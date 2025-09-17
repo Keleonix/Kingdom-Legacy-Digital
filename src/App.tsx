@@ -3,134 +3,32 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-
-// -------------------
-// Types
-// -------------------
-
-type ResourceMap = {
-  gold: number;
-  wood: number;
-  stone: number;
-  military: number;
-  ingot: number;
-  export: number;
-  fame: number;
-};
-
-const RESOURCE_KEYS: (keyof ResourceMap)[] = [
-  "gold",
-  "wood",
-  "stone",
-  "military",
-  "ingot",
-  "export",
-  "fame"
-];
-
-const emptyResource: ResourceMap = {
-  gold: 0,
-  wood: 0,
-  stone: 0,
-  military: 0,
-  ingot: 0,
-  export: 0,
-  fame: 0
-};
-
-type Upgrade = {
-  cost: Partial<ResourceMap> | null;
-  nextSide: number; // 1..4
-};
-
-class GameCard {
-  id = -1;
-  name = "";
-  currentHalf = 1; // 1..4
-  type = ["", "", "", ""];
-  permanent = false;
-  up = true;
-  flipped = false;
-  resources: ResourceMap[][] = [];
-  effects: string[] = [];
-  upgrades: Upgrade[][] = [];
-
-  constructor({
-    id = -1,
-    name = "",
-    currentHalf = 1,
-    type = ["", "", "", ""],
-    permanent = false,
-    up = true,
-    flipped = false,
-    resources = [
-      [{ ...emptyResource }],
-      [{ ...emptyResource }],
-      [{ ...emptyResource }],
-      [{ ...emptyResource }],
-    ],
-    effects = ["", "", "", ""],
-    upgrades = [[], [], [], []],
-  }: Partial<{
-    id: number;
-    name: string;
-    currentHalf: number;
-    type: string[];
-    permanent: boolean;
-    up: boolean;
-    flipped: boolean;
-    resources: ResourceMap[][];
-    effects: string[];
-    upgrades: Upgrade[][];
-  }> = {}) {
-    this.id = id;
-    this.name = name;
-    this.currentHalf = currentHalf;
-    this.type = type;
-    this.permanent = permanent;
-    this.up = up;
-    this.flipped = flipped;
-    this.resources = Array.isArray(resources)
-      ? resources.map((side) => side.map((r) => ({ ...emptyResource, ...r })))
-      : [];
-    while (this.resources.length < 4) this.resources.push([{ ...emptyResource }]);
-    this.effects = effects;
-    this.upgrades = upgrades;
-  }
-
-  // returns array of options for the current side
-  GetResources(): ResourceMap[] {
-    return this.resources[this.currentHalf - 1] ?? [{ ...emptyResource }];
-  }
-
-  GetEffect(): string {
-    return this.effects[this.currentHalf - 1] ?? "";
-  }
-
-  GetUpgrades(): Upgrade[] {
-    return this.upgrades[this.currentHalf - 1] ?? [];
-  }
-}
+import { emptyResource, GameCard, RESOURCE_KEYS, type ResourceMap } from "./types";
+import { allCards } from "./cards";
 
 // deep-clone preserving prototype/methods
 function cloneGameCard(src: GameCard): GameCard {
   const out = new GameCard({});
   out.id = src.id;
   out.name = src.name;
-  out.currentHalf = src.currentHalf;
+  // Default to 1 (Front Up) if currentHalf is not set
+  out.currentHalf = src.currentHalf || 1;
   out.type = [...src.type];
   out.permanent = src.permanent;
   out.up = src.up;
   out.flipped = src.flipped;
+
   // deep-copy resources (sides -> options -> resource keys)
   out.resources = src.resources.map((side) =>
     side.map((r) => ({ ...emptyResource, ...r }))
   );
   while (out.resources.length < 4) out.resources.push([{ ...emptyResource }]);
+  
   out.effects = [...src.effects];
   out.upgrades = src.upgrades.map((arr) =>
     arr.map((u) => ({ cost: u.cost ? { ...u.cost } : null, nextSide: u.nextSide }))
   );
+
   return out;
 }
 
@@ -355,71 +253,8 @@ type PopupPayload = {
 };
 
 export default function Game() {
-  const campaignDeckInit = [
-    new GameCard({
-      id: 10,
-      name: "Chevalier",
-      resources: [
-        [{ military: 3 }],
-        [{ ...emptyResource }],
-        [{ ...emptyResource }],
-        [{ ...emptyResource }],
-      ],
-    }),
-    new GameCard({
-      id: 11,
-      name: "Mineur",
-      resources: [[{ gold: 0, wood: 0, stone: 2, military: 0, ingot: 0, export: 0, fame: 2 }], [{ ...emptyResource }], [{ ...emptyResource }], [{ ...emptyResource }]],
-    }),
-    new GameCard({
-      id: 12,
-      name: "Marchand",
-      resources: [[{ gold: 2, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 }], [{ ...emptyResource }], [{ ...emptyResource }], [{ ...emptyResource }]],
-    }),
-  ];
-
-  const initialDeck = [
-    new GameCard({
-      id: 1,
-      name: "Fermier",
-      resources: [
-        [
-          { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 },
-          { gold: 0, wood: 2, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 },
-        ],
-        [{ gold: 0, wood: 2, stone: 0, military: 1, ingot: 0, export: 0, fame: 0 }],
-        [{ ...emptyResource }],
-        [{ ...emptyResource }],
-      ],
-      effects: [
-        "effects/activate : Pay resources/gold and gain resources/stone resources/stone",
-        "",
-        "",
-        "Other test",
-      ],
-      upgrades: [
-        [{ cost: { gold: 2 }, nextSide: 3 }, { cost: { wood: 2, stone: 1 }, nextSide: 2 }],
-        [],
-        [{ cost: { gold: 4 }, nextSide: 4 }],
-        [],
-      ],
-    }),
-    new GameCard({
-      id: 2,
-      name: "Artisant",
-      resources: [[{ gold: 0, wood: 2, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 }], [{ ...emptyResource }], [{ ...emptyResource }], [{ ...emptyResource }]],
-    }),
-    new GameCard({
-      id: 3,
-      name: "Renégat",
-      resources: [[{ gold: 0, wood: 0, stone: 1, military: 0, ingot: 0, export: 0, fame: 0 }], [{ ...emptyResource }], [{ ...emptyResource }], [{ ...emptyResource }]],
-    }),
-  ];
-
-  const [deck, setDeck] = useState<GameCard[]>(initialDeck);
   const [discard, setDiscard] = useState<GameCard[]>([]);
   const [playArea, setPlayArea] = useState<GameCard[]>([]);
-  const [campaignDeck, setCampaignDeck] = useState<GameCard[]>(campaignDeckInit);
 
   // popup now stores origin zone, original card id, and editable clone
   const [popupCard, setPopupCard] = useState<PopupPayload | null>(null);
@@ -432,6 +267,35 @@ export default function Game() {
   const updateResource = (key: keyof ResourceMap, delta: number) => {
     setResources((r) => ({ ...r, [key]: r[key] + delta }));
   };
+
+  // -------------------
+  // Init
+  // -------------------
+
+  function shuffle<T>(array: T[]): T[] {
+    const arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  const [deck, setDeck] = useState<GameCard[]>(() =>
+    shuffle(
+      allCards
+        .filter((c) => c.id >= 1 && c.id <= 10)
+        .map((c) => cloneGameCard(c))
+    )
+  );
+
+  const [campaignDeck, setCampaignDeck] = useState<GameCard[]>(() =>
+    shuffle(
+      allCards
+        .filter((c) => c.id > 10)
+        .map((c) => cloneGameCard(c))
+    )
+  );
 
   // -------------------
   // Game Phases
@@ -447,8 +311,18 @@ export default function Game() {
   const progress = () => draw(2);
 
   const discardEndTurn = () => {
-    setDiscard((d) => [...d, ...playArea.map(cloneGameCard)]);
+    setDiscard((d) => [...d, ...playArea]);
     setPlayArea([]);
+
+    // Reset all resources except Fame
+    setResources((prev) => {
+      const reset: ResourceMap = { ...emptyResource };
+      // If "fame" is part of ResourceMap, keep it
+      if ("fame" in prev) {
+        (reset as any).fame = (prev as any).fame;
+      }
+      return reset;
+    });
   };
 
   const actions = [
