@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
@@ -15,6 +15,7 @@ type ResourceMap = {
   military: number;
   ingot: number;
   export: number;
+  fame: number;
 };
 
 const RESOURCE_KEYS: (keyof ResourceMap)[] = [
@@ -24,6 +25,7 @@ const RESOURCE_KEYS: (keyof ResourceMap)[] = [
   "military",
   "ingot",
   "export",
+  "fame"
 ];
 
 const emptyResource: ResourceMap = {
@@ -33,6 +35,7 @@ const emptyResource: ResourceMap = {
   military: 0,
   ingot: 0,
   export: 0,
+  fame: 0
 };
 
 type Upgrade = {
@@ -48,10 +51,9 @@ class GameCard {
   permanent = false;
   up = true;
   flipped = false;
-  // resources: for each side (4) -> an array of resource options (each ResourceMap)
   resources: ResourceMap[][] = [];
   effects: string[] = [];
-  upgrades: Upgrade[][] = []; // array per side
+  upgrades: Upgrade[][] = [];
 
   constructor({
     id = -1,
@@ -88,11 +90,10 @@ class GameCard {
     this.permanent = permanent;
     this.up = up;
     this.flipped = flipped;
-    // Ensure resources is an array of arrays and pad to length 4
-    this.resources = Array.isArray(resources) ? resources.map((side) => side.map(r => ({ ...emptyResource, ...r }))) : [];
-    while (this.resources.length < 4) {
-      this.resources.push([{ ...emptyResource }]);
-    }
+    this.resources = Array.isArray(resources)
+      ? resources.map((side) => side.map((r) => ({ ...emptyResource, ...r })))
+      : [];
+    while (this.resources.length < 4) this.resources.push([{ ...emptyResource }]);
     this.effects = effects;
     this.upgrades = upgrades;
   }
@@ -111,7 +112,7 @@ class GameCard {
   }
 }
 
-// helper to clone a GameCard preserving prototype (so methods exist)
+// deep-clone preserving prototype/methods
 function cloneGameCard(src: GameCard): GameCard {
   const out = new GameCard({});
   out.id = src.id;
@@ -187,15 +188,21 @@ function CardView({
   onRightClick: (card: GameCard, zone: string) => void;
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
-  const [, drag] = useDrag(() => ({
-    type: "CARD",
-    item: { card, fromZone },
-  }));
+
+  // Drag item contains the id and fromZone; we still include the card reference for convenience,
+  // but the handlers will operate by id to avoid identity problems.
+  const [, drag] = useDrag(
+    () => ({
+      type: "CARD",
+      item: { id: card.id, fromZone, card },
+    }),
+    [card, fromZone]
+  );
   drag(ref);
 
-  const resOptions = card.GetResources(); // array of ResourceMap options for current side
+  const resOptions = card.GetResources();
   const effect = card.GetEffect();
-  const currentUpgrades = card.GetUpgrades(); // only current side
+  const currentUpgrades = card.GetUpgrades();
 
   return (
     <Card
@@ -209,9 +216,7 @@ function CardView({
       <CardContent className="text-center p-2">
         <div>
           <p className="font-bold text-sm">
-            {card.id > 0 ? card.id : ""}{" "}
-            {" | "}
-            {card.name}
+            {card.id > 0 ? card.id : ""} {" | "} {card.name}
           </p>
           {card.permanent && <p className="text-xs">(Permanent)</p>}
         </div>
@@ -226,7 +231,12 @@ function CardView({
               // show single icon and number if >1 to keep compact
               return [
                 <div key={`${idx}-${k}`} className="flex items-center gap-1">
-                  <img src={resourceIconPath(k)} alt={k} title={`${k} x${count}`} className="w-4 h-4" />
+                  <img
+                    src={resourceIconPath(k)}
+                    alt={k}
+                    title={`${k} x${count}`}
+                    className="w-4 h-4"
+                  />
                   {count > 1 && <span className="text-xs">x{count}</span>}
                 </div>,
               ];
@@ -234,7 +244,9 @@ function CardView({
 
             return (
               <div key={idx} className="flex items-center gap-1">
-                <div className="flex items-center gap-1">{icons.length > 0 ? icons : <span className="text-xs text-gray-400">—</span>}</div>
+                <div className="flex items-center gap-1">
+                  {icons.length > 0 ? icons : <span className="text-xs text-gray-400">—</span>}
+                </div>
                 {idx < resOptions.length - 1 && <div className="mx-1">/</div>}
               </div>
             );
@@ -288,17 +300,20 @@ function Zone({
 }: {
   name: string;
   cards: GameCard[];
-  onDrop: (c: GameCard, from: string) => void;
+  onDrop: (payload: { id: number; fromZone: string }) => void;
   onRightClick: (c: GameCard, zone: string) => void;
   showAll?: boolean;
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
-  const [, drop] = useDrop(() => ({
-    accept: "CARD",
-    drop: (item: { card: GameCard; fromZone: string }) => {
-      onDrop(item.card, item.fromZone);
-    },
-  }));
+  const [, drop] = useDrop(
+    () => ({
+      accept: "CARD",
+      drop: (item: { id: number; fromZone: string }) => {
+        onDrop({ id: item.id, fromZone: item.fromZone });
+      },
+    }),
+    [onDrop]
+  );
   drop(ref);
 
   let displayCards = cards;
@@ -345,31 +360,21 @@ export default function Game() {
       id: 10,
       name: "Chevalier",
       resources: [
-        [{ military: 3, gold: 0, wood: 0, stone: 0, ingot: 0, export: 0 }], // Front Up
-        [{ ...emptyResource }], // Front Down
-        [{ ...emptyResource }], // Back Up
-        [{ ...emptyResource }], // Back Down
+        [{ military: 3 }],
+        [{ ...emptyResource }],
+        [{ ...emptyResource }],
+        [{ ...emptyResource }],
       ],
     }),
     new GameCard({
       id: 11,
       name: "Mineur",
-      resources: [
-        [{ stone: 2, gold: 0, wood: 0, military: 0, ingot: 0, export: 0 }],
-        [{ ...emptyResource }],
-        [{ ...emptyResource }],
-        [{ ...emptyResource }],
-      ],
+      resources: [[{ gold: 0, wood: 0, stone: 2, military: 0, ingot: 0, export: 0, fame: 2 }], [{ ...emptyResource }], [{ ...emptyResource }], [{ ...emptyResource }]],
     }),
     new GameCard({
       id: 12,
       name: "Marchand",
-      resources: [
-        [{ gold: 2, wood: 0, stone: 0, military: 0, ingot: 0, export: 0 }],
-        [{ ...emptyResource }],
-        [{ ...emptyResource }],
-        [{ ...emptyResource }],
-      ],
+      resources: [[{ gold: 2, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 }], [{ ...emptyResource }], [{ ...emptyResource }], [{ ...emptyResource }]],
     }),
   ];
 
@@ -378,16 +383,12 @@ export default function Game() {
       id: 1,
       name: "Fermier",
       resources: [
-        // side 1: two alternative options: gold1 OR wood2
         [
-          { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0 },
-          { gold: 0, wood: 2, stone: 0, military: 0, ingot: 0, export: 0 },
+          { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 },
+          { gold: 0, wood: 2, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 },
         ],
-        // side 2
-        [{ military: 1, gold: 0, wood: 0, stone: 0, ingot: 0, export: 0 }],
-        // side 3
-        [{ gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0 }],
-        // side 4
+        [{ gold: 0, wood: 2, stone: 0, military: 1, ingot: 0, export: 0, fame: 0 }],
+        [{ ...emptyResource }],
         [{ ...emptyResource }],
       ],
       effects: [
@@ -406,43 +407,27 @@ export default function Game() {
     new GameCard({
       id: 2,
       name: "Artisant",
-      resources: [
-        [{ wood: 2, gold: 0, stone: 0, military: 0, ingot: 0, export: 0 }],
-        [{ ...emptyResource }],
-        [{ ...emptyResource }],
-        [{ ...emptyResource }],
-      ],
+      resources: [[{ gold: 0, wood: 2, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 }], [{ ...emptyResource }], [{ ...emptyResource }], [{ ...emptyResource }]],
     }),
     new GameCard({
       id: 3,
       name: "Renégat",
-      resources: [
-        [{ stone: 1, gold: 0, wood: 0, military: 0, ingot: 0, export: 0 }],
-        [{ ...emptyResource }],
-        [{ ...emptyResource }],
-        [{ ...emptyResource }],
-      ],
+      resources: [[{ gold: 0, wood: 0, stone: 1, military: 0, ingot: 0, export: 0, fame: 0 }], [{ ...emptyResource }], [{ ...emptyResource }], [{ ...emptyResource }]],
     }),
   ];
 
   const [deck, setDeck] = useState<GameCard[]>(initialDeck);
   const [discard, setDiscard] = useState<GameCard[]>([]);
   const [playArea, setPlayArea] = useState<GameCard[]>([]);
-  const [campaignDeck, setCampaignDeck] = useState<GameCard[]>(
-    campaignDeckInit
-  );
+  const [campaignDeck, setCampaignDeck] = useState<GameCard[]>(campaignDeckInit);
 
   // popup now stores origin zone, original card id, and editable clone
   const [popupCard, setPopupCard] = useState<PopupPayload | null>(null);
   const [showDiscard, setShowDiscard] = useState(false);
   const [showEndRound, setShowEndRound] = useState(false);
-  const [campaignPreview, setCampaignPreview] = useState<GameCard | null>(
-    null
-  );
+  const [campaignPreview, setCampaignPreview] = useState<GameCard | null>(null);
 
-  const [resources, setResources] = useState<ResourceMap>({
-    ...emptyResource,
-  });
+  const [resources, setResources] = useState<ResourceMap>({ ...emptyResource });
 
   const updateResource = (key: keyof ResourceMap, delta: number) => {
     setResources((r) => ({ ...r, [key]: r[key] + delta }));
@@ -454,7 +439,7 @@ export default function Game() {
 
   const draw = (nbCards: number) => {
     const drawn = deck.slice(0, nbCards);
-    setPlayArea((p) => [...p, ...drawn]);
+    setPlayArea((p) => [...p, ...drawn.map(cloneGameCard)]);
     setDeck((d) => d.slice(nbCards));
   };
 
@@ -462,7 +447,7 @@ export default function Game() {
   const progress = () => draw(2);
 
   const discardEndTurn = () => {
-    setDiscard((d) => [...d, ...playArea]);
+    setDiscard((d) => [...d, ...playArea.map(cloneGameCard)]);
     setPlayArea([]);
   };
 
@@ -475,31 +460,56 @@ export default function Game() {
   // Drag & Drop Handlers
   // -------------------
 
-  const handleDrop = (card: GameCard, from: string, to: string) => {
-    if (from === to) return;
+  type DropPayload = { id: number; fromZone: string };
 
-    const removeFrom = (arr: GameCard[]) =>
-      arr.filter((c) => !(c.id === card.id && c === card));
+  const handleDropToZone = (toZone: string) => (payload: DropPayload) => {
+    const { id, fromZone } = payload;
+    if (fromZone === toZone) return;
 
-    if (from === "Deck") setDeck((d) => removeFrom(d));
-    if (from === "Play Area") setPlayArea((p) => removeFrom(p));
-    if (from === "Discard") setDiscard((f) => removeFrom(f));
-    if (from === "Campaign") setCampaignDeck((c) => removeFrom(c));
+    // helper: remove a card by id from a given array
+    const removeById = (arr: GameCard[], removeId: number) => arr.filter((c) => c.id !== removeId);
 
-    if (to === "Deck") setDeck((d) => [card, ...d]);
-    if (to === "Play Area") setPlayArea((p) => [...p, card]);
-    if (to === "Discard") setDiscard((f) => [...f, card]);
-    if (to === "Destroy") {
-      // Do nothing = removed permanently
+    // Remove from source zone (by id only)
+    if (fromZone === "Deck") setDeck((d) => removeById(d, id));
+    if (fromZone === "Play Area") setPlayArea((p) => removeById(p, id));
+    if (fromZone === "Discard") setDiscard((f) => removeById(f, id));
+    if (fromZone === "Campaign") setCampaignDeck((c) => removeById(c, id));
+
+    // Find the original card object to clone for adding to destination (prefer searching in current states).
+    // If not found (shouldn't happen often), create a minimal placeholder to avoid crashes.
+    const findCardInAllZones = (): GameCard | null => {
+      const find = (arr: GameCard[]) => arr.find((c) => c.id === id) ?? null;
+      return find(deck) || find(playArea) || find(discard) || find(campaignDeck) || null;
+    };
+
+    const sourceCard = findCardInAllZones();
+
+    // If the source card wasn't located (e.g. it was just removed / or fromZone had an outdated reference),
+    // create a tiny placeholder so we can add something sensible.
+    const toAdd = sourceCard ? cloneGameCard(sourceCard) : new GameCard({ id, name: `Card #${id}` });
+
+    // Add to destination zone (add cloned instance)
+    if (toZone === "Deck") setDeck((d) => [toAdd, ...d]);
+    if (toZone === "Play Area") setPlayArea((p) => [...p, toAdd]);
+    if (toZone === "Discard") setDiscard((f) => [...f, toAdd]);
+    if (toZone === "Destroy") {
+      // intentionally drop permanently (do nothing but ensure it was removed from source)
     }
   };
 
+  // wrappers for Zone components
+  const dropToDeck = handleDropToZone("Deck");
+  const dropToPlayArea = handleDropToZone("Play Area");
+  const dropToDiscard = handleDropToZone("Discard");
+  const dropToCampaign = handleDropToZone("Campaign");
+  const dropToDestroy = handleDropToZone("Destroy");
+
   // -------------------
-  // End Round: gather discard & playArea into deck then show campaign top
+  // End Round / Shuffle
   // -------------------
 
   const handleEndRound = () => {
-    setDeck((d) => [...discard, ...playArea, ...d]);
+    setDeck((d) => [...discard.map(cloneGameCard), ...playArea.map(cloneGameCard), ...d]);
     setDiscard([]);
     setPlayArea([]);
     setShowEndRound(true);
@@ -518,21 +528,17 @@ export default function Game() {
   };
 
   // -------------------
-  // Helper: replace card in the right zone by id
+  // Replace card in zone by id (used by popup apply)
   // -------------------
-  function replaceCardInZone(
-    zone: string,
-    id: number,
-    newCard: GameCard
-  ): void {
+  function replaceCardInZone(zone: string, id: number, newCard: GameCard): void {
     if (zone === "Deck") {
-      setDeck((d) => d.map((c) => (c.id === id ? newCard : c)));
+      setDeck((d) => d.map((c) => (c.id === id ? cloneGameCard(newCard) : c)));
     } else if (zone === "Play Area") {
-      setPlayArea((p) => p.map((c) => (c.id === id ? newCard : c)));
+      setPlayArea((p) => p.map((c) => (c.id === id ? cloneGameCard(newCard) : c)));
     } else if (zone === "Discard") {
-      setDiscard((f) => f.map((c) => (c.id === id ? newCard : c)));
+      setDiscard((f) => f.map((c) => (c.id === id ? cloneGameCard(newCard) : c)));
     } else if (zone === "Campaign") {
-      setCampaignDeck((c) => c.map((card) => (card.id === id ? newCard : card)));
+      setCampaignDeck((c) => c.map((card) => (card.id === id ? cloneGameCard(newCard) : card)));
     }
   }
 
@@ -549,13 +555,9 @@ export default function Game() {
           <Zone
             name="Deck"
             cards={deck.slice(0, 1)}
-            onDrop={(c, from) => handleDrop(c, from, "Deck")}
+            onDrop={(p) => dropToDeck(p)}
             onRightClick={(c, zone) =>
-              setPopupCard({
-                originZone: zone,
-                originalId: c.id,
-                editable: cloneGameCard(c),
-              })
+              setPopupCard({ originZone: zone, originalId: c.id, editable: cloneGameCard(c) })
             }
           />
 
@@ -564,13 +566,9 @@ export default function Game() {
             <Zone
               name="Discard"
               cards={discard}
-              onDrop={(c, from) => handleDrop(c, from, "Discard")}
+              onDrop={(p) => dropToDiscard(p)}
               onRightClick={(c, zone) =>
-                setPopupCard({
-                  originZone: zone,
-                  originalId: c.id,
-                  editable: cloneGameCard(c),
-                })
+                setPopupCard({ originZone: zone, originalId: c.id, editable: cloneGameCard(c) })
               }
               showAll={false}
             />
@@ -591,32 +589,20 @@ export default function Game() {
                 if (card) setCampaignPreview(cloneGameCard(card));
               }}
             >
-              <div className="w-32 h-48 border bg-gray-300 flex items-center justify-center">
-                Hidden
-              </div>
+              <div className="w-32 h-48 border bg-gray-300 flex items-center justify-center">Hidden</div>
             </div>
           </div>
 
-          {/* Destroy Zone (permanent removal) */}
-          <Zone
-            name="Destroy"
-            cards={[]} // never displays cards, they vanish
-            onDrop={(c, from) => handleDrop(c, from, "Destroy")}
-            onRightClick={() => {}}
-          />
+          <Zone name="Destroy" cards={[]} onDrop={(p) => dropToDestroy(p)} onRightClick={() => {}} />
         </div>
 
         {/* Play Area */}
         <Zone
           name="Play Area"
           cards={playArea}
-          onDrop={(c, from) => handleDrop(c, from, "Play Area")}
+          onDrop={(p) => dropToPlayArea(p)}
           onRightClick={(c, zone) =>
-            setPopupCard({
-              originZone: zone,
-              originalId: c.id,
-              editable: cloneGameCard(c),
-            })
+            setPopupCard({ originZone: zone, originalId: c.id, editable: cloneGameCard(c) })
           }
         />
 
@@ -636,10 +622,7 @@ export default function Game() {
                   className="w-16 text-center border rounded"
                   value={resources[key]}
                   onChange={(e) =>
-                    setResources((r) => ({
-                      ...r,
-                      [key]: parseInt(e.target.value || "0") || 0,
-                    }))
+                    setResources((r) => ({ ...r, [key]: parseInt(e.target.value || "0", 10) || 0 }))
                   }
                 />
                 <Button size="sm" onClick={() => updateResource(key, 1)}>
@@ -665,7 +648,6 @@ export default function Game() {
           <Button onClick={shuffleDeck}>Shuffle Deck</Button>
         </div>
 
-        {/* Card Popup (high z so it appears over discard modal) */}
         {popupCard && (
           <CardPopup
             payload={popupCard}
@@ -681,13 +663,7 @@ export default function Game() {
           <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
             <div className="bg-white p-4 rounded-xl space-y-4">
               <h2 className="font-bold">Campaign Card #{campaignPreview.id}</h2>
-              {/* Make campaign preview draggable */}
-              <Zone
-                name="Campaign"
-                cards={[campaignPreview]}
-                onDrop={(c, from) => handleDrop(c, from, "Campaign")}
-                onRightClick={() => {}}
-              />
+              <Zone name="Campaign" cards={[campaignPreview]} onDrop={(p) => dropToCampaign(p)} onRightClick={() => {}} />
               <Button onClick={() => setCampaignPreview(null)}>Close</Button>
             </div>
           </div>
@@ -705,11 +681,7 @@ export default function Game() {
                     card={c}
                     fromZone="Discard"
                     onRightClick={(x, zone) =>
-                      setPopupCard({
-                        originZone: zone,
-                        originalId: x.id,
-                        editable: cloneGameCard(x),
-                      })
+                      setPopupCard({ originZone: zone, originalId: x.id, editable: cloneGameCard(x) })
                     }
                   />
                 ))}
@@ -729,12 +701,7 @@ export default function Game() {
                 <div className="flex-1">
                   <p className="font-bold">Campaign Deck (top card revealed)</p>
                   {campaignDeck.length > 0 ? (
-                    <Zone
-                      name="Campaign"
-                      cards={[campaignDeck[0]]}
-                      onDrop={(c, from) => handleDrop(c, from, "Campaign")}
-                      onRightClick={() => {}}
-                    />
+                    <Zone name="Campaign" cards={[campaignDeck[0]]} onDrop={(p) => dropToCampaign(p)} onRightClick={() => {}} />
                   ) : (
                     <p>No more campaign cards</p>
                   )}
@@ -742,23 +709,12 @@ export default function Game() {
 
                 <div className="flex-1">
                   <p className="font-bold">Deck (top)</p>
-                  <Zone
-                    name="Deck"
-                    cards={deck.slice(0, 1)}
-                    onDrop={(c, from) => handleDrop(c, from, "Deck")}
-                    onRightClick={() => {}}
-                  />
+                  <Zone name="Deck" cards={deck.slice(0, 1)} onDrop={(p) => dropToDeck(p)} onRightClick={() => {}} />
                 </div>
 
                 <div className="flex-1">
                   <p className="font-bold">Discard</p>
-                  <Zone
-                    name="Discard"
-                    cards={discard}
-                    onDrop={(c, from) => handleDrop(c, from, "Discard")}
-                    onRightClick={() => {}}
-                    showAll={true}
-                  />
+                  <Zone name="Discard" cards={discard} onDrop={(p) => dropToDiscard(p)} onRightClick={() => {}} showAll={true} />
                 </div>
               </div>
 
@@ -774,8 +730,9 @@ export default function Game() {
 }
 
 // -------------------
-// Card Popup Component (separated for clarity)
+// Card Popup Component
 // -------------------
+
 function CardPopup({
   payload,
   close,
@@ -789,18 +746,14 @@ function CardPopup({
   resources: ResourceMap;
   setResources: (updater: React.SetStateAction<ResourceMap>) => void;
 }) {
-  const [localCard, setLocalCard] = useState<GameCard>(
-    cloneGameCard(payload.editable)
-  );
-  const [selectedUpgradeIndex, setSelectedUpgradeIndex] = useState<number | null>(
-    null
-  );
+  const [localCard, setLocalCard] = useState<GameCard>(cloneGameCard(payload.editable));
+  const [selectedUpgradeIndex, setSelectedUpgradeIndex] = useState<number | null>(null);
 
   // Side chooser
   const setSide = (half: number) => {
     localCard.currentHalf = half;
     setLocalCard(cloneGameCard(localCard));
-    setSelectedUpgradeIndex(null); // reset selected upgrade when changing side
+    setSelectedUpgradeIndex(null);
   };
 
   // current side options (array of ResourceMap)
@@ -826,10 +779,7 @@ function CardPopup({
     // 1) if an upgrade was selected, deduct its cost from global resources and set the card's currentHalf to nextSide
     let appliedCard = cloneGameCard(localCard);
 
-    if (
-      selectedUpgradeIndex !== null &&
-      currentSideUpgrades[selectedUpgradeIndex]
-    ) {
+    if (selectedUpgradeIndex !== null && currentSideUpgrades[selectedUpgradeIndex]) {
       const upg = currentSideUpgrades[selectedUpgradeIndex];
       if (upg.cost) {
         // Deduct cost keys from player resources
@@ -846,14 +796,13 @@ function CardPopup({
       appliedCard.currentHalf = upg.nextSide;
     }
 
-    // 2) commit edited resource numbers for the selected (current) side
-    appliedCard.resources = localCard.resources.map((side) => side.map(r => ({ ...r })));
+    appliedCard.resources = localCard.resources.map((side) => side.map((r) => ({ ...r })));
     appliedCard.effects = [...localCard.effects];
     appliedCard.upgrades = localCard.upgrades.map((arr) =>
       arr.map((u) => ({ cost: u.cost ? { ...u.cost } : null, nextSide: u.nextSide }))
     );
 
-    // 3) replace the original card in its zone by id
+    // Replace by id in the original zone (this will keep the card id the same but substitute the instance)
     replaceCardInZone(payload.originZone, payload.originalId, appliedCard);
 
     // 4) close popup
@@ -887,11 +836,7 @@ function CardPopup({
         <div>
           <h3 className="font-bold">Effects (current side)</h3>
           <div className="text-sm">
-            {localCard.GetEffect() ? (
-              renderEffect(localCard.GetEffect())
-            ) : (
-              <span className="text-gray-400">No effect</span>
-            )}
+            {localCard.GetEffect() ? renderEffect(localCard.GetEffect()) : <span className="text-gray-400">No effect</span>}
           </div>
         </div>
 
@@ -919,7 +864,7 @@ function CardPopup({
                     <input
                       type="number"
                       className="w-20 text-center border rounded"
-                      value={opt[key]}
+                      value={opt[key] || 0}
                       onChange={(e) => {
                         const val = parseInt(e.target.value || "0", 10) || 0;
                         localCard.resources[localCard.currentHalf - 1][optIdx][key] = val;
@@ -947,9 +892,7 @@ function CardPopup({
                   className={`flex items-center gap-2 text-sm p-2 border rounded cursor-pointer ${
                     selected ? "bg-blue-100 border-blue-400" : "bg-white"
                   }`}
-                  onClick={() =>
-                    setSelectedUpgradeIndex(selected ? null : idx)
-                  }
+                  onClick={() => setSelectedUpgradeIndex(selected ? null : idx)}
                 >
                   <div className="flex items-center gap-2">
                     {upg.cost ? (
