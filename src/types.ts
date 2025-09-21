@@ -39,7 +39,7 @@ export type Upgrade = {
 
 export class GameCard {
   id = -1;
-  name = "";
+  name: string[] = ["", "", "", ""];
   currentHalf = 1; // 1..4
   type = ["", "", "", ""];
   permanent = false;
@@ -48,10 +48,12 @@ export class GameCard {
   resources: ResourceMap[][] = [];
   effects: string[] = [];
   upgrades: Upgrade[][] = [];
+  selectedCheckboxes: any[] | undefined;
+  checkboxes: any;
 
   constructor({
     id = -1,
-    name = "",
+    name = ["", "", "", ""],
     currentHalf = 1,
     type = ["", "", "", ""],
     permanent = false,
@@ -67,7 +69,7 @@ export class GameCard {
     upgrades = [[], [], [], []],
   }: Partial<{
     id: number;
-    name: string;
+    name: string[];
     currentHalf: number;
     type: string[];
     permanent: boolean;
@@ -76,6 +78,7 @@ export class GameCard {
     resources: ResourceMap[][];
     effects: string[];
     upgrades: Upgrade[][];
+    selectedCheckboxes: any[];
   }> = {}) {
     this.id = id;
     this.name = name;
@@ -99,6 +102,14 @@ export class GameCard {
 
   GetEffect(): string {
     return this.effects[this.currentHalf - 1] ?? "";
+  }
+
+  GetName(): string {
+    return this.name[this.currentHalf - 1] ?? "";
+  }
+
+  GetType(): string {
+    return this.type[this.currentHalf - 1] ?? "";
   }
 
   GetUpgrades(): Upgrade[] {
