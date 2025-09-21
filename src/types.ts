@@ -12,6 +12,12 @@ export type ResourceMap = {
   fame: number;
 };
 
+export type PopupPayload = {
+  originZone: string;
+  originalId: number;
+  editable: GameCard;
+};
+
 export const RESOURCE_KEYS: (keyof ResourceMap)[] = [
   "gold",
   "wood",

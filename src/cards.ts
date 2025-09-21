@@ -431,8 +431,8 @@ export const allCards: GameCard[] = [
       ],
     ],
     effects: [
-      "effects/activate Jouez un Terrain depuis votre défausse.",
       "",
+      "effects/activate Jouez un Terrain depuis votre défausse.",
       "effects/activate Jouez une carte depuis votre défausse.",
       "effects/activate Jouez un Terrain ou Bâtiment depuis votre défausse.",
     ],
@@ -474,13 +474,12 @@ export const allCards: GameCard[] = [
         { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 1 }
       ],
       [
-        { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 4 }
-      ],
-      [
         { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 },
         { gold: 0, wood: 1, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 },
         { gold: 0, wood: 0, stone: 1, military: 0, ingot: 0, export: 0, fame: 0 },
-        { gold: 0, wood: 0, stone: 0, military: 0, ingot: 1, export: 0, fame: 0 },
+        { gold: 0, wood: 0, stone: 0, military: 0, ingot: 1, export: 0, fame: 4 }
+      ],
+      [
         { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 3 }
       ],
     ],
@@ -589,7 +588,7 @@ export const allCards: GameCard[] = [
     effects: [
       " ",
       "",
-      "effects/activate Découvrez un nouveau territoire (71/72/73/74). Puis Back Up.",
+      "effects/activate Découvrez un nouveau territoire (71/72/73/74). Puis -> Back Down.",
       "",
     ],
     upgrades: [
@@ -675,9 +674,7 @@ export const allCards: GameCard[] = [
       [{ ...emptyResource }],
     ],
     effects: [
-      "effects/mandatory Carte Jouée : bloque 1 carte avec production d' resources/gold .\n\
- effects/activate Dépensez resources/military pour vaincre ( effects/destroy ) et gagner 2 ressources au choix.\
- (Peut être retournée par un Missionaire)",
+      "effects/mandatory Carte Jouée : bloque 1 carte avec production d' resources/gold . effects/activate Dépensez resources/military pour vaincre ( effects/destroy ) et gagner 2 ressources au choix. (Peut être retournée par un Missionaire)",
       "",
       "effects/activate Choisissez un Bâtiment en jeu. Gagnez les ressources qui correspondent à sa production.",
       "",
@@ -773,9 +770,7 @@ export const allCards: GameCard[] = [
       [{ ...emptyResource }],
     ],
     effects: [
-      "effects/mandatory Carte Jouée : bloque 1 carte avec production d' resources/gold .\n\
- effects/activate Dépensez resources/military pour vaincre ( effects/destroy ) et gagner 2 ressources au choix.\
- (Peut être retournée par un Missionaire)",
+      "effects/mandatory Carte Jouée : bloque 1 carte avec production d' resources/gold . effects/activate Dépensez resources/military pour vaincre ( effects/destroy ) et gagner 2 ressources au choix. (Peut être retournée par un Missionaire)",
       "",
       "effects/activate Choisissez un Terrain en jeu. Gagnez les ressources qui correspondent à sa production.",
       "",
@@ -1357,8 +1352,8 @@ export const allCards: GameCard[] = [
     effects: [
       "effects/mandatory Tant qu'elle est en jeu, détruisez le prochain Terrain que vous jouez. Lorsque vous le faite, Back Up.",
       "",
-      "effects/end Ajoutez 1 resources/check dans l'ordre. *: Ajoutez resources/wood à la production de cette carte.",
       "",
+      "effects/end Ajoutez 1 resources/check dans l'ordre. *: Ajoutez resources/wood à la production de cette carte.",
     ],
     upgrades: [
       [],
@@ -1375,13 +1370,13 @@ export const allCards: GameCard[] = [
     checkboxes: [
       [],
       [],
-      [],
       [ {content: "*", checked: false},
         {content: "", checked: false},
         {content: "*", checked: false},
         {content: "", checked: false},
         {content: "*", checked: false},
       ],
+      [],
     ],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -2779,8 +2774,8 @@ export const allCards: GameCard[] = [
     effects: [
       "effects/passif Reste en jeu. effects/mandatory Fin de Manche: Détruisez 1 Bâtiment de votre royaume. Puis -> (Back Up).",
       "",
-      "effects/end Ajoutez 1 resources/check dans l'ordre. *: Ajoutez resources/wood à la production de cette carte.",
       "",
+      "effects/end Ajoutez 1 resources/check dans l'ordre. *: Ajoutez resources/wood à la production de cette carte.",
     ],
     upgrades: [
       [],
@@ -2797,13 +2792,13 @@ export const allCards: GameCard[] = [
     checkboxes: [
       [],
       [],
-      [],
       [ {content: "*", checked: false},
         {content: "", checked: false},
         {content: "*", checked: false},
         {content: "", checked: false},
         {content: "*", checked: false},
       ],
+      [],
     ],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -5722,13 +5717,12 @@ export const allCards: GameCard[] = [
         { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 1 }
       ],
       [
-        { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 4 }
-      ],
-      [
         { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 },
         { gold: 0, wood: 1, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 },
         { gold: 0, wood: 0, stone: 1, military: 0, ingot: 0, export: 0, fame: 0 },
-        { gold: 0, wood: 0, stone: 0, military: 0, ingot: 1, export: 0, fame: 0 },
+        { gold: 0, wood: 0, stone: 0, military: 0, ingot: 1, export: 0, fame: 4 }
+      ],
+      [
         { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 3 }
       ],
     ],
