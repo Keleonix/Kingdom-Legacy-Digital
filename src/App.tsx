@@ -400,19 +400,20 @@ function Zone({
   }
 
   // --- Layout rules ---
-  let containerClass = "grid gap-2";
-  let gridTemplate: string | undefined;
+let containerClass = "grid gap-2";
+let gridTemplate: string | undefined;
 
-  if (name === "Play Area") {
-    // Left-aligned flex row
-    containerClass = "flex flex-wrap gap-2 justify-start";
-  } else if ((name === "Permanent" || name === "Blocked") && displayCards.length < 6) {
-    // Expand horizontally (1–5 columns only)
-    gridTemplate = `repeat(${displayCards.length || 1}, minmax(0, 1fr))`;
-  } else {
-    // Default: max 6 per row
-    gridTemplate = `repeat(${Math.min(6, displayCards.length || 1)}, minmax(0, 1fr))`;
-  }
+if (name === "Play Area") {
+  // Mobile-friendly flex row with wrap
+  containerClass = "flex flex-wrap gap-2 justify-start items-start";
+} else if ((name === "Permanent" || name === "Blocked") && displayCards.length < 6) {
+  // Expand horizontally (1–5 columns only)
+  gridTemplate = `repeat(${displayCards.length || 1}, minmax(0, 1fr))`;
+} else {
+  // Default: responsive grid for mobile
+  const cols = Math.min(6, displayCards.length || 1);
+  gridTemplate = `repeat(${cols}, minmax(140px, 1fr))`;
+}
 
   return (
     <div ref={ref} className="p-2 border rounded min-h-[120px]">
@@ -772,7 +773,11 @@ export default function Game() {
     setDeck((d) => d.slice(nbCards));
   };
 
-  const drawNewTurn = () => draw(4);
+  const drawNewTurn = () => {
+    discardEndTurn();
+    draw(4);
+  }
+  
   const progress = () => draw(2);
 
   const discardEndTurn = () => {
@@ -862,9 +867,10 @@ export default function Game() {
   // -------------------
 
   const handleEndRound = () => {
-    setDeck((d) => [...discard.map(cloneGameCard), ...playArea.map(cloneGameCard), ...d]);
+    setDeck((d) => [...discard.map(cloneGameCard), ...playArea.map(cloneGameCard), ...blockedZone.map(cloneGameCard), ...d]);
     setDiscard([]);
     setPlayArea([]);
+    setBlockedZone([]);
     setShowEndRound(true);
   };
 
@@ -1051,8 +1057,8 @@ export default function Game() {
         </div>
 
         {/* Play Area + Blocked (blocked to the right) */}
-        <div className="flex gap-4">
-          <div className="flex-1 w-512">
+        <div className="flex flex-col lg:flex-row gap-4">
+          <div className="flex-1 min-w-0">
             <Zone
               name="Play Area"
               cards={playArea}
@@ -1063,7 +1069,7 @@ export default function Game() {
           </div>
 
           {/* Blocked zone: visible but not interactable except via drag/drop to it explicitly */}
-          <div className="w-96">
+          <div className="w-full lg:w-96">
             <Zone
               name="Blocked"
               cards={blockedZone}
@@ -1219,23 +1225,19 @@ export default function Game() {
 
               <div className="flex gap-4">
                 <div className="flex-1">
-                  <p className="font-bold">Campaign Deck (top card revealed)</p>
-                  {campaignDeck.length > 0 ? (
-                    <Zone name="Campaign" cards={[campaignDeck[0]]} onDrop={(p) => dropToCampaign(p)} onTapAction={handleTapAction} onRightClick={() => {}} />
-                  ) : (
-                    <p>No more campaign cards</p>
-                  )}
+                  <p className="font-bold">Campaign Deck</p>
+                  <Zone name="Campaign" cards={campaignDeck.slice(0, 1)} onDrop={() => {}} onTapAction={handleTapAction} onRightClick={() => {handleTapAction}} />
                 </div>
 
                 <div className="flex-1">
-                  <p className="font-bold">Deck (top)</p>
-                  <Zone name="Deck" cards={deck.slice(0, 1)} onDrop={(p) => dropToDeck(p)} onTapAction={handleTapAction} onRightClick={() => {}} />
+                  <p className="font-bold">Deck</p>
+                  <Zone name="Deck" cards={deck.slice(0, 1)} onDrop={(p) => dropToDeck(p)} onTapAction={handleTapAction} onRightClick={() => {handleTapAction}} />
                   {<Button onClick={() => setShowDeck(true)}>See deck</Button>}
                 </div>
 
                 <div className="flex-1">
                   <p className="font-bold">Temporary (Blocked)</p>
-                  <Zone name="Temporary" cards={[]} onDrop={(p) => dropToBlocked(p)} onTapAction={handleTapAction} onRightClick={() => {}} />
+                  <Zone name="Blocked" cards={blockedZone.slice(-1)} onDrop={(p) => dropToBlocked(p)} onTapAction={handleTapAction} onRightClick={() => {handleTapAction} } />
                 </div>
 
                 <div className="flex-1">
