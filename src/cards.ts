@@ -1353,7 +1353,7 @@ export const allCards: GameCard[] = [
       "effects/mandatory Tant qu'elle est en jeu, détruisez le prochain Terrain que vous jouez. Lorsque vous le faite, Back Up.",
       "",
       "",
-      "effects/end Ajoutez 1 resources/check dans l'ordre. *: Ajoutez resources/wood à la production de cette carte.",
+      "effects/end Ajoutez 1 effects/check dans l'ordre. *: Ajoutez resources/wood à la production de cette carte.",
     ],
     upgrades: [
       [],
@@ -1370,13 +1370,13 @@ export const allCards: GameCard[] = [
     checkboxes: [
       [],
       [],
+      [],
       [ {content: "*", checked: false},
         {content: "", checked: false},
         {content: "*", checked: false},
         {content: "", checked: false},
         {content: "*", checked: false},
       ],
-      [],
     ],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -1582,7 +1582,7 @@ export const allCards: GameCard[] = [
     effects: [
       "effects/activate Détruisez l'une des cartes suivantes: Cabane de Bûcheron - découvrez (100). Grange - découvrez (101). Bâteau de pêche - découvrez (102).",
       "",
-      "effects/destroy Vainquez un ennemi (défausse, en jeu ou permanent). Puis marquez resources/check la case suivante de la carte Armée.",
+      "effects/destroy Vainquez un ennemi (défausse, en jeu ou permanent). Puis marquez effects/check la case suivante de la carte Armée.",
       "",
     ],
     upgrades: [
@@ -1626,7 +1626,7 @@ export const allCards: GameCard[] = [
     effects: [
       "Vaut 5 resources/fame par effects/check .",
       "",
-      "effects/activate réinitialisez et ajoutez 1 resources/check . Découvrez une invention (97/98/99) ou gagnez une ressource de votre choix pour chaque effects/check . Vaut 5 resources/fame par effects/check .",
+      "effects/activate réinitialisez et ajoutez 1 effects/check . Découvrez une invention (97/98/99) ou gagnez une ressource de votre choix pour chaque effects/check . Vaut 5 resources/fame par effects/check .",
       "",
     ],
     upgrades: [
@@ -2775,7 +2775,7 @@ export const allCards: GameCard[] = [
       "effects/passif Reste en jeu. effects/mandatory Fin de Manche: Détruisez 1 Bâtiment de votre royaume. Puis -> (Back Up).",
       "",
       "",
-      "effects/end Ajoutez 1 resources/check dans l'ordre. *: Ajoutez resources/wood à la production de cette carte.",
+      "effects/end Ajoutez 1 effects/check dans l'ordre. *: Ajoutez resources/wood à la production de cette carte.",
     ],
     upgrades: [
       [],
@@ -2792,13 +2792,13 @@ export const allCards: GameCard[] = [
     checkboxes: [
       [],
       [],
+      [],
       [ {content: "*", checked: false},
         {content: "", checked: false},
         {content: "*", checked: false},
         {content: "", checked: false},
         {content: "*", checked: false},
       ],
-      [],
     ],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -3907,10 +3907,10 @@ export const allCards: GameCard[] = [
       ],
     ],
     effects: [
-      "resources/may Fin du Tour : Défaussez pour que 1 autre carte reste en jeu.",
-      "resources/may Fin du Tour : Défaussez pour que 2 autres cartes restent en jeu.",
-      "resources/may Fin du Tour : Défaussez pour que 4 autres cartes restent en jeu.",
-      "resources/may Fin du Tour : Défaussez pour que 3 autres cartes restent en jeu.",
+      "effects/may Fin du Tour : Défaussez pour que 1 autre carte reste en jeu.",
+      "effects/may Fin du Tour : Défaussez pour que 2 autres cartes restent en jeu.",
+      "effects/may Fin du Tour : Défaussez pour que 4 autres cartes restent en jeu.",
+      "effects/may Fin du Tour : Défaussez pour que 3 autres cartes restent en jeu.",
     ],
     upgrades: [
       [{ cost: { gold: 3 }, nextSide: 2 }],
@@ -3959,10 +3959,10 @@ export const allCards: GameCard[] = [
       ],
     ],
     effects: [
-      "resources/may Fin du Tour : Défaussez pour que 1 autre carte reste en jeu.",
-      "resources/may Fin du Tour : Défaussez pour que 2 autres cartes restent en jeu.",
-      "resources/may Fin du Tour : Défaussez pour que 4 autres cartes restent en jeu.",
-      "resources/may Fin du Tour : Défaussez pour que 3 autres cartes restent en jeu.",
+      "effects/may Fin du Tour : Défaussez pour que 1 autre carte reste en jeu.",
+      "effects/may Fin du Tour : Défaussez pour que 2 autres cartes restent en jeu.",
+      "effects/may Fin du Tour : Défaussez pour que 4 autres cartes restent en jeu.",
+      "effects/may Fin du Tour : Défaussez pour que 3 autres cartes restent en jeu.",
     ],
     upgrades: [
       [{ cost: { gold: 3 }, nextSide: 2 }],
@@ -4574,7 +4574,7 @@ export const allCards: GameCard[] = [
       [ { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 2, fame: 10 } ],
     ],
     effects: [
-      "(Choisissez quand rajoutée.) effects/activate Dépensez resources/gold resources/gold pour inscrire 1 effects/check . (Vaut 2 resources/fame par effects/check)",
+      "(Choisissez quand rajoutée.) effects/activate Dépensez resources/gold resources/gold pour inscrire 1 effects/check . (Vaut 2 resources/fame par effects/check )",
       "",
       "effects/activate Remettez au-dessus ou en-dessous de votre pioche jusqu'à 3 autres de vos cartes en jeu.",
       "",
@@ -6615,7 +6615,7 @@ export const allCards: GameCard[] = [
       "Jouez 1 manche durant laquelle tous les Terrains restent en jeu. Puis -> (Front Down).",
       "Jouez 1 manche. Puis -> (Back Down). effects/mandatory Lorsqu'une Personne est jouée, inscrivez 1 effects/check ou défaussez 2 cartes alliées. Une fois complétée, défaussez toute votre pioche.",
       "Jouez 1 manche durant laquelle vous pouvez dépenser autant d' resources/military que vous le souhaitez pour les mettre sur cette carte. Après la manche, ajoutez autant de resources/fame (max 100) à un Terrain. Puis détruisez cette extension.",
-      "Jouez 1 manche. effects/mandatory Fin du Tour: Si vous n'avez aucune resources/military, enlevez 1 production d'1 carte en jeu. effects/mandator Fin de Manche: Ajoutez une ressource (non- resources/fame) au choix à une carte alliée, puis -> (Back Up).",
+      "Jouez 1 manche. effects/mandatory Fin du Tour: Si vous n'avez aucune resources/military , enlevez 1 production d'1 carte en jeu. effects/mandator Fin de Manche: Ajoutez une ressource (non- resources/fame ) au choix à une carte alliée, puis -> (Back Up).",
     ],
     upgrades: [
       [],

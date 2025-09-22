@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
@@ -98,7 +98,9 @@ function CardView({
   interactable?: boolean; // when false, disable drag & tap
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
+  const previewRef = useRef<HTMLDivElement | null>(null);
   const [showPreview, setShowPreview] = useState(false);
+  const [previewPosition, setPreviewPosition] = useState({ top: 0, left: 0 });
   const touchTimeout = useRef<any>(null);
 
   const [, drag] = useDrag(
@@ -110,6 +112,40 @@ function CardView({
   [card, fromZone, interactable]
   );
   drag(ref);
+
+  // Calculate optimal popup position
+  useEffect(() => {
+    if (showPreview && ref.current && previewRef.current) {
+      const cardRect = ref.current.getBoundingClientRect();
+      const previewRect = previewRef.current.getBoundingClientRect();
+      const viewport = {
+        width: window.innerWidth,
+        height: window.innerHeight
+      };
+
+      let top = cardRect.top - previewRect.height - 8; // 8px gap above card
+      let left = cardRect.left + (cardRect.width / 2) - (previewRect.width / 2); // centered
+
+      // Adjust if popup goes above viewport
+      if (top < 8) {
+        top = cardRect.bottom + 8; // show below card instead
+      }
+
+      // Adjust if popup goes below viewport when positioned below
+      if (top + previewRect.height > viewport.height - 8) {
+        top = viewport.height - previewRect.height - 8;
+      }
+
+      // Adjust horizontal position if popup goes outside viewport
+      if (left < 8) {
+        left = 8;
+      } else if (left + previewRect.width > viewport.width - 8) {
+        left = viewport.width - previewRect.width - 8;
+      }
+
+      setPreviewPosition({ top, left });
+    }
+  }, [showPreview]);
 
   const resOptions = card.GetResources();
   const effect = card.GetEffect();
@@ -279,7 +315,14 @@ function CardView({
 
       {/* --- PREVIEW POPUP --- */}
       {showPreview && (
-        <div className="absolute z-50 -top-2 left-1/2 transform -translate-x-1/2 -translate-y-full w-64 p-2 border rounded bg-white shadow-lg">
+        <div 
+          ref={previewRef}
+          className="fixed z-50 w-64 p-2 border rounded bg-white shadow-lg"
+          style={{
+            top: `${previewPosition.top}px`,
+            left: `${previewPosition.left}px`
+          }}
+        >
           <div className="font-bold">{card.id}</div>
 
           {/* Names/Types */}
@@ -287,6 +330,7 @@ function CardView({
             <div className="text-sm">{`${card.name[0]}: ${card.type[0]} | ${card.name[2]}: ${card.type[2]}`}</div>
             <div className="text-sm">{`${card.name[1]}: ${card.type[1]} | ${card.name[3]}: ${card.type[3]}`}</div>
           </div>
+          <div className="my-1">-----</div>
 
           {/* Resources per side (each side's options joined with '/', sides separated by ' | ') */}
           <div className="mt-2 text-xs flex flex-wrap justify-center items-center">
@@ -303,6 +347,7 @@ function CardView({
           </div>
 
           {/* Effects per side */}
+          <div className="my-1">-----</div>
           {card.effects?.map((eff: any, idx: number) => (
             <div key={idx}>
               {idx > 0 && <div className="my-1">-----</div>}
@@ -681,6 +726,7 @@ export default function Game() {
   const [permanentZone, setPermanentZone] = useState<GameCard[]>([]);
   const [popupCard, setPopupCard] = useState<PopupPayload | null>(null);
   const [showDiscard, setShowDiscard] = useState(false);
+  const [showDeck, setShowDeck] = useState(false);
   const [showEndRound, setShowEndRound] = useState(false);
   const [campaignPreview, setCampaignPreview] = useState<GameCard | null>(null);
   const [resources, setResources] = useState<ResourceMap>({ ...emptyResource });
@@ -889,18 +935,30 @@ export default function Game() {
     }
   };
 
+
   const loadGame = (name: string) => {
     if (!name) return alert("Please provide the name of a save to load.");
     try {
       const raw = localStorage.getItem(`citysave:${name}`);
       if (!raw) return alert(`No save found named '${name}'.`);
       const parsed = JSON.parse(raw);
-      setDeck(parsed.deck || []);
-      setCampaignDeck(parsed.campaignDeck || []);
-      setPlayArea(parsed.playArea || []);
-      setDiscard(parsed.discard || []);
-      setBlockedZone(parsed.blockedZone || []);
-      setPermanentZone(parsed.permanentZone || []);
+      
+      // Helper function to reconstruct GameCard instances from saved data
+      const reconstructCards = (cards: any[]): GameCard[] => {
+        return (cards || []).map(cardData => {
+          const card = new GameCard({});
+          // Copy all properties from saved data
+          Object.assign(card, cardData);
+          return card;
+        });
+      };
+      
+      setDeck(reconstructCards(parsed.deck));
+      setCampaignDeck(reconstructCards(parsed.campaignDeck));
+      setPlayArea(reconstructCards(parsed.playArea));
+      setDiscard(reconstructCards(parsed.discard));
+      setBlockedZone(reconstructCards(parsed.blockedZone));
+      setPermanentZone(reconstructCards(parsed.permanentZone));
       setResources(parsed.resources || { ...emptyResource });
       setShowSettings(false);
       alert(`Loaded city '${name}'.`);
@@ -1129,9 +1187,9 @@ export default function Game() {
           <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
             <div className="bg-white p-4 rounded-xl space-y-4 max-w-4xl w-full max-h-[80vh] overflow-hidden">
               <h2 className="font-bold">Discard</h2>
-              <div className="flex gap-4 h-[70vh]">
+              <div className="flex gap-4 h-[35vh]">
                 <div className="flex-1 overflow-y-auto p-2 border rounded">
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-4 gap-2">
                     {discard.map((c) => (
                       <CardView
                         key={`modal-${c.id}-${c.currentHalf}-${Math.random()}`}
@@ -1143,11 +1201,7 @@ export default function Game() {
                     ))}
                   </div>
                 </div>
-
-                <div className="w-80 p-2 border rounded">
-                  <h3 className="font-bold">Play Area (preview)</h3>
-                  <Zone name="Play Area" cards={playArea.slice(-6)} onDrop={(p) => dropToPlayArea(p)} onRightClick={(c, zone) => setPopupCard({ originZone: zone, originalId: c.id, editable: cloneGameCard(c) })} onTapAction={handleTapAction} />
-                </div>
+                <Zone name="Play Area" cards={[]} onDrop={(p) => dropToPlayArea(p)} onRightClick={(c, zone) => setPopupCard({ originZone: zone, originalId: c.id, editable: cloneGameCard(c) })} onTapAction={handleTapAction} />
               </div>
 
               <div className="flex justify-end gap-2">
@@ -1167,7 +1221,7 @@ export default function Game() {
                 <div className="flex-1">
                   <p className="font-bold">Campaign Deck (top card revealed)</p>
                   {campaignDeck.length > 0 ? (
-                    <Zone name="Campaign" cards={[campaignDeck[0]]} onDrop={(p) => dropToCampaign(p)} onRightClick={() => {}} />
+                    <Zone name="Campaign" cards={[campaignDeck[0]]} onDrop={(p) => dropToCampaign(p)} onTapAction={handleTapAction} onRightClick={() => {}} />
                   ) : (
                     <p>No more campaign cards</p>
                   )}
@@ -1175,7 +1229,13 @@ export default function Game() {
 
                 <div className="flex-1">
                   <p className="font-bold">Deck (top)</p>
-                  <Zone name="Deck" cards={deck.slice(0, 1)} onDrop={(p) => dropToDeck(p)} onRightClick={() => {}} />
+                  <Zone name="Deck" cards={deck.slice(0, 1)} onDrop={(p) => dropToDeck(p)} onTapAction={handleTapAction} onRightClick={() => {}} />
+                  {<Button onClick={() => setShowDeck(true)}>See deck</Button>}
+                </div>
+
+                <div className="flex-1">
+                  <p className="font-bold">Temporary (Blocked)</p>
+                  <Zone name="Temporary" cards={[]} onDrop={(p) => dropToBlocked(p)} onTapAction={handleTapAction} onRightClick={() => {}} />
                 </div>
 
                 <div className="flex-1">
@@ -1191,6 +1251,35 @@ export default function Game() {
                   }
                 }>
                 Close</Button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Full Deck Modal */}
+        {showDeck && (
+          <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+            <div className="bg-white p-4 rounded-xl space-y-4 max-w-4xl w-full max-h-[80vh] overflow-hidden">
+              <h2 className="font-bold">Deck</h2>
+              <div className="flex gap-4 h-[35vh]">
+                <div className="flex-1 overflow-y-auto p-2 border rounded">
+                  <div className="grid grid-cols-4 gap-2">
+                    {deck.map((c) => (
+                      <CardView
+                        key={`modal-${c.id}-${c.currentHalf}-${Math.random()}`}
+                        card={c}
+                        fromZone="Deck"
+                        onRightClick={(x, zone) => setPopupCard({ originZone: zone, originalId: x.id, editable: cloneGameCard(x) })}
+                        onTapAction={handleTapAction}
+                      />
+                    ))}
+                  </div>
+                </div>
+                <Zone name="Destroy" cards={[]} onDrop={(p) => dropToDestroy(p)} onRightClick={() => {}} />
+              </div>
+
+              <div className="flex justify-end gap-2">
+                <Button onClick={() => setShowDeck(false)}>Close</Button>
               </div>
             </div>
           </div>
