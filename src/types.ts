@@ -28,6 +28,16 @@ export const RESOURCE_KEYS: (keyof ResourceMap)[] = [
   "fame"
 ];
 
+export const TYPE_COLORS: Record<string, string> = {
+  Maritime: "#a7bed3",   // muted blue
+  Bâtiment: "#cfd4d9",   // light grey
+  Personne: "#f6e5a5",   // soft pastel yellow
+  Evénement: "#f4c2d7",  // pastel pink
+  Terrain: "#b6d7a8",    // muted green
+  Ennemi: "#e6a5a5",     // soft red
+  default: "#ffffff"
+};
+
 export const emptyResource: ResourceMap = {
   gold: 0,
   wood: 0,

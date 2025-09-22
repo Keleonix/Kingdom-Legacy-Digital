@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { emptyResource, GameCard, RESOURCE_KEYS, type ResourceMap, type PopupPayload } from "./types";
+import { emptyResource, GameCard, RESOURCE_KEYS, TYPE_COLORS, type ResourceMap, type PopupPayload } from "./types";
 import { allCards } from "./cards";
 
 // deep-clone preserving prototype/methods
@@ -78,6 +78,28 @@ function renderEffect(effect: string) {
       );
     }
   });
+}
+
+// -------------------
+// Helper to render background card color
+// -------------------
+function getBackgroundStyle(card: GameCard, sideIdx: number) {
+  // assume `card.type[sideIdx]` can be a string or an array of strings
+  const rawType = card.type?.[sideIdx];
+  if (!rawType) return {};
+
+  const types = Array.isArray(rawType) ? rawType : [rawType];
+  const colors = types.map((t) => TYPE_COLORS[t] || "#ffffff");
+
+  if (colors.length === 1) {
+    return { background: colors[0] };
+  }
+  if (colors.length >= 2) {
+    return {
+      background: `linear-gradient(135deg, ${colors[0]} 0%, ${colors[1]} 100%)`,
+    };
+  }
+  return {};
 }
 
 // -------------------
@@ -227,8 +249,10 @@ function CardView({
           if (!interactable) return;
           if (onTapAction) onTapAction(card, fromZone);
         }}
-        className={`w-40 h-56 m-2 flex flex-col items-center justify-between border ${!interactable ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
-      >
+        style={getBackgroundStyle(card, currentSideIdx)}
+        className={`w-40 h-56 m-2 flex flex-col items-center justify-between border 
+          ${!interactable ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
+        >
         <CardContent className="text-center p-2 overflow-hidden">
           <div>
             <p className="font-bold text-sm line-clamp-2">
