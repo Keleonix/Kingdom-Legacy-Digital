@@ -403,12 +403,9 @@ function Zone({
 let containerClass = "grid gap-2";
 let gridTemplate: string | undefined;
 
-if (name === "Play Area") {
+if (name === "Play Area" || name === "Permanent" || name === "Blocked") {
   // Mobile-friendly flex row with wrap
   containerClass = "flex flex-wrap gap-2 justify-start items-start";
-} else if ((name === "Permanent" || name === "Blocked") && displayCards.length < 6) {
-  // Expand horizontally (1–5 columns only)
-  gridTemplate = `repeat(${displayCards.length || 1}, minmax(0, 1fr))`;
 } else {
   // Default: responsive grid for mobile
   const cols = Math.min(6, displayCards.length || 1);
@@ -1020,7 +1017,7 @@ export default function Game() {
             </div>
 
             {/* Campaign Deck */}
-            <div className="p-2 border rounded">
+            <div className="max-h-[300px] max-w-[200px] p-2 border rounded">
               <h2 className="text-lg font-bold">Campaign Deck</h2>
               <p>Click here and type ID to preview</p>
               <div
@@ -1036,7 +1033,7 @@ export default function Game() {
             </div>
 
             {/* Permanent zone */}
-            <div className="w-96">
+            <div className="flex flex-col lg:flex-row gap-4">
               <Zone
                 name="Permanent"
                 cards={permanentZone}
@@ -1047,7 +1044,16 @@ export default function Game() {
               />
             </div>
 
-            <Zone name="Destroy" cards={[]} onDrop={(p) => dropToDestroy(p)} onRightClick={() => {}} />
+            {/* Destroy */}
+            <div className="min-w-[200px]">
+              <Zone
+                name="Destroy"
+                cards={[]}
+                onDrop={(p) => dropToDestroy(p)}
+                onRightClick={() => {}}
+                onTapAction={undefined}
+              />
+            </div>
           </div>
 
           {/* Settings button */}
@@ -1056,9 +1062,9 @@ export default function Game() {
           </div>
         </div>
 
-        {/* Play Area + Blocked (blocked to the right) */}
+        {/* Play Area */}
         <div className="flex flex-col lg:flex-row gap-4">
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-[1200px]">
             <Zone
               name="Play Area"
               cards={playArea}
@@ -1068,8 +1074,8 @@ export default function Game() {
             />
           </div>
 
-          {/* Blocked zone: visible but not interactable except via drag/drop to it explicitly */}
-          <div className="w-full lg:w-96">
+          {/* Blocked zone */}
+          <div className="w-full lg:w-96 min-w-[600px]">
             <Zone
               name="Blocked"
               cards={blockedZone}
