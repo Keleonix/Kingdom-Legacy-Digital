@@ -399,13 +399,17 @@ function Zone({
     displayCards = [cards[cards.length - 1]];
   }
 
-  // --- Layout rules ---
+// --- Layout rules ---
 let containerClass = "grid gap-2";
 let gridTemplate: string | undefined;
 
-if (name === "Play Area" || name === "Permanent" || name === "Blocked") {
+if (name === "Play Area" || name === "Blocked") {
   // Mobile-friendly flex row with wrap
   containerClass = "flex flex-wrap gap-2 justify-start items-start";
+} else if (name === "Permanent") {
+  // Permanent zone: 3 cards per row grid layout
+  containerClass = "grid gap-2";
+  gridTemplate = "repeat(3, minmax(140px, 1fr))";
 } else {
   // Default: responsive grid for mobile
   const cols = Math.min(6, displayCards.length || 1);
@@ -1017,7 +1021,7 @@ export default function Game() {
             </div>
 
             {/* Campaign Deck */}
-            <div className="max-h-[300px] max-w-[200px] p-2 border rounded">
+            <div className="p-2 border rounded">
               <h2 className="text-lg font-bold">Campaign Deck</h2>
               <p>Click here and type ID to preview</p>
               <div
@@ -1064,7 +1068,7 @@ export default function Game() {
 
         {/* Play Area */}
         <div className="flex flex-col lg:flex-row gap-4">
-          <div className="flex-1 min-w-[1200px]">
+          <div className="flex-1 min-w-[800px]">
             <Zone
               name="Play Area"
               cards={playArea}
