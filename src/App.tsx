@@ -87,7 +87,7 @@ function getBackgroundStyle(card: GameCard, sideIdx: number) {
   let types: string[] = [];
 
   if (Array.isArray(rawType)) {
-    types = rawType.flatMap((t) => t.split(" - ").map((s) => s.trim()));
+    types = rawType.flatMap((t) => t.split(" - ").map((s: string) => s.trim()));
   } else if (typeof rawType === "string") {
     types = rawType.split(" - ").map((s) => s.trim());
   }
