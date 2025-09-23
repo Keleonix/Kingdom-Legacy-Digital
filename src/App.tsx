@@ -171,7 +171,7 @@ function CardView({
 
   function renderCheckboxContent(content: string | undefined) {
     if (!content || content.trim() === "") return <span className="text-xs text-gray-400"></span>;
-    if (content.trim() === "*") return <span className="font-bold text-sm">content.trim()</span>;
+    if (content.trim() === "*") return <span className="font-bold text-sm">*</span>;
     
     // Parse resources: handle both "resource" and "resource x5" formats
     const resources = content.split(",").map((s) => s.trim()).filter(Boolean);
@@ -187,10 +187,6 @@ function CardView({
         parsedResources.push({ name: resource, count: 1 });
       }
     });
-
-    if (parsedResources.length == 0) {
-      return <span className="font-bold text-sm">content.trim()</span>;
-    }
     
     return (
       <div className="flex items-center justify-center gap-1 flex-wrap">
