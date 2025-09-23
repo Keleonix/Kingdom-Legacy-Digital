@@ -1139,7 +1139,7 @@ export default function Game() {
         </div>
 
         {/* Play Area */}
-        <div className="flex flex-col lg:flex-row gap-4">
+        <div className="flex flex-col lg:flex-row gap-4 min-w-[1400px]">
           <div className="flex-1 min-w-[1200px]">
             <Zone
               name="Play Area"
