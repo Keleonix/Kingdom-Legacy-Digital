@@ -80,11 +80,18 @@ function renderEffect(effect: string) {
 // Helper to render background card color
 // -------------------
 function getBackgroundStyle(card: GameCard, sideIdx: number) {
-  // assume `card.type[sideIdx]` can be a string or an array of strings
+  // `card.type[sideIdx]` can be string ("Fire - Water") or string[] or undefined
   const rawType = card.type?.[sideIdx];
   if (!rawType) return {};
 
-  const types = Array.isArray(rawType) ? rawType : [rawType];
+  let types: string[] = [];
+
+  if (Array.isArray(rawType)) {
+    types = rawType.flatMap((t) => t.split(" - ").map((s) => s.trim()));
+  } else if (typeof rawType === "string") {
+    types = rawType.split(" - ").map((s) => s.trim());
+  }
+
   const colors = types.map((t) => TYPE_COLORS[t] || "#ffffff");
 
   if (colors.length === 1) {
@@ -92,11 +99,12 @@ function getBackgroundStyle(card: GameCard, sideIdx: number) {
   }
   if (colors.length >= 2) {
     return {
-      background: `linear-gradient(135deg, ${colors[0]} 0%, ${colors[1]} 100%)`,
+      background: `linear-gradient(to bottom right, ${colors[0]}, ${colors[1]})`,
     };
   }
   return {};
 }
+
 
 // -------------------
 // Card View Component
@@ -108,14 +116,12 @@ function CardView({
   onRightClick,
   onTapAction,
   interactable = true,
-  onUpgrade,
 }: {
   card: GameCard;
   fromZone: string;
   onRightClick: (card: GameCard, zone: string) => void;
   onTapAction?: (card: GameCard, zone: string) => void;
   interactable?: boolean;
-  onUpgrade?: (card: GameCard, upgrade: any, zone: string) => void;
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
   const previewRef = useRef<HTMLDivElement | null>(null);
@@ -177,6 +183,11 @@ function CardView({
     const resources = content.split(",").map((s) => s.trim()).filter(Boolean);
     const parsedResources: Array<{name: string, count: number}> = [];
     
+    if (resources.length == 0) {
+      // Fallback: render as plain text
+      return <span className="text-sm">{content}</span>;
+    }
+
     resources.forEach(resource => {
       const match = resource.match(/^(\w+)\s*x(\d+)$/i);
       if (match) {
@@ -187,7 +198,7 @@ function CardView({
         parsedResources.push({ name: resource, count: 1 });
       }
     });
-    
+
     return (
       <div className="flex items-center justify-center gap-1 flex-wrap">
         {parsedResources.map((res, i) => (
@@ -311,9 +322,10 @@ function CardView({
                 <button
                   key={i}
                   onClick={(e) => {
+                    e.preventDefault();
                     e.stopPropagation();
-                    if (!interactable || !onUpgrade) return;
-                    onUpgrade(card, upg, fromZone);
+                    if (!interactable) return;
+                    card.currentHalf = upg.nextSide;
                   }}
                   className="text-[10px] px-2 py-1 border rounded bg-white flex items-center gap-1 hover:bg-gray-100 transition"
                 >
@@ -337,7 +349,7 @@ function CardView({
 
           {/* Checkboxes - Fixed size and layout */}
           <div className="mt-2">
-            <div className="grid grid-cols-4 gap-1 justify-items-center">
+            <div className="grid grid-cols-5 gap-1 justify-items-center">
               {sideCheckboxes.map((box: any, idx: number) => (
                 <button
                   key={idx}
@@ -418,7 +430,6 @@ function Zone({
   showAll = true,
   interactable = true,
   onTapAction,
-  onUpgrade,
 }: {
   name: string;
   cards: GameCard[];
@@ -427,7 +438,6 @@ function Zone({
   showAll?: boolean;
   interactable?: boolean;
   onTapAction?: (card: GameCard, zone: string) => void;
-  onUpgrade?: (card: GameCard, upgrade: any, zone: string) => void;
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
   const [, drop] = useDrop(
@@ -480,7 +490,6 @@ if (name === "Play Area" || name === "Blocked") {
               onRightClick={onRightClick}
               interactable={interactable}
               onTapAction={onTapAction}
-              onUpgrade={onUpgrade}
             />
           ))
         ) : (
@@ -859,35 +868,6 @@ export default function Game() {
     { label: "Pass", onClick: () => discardEndTurn() },
   ];
 
-  const handleUpgrade = (card: GameCard, upg: any, zone: string) => {
-    // Deduct cost if applicable
-    // if (upg.cost) {
-    //   setResources((prev) => {
-    //     const next = { ...prev };
-    //     Object.entries(upg.cost).forEach(([k, v]) => {
-    //       const key = k as keyof ResourceMap;
-    //       next[key] = (next[key] || 0) - (v || 0);
-    //     });
-    //     return next;
-    //   });
-    // }
-
-    // Switch side
-    const upgraded = cloneGameCard(card);
-    upgraded.currentHalf = upg.nextSide;
-
-    if (zone === "Play Area") {
-      // Remove from play area
-      setPlayArea((prev) => prev.filter((c) => c.id !== card.id));
-      // Add upgraded card to discard
-      setDiscard((prev) => [...prev, upgraded]);
-    } else {
-      // Default behavior: just replace in the same zone
-      replaceCardInZone(zone, card.id, upgraded);
-    }
-  };
-
-
   // -------------------
   // Drag & Drop Handlers
   // -------------------
@@ -1082,7 +1062,10 @@ export default function Game() {
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <div className="p-4 space-y-4">
+      <div 
+        className="p-4 space-y-4 min-h-screen"
+        style={{ background: "linear-gradient(to top left, #f7f9ffff, #ffffffff)" }}
+      >
         <div className="flex justify-between items-start">
           <div className="flex gap-4">
             {/* Deck */}
@@ -1157,7 +1140,7 @@ export default function Game() {
 
         {/* Play Area */}
         <div className="flex flex-col lg:flex-row gap-4">
-          <div className="flex-1 min-w-[800px]">
+          <div className="flex-1 min-w-[1200px]">
             <Zone
               name="Play Area"
               cards={playArea}
@@ -1168,7 +1151,7 @@ export default function Game() {
           </div>
 
           {/* Blocked zone */}
-          <div className="w-full lg:w-96 min-w-[600px]">
+          <div className="w-full lg:w-120 min-w-[120px]">
             <Zone
               name="Blocked"
               cards={blockedZone}
@@ -1177,27 +1160,6 @@ export default function Game() {
               onTapAction={handleTapAction}
               interactable={true}
             />
-          </div>
-        </div>
-
-        {/* Resource Pool */}
-        <div>
-          <h2 className="text-lg font-bold">Resources</h2>
-          <div className="grid grid-cols-3 gap-4">
-            {RESOURCE_KEYS.map((key) => (
-              <div key={key} className="flex items-center gap-2">
-                <img src={resourceIconPath(key)} alt={key} className="w-4 h-4" />
-                <span className="w-16 capitalize">{key}</span>
-                <Button size="sm" onClick={() => updateResource(key, -1)}>-</Button>
-                <input
-                  type="number"
-                  className="w-16 text-center border rounded"
-                  value={resources[key]}
-                  onChange={(e) => setResources((r) => ({ ...r, [key]: parseInt(e.target.value || "0", 10) || 0 }))}
-                />
-                <Button size="sm" onClick={() => updateResource(key, 1)}>+</Button>
-              </div>
-            ))}
           </div>
         </div>
 
@@ -1210,6 +1172,27 @@ export default function Game() {
           {/* End Round only active when deck empty */}
           <Button disabled={deck.length > 0} onClick={handleEndRound}>End Round</Button>
           <Button onClick={shuffleDeck}>Shuffle Deck</Button>
+        </div>
+
+        {/* Resource Pool */}
+        <div>
+          <h2 className="text-lg font-bold">Resources</h2>
+          <div className="grid grid-cols-4 gap-1">
+            {RESOURCE_KEYS.map((key) => (
+              <div key={key} className="flex justify-items-center gap-1">
+                <img src={resourceIconPath(key)} alt={key} className="w-4 h-4" />
+                <span className="w-16 capitalize" gap-1>{key}</span>
+                <Button size="sm" gap-1 onClick={() => updateResource(key, -1)}>-</Button>
+                <input
+                  type="number"
+                  className="w-16 text-center border rounded"
+                  value={resources[key]}
+                  onChange={(e) => setResources((r) => ({ ...r, [key]: parseInt(e.target.value || "0", 10) || 0 }))}
+                />
+                <Button size="sm" gap-1 onClick={() => updateResource(key, 1)}>+</Button>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Settings Modal */}
@@ -1302,12 +1285,11 @@ export default function Game() {
                         fromZone="Discard"
                         onRightClick={(x, zone) => setPopupCard({ originZone: zone, originalId: x.id, editable: cloneGameCard(x) })}
                         onTapAction={handleTapAction}
-                        onUpgrade={handleUpgrade}
                       />
                     ))}
                   </div>
                 </div>
-                <Zone name="Play Area" cards={playArea.slice(-1)} onDrop={(p) => dropToPlayArea(p)} onRightClick={(c, zone) => setPopupCard({ originZone: zone, originalId: c.id, editable: cloneGameCard(c) })} onTapAction={handleTapAction} onUpgrade={handleUpgrade} />
+                <Zone name="Play Area" cards={playArea.slice(-1)} onDrop={(p) => dropToPlayArea(p)} onRightClick={(c, zone) => setPopupCard({ originZone: zone, originalId: c.id, editable: cloneGameCard(c) })} onTapAction={handleTapAction} />
               </div>
 
               <div className="flex justify-end gap-2">
