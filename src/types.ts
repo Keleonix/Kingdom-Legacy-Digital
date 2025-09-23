@@ -35,7 +35,8 @@ export const TYPE_COLORS: Record<string, string> = {
   Evénement: "#f4c2d7",  // pastel pink
   Terrain: "#b6d7a8",    // muted green
   Ennemi: "#e6a5a5",     // soft red
-  default: "#ffffff"
+  Parchemin: "#e6c2a5ff",// soft brown
+  default: "#f4c2d7"
 };
 
 export const emptyResource: ResourceMap = {
@@ -64,7 +65,6 @@ export class GameCard {
   resources: ResourceMap[][] = [];
   effects: string[] = [];
   upgrades: Upgrade[][] = [];
-  selectedCheckboxes: any[] | undefined;
   checkboxes: any;
 
   constructor({
@@ -94,7 +94,6 @@ export class GameCard {
     resources: ResourceMap[][];
     effects: string[];
     upgrades: Upgrade[][];
-    selectedCheckboxes: any[];
   }> = {}) {
     this.id = id;
     this.name = name;

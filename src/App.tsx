@@ -33,10 +33,6 @@ function cloneGameCard(src: GameCard): GameCard {
   out.checkboxes = (src.checkboxes || []).map((side: any) => side.map((c: any) => ({ ...c })));
   while (out.checkboxes.length < 4) out.checkboxes.push([]);
 
-  // NEW: which checkbox index is "selected" per side (used by tap-to-check behavior)
-  out.selectedCheckboxes = src.selectedCheckboxes ? [...src.selectedCheckboxes] : [0,0,0,0];
-  while (out.selectedCheckboxes.length < 4) out.selectedCheckboxes.push(0);
-
   return out;
 }
 
@@ -112,12 +108,14 @@ function CardView({
   onRightClick,
   onTapAction,
   interactable = true,
+  onUpgrade,
 }: {
   card: GameCard;
   fromZone: string;
   onRightClick: (card: GameCard, zone: string) => void;
-  onTapAction?: (card: GameCard, zone: string) => void; // called on left click / tap
-  interactable?: boolean; // when false, disable drag & tap
+  onTapAction?: (card: GameCard, zone: string) => void;
+  interactable?: boolean;
+  onUpgrade?: (card: GameCard, upgrade: any, zone: string) => void;
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
   const previewRef = useRef<HTMLDivElement | null>(null);
@@ -145,24 +143,20 @@ function CardView({
         height: window.innerHeight
       };
 
-      let top = cardRect.top - previewRect.height - 8; // 8px gap above card
-      let left = cardRect.left + (cardRect.width / 2) - (previewRect.width / 2); // centered
+      // Default: to the left of the card
+      let top = cardRect.top + (cardRect.height / 2) - (previewRect.height / 2);
+      let left = cardRect.left - previewRect.width - 8;
 
-      // Adjust if popup goes above viewport
-      if (top < 8) {
-        top = cardRect.bottom + 8; // show below card instead
-      }
-
-      // Adjust if popup goes below viewport when positioned below
-      if (top + previewRect.height > viewport.height - 8) {
-        top = viewport.height - previewRect.height - 8;
-      }
-
-      // Adjust horizontal position if popup goes outside viewport
+      // If popup goes outside left edge, move to the right side
       if (left < 8) {
-        left = 8;
-      } else if (left + previewRect.width > viewport.width - 8) {
-        left = viewport.width - previewRect.width - 8;
+        left = cardRect.right + 8;
+      }
+
+      // Keep inside viewport vertically
+      if (top < 8) {
+        top = 8;
+      } else if (top + previewRect.height > viewport.height - 8) {
+        top = viewport.height - previewRect.height - 8;
       }
 
       setPreviewPosition({ top, left });
@@ -176,13 +170,41 @@ function CardView({
   const name = card.GetName();
 
   function renderCheckboxContent(content: string | undefined) {
-    if (!content || content.trim() === "") return <span className="text-xs text-gray-400">—</span>;
-    if (content.trim() === "*") return <span className="font-bold">*</span>;
-    const keys = content.split(",").map((s) => s.trim()).filter(Boolean);
+    if (!content || content.trim() === "") return <span className="text-xs text-gray-400"></span>;
+    if (content.trim() === "*") return <span className="font-bold text-sm">content.trim()</span>;
+    
+    // Parse resources: handle both "resource" and "resource x5" formats
+    const resources = content.split(",").map((s) => s.trim()).filter(Boolean);
+    const parsedResources: Array<{name: string, count: number}> = [];
+    
+    resources.forEach(resource => {
+      const match = resource.match(/^(\w+)\s*x(\d+)$/i);
+      if (match) {
+        // Format: "gold x5"
+        parsedResources.push({ name: match[1], count: parseInt(match[2]) });
+      } else {
+        // Format: "gold" (default count = 1)
+        parsedResources.push({ name: resource, count: 1 });
+      }
+    });
+
+    if (parsedResources.length == 0) {
+      return <span className="font-bold text-sm">content.trim()</span>;
+    }
+    
     return (
-      <div className="flex items-center gap-1">
-        {keys.map((k, i) => (
-          <img key={i} src={resourceIconPath(k as keyof ResourceMap)} alt={k} className="w-3 h-3" />
+      <div className="flex items-center justify-center gap-1 flex-wrap">
+        {parsedResources.map((res, i) => (
+          <div key={i} className="flex items-center gap-0.5">
+            <img 
+              src={resourceIconPath(res.name as keyof ResourceMap)} 
+              alt={res.name} 
+              className="w-4 h-4 flex-shrink-0" 
+            />
+            {res.count > 1 && (
+              <span className="text-xs font-medium">{res.count}</span>
+            )}
+          </div>
         ))}
       </div>
     );
@@ -250,7 +272,7 @@ function CardView({
           if (onTapAction) onTapAction(card, fromZone);
         }}
         style={getBackgroundStyle(card, currentSideIdx)}
-        className={`w-40 h-56 m-2 flex flex-col items-center justify-between border 
+        className={`w-49 h-70 m-2 flex flex-col items-center justify-between border 
           ${!interactable ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
         >
         <CardContent className="text-center p-2 overflow-hidden">
@@ -290,9 +312,14 @@ function CardView({
           <div className="mt-2">
             <div className="flex gap-1 flex-wrap justify-center line-clamp-2">
               {currentUpgrades.map((upg, i) => (
-                <div
+                <button
                   key={i}
-                  className="text-[10px] px-2 py-1 border rounded bg-white flex items-center gap-1"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (!interactable || !onUpgrade) return;
+                    onUpgrade(card, upg, fromZone);
+                  }}
+                  className="text-[10px] px-2 py-1 border rounded bg-white flex items-center gap-1 hover:bg-gray-100 transition"
                 >
                   <div className="flex items-center gap-1">
                     {upg.cost ? (
@@ -307,32 +334,31 @@ function CardView({
                     )}
                   </div>
                   <div className="text-[11px]">→ {sideLabel(upg.nextSide)}</div>
-                </div>
+                </button>
               ))}
             </div>
           </div>
 
-          {/* Checkboxes */}
-          <div className="mt-2 flex gap-1 justify-center items-center">
-            {sideCheckboxes.map((box: any, idx: number) => (
-              <button
-                key={idx}
-                onClick={(ev) => {
-                  ev.stopPropagation();
-                  if (!interactable) return;
-                  box.checked = !box.checked;
-                  if (card.selectedCheckboxes) {
-                    card.selectedCheckboxes[currentSideIdx] =
-                      card.selectedCheckboxes[currentSideIdx] || 0;
-                  }
-                }}
-                className={`border rounded px-1 py-0.5 text-[11px] flex items-center gap-1 ${
-                  box.checked ? "bg-green-100" : "bg-white"
-                }`}
-              >
-                {renderCheckboxContent(box.content)}
-              </button>
-            ))}
+          {/* Checkboxes - Fixed size and layout */}
+          <div className="mt-2">
+            <div className="grid grid-cols-4 gap-1 justify-items-center">
+              {sideCheckboxes.map((box: any, idx: number) => (
+                <button
+                  key={idx}
+                  onClick={(ev) => {
+                    ev.stopPropagation();
+                    if (!interactable) return;
+                    box.checked = !box.checked;
+                  }}
+                  className={`w-8 h-8 border rounded flex items-center justify-center p-1 text-[10px] ${
+                    box.checked ? "bg-green-100 border-green-400" : "bg-white border-gray-300"
+                  } hover:border-gray-400 transition-colors`}
+                  title={box.content || "Empty checkbox"}
+                >
+                  {renderCheckboxContent(box.content)}
+                </button>
+              ))}
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -396,6 +422,7 @@ function Zone({
   showAll = true,
   interactable = true,
   onTapAction,
+  onUpgrade,
 }: {
   name: string;
   cards: GameCard[];
@@ -404,6 +431,7 @@ function Zone({
   showAll?: boolean;
   interactable?: boolean;
   onTapAction?: (card: GameCard, zone: string) => void;
+  onUpgrade?: (card: GameCard, upgrade: any, zone: string) => void;
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
   const [, drop] = useDrop(
@@ -433,11 +461,11 @@ if (name === "Play Area" || name === "Blocked") {
 } else if (name === "Permanent") {
   // Permanent zone: 3 cards per row grid layout
   containerClass = "grid gap-2";
-  gridTemplate = "repeat(3, minmax(140px, 1fr))";
+  gridTemplate = "repeat(3, minmax(200px, 1fr))"; // was 140px
 } else {
   // Default: responsive grid for mobile
   const cols = Math.min(6, displayCards.length || 1);
-  gridTemplate = `repeat(${cols}, minmax(140px, 1fr))`;
+  gridTemplate = `repeat(${cols}, minmax(200px, 1fr))`; // was 140px
 }
 
   return (
@@ -456,10 +484,11 @@ if (name === "Play Area" || name === "Blocked") {
               onRightClick={onRightClick}
               interactable={interactable}
               onTapAction={onTapAction}
+              onUpgrade={onUpgrade}
             />
           ))
         ) : (
-          <Card className="w-32 h-48 m-2 flex items-center justify-center border bg-gray-100">
+          <Card className="w-49 h-70 m-2 flex items-center justify-center border bg-gray-100">
             <CardContent className="text-center text-gray-400">Empty</CardContent>
           </Card>
         )}
@@ -529,13 +558,6 @@ function CardPopup({
     setLocalCard(cloneGameCard(localCard));
   };
 
-  // set the selected checkbox index for tap action
-  const setSelectedIndex = (idx: number) => {
-    if (!localCard.selectedCheckboxes) localCard.selectedCheckboxes = [0,0,0,0];
-    localCard.selectedCheckboxes[currentSideIdx] = idx;
-    setLocalCard(cloneGameCard(localCard));
-  };
-
   const applyChanges = () => {
     // 1) if an upgrade was selected, deduct its cost from global resources and set the card's currentHalf to nextSide
     let appliedCard = cloneGameCard(localCard);
@@ -563,9 +585,8 @@ function CardPopup({
       arr.map((u) => ({ cost: u.cost ? { ...u.cost } : null, nextSide: u.nextSide }))
     );
 
-    // persist checkboxes & selectedCheckboxes
+    // persist checkboxes
     appliedCard.checkboxes = localCard.checkboxes?.map((side: any) => side.map((c: any) => ({ ...c }))) ?? [[],[],[],[]];
-    appliedCard.selectedCheckboxes = [...(localCard.selectedCheckboxes || [0,0,0,0])];
 
     // Replace by id in the original zone (this will keep the card id the same but substitute the instance)
     replaceCardInZone(payload.originZone, payload.originalId, appliedCard);
@@ -580,29 +601,63 @@ function CardPopup({
         <h2 className="font-bold">{localCard.GetName()}</h2>
 
         {/* Side chooser (4 sides) */}
-        <div className="flex gap-4">
-          {[1, 2, 3, 4].map((half) => {
-            const label = sideLabel(half);
-            return (
-              <div
-                key={half}
-                className={`relative w-28 h-40 border flex items-center justify-center cursor-pointer ${
-                  localCard.currentHalf === half ? "bg-yellow-200" : "bg-gray-200"
-                }`}
-                onClick={() => setSide(half)}
+        <div className="flex flex-col gap-4">
+          {/* Front */}
+          <div>
+            <h3 className="font-bold mb-2">Front</h3>
+            <div className="flex gap-2">
+              <Button
+                disabled={!localCard.name[0] || localCard.name[0].trim() === ""}
+                variant={localCard.currentHalf === 1 ? "default" : "secondary"}
+                onClick={() => setSide(1)}
               >
-                {label}
-              </div>
-            );
-          })}
+                Up
+              </Button>
+              <Button
+                disabled={!localCard.name[1] || localCard.name[1].trim() === ""}
+                variant={localCard.currentHalf === 2 ? "default" : "secondary"}
+                onClick={() => setSide(2)}
+              >
+                Down
+              </Button>
+            </div>
+          </div>
+
+          {/* Back */}
+          <div>
+            <h3 className="font-bold mb-2">Back</h3>
+            <div className="flex gap-2">
+              <Button
+                disabled={!localCard.name[2] || localCard.name[2].trim() === ""}
+                variant={localCard.currentHalf === 3 ? "default" : "secondary"}
+                onClick={() => setSide(3)}
+              >
+                Up
+              </Button>
+              <Button
+                disabled={!localCard.name[3] || localCard.name[3].trim() === ""}
+                variant={localCard.currentHalf === 4 ? "default" : "secondary"}
+                onClick={() => setSide(4)}
+              >
+                Down
+              </Button>
+            </div>
+          </div>
         </div>
 
         {/* Effects section */}
         <div>
-          <h3 className="font-bold">Effects (current side)</h3>
-          <div className="text-sm">
-            {localCard.GetEffect() ? renderEffect(localCard.GetEffect()) : <span className="text-gray-400">No effect</span>}
-          </div>
+          <h3 className="font-bold">Effect (for {sideLabel(localCard.currentHalf)})</h3>
+          <textarea
+            className="w-full border rounded p-2 text-sm"
+            rows={3}
+            value={localCard.effects[localCard.currentHalf - 1] || ""}
+            onChange={(e) => {
+              localCard.effects[localCard.currentHalf - 1] = e.target.value;
+              setLocalCard(cloneGameCard(localCard));
+            }}
+            placeholder="Enter effect text (use 'resources/gold' or 'effects/fire' for icons)"
+          />
         </div>
 
         {/* Editable Resources: multiple options per side, show as list, allow add/remove */}
@@ -675,22 +730,9 @@ function CardPopup({
                   }}
                   placeholder="'*' or comma-separated resource keys (e.g. gold,silver)"
                 />
-                <span className="text-xs text-gray-500">Preview:</span>
-                <div className="flex items-center gap-1">
-                  {box.content === '*' ? <span className="font-bold">*</span> : (
-                    box.content.split(',').map((s: string, i: number) => s.trim() ? <img key={i} src={resourceIconPath(s.trim() as keyof ResourceMap)} alt={s} className="w-4 h-4" /> : null)
-                  )}
-              </div>
               </div>
 
               <div className="flex items-center gap-2">
-                <label className="text-sm">Use for tap:</label>
-                <input
-                  type="radio"
-                  name={`selected-${currentSideIdx}`}
-                  checked={localCard.selectedCheckboxes?.[currentSideIdx] === idx}
-                  onChange={() => setSelectedIndex(idx)}
-                />
                 <Button size="sm" onClick={() => removeCheckbox(idx)}>Remove</Button>
               </div>
             </div>
@@ -821,6 +863,35 @@ export default function Game() {
     { label: "Pass", onClick: () => discardEndTurn() },
   ];
 
+  const handleUpgrade = (card: GameCard, upg: any, zone: string) => {
+    // Deduct cost if applicable
+    // if (upg.cost) {
+    //   setResources((prev) => {
+    //     const next = { ...prev };
+    //     Object.entries(upg.cost).forEach(([k, v]) => {
+    //       const key = k as keyof ResourceMap;
+    //       next[key] = (next[key] || 0) - (v || 0);
+    //     });
+    //     return next;
+    //   });
+    // }
+
+    // Switch side
+    const upgraded = cloneGameCard(card);
+    upgraded.currentHalf = upg.nextSide;
+
+    if (zone === "Play Area") {
+      // Remove from play area
+      setPlayArea((prev) => prev.filter((c) => c.id !== card.id));
+      // Add upgraded card to discard
+      setDiscard((prev) => [...prev, upgraded]);
+    } else {
+      // Default behavior: just replace in the same zone
+      replaceCardInZone(zone, card.id, upgraded);
+    }
+  };
+
+
   // -------------------
   // Drag & Drop Handlers
   // -------------------
@@ -864,7 +935,7 @@ export default function Game() {
     if (fromZone === "Deck") setDeck((d) => removeById(d, id));
     if (fromZone === "Play Area") setPlayArea((p) => removeById(p, id));
     if (fromZone === "Discard") setDiscard((f) => removeById(f, id));
-    if (fromZone === "Campaign") setCampaignDeck((c) => removeById(c, id));
+    if (fromZone === "Campaign") setCampaignDeck((g) => removeById(g, id));
     if (fromZone === "Blocked") setBlockedZone((b) => removeById(b, id));
     if (fromZone === "Permanent") setPermanentZone((pe) => removeById(pe, id));
 
@@ -872,9 +943,7 @@ export default function Game() {
     if (toZone === "Deck") setDeck((d) => [toAdd, ...d]);
     if (toZone === "Play Area") setPlayArea((p) => [...p, toAdd]);
     if (toZone === "Discard") setDiscard((f) => [...f, toAdd]);
-    if (toZone === "Destroy") {
-      // intentionally drop permanently (do nothing but ensure it was removed from source)
-    }
+    if (toZone === "Destroy") { } // intentionally drop permanently (do nothing but ensure it was removed from source)
     if (toZone === "Blocked") setBlockedZone((b) => [...b, toAdd]);
     if (toZone === "Permanent") setPermanentZone((pe) => [...pe, toAdd]);
   };
@@ -1056,7 +1125,7 @@ export default function Game() {
                 }}
                 className="cursor-pointer"
               >
-                <div className="w-32 h-48 border bg-gray-300 flex items-center justify-center">Hidden</div>
+                <div className="w-49 h-70 border bg-gray-300 flex items-center justify-center">Hidden</div>
               </div>
             </div>
 
@@ -1214,8 +1283,8 @@ export default function Game() {
               <h2 className="font-bold">Campaign Card #{campaignPreview.id}</h2>
               <div className="flex gap-4">
                 <Zone name="Campaign" cards={[campaignPreview]} onDrop={(p) => dropToCampaign(p)} onTapAction={handleTapAction} onRightClick={(c, zone) => setPopupCard({ originZone: zone, originalId: c.id, editable: cloneGameCard(c) })} />
-                <Zone name="Discard" cards={discard.slice(-1)} onDrop={(p) => dropToDiscard(p)} onTapAction={handleTapAction} onRightClick={(c, zone) => setPopupCard({ originZone: zone, originalId: c.id, editable: cloneGameCard(c) })} showAll={true} />
-                <Zone name="Destroy" cards={[]} onDrop={(p) => dropToDestroy(p)} onRightClick={() => {}} />
+                <Zone name="Discard" cards={discard.slice(-1)} onDrop={(p) => {dropToDiscard(p); setCampaignPreview(null);}} onTapAction={handleTapAction} onRightClick={(c, zone) => setPopupCard({ originZone: zone, originalId: c.id, editable: cloneGameCard(c) })} showAll={true} />
+                <Zone name="Destroy" cards={[]} onDrop={(p) => {dropToDestroy(p); setCampaignPreview(null);}} onRightClick={() => {}} />
               </div>
               <Button onClick={() => setCampaignPreview(null)}>Close</Button>
             </div>
@@ -1225,7 +1294,7 @@ export default function Game() {
         {/* Full Discard Modal */}
         {showDiscard && (
           <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-            <div className="bg-white p-4 rounded-xl space-y-4 max-w-4xl w-full max-h-[80vh] overflow-hidden">
+            <div className="bg-white p-6 rounded-xl space-y-6 max-w-[90vw] w-full max-h-[90vh] overflow-hidden">
               <h2 className="font-bold">Discard</h2>
               <div className="flex gap-4 h-[35vh]">
                 <div className="flex-1 overflow-y-auto p-2 border rounded">
@@ -1237,11 +1306,12 @@ export default function Game() {
                         fromZone="Discard"
                         onRightClick={(x, zone) => setPopupCard({ originZone: zone, originalId: x.id, editable: cloneGameCard(x) })}
                         onTapAction={handleTapAction}
+                        onUpgrade={handleUpgrade}
                       />
                     ))}
                   </div>
                 </div>
-                <Zone name="Play Area" cards={[]} onDrop={(p) => dropToPlayArea(p)} onRightClick={(c, zone) => setPopupCard({ originZone: zone, originalId: c.id, editable: cloneGameCard(c) })} onTapAction={handleTapAction} />
+                <Zone name="Play Area" cards={playArea.slice(-1)} onDrop={(p) => dropToPlayArea(p)} onRightClick={(c, zone) => setPopupCard({ originZone: zone, originalId: c.id, editable: cloneGameCard(c) })} onTapAction={handleTapAction} onUpgrade={handleUpgrade} />
               </div>
 
               <div className="flex justify-end gap-2">
@@ -1254,7 +1324,7 @@ export default function Game() {
         {/* End Round Modal */}
         {showEndRound && (
           <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-            <div className="bg-white p-4 rounded-xl space-y-4 max-w-4xl">
+            <div className="bg-white p-6 rounded-xl space-y-6 max-w-[90vw] max-h-[90vh] overflow-y-auto">
               <h2 className="font-bold">End Round</h2>
 
               <div className="flex gap-4">
@@ -1295,7 +1365,7 @@ export default function Game() {
         {/* Full Deck Modal */}
         {showDeck && (
           <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-            <div className="bg-white p-4 rounded-xl space-y-4 max-w-4xl w-full max-h-[80vh] overflow-hidden">
+            <div className="bg-white p-6 rounded-xl space-y-6 max-w-[90vw] w-full max-h-[90vh] overflow-hidden">
               <h2 className="font-bold">Deck</h2>
               <div className="flex gap-4 h-[35vh]">
                 <div className="flex-1 overflow-y-auto p-2 border rounded">

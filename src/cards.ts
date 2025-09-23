@@ -35,7 +35,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -87,7 +86,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -139,7 +137,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -191,7 +188,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -243,7 +239,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -295,7 +290,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -345,7 +339,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -395,7 +388,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -447,7 +439,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -500,7 +491,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -550,7 +540,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -602,7 +591,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -646,7 +634,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -690,7 +677,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -742,7 +728,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -786,7 +771,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -830,7 +814,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -876,7 +859,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -926,7 +908,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -950,8 +931,8 @@ export const allCards: GameCard[] = [
     resources: [
       [{ ...emptyResource }],
       [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 1 } ],
-      [ { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 3 } ],
       [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 2, fame: 4 } ],
+      [ { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 3 } ],
     ],
     effects: [
       "",
@@ -970,7 +951,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -994,8 +974,8 @@ export const allCards: GameCard[] = [
     resources: [
       [{ ...emptyResource }],
       [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 1 } ],
-      [ { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 3 } ],
       [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 2, fame: 4 } ],
+      [ { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 3 } ],
     ],
     effects: [
       "",
@@ -1014,7 +994,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -1058,7 +1037,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -1098,11 +1076,10 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentHalf: 0,
-    type: ["Scroll", "", "", ""],
+    type: ["Parchemin", "", "", ""],
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -1142,11 +1119,10 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentHalf: 0,
-    type: ["Scroll", "", "", ""],
+    type: ["Parchemin", "", "", ""],
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -1186,30 +1162,29 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentHalf: 0,
-    type: ["Scroll", "", "", ""],
+    type: ["Parchemin", "", "Parchemin", ""],
     permanent: true,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: [
-      [ {content: "fame 1", checked: false},
-        {content: "fame 4", checked: false},
-        {content: "fame 7", checked: false},
-        {content: "fame 10", checked: false},
-        {content: "fame 14", checked: false},
-        {content: "fame 19", checked: false},
-        {content: "fame 25", checked: false},
-        {content: "fame 32", checked: false},
-        {content: "fame 40", checked: false},
+      [ {content: "fame x1", checked: false},
+        {content: "fame x4", checked: false},
+        {content: "fame x7", checked: false},
+        {content: "fame x10", checked: false},
+        {content: "fame x14", checked: false},
+        {content: "fame x19", checked: false},
+        {content: "fame x25", checked: false},
+        {content: "fame x32", checked: false},
+        {content: "fame x40", checked: false},
         {content: "(135) ->", checked: false}
       ],
       [],
       [
-        {content: "fame 10", checked: false},
-        {content: "fame 20", checked: false},
-        {content: "fame 30", checked: false},
-        {content: "fame 40", checked: false},
-        {content: "fame 50", checked: false}
+        {content: "fame x10", checked: false},
+        {content: "fame x20", checked: false},
+        {content: "fame x30", checked: false},
+        {content: "fame x40", checked: false},
+        {content: "fame x50", checked: false}
       ],
       []
     ],
@@ -1251,32 +1226,31 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentHalf: 0,
-    type: ["Scroll", "", "", ""],
+    type: ["Parchemin", "", "Parchemin", ""],
     permanent: true,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: [
-      [ {content: "fame 1", checked: false},
-        {content: "fame 2", checked: false},
-        {content: "fame 3", checked: false},
-        {content: "fame 5", checked: false},
-        {content: "fame 7", checked: false},
-        {content: "fame 10", checked: false},
-        {content: "fame 14", checked: false},
-        {content: "fame 19", checked: false},
-        {content: "fame 25", checked: false},
-        {content: "fame 32", checked: false},
-        {content: "fame 40", checked: false},
+      [ {content: "fame x1", checked: false},
+        {content: "fame x2", checked: false},
+        {content: "fame x3", checked: false},
+        {content: "fame x5", checked: false},
+        {content: "fame x7", checked: false},
+        {content: "fame x10", checked: false},
+        {content: "fame x14", checked: false},
+        {content: "fame x19", checked: false},
+        {content: "fame x25", checked: false},
+        {content: "fame x32", checked: false},
+        {content: "fame x40", checked: false},
         {content: "->", checked: false},
       ],
       [],
       [
-        {content: "fame 10", checked: false},
-        {content: "fame 20", checked: false},
-        {content: "fame 30", checked: false},
-        {content: "fame 40", checked: false},
-        {content: "fame 50", checked: false}
+        {content: "fame x10", checked: false},
+        {content: "fame x20", checked: false},
+        {content: "fame x30", checked: false},
+        {content: "fame x40", checked: false},
+        {content: "fame x50", checked: false}
       ],
       []
     ],
@@ -1306,9 +1280,9 @@ export const allCards: GameCard[] = [
       [ { ...emptyResource } ],
     ],
     effects: [
-      "effects/passif dépensez des resources/export. 10: Ajoutez resources/gold / resources/wood / resources/stone sur un Terrain. 20: Un Personnage gagne \" effects/passif Reste en jeu.\". 30 Découvrez Adoubement (80). 40: Ajoutez resources/ingot / resources/military / resources/export sur 1 Bâtiment. 55: Ajoutez resources/wood / resources/stone / resources/ingot / resources/military sur une carte. 75: Ajoutez resources/fame x5 sur une carte. 100: Face Up.",
+      "effects/passif dépensez des resources/export . 10: Ajoutez resources/gold / resources/wood / resources/stone sur un Terrain. 20: Un Personnage gagne \" effects/passif Reste en jeu.\". 30 Découvrez Adoubement (80). 40: Ajoutez resources/ingot / resources/military / resources/export sur 1 Bâtiment. 55: Ajoutez resources/wood / resources/stone / resources/ingot / resources/military sur une carte. 75: Ajoutez resources/fame x5 sur une carte. 100: Face Up.",
       "",
-      "effects/passif dépensez des resources/export. 25: Ajoutez resources/fame sur deux Terrains. 50: Ajoutez resources/fame x5 sur une Personne. 75: Découvrez Visite Royale (107). 100: Ajoutez resources/fame x5 sur un Bâtiment. 150: effects/check une autre carte Permanente. 200: effects/check toutes les autres cartes Permanentes au choix. 250: Découvrez Relations Commerciales (117).",
+      "effects/passif dépensez des resources/export . 25: Ajoutez resources/fame sur deux Terrains. 50: Ajoutez resources/fame x5 sur une Personne. 75: Découvrez Visite Royale (107). 100: Ajoutez resources/fame x5 sur un Bâtiment. 150: effects/check une autre carte Permanente. 200: effects/check toutes les autres cartes Permanentes au choix. 250: Découvrez Relations Commerciales (117).",
       "",
     ],
     upgrades: [
@@ -1318,12 +1292,32 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentHalf: 0,
-    type: ["Scroll", "", "", ""],
+    type: ["Parchemin", "", "Parchemin", ""],
     permanent: true,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
-    checkboxes: undefined,
+    checkboxes: [
+      [
+        { content: "10", checked: false },
+        { content: "20", checked: false },
+        { content: "30", checked: false },
+        { content: "40", checked: false },
+        { content: "55", checked: false },
+        { content: "75", checked: false },
+        { content: "100", checked: false }
+      ],
+      [],
+      [
+        { content: "25", checked: false },
+        { content: "50", checked: false },
+        { content: "75", checked: false },
+        { content: "100", checked: false },
+        { content: "150", checked: false },
+        { content: "200", checked: false },
+        { content: "250", checked: false }
+      ],
+      [],
+    ],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -1358,7 +1352,7 @@ export const allCards: GameCard[] = [
     upgrades: [
       [],
       [],
-      [],
+      [ {cost: {gold: 2}, nextSide: 4} ],
       [],
     ],
     currentHalf: 0,
@@ -1366,7 +1360,6 @@ export const allCards: GameCard[] = [
     permanent: true,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: [
       [],
       [],
@@ -1420,7 +1413,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -1448,7 +1440,7 @@ export const allCards: GameCard[] = [
       [ { ...emptyResource } ],
     ],
     effects: [
-      "Découvrez les cartes 21 à 34, choisissez-en 2 à découvrir et détruisez les 2 autres.",
+      "Découvrez les cartes 31 à 34, choisissez-en 2 à découvrir et détruisez les 2 autres.",
       "",
       "",
       "",
@@ -1460,11 +1452,10 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentHalf: 0,
-    type: ["Scroll", "", "", ""],
+    type: ["Parchemin", "", "", ""],
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -1508,7 +1499,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -1552,7 +1542,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -1596,7 +1585,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -1636,11 +1624,10 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentHalf: 0,
-    type: ["Personne", "", "Bâtiment", "Bâtiment"],
+    type: ["Personne", "", "Personne", ""],
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: [
       [ {content: "", checked: false},
         {content: "", checked: false},
@@ -1700,7 +1687,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -1728,9 +1714,9 @@ export const allCards: GameCard[] = [
       [ { ...emptyResource } ],
     ],
     effects: [
-      " ",
       "effects/activate Dépensez resources/gold resources/gold pour ajouter 1 ou deux effects/check .",
-      "effects/destroy Découvrez une Mine (84/85). ",
+      "",
+      "effects/end Dépensez resources/ingot resources/ingot resources/ingot pour ajouter resources/military sur cette carte ( effects/single ). effects/end Dépensez resources/ingot resources/ingot resources/ingot resources/ingot pour ajouter resources/military sur cette carte ( effects/single ). ",
       "",
     ],
     upgrades: [
@@ -1744,7 +1730,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: [
       [
         {content: "military", checked: false},
@@ -1798,11 +1783,10 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentHalf: 0,
-    type: ["Scroll", "", "", ""],
+    type: ["Parchemin", "", "", ""],
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -1846,7 +1830,6 @@ export const allCards: GameCard[] = [
     permanent: true,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -1890,7 +1873,6 @@ export const allCards: GameCard[] = [
     permanent: true,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -1934,7 +1916,6 @@ export const allCards: GameCard[] = [
     permanent: true,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -1962,7 +1943,7 @@ export const allCards: GameCard[] = [
       [ { ...emptyResource } ],
     ],
     effects: [
-      "effects/passif reste en jeu. effects/activate Défaussez la carte au sommet de votre pioche. effects/activate Ajoutez 1 effects/check .",
+      "effects/passif Reste en jeu. effects/activate Défaussez la carte au sommet de votre pioche. effects/activate Ajoutez 1 effects/check .",
       "",
       "effects/activate Ajoutez 1 à 2 effects/check .",
       "",
@@ -1978,7 +1959,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: [
       [
         {content: "gold, gold", checked: false},
@@ -2047,7 +2027,7 @@ export const allCards: GameCard[] = [
     effects: [
       "(Choisissez le côté quand la carte est ajoutée). effects/activate Choisissez un Terrain en jeu. Gagnez les ressources qui correspondent à sa production.",
       "",
-      "effects/passif reste en jeu. effects/may Fin du Tour: Défaussez pour qu'une autre carte reste en jeu.",
+      "effects/passif Reste en jeu. effects/may Fin du Tour: Défaussez pour qu'une autre carte reste en jeu.",
       "",
     ],
     upgrades: [
@@ -2061,7 +2041,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -2105,7 +2084,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -2149,7 +2127,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -2193,7 +2170,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -2237,7 +2213,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -2277,11 +2252,10 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentHalf: 0,
-    type: ["Scroll", "", "", ""],
+    type: ["Parchemin", "", "", ""],
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -2325,7 +2299,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -2369,7 +2342,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -2413,7 +2385,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -2457,7 +2428,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -2501,7 +2471,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -2545,7 +2514,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -2589,7 +2557,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -2633,7 +2600,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: [
       [
         {content: "gold, gold", checked: false},
@@ -2700,7 +2666,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -2744,7 +2709,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -2780,7 +2744,7 @@ export const allCards: GameCard[] = [
     upgrades: [
       [],
       [],
-      [],
+      [ {cost: {gold: 2}, nextSide: 4} ],
       [],
     ],
     currentHalf: 0,
@@ -2788,7 +2752,6 @@ export const allCards: GameCard[] = [
     permanent: true,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: [
       [],
       [],
@@ -2842,7 +2805,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -2886,7 +2848,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -2930,7 +2891,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -2974,7 +2934,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -3026,7 +2985,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -3070,7 +3028,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -3114,7 +3071,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -3158,7 +3114,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -3205,7 +3160,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -3245,11 +3199,10 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentHalf: 0,
-    type: ["Scroll", "", "", ""],
+    type: ["Parchemin", "", "", ""],
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -3293,7 +3246,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -3337,7 +3289,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -3389,7 +3340,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -3439,7 +3389,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -3489,7 +3438,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -3545,7 +3493,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -3601,7 +3548,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -3648,7 +3594,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -3695,7 +3640,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -3739,7 +3683,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -3783,7 +3726,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -3827,7 +3769,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -3871,7 +3812,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -3923,7 +3863,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -3975,7 +3914,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -4027,7 +3965,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -4079,7 +4016,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -4123,7 +4059,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -4163,21 +4098,20 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentHalf: 0,
-    type: ["Scroll", "", "", ""],
+    type: ["Parchemin", "", "", ""],
     permanent: true,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: [
-      [ {content: "fame 1", checked: false},
-        {content: "fame 3", checked: false},
-        {content: "fame 6", checked: false},
-        {content: "fame 10", checked: false},
-        {content: "fame 14", checked: false},
-        {content: "fame 20", checked: false},
-        {content: "fame 27", checked: false},
-        {content: "fame 35", checked: false},
-        {content: "fame 45", checked: false}
+      [ {content: "fame x1", checked: false},
+        {content: "fame x3", checked: false},
+        {content: "fame x6", checked: false},
+        {content: "fame x10", checked: false},
+        {content: "fame x14", checked: false},
+        {content: "fame x20", checked: false},
+        {content: "fame x27", checked: false},
+        {content: "fame x35", checked: false},
+        {content: "fame x45", checked: false}
       ],
       [],
       [],
@@ -4221,11 +4155,10 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentHalf: 0,
-    type: ["Scroll", "", "", ""],
+    type: ["Parchemin", "", "", ""],
     permanent: true,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: [
       [ {content: "fame 3", checked: false},
         {content: "fame 6", checked: false},
@@ -4287,7 +4220,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -4327,22 +4259,21 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentHalf: 0,
-    type: ["Scroll", "", "", ""],
+    type: ["Parchemin", "", "", ""],
     permanent: true,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: [
-      [ {content: "fame 1", checked: false},
-        {content: "fame 2", checked: false},
-        {content: "fame 3", checked: false},
-        {content: "fame 5", checked: false},
-        {content: "fame 7", checked: false},
-        {content: "fame 10", checked: false},
-        {content: "fame 14", checked: false},
-        {content: "fame 20", checked: false},
-        {content: "fame 28", checked: false},
-        {content: "fame 40", checked: false}
+      [ {content: "fame x1", checked: false},
+        {content: "fame x2", checked: false},
+        {content: "fame x3", checked: false},
+        {content: "fame x5", checked: false},
+        {content: "fame x7", checked: false},
+        {content: "fame x10", checked: false},
+        {content: "fame x14", checked: false},
+        {content: "fame x20", checked: false},
+        {content: "fame x28", checked: false},
+        {content: "fame x40", checked: false}
       ],
       [],
       [],
@@ -4386,11 +4317,10 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentHalf: 0,
-    type: ["Scroll", "", "Maritime", ""],
+    type: ["Parchemin", "", "Maritime", ""],
     permanent: true,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: [
       [ {content: "", checked: false}, 
         {content: "", checked: false},
@@ -4455,7 +4385,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -4499,7 +4428,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -4546,7 +4474,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -4590,7 +4517,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: [
       [
         { content: "", checked: false }, { content: "", checked: false },
@@ -4648,7 +4574,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -4692,7 +4617,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -4736,7 +4660,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: [
       [
         { content: "", checked: false }, { content: "", checked: false },
@@ -4747,8 +4670,8 @@ export const allCards: GameCard[] = [
       [
         { content: "gold", checked: false }, { content: "gold", checked: false },
         { content: "gold", checked: false }, { content: "gold", checked: false },
-        { content: "exportation", checked: false }, { content: "exportation", checked: false },
-        { content: "exportation", checked: false }, { content: "exportation", checked: false },
+        { content: "export", checked: false }, { content: "export", checked: false },
+        { content: "export", checked: false }, { content: "export", checked: false },
       ],
       [
         { content: "", checked: false }, { content: "", checked: false },
@@ -4803,7 +4726,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -4850,7 +4772,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -4894,7 +4815,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -4938,7 +4858,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: [
       [],
       [],
@@ -4990,7 +4909,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: [
       [],
       [],
@@ -5042,7 +4960,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -5086,7 +5003,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -5130,7 +5046,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: [
       [],
       [],
@@ -5184,7 +5099,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -5228,7 +5142,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -5279,7 +5192,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: [
       [],
       [],
@@ -5335,7 +5247,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -5379,7 +5290,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -5423,7 +5333,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -5467,7 +5376,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -5511,7 +5419,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -5558,7 +5465,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -5602,7 +5508,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -5646,7 +5551,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -5690,7 +5594,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -5743,7 +5646,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -5787,7 +5689,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -5831,7 +5732,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes:  [
       [],
       [],
@@ -5885,7 +5785,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -5929,7 +5828,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -5973,7 +5871,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -6017,7 +5914,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -6061,7 +5957,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -6105,7 +6000,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -6149,7 +6043,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes:  [
       [],
       [],
@@ -6203,7 +6096,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -6250,7 +6142,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -6297,7 +6188,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -6344,7 +6234,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -6388,7 +6277,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -6432,7 +6320,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes:  [
       [
         { content: "gold, gold, gold, gold, gold", checked: false },
@@ -6486,7 +6373,6 @@ export const allCards: GameCard[] = [
     permanent: false,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -6530,7 +6416,6 @@ export const allCards: GameCard[] = [
     permanent: true,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: [
       [],
       [],
@@ -6584,7 +6469,6 @@ export const allCards: GameCard[] = [
     permanent: true,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: undefined,
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
@@ -6628,7 +6512,6 @@ export const allCards: GameCard[] = [
     permanent: true,
     up: false,
     flipped: false,
-    selectedCheckboxes: undefined,
     checkboxes: [
       [],
       [
