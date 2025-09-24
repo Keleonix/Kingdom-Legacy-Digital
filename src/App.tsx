@@ -805,8 +805,10 @@ export default function Game() {
   const [resources, setResources] = useState<ResourceMap>({ ...emptyResource });
   const [showSettings, setShowSettings] = useState(false);
   const [showGuide, setShowGuide] = useState(false);
+  const [showAbout, setShowAbout] = useState(false);
 
   const [cityNameInput, setCityNameInput] = useState("");
+  const [selectedKingdom, setSelectedKingdom] = useState("New Kingdom");
 
   const updateResource = (key: keyof ResourceMap, delta: number) => {
     setResources((r) => ({ ...r, [key]: r[key] + delta }));
@@ -864,8 +866,10 @@ export default function Game() {
   };
 
   const actions = [
+    { label: "New Turn", onClick: () => drawNewTurn() },
     { label: "Progress", onClick: () => progress() },
     { label: "Pass", onClick: () => discardEndTurn() },
+    { label: "Shuffle Deck", onClick: () => shuffleDeck() },
   ];
 
   // -------------------
@@ -956,6 +960,33 @@ export default function Game() {
     });
   };
 
+  const handleShuffle15Rand = () => {
+    if (discard.length === 0) return;
+    
+    const randomCards: GameCard[] = [];
+    const availableCards = [...discard];
+    
+    const numCardsToTake = Math.min(15, availableCards.length);
+    
+    for (let i = 0; i < numCardsToTake; i++) {
+      const randomIndex = Math.floor(Math.random() * availableCards.length);
+      randomCards.push(availableCards[randomIndex]);
+      availableCards.splice(randomIndex, 1);
+    }
+    
+    setDeck(prev => [...prev, ...randomCards]);
+    setDiscard(prev => prev.filter(card => !randomCards.includes(card)));
+  };
+
+  const handleTopDiscardToBottom = () => {
+    if (discard.length === 0) return;
+
+    const card = discard[discard.length - 1];
+
+    setDeck(prev => [...prev, card]);
+    discard.pop();
+  }
+
   // -------------------
   // Replace card in zone by id (used by popup apply)
   // -------------------
@@ -1042,6 +1073,18 @@ export default function Game() {
       console.error(e);
       alert("Failed to load: " + e);
     }
+  };
+
+  // Ajoutez cette fonction avant le return de votre composant Game
+  const getSavedKingdoms = () => {
+    const kingdoms = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('citysave:')) {
+        kingdoms.push(key.replace('citysave:', ''));
+      }
+    }
+    return kingdoms.sort();
   };
 
   // Reset game (fail-safe confirmation)
@@ -1165,13 +1208,14 @@ export default function Game() {
 
         {/* Action Buttons (with Shuffle next to End Round) */}
         <div className="space-x-2">
-          <Button onClick={drawNewTurn}>New Turn</Button>
           {actions.map((a, i) => (
             <Button key={i} onClick={a.onClick}>{a.label}</Button>
           ))}
-          {/* End Round only active when deck empty */}
-          <Button disabled={deck.length > 0} onClick={handleEndRound}>End Round</Button>
-          <Button onClick={shuffleDeck}>Shuffle Deck</Button>
+          {/* Conditionnal controls */}
+          <Button disabled={deck.length > 0} className="bg-red-600 hover:bg-red-500 text-white" onClick={handleEndRound}>End Round</Button>
+          {/* Hidden controls */}
+          <Button hidden={campaignDeck.some(card => card.id === 95) && campaignDeck.some(card => card.id === 110)} className="bg-green-600 hover:bg-green-500 text-white" onClick={handleTopDiscardToBottom}>Top Discard to Bottom Deck</Button>
+          <Button hidden={campaignDeck.some(card => card.id === 98)} className="bg-green-600 hover:bg-green-500 text-white" onClick={handleShuffle15Rand}>Shuffle 15 Rand</Button>
         </div>
 
         {/* Resource Pool */}
@@ -1205,15 +1249,84 @@ export default function Game() {
                 <Button onClick={() => { setShowGuide(true); setShowSettings(false); }}>Guide</Button>
 
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm">City Save / Load</label>
-                  <input className="border p-1 rounded" value={cityNameInput} onChange={(e) => setCityNameInput(e.target.value)} placeholder="City name" />
+                  <label className="text-sm">Kingdom Save / Load</label>
+                  
+                  {/* Dropdown pour sélectionner le royaume */}
+                  <select 
+                    className="border p-1 rounded" 
+                    value={selectedKingdom} 
+                    onChange={(e) => setSelectedKingdom(e.target.value)}
+                  >
+                    <option value="New Kingdom">New Kingdom</option>
+                    {getSavedKingdoms().map(kingdom => (
+                      <option key={kingdom} value={kingdom}>{kingdom}</option>
+                    ))}
+                  </select>
+
+                  {/* Input pour nouveau nom si "New Kingdom" est sélectionné */}
+                  {selectedKingdom === "New Kingdom" && (
+                    <input 
+                      className="border p-1 rounded" 
+                      value={cityNameInput} 
+                      onChange={(e) => setCityNameInput(e.target.value)} 
+                      placeholder="Enter new kingdom name" 
+                    />
+                  )}
+
                   <div className="flex gap-2">
-                    <Button onClick={() => saveGame(cityNameInput)}>Save</Button>
-                    <Button onClick={() => loadGame(cityNameInput)}>Continue</Button>
+                    <Button onClick={() => {
+                      if (selectedKingdom === "New Kingdom") {
+                        saveGame(cityNameInput);
+                      } else {
+                        saveGame(selectedKingdom);
+                      }
+                    }}>
+                      Save
+                    </Button>
+                    <Button 
+                      disabled={selectedKingdom === "New Kingdom"}
+                      onClick={() => loadGame(selectedKingdom)}
+                    >
+                      Continue
+                    </Button>
+                    <Button onClick={() => { setShowAbout(true); setShowSettings(false); }}>About</Button>
                   </div>
                 </div>
 
                 <Button onClick={() => setShowSettings(false)}>Close</Button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Guide Modal */}
+        {showAbout && (
+          <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+            <div className="bg-white p-4 rounded-xl space-y-4 max-w-2xl">
+              <h2 className="font-bold">About</h2>
+              <div className="text-sm">
+                <p className="font-bold">Original Board Game:</p><br/>
+                <p className="font-bold">Kingdom Legacy</p><br/>
+                <p>Game Design: Jonathan Fryxelius</p>
+                <p>Assistant Design: FryxGames</p>
+                <p>Art Director: Jonathan Fryxelius</p>
+                <p>Designer Thanks: Benjamin, Daniel, Abram, Thomas, Kezia, and Stina, for eagerly testing all new ideas through all iterations.</p><br/>
+                <p>Special thanks to the ultimate King; may your Kingdom come!</p><br/>
+                <p className="font-bold">Publisher:</p>
+                <p>Intrafin Toys & Games Distribution</p>
+                <p>(Official distributor of Kingdom Legacy and other titles across Europe.)</p><br/>
+                <p className="font-bold">Digital Fan Adaptation:</p>
+                <p>This digital version of Kingdom Legacy is a non-commercial fan project, created with admiration for the original design. It was made to make the game easier to learn, share, and play online.</p>
+                <p>Digitalization Team:</p>
+                <p>Project Lead / Developer: Keleonix</p>
+                <p>Digital Art / Assets Adaptation: Freepik, Smashicons</p>
+                <p>Playtesters / Feedback: Keleonix</p><br/>
+                <p className="font-bold">Disclaimer:</p>
+                <p>This is an unofficial fan project and is not affiliated with, endorsed by, or sponsored by FryxGames, Intrafin, or Jonathan Fryxelius. All rights to the original game, rules, and artwork remain with their respective copyright holders.</p>
+              </div>
+
+              <div className="flex justify-end gap-2">
+                <Button onClick={() => setShowAbout(false)}>Close</Button>
               </div>
             </div>
           </div>
@@ -1225,16 +1338,30 @@ export default function Game() {
             <div className="bg-white p-4 rounded-xl space-y-4 max-w-2xl">
               <h2 className="font-bold">Guide & Controls</h2>
               <div className="text-sm">
+                <a 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  href="https://fryxgames.se/wp-content/uploads/2023/12/FK-Rules-Small.pdf"
+                  className="text-blue-600 hover:text-blue-800 underline"
+                >
+                  <p>Before reading the controls, please read the full rules.</p>
+                </a>
                 <ul className="list-disc pl-5">
-                  <li>Tap a card to toggle its currently selected checkbox (mobile-friendly).</li>
-                  <li>Right-click (or long-press) a card to open the editor where you can:</li>
+                  <li>Tap a card to open the editor where you can:</li>
                   <ul className="list-disc pl-5">
                     <li>Edit resources/options per side</li>
                     <li>Add / remove checkboxes for each side; each checkbox can contain '*' or multiple resource icons (comma-separated), or be blank</li>
                     <li>Choose which checkbox index is the "selected" one (used for tap action)</li>
                   </ul>
-                  <li>Drag cards between zones (Deck, Play Area, Discard, Blocked). Blocked zone is shown to the right of the play area and is non-interactable; use drag-drop to place cards into it.</li>
-                  <li>Use Settings → Reset to fully reset the game (extra confirmation required).</li>
+                  <li>Tap a card's checkbox to use check it.</li>
+                  <li>Tap a card's upgrade to upgrade it.</li>
+                  <li>Drag cards between zones.</li>
+                  <li>Use Settings:</li>
+                  <ul className="list-disc pl-5">
+                    <li>Reset to fully reset the game (extra confirmation required).</li>
+                    <li>Save your current Kingdom's progress.</li>
+                    <li>Continue a saved Kingdom's game.</li>
+                  </ul>
                 </ul>
               </div>
 
@@ -1272,12 +1399,12 @@ export default function Game() {
 
         {/* Full Discard Modal */}
         {showDiscard && (
-          <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-xl space-y-6 max-w-[90vw] w-full max-h-[90vh] overflow-hidden">
-              <h2 className="font-bold">Discard</h2>
-              <div className="flex gap-4 h-[35vh]">
+          <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-2">
+            <div className="bg-white p-4 rounded-xl space-y-4 w-full h-full max-w-[95vw] max-h-[95vh] overflow-hidden flex flex-col">
+              <h2 className="font-bold text-xl">Discard</h2>
+              <div className="flex flex-col lg:flex-row gap-4 flex-1 min-h-0">
                 <div className="flex-1 overflow-y-auto p-2 border rounded">
-                  <div className="grid grid-cols-4 gap-2">
+                  <div className="grid grid-cols-6 gap-2">
                     {discard.map((c) => (
                       <CardView
                         key={`modal-${c.id}-${c.currentHalf}-${Math.random()}`}
@@ -1289,10 +1416,12 @@ export default function Game() {
                     ))}
                   </div>
                 </div>
-                <Zone name="Play Area" cards={playArea.slice(-1)} onDrop={(p) => dropToPlayArea(p)} onRightClick={(c, zone) => setPopupCard({ originZone: zone, originalId: c.id, editable: cloneGameCard(c) })} onTapAction={handleTapAction} />
+                <div className="lg:min-w-[220px]">
+                  <Zone name="Play Area" cards={playArea.slice(-1)} onDrop={(p) => dropToPlayArea(p)} onRightClick={(c, zone) => setPopupCard({ originZone: zone, originalId: c.id, editable: cloneGameCard(c) })} onTapAction={handleTapAction} />
+                </div>
               </div>
 
-              <div className="flex justify-end gap-2">
+              <div className="flex justify-end gap-2 pt-2 border-t">
                 <Button onClick={() => setShowDiscard(false)}>Close</Button>
               </div>
             </div>
@@ -1302,7 +1431,7 @@ export default function Game() {
         {/* End Round Modal */}
         {showEndRound && (
           <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-xl space-y-6 max-w-[90vw] max-h-[90vh] overflow-y-auto">
+            <div className="bg-white p-4 rounded-xl space-y-4 w-full h-full max-w-[95vw] max-h-[95vh] overflow-hidden flex flex-col">
               <h2 className="font-bold">End Round</h2>
 
               <div className="flex gap-4">
@@ -1328,7 +1457,7 @@ export default function Game() {
                 </div>
               </div>
 
-              <div className="flex justify-end gap-2">
+              <div className="flex justify-end gap-2 pt-2 border-t">
                 <Button onClick={() => {
                     setShowEndRound(false);
                     shuffleDeck();
@@ -1342,12 +1471,12 @@ export default function Game() {
 
         {/* Full Deck Modal */}
         {showDeck && (
-          <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-xl space-y-6 max-w-[90vw] w-full max-h-[90vh] overflow-hidden">
+          <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-2">
+            <div className="bg-white p-4 rounded-xl space-y-4 w-full h-full max-w-[95vw] max-h-[95vh] overflow-hidden flex flex-col">
               <h2 className="font-bold">Deck</h2>
-              <div className="flex gap-4 h-[35vh]">
+              <div className="flex flex-col lg:flex-row gap-4 flex-1 min-h-0">
                 <div className="flex-1 overflow-y-auto p-2 border rounded">
-                  <div className="grid grid-cols-4 gap-2">
+                  <div className="grid grid-cols-6 gap-2">
                     {deck.map((c) => (
                       <CardView
                         key={`modal-${c.id}-${c.currentHalf}-${Math.random()}`}
@@ -1362,7 +1491,7 @@ export default function Game() {
                 <Zone name="Destroy" cards={[]} onDrop={(p) => dropToDestroy(p)} onRightClick={() => {}} />
               </div>
 
-              <div className="flex justify-end gap-2">
+              <div className="flex justify-end gap-2 pt-2 border-t">
                 <Button onClick={() => setShowDeck(false)}>Close</Button>
               </div>
             </div>
