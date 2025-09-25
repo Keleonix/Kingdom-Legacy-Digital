@@ -30,8 +30,11 @@ export const RESOURCE_KEYS: (keyof ResourceMap)[] = [
 
 export const TYPE_COLORS: Record<string, string> = {
   Maritime: "#a7bed3",   // muted blue
+  Navire: "#a7bed3",   // muted blue
   Bâtiment: "#cfd4d9",   // light grey
   Personne: "#f6e5a5",   // soft pastel yellow
+  Chevalier: "#f6e5a5",   // soft pastel yellow
+  Dame: "#f6e5a5",   // soft pastel yellow
   Objectif: "#f6e5a5",   // soft pastel yellow
   Evénement: "#f4c2d7",  // pastel pink
   Terrain: "#b6d7a8",    // muted green
@@ -39,6 +42,7 @@ export const TYPE_COLORS: Record<string, string> = {
   Catastrophe: "#e6a5a5",// soft red
   Parchemin: "#e6c2a5ff",// soft brown
   Elevage: "#f8ad70ff",
+  Cheval: "#f8ad70ff",
   Cargaison: "#c59f90ff",
   default: "#f4c2d7"
 };

@@ -94,6 +94,10 @@ function getBackgroundStyle(card: GameCard, sideIdx: number) {
 
   let colors = types.map((t) => TYPE_COLORS[t] || "#ffffff");
 
+  if (colors.length ===0 ) {
+    colors.push(TYPE_COLORS["default"]);
+  }
+
   if (colors.length === 1) {
     return { background: colors[0] };
   }
@@ -182,34 +186,35 @@ function CardView({
     // Parse resources: handle both "resource" and "resource x5" formats
     const resources = content.split(",").map((s) => s.trim()).filter(Boolean);
     const parsedResources: Array<{name: string, count: number}> = [];
-    
-    if (resources.length == 0) {
-      // Fallback: render as plain text
-      return <span className="text-sm">{content}</span>;
-    }
 
     resources.forEach(resource => {
       const match = resource.match(/^(\w+)\s*x(\d+)$/i);
-      if (match) {
+      if (match && RESOURCE_KEYS.includes(match[1] as keyof ResourceMap)) {
         // Format: "gold x5"
         parsedResources.push({ name: match[1], count: parseInt(match[2]) });
-      } else {
+      }
+      else if (RESOURCE_KEYS.includes(resource as keyof ResourceMap)) {
         // Format: "gold" (default count = 1)
         parsedResources.push({ name: resource, count: 1 });
       }
     });
 
+    if (parsedResources.length === 0) {
+      // Fallback: render as plain text
+      return (<span className="text-[9px] font-medium">{content}</span>);
+    }
+
     return (
-      <div className="flex items-center justify-center gap-1 flex-wrap">
+      <div className="flex items-center justify-center flex-wrap">
         {parsedResources.map((res, i) => (
-          <div key={i} className="flex items-center gap-0.5">
+          <div key={i} className="flex items-center">
             <img 
               src={resourceIconPath(res.name as keyof ResourceMap)} 
               alt={res.name} 
               className="w-4 h-4 flex-shrink-0" 
             />
             {res.count > 1 && (
-              <span className="text-xs font-medium">{res.count}</span>
+              <span className="text-[9px] font-medium">{res.count}</span>
             )}
           </div>
         ))}
@@ -298,23 +303,37 @@ function CardView({
                 const count = opt[k] ?? 0;
                 if (!count) return [];
                 return [
-                  <div key={`${idx}-${k}`} className="flex items-center gap-1">
-                    <img src={resourceIconPath(k)} alt={k} title={`${k} x${count}`} className="w-4 h-4" />
-                    {count !== 0 && <span className="text-xs">x{count}</span>}
-                  </div>,
+                    <div key={`${idx}-${k}`} className="flex items-center gap-1">
+                      <img src={resourceIconPath(k)} alt={k} title={`${k} x${count}`} className="w-4 h-4" />
+                      {count !== 0 && <span className="text-xs">x{count}</span>}
+                    </div>
                 ];
               });
 
+              // Ne pas afficher le bouton s'il n'y a pas de ressources
+              if (icons.length === 0) {
+                return null;
+              }
+
               return (
                 <div key={idx} className="flex items-center gap-1">
-                  {icons.length > 0 ? icons : <span className="text-xs text-gray-400">—</span>}
-                  {idx < resOptions.length - 1 && <span className="mx-1">/</span>}
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      if (!interactable) return;
+                      // Logique pour ce groupe de ressources
+                    }}
+                    className="text-[10px] px-2 py-1 border rounded bg-white flex items-center gap-1 hover:bg-gray-100 transition"
+                  >
+                    {icons}
+                  </button>
                 </div>
               );
-            })}
+            }).filter(Boolean)} {/* Filtrer les éléments null */}
           </div>
 
-          {effect && <div className="mb-2 text-sm line-clamp-3">{renderEffect(effect)}</div>}
+          {effect && <div className="mb-2 text-sm line-clamp-5">{renderEffect(effect)}</div>}
 
           {/* Upgrades */}
           <div className="mt-2">
@@ -350,7 +369,7 @@ function CardView({
 
           {/* Checkboxes - Fixed size and layout */}
           <div className="mt-2">
-            <div className="grid grid-cols-5 gap-1 justify-items-center">
+            <div className="grid grid-cols-6 gap-1 justify-items-center">
               {sideCheckboxes.map((box: any, idx: number) => (
                 <button
                   key={idx}
@@ -359,7 +378,7 @@ function CardView({
                     if (!interactable) return;
                     box.checked = !box.checked;
                   }}
-                  className={`w-8 h-8 border rounded flex items-center justify-center p-1 text-[10px] ${
+                  className={`w-7 h-7 border rounded flex items-center justify-center p-1 text-[10px] ${
                     box.checked ? "bg-green-100 border-green-400" : "bg-white border-gray-300"
                   } hover:border-gray-400 transition-colors`}
                   title={box.content || "Empty checkbox"}
@@ -476,7 +495,7 @@ if (name === "Play Area" || name === "Blocked") {
 }
 
   return (
-    <div ref={ref} className="p-2 border rounded min-h-[120px]">
+    <div ref={ref} className="p-2 border rounded min-h-[120px]" style={{background: "linear-gradient(to top left, #ebebebff, #ecececff)"}}>
       <h2 className="text-lg font-bold">{name}</h2>
       <div
         className={containerClass}
@@ -603,7 +622,7 @@ function CardPopup({
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[60]">
-      <div className="bg-white p-4 rounded-xl space-y-4 max-w-3xl relative max-h-[90vh] overflow-y-auto">
+      <div className="bg-white p-4 rounded-xl space-y-4 max-w-3xl relative max-h-[80vh] overflow-y-auto">
         <h2 className="font-bold">{localCard.GetName()}</h2>
 
         {/* Side chooser (4 sides) */}
@@ -795,7 +814,7 @@ function CardPopup({
 
 export default function Game() {
   const [discard, setDiscard] = useState<GameCard[]>([]);
-  const [blockedZone, setBlockedZone] = useState<GameCard[]>([]);
+  const [playArea, setPlayArea] = useState<GameCard[]>([]);
   const [permanentZone, setPermanentZone] = useState<GameCard[]>([]);
   const [popupCard, setPopupCard] = useState<PopupPayload | null>(null);
   const [showDiscard, setShowDiscard] = useState(false);
@@ -840,7 +859,7 @@ export default function Game() {
       .map((c) => cloneGameCard(c))
   );
 
-  const [playArea, setPlayArea] = useState<GameCard[]>(() =>
+  const [blockedZone, setBlockedZone] = useState<GameCard[]>(() =>
     allCards
       .filter((c) => c.id === 0)
       .map((c) => cloneGameCard(c))
@@ -1111,12 +1130,23 @@ export default function Game() {
     setShowSettings(false);
   };
 
+  useEffect(() => {
+    // Appliquer le style au body
+    document.body.style.background = "linear-gradient(to top left, #6d6d6dff, #ebebebff)";
+    document.body.style.backgroundAttachment = "fixed";
+    document.body.style.minHeight = "100vh";
+    
+    // Nettoyer au démontage (optionnel)
+    return () => {
+      document.body.style.background = "";
+      document.body.style.backgroundAttachment = "";
+      document.body.style.minHeight = "";
+    };
+  }, [])
+
   return (
     <DndProvider backend={HTML5Backend}>
-      <div 
-        className="p-4 space-y-4 min-h-screen"
-        style={{ background: "linear-gradient(to top left, #f7f9ffff, #ffffffff)" }}
-      >
+      <div className="p-4 space-y-4 min-h-screen">
         <div className="flex justify-between items-start">
           <div className="flex gap-4">
             {/* Deck */}
@@ -1144,7 +1174,7 @@ export default function Game() {
             </div>
 
             {/* Campaign Deck */}
-            <div className="p-2 border rounded">
+            <div className="p-2 border rounded" style={{background: "linear-gradient(to bottom right, #ebebebff, #ecececff)"}}>
               <h2 className="text-lg font-bold">Campaign Deck</h2>
               <p>Click here and type ID to preview</p>
               <div
@@ -1229,19 +1259,20 @@ export default function Game() {
         {/* Resource Pool */}
         <div>
           <h2 className="text-lg font-bold">Resources</h2>
-          <div className="grid grid-cols-4 gap-1">
+          <div className="grid grid-cols-7 sm:grid-cols-7 lg:grid-cols-7 gap-2 sm:gap-3 lg:gap-4 min-w-240 max-h-0">
             {RESOURCE_KEYS.map((key) => (
-              <div key={key} className="flex justify-items-center gap-1">
-                <img src={resourceIconPath(key)} alt={key} className="w-4 h-4" />
-                <span className="w-16 capitalize" gap-1>{key}</span>
-                <Button size="sm" gap-1 onClick={() => updateResource(key, -1)}>-</Button>
-                <input
-                  type="number"
-                  className="w-16 text-center border rounded"
-                  value={resources[key]}
-                  onChange={(e) => setResources((r) => ({ ...r, [key]: parseInt(e.target.value || "0", 10) || 0 }))}
-                />
-                <Button size="sm" gap-1 onClick={() => updateResource(key, 1)}>+</Button>
+              <div key={key} className="flex flex-col items-center gap-2 p-2 bg-white rounded-lg min-w-0">
+                <img src={resourceIconPath(key)} alt={key} title={key} className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" />
+                <div className="flex items-center gap-1 w-full justify-center">
+                  <Button size="sm" gap-1 onClick={() => updateResource(key, -1)}>-</Button>
+                  <input
+                    type="number"
+                    className="w-12 sm:w-16 text-center border rounded text-xs sm:text-sm py-1"
+                    value={resources[key]}
+                    onChange={(e) => setResources((r) => ({ ...r, [key]: parseInt(e.target.value || "0", 10) || 0 }))}
+                  />
+                  <Button size="sm" gap-1 onClick={() => updateResource(key, 1)}>+</Button>
+                </div>
               </div>
             ))}
           </div>
@@ -1259,7 +1290,7 @@ export default function Game() {
                 <div className="flex flex-col gap-2">
                   <label className="text-sm">Kingdom Save / Load</label>
                   
-                  {/* Dropdown pour sélectionner le royaume */}
+                  {/* Dropdown to select Kingdom */}
                   <select 
                     className="border p-1 rounded" 
                     value={selectedKingdom} 
@@ -1408,7 +1439,7 @@ export default function Game() {
         {/* Full Discard Modal */}
         {showDiscard && (
           <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-2">
-            <div className="bg-white p-4 rounded-xl space-y-4 w-full h-full max-w-[95vw] max-h-[95vh] overflow-hidden flex flex-col">
+            <div className="bg-white p-4 rounded-xl space-y-4 w-full h-full max-w-[300vw] max-h-[300vh] overflow-hidden flex flex-col">
               <h2 className="font-bold text-xl">Discard</h2>
               <div className="flex flex-col lg:flex-row gap-4 flex-1 min-h-0">
                 <div className="flex-1 overflow-y-auto p-2 border rounded">
@@ -1439,7 +1470,7 @@ export default function Game() {
         {/* End Round Modal */}
         {showEndRound && (
           <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-            <div className="bg-white p-4 rounded-xl space-y-4 w-full h-full max-w-[95vw] max-h-[95vh] overflow-hidden flex flex-col">
+            <div className="bg-white p-4 rounded-xl space-y-4 w-full h-full max-w-[300vw] max-h-[300vh] overflow-hidden flex flex-col">
               <h2 className="font-bold">End Round</h2>
 
               <div className="flex gap-4">
@@ -1480,7 +1511,7 @@ export default function Game() {
         {/* Full Deck Modal */}
         {showDeck && (
           <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-2">
-            <div className="bg-white p-4 rounded-xl space-y-4 w-full h-full max-w-[95vw] max-h-[95vh] overflow-hidden flex flex-col">
+            <div className="bg-white p-4 rounded-xl space-y-4 w-full h-full max-w-[300vw] max-h-[300vh] overflow-hidden flex flex-col">
               <h2 className="font-bold">Deck</h2>
               <div className="flex flex-col lg:flex-row gap-4 flex-1 min-h-0">
                 <div className="flex-1 overflow-y-auto p-2 border rounded">
