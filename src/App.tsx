@@ -11,10 +11,11 @@ function cloneGameCard(src: GameCard): GameCard {
   const out = new GameCard({});
   out.id = src.id;
   out.name = src.name;
-  // Default to 1 (Front Up) if currentHalf is not set
-  out.currentHalf = src.currentHalf || 1;
+  // Default to 1 (Front Up) if currentSide is not set
+  out.currentSide = src.currentSide || 1;
   out.type = [...src.type];
   out.permanent = src.permanent;
+  out.choice = src.choice;
   out.up = src.up;
   out.flipped = src.flipped;
 
@@ -80,7 +81,6 @@ function renderEffect(effect: string) {
 // Helper to render background card color
 // -------------------
 function getBackgroundStyle(card: GameCard, sideIdx: number) {
-  // `card.type[sideIdx]` can be string ("Fire - Water") or string[] or undefined
   const rawType = card.type?.[sideIdx];
   if (!rawType) return {};
 
@@ -89,10 +89,11 @@ function getBackgroundStyle(card: GameCard, sideIdx: number) {
   if (Array.isArray(rawType)) {
     types = rawType.flatMap((t) => t.split(" - ").map((s: string) => s.trim()));
   } else if (typeof rawType === "string") {
-    types = rawType.split(" - ").map((s) => s.trim());
+    types = rawType.split(" - ").map((s: string) => s.trim());
   }
+  types = types.filter((t) => t !== "Permanente");
 
-  const colors = types.map((t) => TYPE_COLORS[t] || "#ffffff");
+  let colors = types.map((t) => TYPE_COLORS[t] || "#ffffff");
 
   if (colors.length === 1) {
     return { background: colors[0] };
@@ -251,7 +252,7 @@ function CardView({
     );
   }
 
-  const currentSideIdx = (card.currentHalf || 1) - 1;
+  const currentSideIdx = (card.currentSide || 1) - 1;
   const sideCheckboxes = card.checkboxes?.[currentSideIdx] ?? [];
 
   return (
@@ -283,11 +284,12 @@ function CardView({
           ${!interactable ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
         >
         <CardContent className="text-center p-2 overflow-hidden">
+          {card.GetType().includes("Permanente") && <img src={"effects/permanent.png"} alt={"Permanent"} title={"Permanent"} className="w-49 h-2" />}
+          {card.choice && (card.currentSide == 1 || card.currentSide == 3) && <img src={"effects/choice.png"} alt={"Choice"} title={"Choice"} className="w-49 h-2" />}
           <div>
             <p className="font-bold text-sm line-clamp-2">
-              {card.id > 0 ? card.id : ""} {" | "} {name} {" | "} {type}
+              {card.id >= 0 ? card.id : ""} {" | "} {name} {" | "} {type}
             </p>
-            {card.permanent && <p className="text-xs">(Permanent)</p>}
           </div>
 
           {/* Normal (in-play) resources */}
@@ -325,7 +327,7 @@ function CardView({
                     e.preventDefault();
                     e.stopPropagation();
                     if (!interactable) return;
-                    card.currentHalf = upg.nextSide;
+                    card.currentSide = upg.nextSide;
                   }}
                   className="text-[10px] px-2 py-1 border rounded bg-white flex items-center gap-1 hover:bg-gray-100 transition"
                 >
@@ -385,8 +387,8 @@ function CardView({
 
           {/* Names/Types */}
           <div>
-            <div className="text-sm">{`${card.name[0]}: ${card.type[0]} | ${card.name[2]}: ${card.type[2]}`}</div>
-            <div className="text-sm">{`${card.name[1]}: ${card.type[1]} | ${card.name[3]}: ${card.type[3]}`}</div>
+            <div className="text-sm">{`${card.name[0]}: ${card.type[0]} | ${card.name[1]}: ${card.type[1]}`}</div>
+            <div className="text-sm">{`${card.name[2]}: ${card.type[2]} | ${card.name[3]}: ${card.type[3]}`}</div>
           </div>
           <div className="my-1">-----</div>
 
@@ -484,7 +486,7 @@ if (name === "Play Area" || name === "Blocked") {
         {displayCards.length > 0 ? (
           displayCards.map((c) => (
             <CardView
-              key={`${name}-${c.id}-${c.currentHalf}-${c.flipped}`}
+              key={`${name}-${c.id}-${c.currentSide}-${c.flipped}`}
               card={c}
               fromZone={name}
               onRightClick={onRightClick}
@@ -523,7 +525,7 @@ function CardPopup({
 
   // Side chooser
   const setSide = (half: number) => {
-    localCard.currentHalf = half;
+    localCard.currentSide = half;
     setLocalCard(cloneGameCard(localCard));
     setSelectedUpgradeIndex(null);
   };
@@ -534,15 +536,15 @@ function CardPopup({
 
   // add an option (empty) to current side
   const addOption = () => {
-    localCard.resources[localCard.currentHalf - 1].push({ ...emptyResource });
+    localCard.resources[localCard.currentSide - 1].push({ ...emptyResource });
     setLocalCard(cloneGameCard(localCard));
   };
 
   // remove option
   const removeOption = (optIdx: number) => {
-    localCard.resources[localCard.currentHalf - 1].splice(optIdx, 1);
-    if (localCard.resources[localCard.currentHalf - 1].length === 0) {
-      localCard.resources[localCard.currentHalf - 1].push({ ...emptyResource });
+    localCard.resources[localCard.currentSide - 1].splice(optIdx, 1);
+    if (localCard.resources[localCard.currentSide - 1].length === 0) {
+      localCard.resources[localCard.currentSide - 1].push({ ...emptyResource });
     }
     setLocalCard(cloneGameCard(localCard));
   };
@@ -550,7 +552,7 @@ function CardPopup({
   // -------------------
   // Checkbox editing helpers
   // -------------------
-  const currentSideIdx = localCard.currentHalf - 1;
+  const currentSideIdx = localCard.currentSide - 1;
   const currentCheckboxes = localCard.checkboxes?.[currentSideIdx] ?? [];
 
   const addCheckbox = () => {
@@ -564,7 +566,7 @@ function CardPopup({
   };
 
   const applyChanges = () => {
-    // 1) if an upgrade was selected, deduct its cost from global resources and set the card's currentHalf to nextSide
+    // 1) if an upgrade was selected, deduct its cost from global resources and set the card's currentSide to nextSide
     let appliedCard = cloneGameCard(localCard);
 
     if (selectedUpgradeIndex !== null && currentSideUpgrades[selectedUpgradeIndex]) {
@@ -581,7 +583,7 @@ function CardPopup({
         });
       }
       // set the card side to the upgrade nextSide
-      appliedCard.currentHalf = upg.nextSide;
+      appliedCard.currentSide = upg.nextSide;
     }
 
     appliedCard.resources = localCard.resources.map((side) => side.map((r) => ({ ...r })));
@@ -613,14 +615,14 @@ function CardPopup({
             <div className="flex gap-2">
               <Button
                 disabled={!localCard.name[0] || localCard.name[0].trim() === ""}
-                variant={localCard.currentHalf === 1 ? "default" : "secondary"}
+                variant={localCard.currentSide === 1 ? "default" : "secondary"}
                 onClick={() => setSide(1)}
               >
                 Up
               </Button>
               <Button
                 disabled={!localCard.name[1] || localCard.name[1].trim() === ""}
-                variant={localCard.currentHalf === 2 ? "default" : "secondary"}
+                variant={localCard.currentSide === 2 ? "default" : "secondary"}
                 onClick={() => setSide(2)}
               >
                 Down
@@ -634,14 +636,14 @@ function CardPopup({
             <div className="flex gap-2">
               <Button
                 disabled={!localCard.name[2] || localCard.name[2].trim() === ""}
-                variant={localCard.currentHalf === 3 ? "default" : "secondary"}
+                variant={localCard.currentSide === 3 ? "default" : "secondary"}
                 onClick={() => setSide(3)}
               >
                 Up
               </Button>
               <Button
                 disabled={!localCard.name[3] || localCard.name[3].trim() === ""}
-                variant={localCard.currentHalf === 4 ? "default" : "secondary"}
+                variant={localCard.currentSide === 4 ? "default" : "secondary"}
                 onClick={() => setSide(4)}
               >
                 Down
@@ -652,13 +654,13 @@ function CardPopup({
 
         {/* Effects section */}
         <div>
-          <h3 className="font-bold">Effect (for {sideLabel(localCard.currentHalf)})</h3>
+          <h3 className="font-bold">Effect (for {sideLabel(localCard.currentSide)})</h3>
           <textarea
             className="w-full border rounded p-2 text-sm"
             rows={3}
-            value={localCard.effects[localCard.currentHalf - 1] || ""}
+            value={localCard.effects[localCard.currentSide - 1] || ""}
             onChange={(e) => {
-              localCard.effects[localCard.currentHalf - 1] = e.target.value;
+              localCard.effects[localCard.currentSide - 1] = e.target.value;
               setLocalCard(cloneGameCard(localCard));
             }}
             placeholder="Enter effect text (use 'resources/gold' or 'effects/fire' for icons)"
@@ -668,7 +670,7 @@ function CardPopup({
         {/* Editable Resources: multiple options per side, show as list, allow add/remove */}
         <div>
           <div className="flex items-center justify-between">
-            <h3 className="font-bold">Resources (options for {sideLabel(localCard.currentHalf)})</h3>
+            <h3 className="font-bold">Resources (options for {sideLabel(localCard.currentSide)})</h3>
             <Button size="sm" onClick={addOption}>Add Option</Button>
           </div>
 
@@ -692,7 +694,7 @@ function CardPopup({
                       value={opt[key] || 0}
                       onChange={(e) => {
                         const val = parseInt(e.target.value || "0", 10) || 0;
-                        localCard.resources[localCard.currentHalf - 1][optIdx][key] = val;
+                        localCard.resources[localCard.currentSide - 1][optIdx][key] = val;
                         setLocalCard(cloneGameCard(localCard));
                       }}
                     />
@@ -706,7 +708,7 @@ function CardPopup({
         {/* Checkboxes editor for current side */}
         <div>
           <div className="flex items-center justify-between">
-            <h3 className="font-bold">Checkboxes (for {sideLabel(localCard.currentHalf)})</h3>
+            <h3 className="font-bold">Checkboxes (for {sideLabel(localCard.currentSide)})</h3>
             <div className="flex gap-2">
               <Button size="sm" onClick={addCheckbox}>Add Checkbox</Button>
             </div>
@@ -746,7 +748,7 @@ function CardPopup({
 
         {/* Upgrades for current side (clickable to select) */}
         <div>
-          <h3 className="font-bold">Upgrades ({sideLabel(localCard.currentHalf)})</h3>
+          <h3 className="font-bold">Upgrades ({sideLabel(localCard.currentSide)})</h3>
           {currentSideUpgrades.length === 0 ? (
             <div className="text-sm text-gray-400">No upgrades</div>
           ) : (
@@ -794,7 +796,6 @@ function CardPopup({
 
 export default function Game() {
   const [discard, setDiscard] = useState<GameCard[]>([]);
-  const [playArea, setPlayArea] = useState<GameCard[]>([]);
   const [blockedZone, setBlockedZone] = useState<GameCard[]>([]);
   const [permanentZone, setPermanentZone] = useState<GameCard[]>([]);
   const [popupCard, setPopupCard] = useState<PopupPayload | null>(null);
@@ -835,7 +836,15 @@ export default function Game() {
   );
 
   const [campaignDeck, setCampaignDeck] = useState<GameCard[]>(() =>
-    allCards.filter((c) => c.id > 10).map((c) => cloneGameCard(c))
+    allCards
+      .filter((c) => c.id > 10)
+      .map((c) => cloneGameCard(c))
+  );
+
+  const [playArea, setPlayArea] = useState<GameCard[]>(() =>
+    allCards
+      .filter((c) => c.id === 0)
+      .map((c) => cloneGameCard(c))
   );
 
   // -------------------
@@ -1407,7 +1416,7 @@ export default function Game() {
                   <div className="grid grid-cols-6 gap-2">
                     {discard.map((c) => (
                       <CardView
-                        key={`modal-${c.id}-${c.currentHalf}-${Math.random()}`}
+                        key={`modal-${c.id}-${c.currentSide}-${Math.random()}`}
                         card={c}
                         fromZone="Discard"
                         onRightClick={(x, zone) => setPopupCard({ originZone: zone, originalId: x.id, editable: cloneGameCard(x) })}
@@ -1479,7 +1488,7 @@ export default function Game() {
                   <div className="grid grid-cols-6 gap-2">
                     {deck.map((c) => (
                       <CardView
-                        key={`modal-${c.id}-${c.currentHalf}-${Math.random()}`}
+                        key={`modal-${c.id}-${c.currentSide}-${Math.random()}`}
                         card={c}
                         fromZone="Deck"
                         onRightClick={(x, zone) => setPopupCard({ originZone: zone, originalId: x.id, editable: cloneGameCard(x) })}
