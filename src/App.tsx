@@ -14,7 +14,6 @@ function cloneGameCard(src: GameCard): GameCard {
   // Default to 1 (Front Up) if currentSide is not set
   out.currentSide = src.currentSide || 1;
   out.type = [...src.type];
-  out.permanent = src.permanent;
   out.choice = src.choice;
   out.up = src.up;
   out.flipped = src.flipped;
