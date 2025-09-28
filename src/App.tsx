@@ -119,6 +119,8 @@ function CardView({
   fromZone,
   onRightClick,
   onTapAction,
+  onUpgrade,
+  onGainResources,
   onCardUpdate,
   interactable = true,
 }: {
@@ -126,6 +128,8 @@ function CardView({
   fromZone: string;
   onRightClick: (card: GameCard, zone: string) => void;
   onTapAction?: (card: GameCard, zone: string) => void;
+  onUpgrade?: (card: GameCard, upgrade: any, zone: string) => void;
+  onGainResources?: (card: GameCard, resources: any, zone: string) => void;
   onCardUpdate?: (updatedCard: GameCard, zone: string) => void;
   interactable?: boolean;
 }) {
@@ -323,8 +327,8 @@ function CardView({
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      if (!interactable) return;
-                      // Logique pour ce groupe de ressources
+                      if (!interactable || ! onGainResources) return;
+                      onGainResources(card, opt, fromZone);
                     }}
                     className="text-[10px] px-2 py-1 border rounded bg-white flex items-center gap-1 hover:bg-gray-100 transition"
                   >
@@ -346,11 +350,8 @@ function CardView({
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    if (!interactable) return;
-                    if (onCardUpdate){
-                      card.currentSide = upg.nextSide;
-                      onCardUpdate(card, fromZone);
-                    }
+                    if (!interactable || !onUpgrade) return;
+                    onUpgrade(card, upg, fromZone);
                   }}
                   className="text-[10px] px-2 py-1 border rounded bg-white flex items-center gap-1 hover:bg-gray-100 transition"
                 >
@@ -455,6 +456,8 @@ function Zone({
   cards,
   onDrop,
   onRightClick,
+  onUpgrade,
+  onGainResources,
   onCardUpdate,
   showAll = true,
   interactable = true,
@@ -464,6 +467,8 @@ function Zone({
   cards: GameCard[];
   onDrop: (payload: { id: number; fromZone: string }) => void;
   onRightClick: (c: GameCard, zone: string) => void;
+  onUpgrade?: (card: GameCard, upgrade: any, zone: string) => void;
+  onGainResources?: (card: GameCard, resources: any, zone: string) => void;
   onCardUpdate?: (updatedCard: GameCard, zone: string) => void;
   showAll?: boolean;
   interactable?: boolean;
@@ -497,15 +502,15 @@ if (name === "Play Area" || name === "Blocked") {
 } else if (name === "Permanent") {
   // Permanent zone: 3 cards per row grid layout
   containerClass = "grid gap-2";
-  gridTemplate = "repeat(3, minmax(200px, 1fr))"; // was 140px
+  gridTemplate = "repeat(3, minmax(200px, 1fr))";
 } else {
   // Default: responsive grid for mobile
   const cols = Math.min(6, displayCards.length || 1);
-  gridTemplate = `repeat(${cols}, minmax(200px, 1fr))`; // was 140px
+  gridTemplate = `repeat(${cols}, minmax(200px, 1fr))`;
 }
 
   return (
-    <div ref={ref} className="p-2 border rounded min-h-[120px]" style={{background: "linear-gradient(to top left, #ebebebff, #ecececff)"}}>
+    <div ref={ref} className="p-2 border rounded min-h-[130px]" style={{background: "linear-gradient(to top left, #ebebebff, #ecececff)"}}>
       <h2 className="text-lg font-bold">{name}</h2>
       <div
         className={containerClass}
@@ -520,6 +525,8 @@ if (name === "Play Area" || name === "Blocked") {
               onRightClick={onRightClick}
               interactable={interactable}
               onTapAction={onTapAction}
+              onUpgrade={onUpgrade}
+              onGainResources={onGainResources}
               onCardUpdate={onCardUpdate}
             />
           ))
@@ -584,16 +591,6 @@ function CardPopup({
   const currentSideIdx = localCard.currentSide - 1;
   const currentCheckboxes = localCard.checkboxes?.[currentSideIdx] ?? [];
 
-  const addCheckbox = () => {
-    if (!localCard.checkboxes) localCard.checkboxes = [[],[],[],[]];
-    localCard.checkboxes[currentSideIdx].push({ content: "", checked: false });
-    setLocalCard(cloneGameCard(localCard));
-  };
-  const removeCheckbox = (idx: number) => {
-    localCard.checkboxes[currentSideIdx].splice(idx, 1);
-    setLocalCard(cloneGameCard(localCard));
-  };
-
   const applyChanges = () => {
     // 1) if an upgrade was selected, deduct its cost from global resources and set the card's currentSide to nextSide
     let appliedCard = cloneGameCard(localCard);
@@ -637,11 +634,17 @@ function CardPopup({
         <h2 className="font-bold">{localCard.GetName()}</h2>
 
         {/* Side chooser (4 sides) */}
-        <div className="flex flex-col gap-4">
-          {/* Front */}
-          <div>
-            <h3 className="font-bold mb-2">Front</h3>
-            <div className="flex gap-2">
+        <div className="flex flex-col gap-2">
+          {/* Titres sur une seule ligne */}
+          <div className="flex">
+            <h3 className="font-bold flex-1 text-left">Front</h3>
+            <h3 className="font-bold flex-1 text-left-center">Back</h3>
+          </div>
+
+          {/* Boutons alignés en dessous */}
+          <div className="flex">
+            {/* Front buttons */}
+            <div className="flex gap-2 flex-1 justify-start">
               <Button
                 disabled={!localCard.name[0] || localCard.name[0].trim() === ""}
                 variant={localCard.currentSide === 1 ? "default" : "secondary"}
@@ -657,12 +660,9 @@ function CardPopup({
                 Down
               </Button>
             </div>
-          </div>
 
-          {/* Back */}
-          <div>
-            <h3 className="font-bold mb-2">Back</h3>
-            <div className="flex gap-2">
+            {/* Back buttons */}
+            <div className="flex gap-2 flex-1 justify-left-center">
               <Button
                 disabled={!localCard.name[2] || localCard.name[2].trim() === ""}
                 variant={localCard.currentSide === 3 ? "default" : "secondary"}
@@ -738,9 +738,6 @@ function CardPopup({
         <div>
           <div className="flex items-center justify-between">
             <h3 className="font-bold">Checkboxes (for {sideLabel(localCard.currentSide)})</h3>
-            <div className="flex gap-2">
-              <Button size="sm" onClick={addCheckbox}>Add Checkbox</Button>
-            </div>
           </div>
 
           {currentCheckboxes.length === 0 && <div className="text-sm text-gray-400">No checkboxes</div>}
@@ -766,10 +763,6 @@ function CardPopup({
                   }}
                   placeholder="'*' or comma-separated resource keys (e.g. gold,silver)"
                 />
-              </div>
-
-              <div className="flex items-center gap-2">
-                <Button size="sm" onClick={() => removeCheckbox(idx)}>Remove</Button>
               </div>
             </div>
           ))}
@@ -840,6 +833,9 @@ export default function Game() {
   const [cityNameInput, setCityNameInput] = useState("");
   const [selectedKingdom, setSelectedKingdom] = useState("New Kingdom");
 
+  const [hasUpgradedCard, setHasUpgradedCard] = useState(false);
+  const [hasEndedBaseGame, setHasEndedBaseGame] = useState(false);
+
   const updateResource = (key: keyof ResourceMap, delta: number) => {
     setResources((r) => ({ ...r, [key]: r[key] + delta }));
   };
@@ -901,14 +897,14 @@ export default function Game() {
       if ("fame" in prev) (reset as any).fame = (prev as any).fame;
       return reset;
     });
+
+    setHasUpgradedCard(false);
   };
 
-  const actions = [
-    { label: "New Turn", onClick: () => drawNewTurn() },
-    { label: "Progress", onClick: () => progress() },
-    { label: "Pass", onClick: () => discardEndTurn() },
-    { label: "Shuffle Deck", onClick: () => shuffleDeck() },
-  ];
+  const handleEndBaseGame = () => {
+    discardEndTurn();
+    setHasEndedBaseGame(true);
+  };
 
   // -------------------
   // Drag & Drop Handlers
@@ -1045,8 +1041,7 @@ export default function Game() {
   }
 
   // -------------------
-  // Tap action: when user taps a card (mobile), attempt to toggle the selected checkbox for that card's current side.
-  // If there are no checkboxes, fallback to opening the popup editor.
+  // Tap actions (pop up, upgrade, resources, etc...)
   // -------------------
   const handleTapAction = (card: GameCard, zone: string) => {
     setPopupCard({ 
@@ -1054,6 +1049,78 @@ export default function Game() {
       originalId: card.id, 
       editable: cloneGameCard(card) 
     });
+  };
+
+  const handleUpgrade = (card: GameCard, upg: any, zone: string) => {
+    if (upg.cost) {
+      // Vérifier si les ressources sont suffisantes
+      const hasEnough = Object.entries(upg.cost).every(([k, v]) => {
+        const key = k as keyof ResourceMap;
+        return (resources[key] || 0) >= (Number(v) || 0);
+      });
+
+      if (!hasEnough) {
+        console.warn("Pas assez de ressources pour cet upgrade");
+        return; // On sort, pas d'upgrade
+      }
+
+      // Déduire les ressources
+      setResources((prev) => {
+        const next = { ...prev };
+        Object.entries(upg.cost).forEach(([k, v]) => {
+          const key = k as keyof ResourceMap;
+          next[key] = (Number(next[key]) || 0) - (Number(v) || 0);
+        });
+        return next;
+      });
+    }
+
+    // Switch side
+    const upgraded = cloneGameCard(card);
+    upgraded.currentSide = upg.nextSide;
+
+    if (zone === "Play Area") {
+      // Remove from play area
+      setPlayArea((prev) => prev.filter((c) => c.id !== card.id));
+      // Add upgraded card to discard
+      setDiscard((prev) => [...prev, upgraded]);
+    } else {
+      // Default behavior: just replace in the same zone
+      replaceCardInZone(zone, card.id, upgraded);
+    }
+
+    setHasUpgradedCard(true);
+  };
+
+  const handleGainResources = (card: GameCard, resources: any, zone: string) => {
+    let onlyFame = true;
+
+    if (resources) {
+      setResources((prev) => {
+        const next = { ...prev };
+        Object.entries(resources).forEach(([k, v]) => {
+          const key = k as keyof ResourceMap;
+          if(key !== "fame" && Number(v) != 0){
+            onlyFame = false;
+            next[key] = (Number(next[key]) || 0) + (Number(v) || 0);
+          }
+        });
+        return next;
+      });
+    }
+    if(onlyFame) {
+      return;
+    }
+
+    if (zone === "Play Area") {
+      // Remove from play area
+      setPlayArea((prev) => prev.filter((c) => c.id !== card.id));
+      // Add upgraded card to discard
+      setDiscard((prev) => [...prev, card]);
+    } else {
+      // Default behavior: just replace in the same zone
+      replaceCardInZone(zone, card.id, card);
+    }
   };
 
   const handleCardUpdate = (updatedCard: GameCard, zone: string) => {
@@ -1245,6 +1312,8 @@ export default function Game() {
               onRightClick={(c, zone) => setPopupCard({ originZone: zone, originalId: c.id, editable: cloneGameCard(c) })}
               onTapAction={handleTapAction}
               onCardUpdate={handleCardUpdate}
+              onUpgrade={handleUpgrade}
+              onGainResources={handleGainResources}
             />
           </div>
 
@@ -1263,14 +1332,17 @@ export default function Game() {
 
         {/* Action Buttons (with Shuffle next to End Round) */}
         <div className="space-x-2">
-          {actions.map((a, i) => (
-            <Button key={i} onClick={a.onClick}>{a.label}</Button>
-          ))}
+          <Button onClick={drawNewTurn}>{"New Turn"}</Button>
+          <Button onClick={discardEndTurn}>{"Pass"}</Button>
+          <Button onClick={progress} disabled={hasUpgradedCard}>{"Progress"}</Button>
           {/* Conditionnal controls */}
           <Button disabled={deck.length > 0} className="bg-red-600 hover:bg-red-500 text-white" onClick={handleEndRound}>End Round</Button>
+          {/* Manual actions */}
+          <Button onClick={shuffleDeck} className="bg-blue-600 hover:bg-blue-500 text-white">{"Shuffle Deck"}</Button>
           {/* Hidden controls */}
           <Button hidden={campaignDeck.some(card => card.id === 95) && campaignDeck.some(card => card.id === 110)} className="bg-green-600 hover:bg-green-500 text-white" onClick={handleTopDiscardToBottom}>Top Discard to Bottom Deck</Button>
           <Button hidden={campaignDeck.some(card => card.id === 98)} className="bg-green-600 hover:bg-green-500 text-white" onClick={handleShuffle15Rand}>Shuffle 15 Rand</Button>
+          <Button hidden={hasEndedBaseGame || campaignDeck.some(card => card.id === 70)} disabled={deck.length > 0} className="bg-red-600 hover:bg-red-500 text-white" onClick={handleEndBaseGame}>End Base Game</Button>
         </div>
 
         {/* Resource Pool */}
