@@ -119,12 +119,14 @@ function CardView({
   fromZone,
   onRightClick,
   onTapAction,
+  onCardUpdate,
   interactable = true,
 }: {
   card: GameCard;
   fromZone: string;
   onRightClick: (card: GameCard, zone: string) => void;
   onTapAction?: (card: GameCard, zone: string) => void;
+  onCardUpdate?: (updatedCard: GameCard, zone: string) => void;
   interactable?: boolean;
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -345,7 +347,10 @@ function CardView({
                     e.preventDefault();
                     e.stopPropagation();
                     if (!interactable) return;
-                    card.currentSide = upg.nextSide;
+                    if (onCardUpdate){
+                      card.currentSide = upg.nextSide;
+                      onCardUpdate(card, fromZone);
+                    }
                   }}
                   className="text-[10px] px-2 py-1 border rounded bg-white flex items-center gap-1 hover:bg-gray-100 transition"
                 >
@@ -376,7 +381,10 @@ function CardView({
                   onClick={(ev) => {
                     ev.stopPropagation();
                     if (!interactable) return;
-                    box.checked = !box.checked;
+                    if (onCardUpdate) {
+                      box.checked = !box.checked;
+                      onCardUpdate(card, fromZone);
+                    }
                   }}
                   className={`w-7 h-7 border rounded flex items-center justify-center p-1 text-[10px] ${
                     box.checked ? "bg-green-100 border-green-400" : "bg-white border-gray-300"
@@ -447,6 +455,7 @@ function Zone({
   cards,
   onDrop,
   onRightClick,
+  onCardUpdate,
   showAll = true,
   interactable = true,
   onTapAction,
@@ -455,6 +464,7 @@ function Zone({
   cards: GameCard[];
   onDrop: (payload: { id: number; fromZone: string }) => void;
   onRightClick: (c: GameCard, zone: string) => void;
+  onCardUpdate?: (updatedCard: GameCard, zone: string) => void;
   showAll?: boolean;
   interactable?: boolean;
   onTapAction?: (card: GameCard, zone: string) => void;
@@ -510,6 +520,7 @@ if (name === "Play Area" || name === "Blocked") {
               onRightClick={onRightClick}
               interactable={interactable}
               onTapAction={onTapAction}
+              onCardUpdate={onCardUpdate}
             />
           ))
         ) : (
@@ -1045,6 +1056,10 @@ export default function Game() {
     });
   };
 
+  const handleCardUpdate = (updatedCard: GameCard, zone: string) => {
+    replaceCardInZone(zone, updatedCard.id, updatedCard);
+  };
+
   // -------------------
   // Save / Load (by city name) -> stored in localStorage
   // -------------------
@@ -1209,6 +1224,7 @@ export default function Game() {
                 onDrop={(p) => dropToDestroy(p)}
                 onRightClick={() => {}}
                 onTapAction={undefined}
+                onCardUpdate={undefined}
               />
             </div>
           </div>
@@ -1228,6 +1244,7 @@ export default function Game() {
               onDrop={(p) => dropToPlayArea(p)}
               onRightClick={(c, zone) => setPopupCard({ originZone: zone, originalId: c.id, editable: cloneGameCard(c) })}
               onTapAction={handleTapAction}
+              onCardUpdate={handleCardUpdate}
             />
           </div>
 
@@ -1258,7 +1275,6 @@ export default function Game() {
 
         {/* Resource Pool */}
         <div>
-          <h2 className="text-lg font-bold">Resources</h2>
           <div className="grid grid-cols-7 sm:grid-cols-7 lg:grid-cols-7 gap-2 sm:gap-3 lg:gap-4 min-w-240 max-h-0">
             {RESOURCE_KEYS.map((key) => (
               <div key={key} className="flex flex-col items-center gap-2 p-2 bg-white rounded-lg min-w-0">
