@@ -28,6 +28,13 @@ export const RESOURCE_KEYS: (keyof ResourceMap)[] = [
   "fame"
 ];
 
+export const EFFECT_KEYWORDS = [
+  "effects/time",
+  "effects/activate",
+  "effects/optional",
+  "effects/oneTime"
+];
+
 export const TYPE_COLORS: Record<string, string> = {
   Maritime: "#a7bed3",   // muted blue
   Navire: "#a7bed3",   // muted blue

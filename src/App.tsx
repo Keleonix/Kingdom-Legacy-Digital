@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { emptyResource, GameCard, RESOURCE_KEYS, TYPE_COLORS, type ResourceMap, type PopupPayload } from "./types";
+import { emptyResource, GameCard, RESOURCE_KEYS, EFFECT_KEYWORDS, TYPE_COLORS, type ResourceMap, type PopupPayload } from "./types";
 import { allCards } from "./cards";
 
 // deep-clone preserving prototype/methods
@@ -53,30 +53,6 @@ function sideLabel(side: number) {
 }
 
 // -------------------
-// Helper to render effect string as icons
-// -------------------
-function renderEffect(effect: string) {
-  return effect.split(" ").map((word, idx) => {
-    if (word.startsWith("resources/") || word.startsWith("effects/")) {
-      return (
-        <img
-          key={idx}
-          src={word.concat(".png")}
-          alt={word}
-          className="inline w-4 h-4 mx-0.5"
-        />
-      );
-    } else {
-      return (
-        <span key={idx} className="inline">
-          {word}{" "}
-        </span>
-      );
-    }
-  });
-}
-
-// -------------------
 // Helper to render background card color
 // -------------------
 function getBackgroundStyle(card: GameCard, sideIdx: number) {
@@ -109,11 +85,9 @@ function getBackgroundStyle(card: GameCard, sideIdx: number) {
   return {};
 }
 
-
 // -------------------
 // Card View Component
 // -------------------
-
 function CardView({
   card,
   fromZone,
@@ -262,6 +236,106 @@ function CardView({
     );
   }
 
+  function parseEffects(raw: string) {
+    if (!raw) return { before: "", effects: [] as string[] };
+
+    // On repère toutes les occurrences de keywords
+    const pattern = new RegExp(
+      `(${EFFECT_KEYWORDS.join("|")})`,
+      "g"
+    );
+
+    let match: RegExpExecArray | null;
+
+    // On stocke les débuts d’effet via les matches successifs
+    const indices: number[] = [];
+    while ((match = pattern.exec(raw)) !== null) {
+      indices.push(match.index);
+    }
+
+    if (indices.length === 0) {
+      return { before: raw.trim(), effects: [] };
+    }
+
+    // Le texte avant le premier effet
+    const before = raw.slice(0, indices[0]).trim();
+
+    // Chaque effet commence à un index trouvé,
+    // et se termine juste avant l'index suivant ou la fin
+    const effects: string[] = [];
+    for (let i = 0; i < indices.length; i++) {
+      const start = indices[i];
+      const end = i < indices.length - 1 ? indices[i + 1] : raw.length;
+      const chunk = raw.slice(start, end).trim();
+
+      // On coupe un effet au premier "." OU ")" final
+      // pour éviter d'inclure un effet suivant
+      const stop = chunk.search(/[.)](?!.*[.)])/);
+      if (stop !== -1) {
+        effects.push(chunk.slice(0, stop + 1).trim());
+      } else {
+        effects.push(chunk);
+      }
+    }
+
+    return { before, effects };
+  }
+
+  function renderEffectText(effect: string) {
+    return effect.split(/(\s+)/).map((part, idx) => {
+      if (/^\s+$/.test(part)) {
+        return <span key={idx}>{part}</span>;
+      }
+
+      if (part.startsWith("resources/") || part.startsWith("effects/")) {
+        return (
+          <img
+            key={idx}
+            src={part.concat(".png")}
+            alt={part}
+            className="inline w-4 h-4 mx-0.5"
+          />
+        );
+      }
+
+      return (
+        <span key={idx} className="inline">
+          {part}
+        </span>
+      );
+    });
+  }
+
+  function renderEffect(raw: string) {
+    const { before, effects } = parseEffects(raw);
+
+    return (
+      <div className="flex flex-col gap-1">
+        {/* Texte avant les effets */}
+        {before && (
+          <div className="text-sm">
+            {renderEffectText(before)} {/* <-- rendu avec icones si besoin */}
+          </div>
+        )}
+
+        {/* Un bouton par effet détecté */}
+        {effects.map((eff, idx) => (
+          <button
+            key={idx}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              console.log("Effet déclenché :", eff);
+            }}
+            className="text-[10px] px-2 py-1 border rounded bg-white hover:bg-gray-100 transition text-left w-full whitespace-pre-wrap flex flex-wrap justify-center"
+          >
+            {renderEffectText(eff)} {/* ⬅ icônes affichées ici */}
+          </button>
+        ))}
+      </div>
+    );
+  }
+
   const currentSideIdx = (card.currentSide || 1) - 1;
   const sideCheckboxes = card.checkboxes?.[currentSideIdx] ?? [];
 
@@ -311,7 +385,7 @@ function CardView({
                 return [
                     <div key={`${idx}-${k}`} className="flex items-center gap-1">
                       <img src={resourceIconPath(k)} alt={k} title={`${k} x${count}`} className="w-4 h-4" />
-                      {count !== 0 && <span className="text-xs">x{count}</span>}
+                      {count !== 1 && <span className="text-xs">x{count}</span>}
                     </div>
                 ];
               });
@@ -336,10 +410,12 @@ function CardView({
                   </button>
                 </div>
               );
-            }).filter(Boolean)} {/* Filtrer les éléments null */}
+            }).filter(Boolean)}
           </div>
 
-          {effect && <div className="mb-2 text-sm line-clamp-5">{renderEffect(effect)}</div>}
+          <div className="mt-2">
+            {effect && <div className="mb-2 text-sm line-clamp-5">{renderEffect(effect)}</div>}
+          </div>
 
           {/* Upgrades */}
           <div className="mt-2">
@@ -359,8 +435,7 @@ function CardView({
                     {upg.cost ? (
                       Object.entries(upg.cost).map(([k, v]) => (
                         <span key={k} className="flex items-center gap-1 text-[11px]">
-                          {v}
-                          <img src={resourceIconPath(k as keyof ResourceMap)} alt={k} className="w-3 h-3" />
+                          <img src={resourceIconPath(k as keyof ResourceMap)} alt={k} className="w-3 h-3" />x{v}
                         </span>
                       ))
                     ) : (
@@ -404,7 +479,7 @@ function CardView({
       {showPreview && (
         <div 
           ref={previewRef}
-          className="fixed z-50 w-64 p-2 border rounded bg-white shadow-lg"
+          className="fixed z-50 w-64 p-2 border rounded bg-white shadow-lg pointer-events-none"
           style={{
             top: `${previewPosition.top}px`,
             left: `${previewPosition.left}px`
@@ -435,7 +510,7 @@ function CardView({
 
           {/* Effects per side */}
           <div className="my-1">-----</div>
-          {card.effects?.map((eff: any, idx: number) => (
+          {card.effects?.map((eff, idx) => (
             <div key={idx}>
               {idx > 0 && <div className="my-1">-----</div>}
               <div className="text-xs mt-1">{renderEffect(eff)}</div>
@@ -450,7 +525,6 @@ function CardView({
 // -------------------
 // Drop Zone Component
 // -------------------
-
 function Zone({
   name,
   cards,
@@ -543,7 +617,6 @@ if (name === "Play Area" || name === "Blocked") {
 // -------------------
 // Card Popup Component
 // -------------------
-
 function CardPopup({
   payload,
   close,
@@ -591,6 +664,18 @@ function CardPopup({
   const currentSideIdx = localCard.currentSide - 1;
   const currentCheckboxes = localCard.checkboxes?.[currentSideIdx] ?? [];
 
+  // -------------------
+  // Upgrade cost editing helpers
+  // -------------------
+  const updateUpgradeCost = (upgradeIdx: number, resourceKey: keyof ResourceMap, value: number) => {
+    const upg = localCard.upgrades[currentSideIdx][upgradeIdx];
+    if (!upg.cost) {
+      upg.cost = {};
+    }
+    upg.cost[resourceKey] = value;
+    setLocalCard(cloneGameCard(localCard));
+  };
+
   const applyChanges = () => {
     // 1) if an upgrade was selected, deduct its cost from global resources and set the card's currentSide to nextSide
     let appliedCard = cloneGameCard(localCard);
@@ -617,6 +702,7 @@ function CardPopup({
     appliedCard.upgrades = localCard.upgrades.map((arr) =>
       arr.map((u) => ({ cost: u.cost ? { ...u.cost } : null, nextSide: u.nextSide }))
     );
+    appliedCard.name = [...localCard.name]; // Persist name changes
 
     // persist checkboxes
     appliedCard.checkboxes = localCard.checkboxes?.map((side: any) => side.map((c: any) => ({ ...c }))) ?? [[],[],[],[]];
@@ -632,6 +718,30 @@ function CardPopup({
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[60]">
       <div className="bg-white p-4 rounded-xl space-y-4 max-w-3xl relative max-h-[80vh] overflow-y-auto">
         <h2 className="font-bold">{localCard.GetName()}</h2>
+
+        {/* Éditeur de noms pour chaque face */}
+        <div>
+          <h3 className="font-bold">Card Names</h3>
+          <div className="grid grid-cols-2 gap-2">
+            {[1, 2, 3, 4].map((sideNum) => (
+              <div key={sideNum} className="flex flex-col gap-1">
+                <label className="text-sm font-medium">
+                  {sideNum <= 2 ? 'Front' : 'Back'} - {sideNum % 2 === 1 ? 'Up' : 'Down'}
+                </label>
+                <input
+                  type="text"
+                  className="border rounded px-2 py-1 text-sm"
+                  value={localCard.name[sideNum - 1] || ""}
+                  onChange={(e) => {
+                    localCard.name[sideNum - 1] = e.target.value;
+                    setLocalCard(cloneGameCard(localCard));
+                  }}
+                  placeholder={`Name for side ${sideNum}`}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
 
         {/* Side chooser (4 sides) */}
         <div className="flex flex-col gap-2">
@@ -768,7 +878,7 @@ function CardPopup({
           ))}
         </div>
 
-        {/* Upgrades for current side (clickable to select) */}
+        {/* Upgrades for current side (éditable) */}
         <div>
           <h3 className="font-bold">Upgrades ({sideLabel(localCard.currentSide)})</h3>
           {currentSideUpgrades.length === 0 ? (
@@ -779,24 +889,48 @@ function CardPopup({
               return (
                 <div
                   key={idx}
-                  className={`flex items-center gap-2 text-sm p-2 border rounded cursor-pointer ${
+                  className={`border rounded p-3 my-2 ${
                     selected ? "bg-blue-100 border-blue-400" : "bg-white"
                   }`}
-                  onClick={() => setSelectedUpgradeIndex(selected ? null : idx)}
                 >
-                  <div className="flex items-center gap-2">
-                    {upg.cost ? (
-                      Object.entries(upg.cost).map(([k, v]) => (
-                        <span key={k} className="flex items-center gap-1 text-[13px]">
-                          {v}
-                          <img src={resourceIconPath(k as keyof ResourceMap)} alt={k} className="w-4 h-4 inline" />
-                        </span>
-                      ))
-                    ) : (
-                      <span>No cost</span>
-                    )}
+                  {/* Header avec sélection */}
+                  <div
+                    className="flex items-center justify-between cursor-pointer mb-2"
+                    onClick={() => setSelectedUpgradeIndex(selected ? null : idx)}
+                  >
+                    <div className="font-medium text-sm">Upgrade {idx + 1}</div>
+                    <div className="text-xs text-gray-600">
+                      {selected ? "✓ Selected" : "Click to select"}
+                    </div>
                   </div>
-                  <div>→ {sideLabel(upg.nextSide)}</div>
+
+                  {/* Éditeur de coût */}
+                  <div className="mb-2">
+                    <div className="text-xs font-medium mb-1">Cost:</div>
+                    <div className="grid grid-cols-3 gap-2">
+                      {RESOURCE_KEYS.map((key) => (
+                        <div key={key} className="flex items-center gap-1">
+                          <img src={resourceIconPath(key)} alt={key} className="w-4 h-4" />
+                          <input
+                            type="number"
+                            className="w-16 text-center border rounded text-sm"
+                            value={upg.cost?.[key] || 0}
+                            onChange={(e) => {
+                              const val = parseInt(e.target.value || "0", 10) || 0;
+                              updateUpgradeCost(idx, key, val);
+                            }}
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Sélecteur de face cible */}
+                  <div>
+                    <div className="text-xs font-medium mb-1">Upgrades to:</div>
+                    {sideLabel(upg.nextSide)}: {localCard.name[upg.nextSide - 1] || 'Unnamed'}
+                  </div>
                 </div>
               );
             })
@@ -836,10 +970,6 @@ export default function Game() {
   const [hasUpgradedCard, setHasUpgradedCard] = useState(false);
   const [hasEndedBaseGame, setHasEndedBaseGame] = useState(false);
 
-  const updateResource = (key: keyof ResourceMap, delta: number) => {
-    setResources((r) => ({ ...r, [key]: r[key] + delta }));
-  };
-
   // -------------------
   // Init
   // -------------------
@@ -875,6 +1005,10 @@ export default function Game() {
   // -------------------
   // Game Phases
   // -------------------
+  const updateResource = (key: keyof ResourceMap, delta: number) => {
+    setResources((r) => ({ ...r, [key]: r[key] + delta }));
+  };
+
   const draw = (nbCards: number) => {
     const drawn = deck.slice(0, nbCards);
     setPlayArea((p) => [...p, ...drawn.map(cloneGameCard)]);
@@ -982,7 +1116,6 @@ export default function Game() {
     setShowEndRound(true);
   };
 
-  // Shuffle deck (Fisher-Yates)
   const shuffleDeck = () => {
     setDeck((prev) => {
       const arr = [...prev];
@@ -1037,6 +1170,22 @@ export default function Game() {
       setBlockedZone((b) => b.map((card) => (card.id === id ? cloneGameCard(newCard) : card)));
     } else if (zone === "Permanent") {
       setPermanentZone((pe) => pe.map((card) => (card.id === id ? cloneGameCard(newCard) : card)));
+    }
+  }
+
+  function deleteCardInZone(zone: string, id: number): void {
+    if (zone === "Deck") {
+      setDeck((d) => d.filter((c) => c.id !== id));
+    } else if (zone === "Play Area") {
+      setPlayArea((p) => p.filter((c) => c.id !== id));
+    } else if (zone === "Discard") {
+      setDiscard((f) => f.filter((c) => c.id !== id));
+    } else if (zone === "Campaign") {
+      setCampaignDeck((c) => c.filter((card) => card.id !== id));
+    } else if (zone === "Blocked") {
+      setBlockedZone((b) => b.filter((card) => card.id !== id));
+    } else if (zone === "Permanent") {
+      setPermanentZone((pe) => pe.filter((card) => card.id !== id));
     }
   }
 
@@ -1112,15 +1261,8 @@ export default function Game() {
       return;
     }
 
-    if (zone === "Play Area") {
-      // Remove from play area
-      setPlayArea((prev) => prev.filter((c) => c.id !== card.id));
-      // Add upgraded card to discard
-      setDiscard((prev) => [...prev, card]);
-    } else {
-      // Default behavior: just replace in the same zone
-      replaceCardInZone(zone, card.id, card);
-    }
+    deleteCardInZone(zone, card.id);
+    setDiscard((prev) => [...prev, card]);
   };
 
   const handleCardUpdate = (updatedCard: GameCard, zone: string) => {
@@ -1128,7 +1270,7 @@ export default function Game() {
   };
 
   // -------------------
-  // Save / Load (by city name) -> stored in localStorage
+  // Memory management
   // -------------------
   const saveGame = (name: string) => {
     if (!name) return alert("Please give a name for this save.");
@@ -1150,7 +1292,6 @@ export default function Game() {
       alert("Failed to save: " + e);
     }
   };
-
 
   const loadGame = (name: string) => {
     if (!name) return alert("Please provide the name of a save to load.");
@@ -1184,7 +1325,6 @@ export default function Game() {
     }
   };
 
-  // Ajoutez cette fonction avant le return de votre composant Game
   const getSavedKingdoms = () => {
     const kingdoms = [];
     for (let i = 0; i < localStorage.length; i++) {
@@ -1279,6 +1419,7 @@ export default function Game() {
                 onDrop={(p) => dropToPermanent(p)}
                 onRightClick={(c, zone) => setPopupCard({ originZone: zone, originalId: c.id, editable: cloneGameCard(c) })}
                 onTapAction={handleTapAction}
+                onCardUpdate={handleCardUpdate}
                 interactable={true}
               />
             </div>
@@ -1325,6 +1466,9 @@ export default function Game() {
               onDrop={(p) => dropToBlocked(p)}
               onRightClick={(c, zone) => setPopupCard({ originZone: zone, originalId: c.id, editable: cloneGameCard(c) })}
               onTapAction={handleTapAction}
+              onCardUpdate={handleCardUpdate}
+              onUpgrade={handleUpgrade}
+              onGainResources={handleGainResources}
               interactable={true}
             />
           </div>

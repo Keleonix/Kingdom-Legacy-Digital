@@ -1528,11 +1528,11 @@ export const allCards: GameCard[] = [
     effects: [
       "effects/time Découvrez l'Ecole (118).",
       "effects/activate Gagnez resources/gold par Personne en jeu.",
-      "effects/activate Défaussez une Personne pour découvrir un Etranger (92).",
       "effects/activate Découvrez les Quêtes (87).",
+      "effects/activate Défaussez une Personne pour découvrir un Etranger (92).",
     ],
     upgrades: [
-      [{ cost: { gold: 1, wood: 3 }, nextSide: 3 }],
+      [{ cost: { gold: 1, wood: 3 }, nextSide: 2 }],
       [{ cost: { gold: 1, wood: 1, stone: 1 }, nextSide: 4 }],
       [],
       [{ cost: { gold: 2, wood: 2, export: 2 }, nextSide: 3 }],
@@ -6409,10 +6409,10 @@ export const allCards: GameCard[] = [
       "effects/passive Dépensez resources/military resources/military resources/military resources/military resources/military  pour ignorer 1 resources/military du coup d'amélioration. Lorsque vous l'améliorez, ajoutez 20 resources/fame à l'étape finale (Back Up).",
     ],
     upgrades: [
-      [ { cost: { military: 2 }, nextSide: 2 } ],
-      [ { cost: { military: 3 }, nextSide: 4 } ],
+      [ { cost: { military: 12 }, nextSide: 2 } ],
+      [ { cost: { military: 9 }, nextSide: 4 } ],
       [],
-      [ { cost: { military: 5 }, nextSide: 3 } ],
+      [ { cost: { military: 8 }, nextSide: 3 } ],
     ],
     currentSide: 1,
     type: ["Terrain - Ennemi", "Evénement", "Terrain", "Terrain"],
