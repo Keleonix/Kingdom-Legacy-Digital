@@ -27,7 +27,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -49,16 +49,16 @@ export const allCards: GameCard[] = [
     name: ["Herbes Sauvages", "Plaines", "Grange", "Terres Cultivées"],
     resources: [
       [
-        { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 }
+        { gold: 1 }
       ],
       [
-        { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 }
+        { gold: 1 }
       ],
       [
-        { gold: 2, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 3 }
+        { gold: 2, fame: 3 }
       ],
       [
-        { gold: 2, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 }
+        { gold: 2 }
       ],
     ],
     effects: [
@@ -78,7 +78,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -100,16 +100,16 @@ export const allCards: GameCard[] = [
     name: ["Herbes Sauvages", "Plaines", "Grange", "Terres Cultivées"],
     resources: [
       [
-        { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 }
+        { gold: 1 }
       ],
       [
-        { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 }
+        { gold: 1 }
       ],
       [
-        { gold: 2, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 3 }
+        { gold: 2, fame: 3 }
       ],
       [
-        { gold: 2, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 }
+        { gold: 2 }
       ],
     ],
     effects: [
@@ -129,7 +129,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -151,16 +151,16 @@ export const allCards: GameCard[] = [
     name: ["Herbes Sauvages", "Plaines", "Grange", "Terres Cultivées"],
     resources: [
       [
-        { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 }
+        { gold: 1 }
       ],
       [
-        { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 }
+        { gold: 1 }
       ],
       [
-        { gold: 2, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 3 }
+        { gold: 2, fame: 3 }
       ],
       [
-        { gold: 2, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 }
+        { gold: 2 }
       ],
     ],
     effects: [
@@ -180,7 +180,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -202,16 +202,16 @@ export const allCards: GameCard[] = [
     name: ["Herbes Sauvages", "Plaines", "Grange", "Terres Cultivées"],
     resources: [
       [
-        { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 }
+        { gold: 1 }
       ],
       [
-        { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 }
+        { gold: 1 }
       ],
       [
-        { gold: 2, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 3 }
+        { gold: 2, fame: 3 }
       ],
       [
-        { gold: 2, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 }
+        { gold: 2 }
       ],
     ],
     effects: [
@@ -231,7 +231,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -253,16 +253,16 @@ export const allCards: GameCard[] = [
     name: ["Montagnes Lointaines", "Zone Rocheuse", "Mine Profonde", "Carrière"],
     resources: [
       [
-        { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 }
+        { gold: 1 }
       ],
       [
-        { gold: 0, wood: 0, stone: 1, military: 0, ingot: 0, export: 0, fame: 0 }
+        { stone: 1 }
       ],
       [
-        { gold: 0, wood: 0, stone: 1, military: 0, ingot: 1, export: 0, fame: 3 }
+        { stone: 1, ingot: 1, fame: 3 }
       ],
       [
-        { gold: 0, wood: 0, stone: 2, military: 0, ingot: 0, export: 0, fame: 0 }
+        { stone: 2 }
       ],
     ],
     effects: [
@@ -282,7 +282,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -304,16 +304,16 @@ export const allCards: GameCard[] = [
     name: ["Montagnes Lointaines", "Zone Rocheuse", "Mine Profonde", "Carrière"],
     resources: [
       [
-        { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 }
+        { gold: 1 }
       ],
       [
-        { gold: 0, wood: 0, stone: 1, military: 0, ingot: 0, export: 0, fame: 0 }
+        { stone: 1 }
       ],
       [
-        { gold: 0, wood: 0, stone: 1, military: 0, ingot: 1, export: 0, fame: 3 }
+        { stone: 1, ingot: 1, fame: 3 }
       ],
       [
-        { gold: 0, wood: 0, stone: 2, military: 0, ingot: 0, export: 0, fame: 0 }
+        { stone: 2 }
       ],
     ],
     effects: [
@@ -333,7 +333,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -355,14 +355,14 @@ export const allCards: GameCard[] = [
     name: ["Forêt", "Coupe Rase", "Puit Sacré", "Cabane de Bûcheron"],
     resources: [
       [
-        { gold: 0, wood: 1, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 }
+        { wood: 1 }
       ],
       [{ ...emptyResource }],
       [
-        { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 2 }
+        { gold: 1, fame: 2 }
       ],
       [
-        { gold: 0, wood: 2, stone: 0, military: 0, ingot: 0, export: 0, fame: 2 }
+        { wood: 2, fame: 2 }
       ],
     ],
     effects: [
@@ -382,7 +382,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -404,14 +404,14 @@ export const allCards: GameCard[] = [
     name: ["Forêt", "Coupe Rase", "Puit Sacré", "Cabane de Bûcheron"],
     resources: [
       [
-        { gold: 0, wood: 1, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 }
+        { wood: 1 }
       ],
       [{ ...emptyResource }],
       [
-        { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 2 }
+        { gold: 1, fame: 2 }
       ],
       [
-        { gold: 0, wood: 2, stone: 0, military: 0, ingot: 0, export: 0, fame: 2 }
+        { wood: 2, fame: 2 }
       ],
     ],
     effects: [
@@ -431,7 +431,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -453,16 +453,16 @@ export const allCards: GameCard[] = [
     name: ["Quartier Général", "Hôtel de Ville", "Château", "Donjon"],
     resources: [
       [
-        { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 }
+        { gold: 1 }
       ],
       [
-        { gold: 0, wood: 0, stone: 0, military: 1, ingot: 0, export: 0, fame: 3 }
+        { military: 1, fame: 3 }
       ],
       [
-        { gold: 0, wood: 0, stone: 0, military: 1, ingot: 0, export: 0, fame: 12 }
+        { military: 1, fame: 12 }
       ],
       [
-        { gold: 0, wood: 0, stone: 0, military: 1, ingot: 0, export: 0, fame: 7 }
+        { military: 1, fame: 7 }
       ],
     ],
     effects: [
@@ -482,7 +482,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -505,16 +505,16 @@ export const allCards: GameCard[] = [
     resources: [
       [{ ...emptyResource }],
       [
-        { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 1 }
+        { fame: 1 }
       ],
       [
-        { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 },
-        { gold: 0, wood: 1, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 },
-        { gold: 0, wood: 0, stone: 1, military: 0, ingot: 0, export: 0, fame: 0 },
-        { gold: 0, wood: 0, stone: 0, military: 0, ingot: 1, export: 0, fame: 4 }
+        { gold: 1 },
+        { wood: 1 },
+        { stone: 1 },
+        { ingot: 1, fame: 4 }
       ],
       [
-        { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 3 }
+        { fame: 3 }
       ],
     ],
     effects: [
@@ -534,7 +534,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -557,13 +557,13 @@ export const allCards: GameCard[] = [
     resources: [
       [{ ...emptyResource }],
       [
-        { gold: 0, wood: 1, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 }
+        { wood: 1 }
       ],
       [
-        { gold: 1, wood: 2, stone: 0, military: 0, ingot: 0, export: 0, fame: 4 }
+        { gold: 1, wood: 2, fame: 4 }
       ],
       [
-        { gold: 0, wood: 2, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 }
+        { wood: 2 }
       ],
     ],
     effects: [
@@ -583,7 +583,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -605,16 +605,16 @@ export const allCards: GameCard[] = [
     name: ["Rivière", "Pont", "Explorateurs", "Pont de Pierre"],
     resources: [
       [
-        { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 }
+        { gold: 1 }
       ],
       [
-        { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 2 }
+        { gold: 1, fame: 2 }
       ],
       [
-        { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 4 }
+        { gold: 1, fame: 4 }
       ],
       [
-        { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 4 }
+        { gold: 1, fame: 4 }
       ],
     ],
     effects: [
@@ -634,7 +634,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -677,7 +677,7 @@ export const allCards: GameCard[] = [
     choice: true,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -698,7 +698,7 @@ export const allCards: GameCard[] = [
     id: 14,
     name: ["Bandit", "", "Travailleur", ""],
     resources: [
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: -2 } ],
+      [ { fame: -2 } ],
       [{ ...emptyResource }],
       [{ ...emptyResource }],
       [{ ...emptyResource }],
@@ -720,7 +720,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -742,16 +742,16 @@ export const allCards: GameCard[] = [
     name: ["Montagnes Lointaines", "Zone Rocheuse", "Mine Profonde", "Carrière"],
     resources: [
       [
-        { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 }
+        { gold: 1 }
       ],
       [
-        { gold: 0, wood: 0, stone: 1, military: 0, ingot: 0, export: 0, fame: 0 }
+        { stone: 1 }
       ],
       [
-        { gold: 0, wood: 0, stone: 1, military: 0, ingot: 1, export: 0, fame: 3 }
+        { stone: 1, ingot: 1, fame: 3 }
       ],
       [
-        { gold: 0, wood: 0, stone: 2, military: 0, ingot: 0, export: 0, fame: 0 }
+        { stone: 2 }
       ],
     ],
     effects: [
@@ -771,7 +771,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -792,7 +792,7 @@ export const allCards: GameCard[] = [
     id: 16,
     name: ["Bandit", "", "Exploitant", ""],
     resources: [
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: -2 } ],
+      [ { fame: -2 } ],
       [{ ...emptyResource }],
       [{ ...emptyResource }],
       [{ ...emptyResource }],
@@ -814,7 +814,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -835,10 +835,10 @@ export const allCards: GameCard[] = [
     id: 17,
     name: ["Colline", "Chappelle", "Cathédrale", "Eglise"],
     resources: [
-      [ { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 } ],
-      [ { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 1 } ],
-      [ { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 7 } ],
-      [ { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 3 } ],
+      [ { gold: 1 } ],
+      [ { gold: 1, fame: 1 } ],
+      [ { gold: 1, fame: 7 } ],
+      [ { gold: 1, fame: 3 } ],
     ],
     effects: [
       "",
@@ -857,7 +857,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -878,10 +878,10 @@ export const allCards: GameCard[] = [
     id: 18,
     name: ["Falaise de l'Est", "Forge", "Muraille", "Armurerie"],
     resources: [
-      [ { gold: 0, wood: 0, stone: 1, military: 0, ingot: 0, export: 0, fame: 0 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 1, export: 0, fame: 1 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 1, ingot: 0, export: 0, fame: 3 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 1, export: 0, fame: 4 } ],
+      [ { stone: 1 } ],
+      [ { ingot: 1, fame: 1 } ],
+      [ { military: 1, fame: 3 } ],
+      [ { ingot: 1, fame: 4 } ],
     ],
     effects: [
       "",
@@ -902,7 +902,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -924,14 +924,14 @@ export const allCards: GameCard[] = [
     name: ["Forêt", "Coupe Rase", "Puit Sacré", "Cabane de Bûcheron"],
     resources: [
       [
-        { gold: 0, wood: 1, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 }
+        { wood: 1 }
       ],
       [{ ...emptyResource }],
       [
-        { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 2 }
+        { gold: 1, fame: 2 }
       ],
       [
-        { gold: 0, wood: 2, stone: 0, military: 0, ingot: 0, export: 0, fame: 2 }
+        { wood: 2, fame: 2 }
       ],
     ],
     effects: [
@@ -951,7 +951,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -973,9 +973,9 @@ export const allCards: GameCard[] = [
     name: ["Marais", "Marais Aménagés", "Arbres à Fruits Exotiques", "Jardin du Marais"],
     resources: [
       [{ ...emptyResource }],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 1 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 2, fame: 4 } ],
-      [ { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 3 } ],
+      [ { fame: 1 } ],
+      [ { export: 2, fame: 4 } ],
+      [ { gold: 1, fame: 3 } ],
     ],
     effects: [
       "",
@@ -994,7 +994,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -1016,9 +1016,9 @@ export const allCards: GameCard[] = [
     name: ["Marais", "Marais Aménagés", "Arbres à Fruits Exotiques", "Jardin du Marais"],
     resources: [
       [{ ...emptyResource }],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 1 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 2, fame: 4 } ],
-      [ { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 3 } ],
+      [ { fame: 1 } ],
+      [ { export: 2, fame: 4 } ],
+      [ { gold: 1, fame: 3 } ],
     ],
     effects: [
       "",
@@ -1037,7 +1037,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -1058,10 +1058,10 @@ export const allCards: GameCard[] = [
     id: 22,
     name: ["Lac", "Chalet du Pêcheur", "Phare", "Bateau de Pêche"],
     resources: [
-      [ { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 1 } ],
-      [ { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 1 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 5 } ],
-      [ { gold: 2, wood: 0, stone: 0, military: 0, ingot: 0, export: 2, fame: 1 } ],
+      [ { gold: 1, fame: 1 } ],
+      [ { gold: 1, fame: 1 } ],
+      [ { fame: 5 } ],
+      [ { gold: 2, export: 2, fame: 1 } ],
     ],
     effects: [
       "",
@@ -1080,7 +1080,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -1101,10 +1101,10 @@ export const allCards: GameCard[] = [
     id: 23,
     name: ["STOP !", "", "", ""],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
+      [],
+      [],
+      [],
+      [],
     ],
     effects: [
       "Découvrez les cartes 24 à 27.",
@@ -1123,7 +1123,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -1144,10 +1144,10 @@ export const allCards: GameCard[] = [
     id: 24,
     name: ["Terre Fertile/Efficacité", "", "", ""],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
+      [],
+      [],
+      [],
+      [],
     ],
     effects: [
       "Ajoutez 1 resources/gold à la production d'un terrain. Puis choisissez un Bâtiment et rajoutez 1 à une ressource qu'il produit déjà.",
@@ -1166,7 +1166,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -1187,10 +1187,10 @@ export const allCards: GameCard[] = [
     id: 25,
     name: ["Armée", "", "Grande Armée", ""],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 50 } ],
-      [ { ...emptyResource } ],
+      [],
+      [],
+      [ { fame: 50 } ],
+      [],
     ],
     effects: [
       "effects/time dépensez les resources/military (1 à 10, incrément de 1) pour cocher la case de gauche à droite. A la dernière carte, Face UP et découvrez l'Etat Vassal (135).",
@@ -1251,10 +1251,10 @@ export const allCards: GameCard[] = [
     id: 26,
     name: ["Trésor", "", "Immense Trésor", ""],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 50 } ],
-      [ { ...emptyResource } ],
+      [],
+      [],
+      [ { fame: 50 } ],
+      [],
     ],
     effects: [
       "effects/time dépensez les resources/gold (1 à 12, incrément de 1) pour cocher la case de gauche à droite. A la dernière carte, Back Up.",
@@ -1317,10 +1317,10 @@ export const allCards: GameCard[] = [
     id: 27,
     name: ["Exportations", "", "Exportations de Masse", ""],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 25 } ],
-      [ { ...emptyResource } ],
+      [],
+      [],
+      [ { fame: 25 } ],
+      [],
     ],
     effects: [
       "effects/passive dépensez des resources/export . 10: Ajoutez resources/gold / resources/wood / resources/stone sur un Terrain. 20: Un Personnage gagne \" effects/passive Reste en jeu.\". 30 Découvrez Adoubement (80). 40: Ajoutez resources/ingot / resources/military / resources/export sur 1 Bâtiment. 55: Ajoutez resources/wood / resources/stone / resources/ingot / resources/military sur une carte. 75: Ajoutez resources/fame x5 sur une carte. 100: Face Up.",
@@ -1381,9 +1381,9 @@ export const allCards: GameCard[] = [
     id: 28,
     name: ["Eruption Volcanique", "", "Terres Brulées", "Jeune Forêt"],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: -2 } ],
+      [],
+      [],
+      [ { fame: -2 } ],
       [ { ...emptyResource }  ],
     ],
     effects: [
@@ -1434,10 +1434,10 @@ export const allCards: GameCard[] = [
     id: 29,
     name: ["Opportuniste", "Recrue", "Artisan", "Prétendu Noble"],
     resources: [
-      [ { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 1, ingot: 0, export: 0, fame: 0 } ],
-      [ { gold: 0, wood: 0, stone: 1, military: 0, ingot: 0, export: 0, fame: 0 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 4 } ],
+      [ { gold: 1 } ],
+      [ { military: 1 } ],
+      [ { stone: 1 } ],
+      [ { fame: 4 } ],
     ],
     effects: [
       "",
@@ -1456,7 +1456,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -1477,10 +1477,10 @@ export const allCards: GameCard[] = [
     id: 30,
     name: ["STOP !", "", "", ""],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
+      [],
+      [],
+      [],
+      [],
     ],
     effects: [
       "Découvrez les cartes 31 à 34, choisissez-en 2 à découvrir et détruisez les 2 autres.",
@@ -1499,7 +1499,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -1520,10 +1520,10 @@ export const allCards: GameCard[] = [
     id: 31,
     name: ["Entrepreneur", "Hôtel", "Taverne", "Bar Confortable"],
     resources: [
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 1, fame: 0 } ],
-      [ { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 1, fame: 2 } ],
-      [ { gold: 2, wood: 0, stone: 0, military: 0, ingot: 0, export: 2, fame: 4 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 2, fame: 2 } ],
+      [ { export: 1 } ],
+      [ { gold: 1, export: 1, fame: 2 } ],
+      [ { gold: 2, export: 2, fame: 4 } ],
+      [ { export: 2, fame: 2 } ],
     ],
     effects: [
       "effects/time Découvrez l'Ecole (118).",
@@ -1542,7 +1542,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -1563,10 +1563,10 @@ export const allCards: GameCard[] = [
     id: 32,
     name: ["Scientifique", "", "Observatoire", "Laboratoire"],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 1, fame: 5 } ],
-      [ { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 2, fame: 10 } ],
+      [],
+      [],
+      [ { gold: 1, export: 1, fame: 5 } ],
+      [ { gold: 1, export: 2, fame: 10 } ],
     ],
     effects: [
       "effects/passive Toutes les Personnes, Scientifique inclus, produisent +1 resources/gold .",
@@ -1585,7 +1585,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -1606,10 +1606,10 @@ export const allCards: GameCard[] = [
     id: 33,
     name: ["Ingénieur", "", "Trébuchet", ""],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 1, ingot: 0, export: 0, fame: 1 } ],
-      [ { ...emptyResource } ],
+      [],
+      [],
+      [ { military: 1, fame: 1 } ],
+      [],
     ],
     effects: [
       "effects/activate Détruisez l'une des cartes suivantes: Cabane de Bûcheron - découvrez (100). Grange - découvrez (101). Bâteau de pêche - découvrez (102).",
@@ -1628,7 +1628,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -1649,10 +1649,10 @@ export const allCards: GameCard[] = [
     id: 34,
     name: ["Inventrice", "", "Inventrice Inspirée", ""],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
+      [],
+      [],
+      [],
+      [],
     ],
     effects: [
       "Vaut 5 resources/fame par effects/check .",
@@ -1701,16 +1701,16 @@ export const allCards: GameCard[] = [
     name: ["Montagnes Lointaines", "Zone Rocheuse", "Mine Profonde", "Carrière"],
     resources: [
       [
-        { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 }
+        { gold: 1 }
       ],
       [
-        { gold: 0, wood: 0, stone: 1, military: 0, ingot: 0, export: 0, fame: 0 }
+        { stone: 1 }
       ],
       [
-        { gold: 0, wood: 0, stone: 1, military: 0, ingot: 1, export: 0, fame: 3 }
+        { stone: 1, ingot: 1, fame: 3 }
       ],
       [
-        { gold: 0, wood: 0, stone: 2, military: 0, ingot: 0, export: 0, fame: 0 }
+        { stone: 2 }
       ],
     ],
     effects: [
@@ -1730,7 +1730,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -1751,10 +1751,10 @@ export const allCards: GameCard[] = [
     id: 36,
     name: ["Mercenaire", "", "Sir __", ""],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 1, ingot: 0, export: 0, fame: 3 } ],
-      [ { ...emptyResource } ],
+      [],
+      [],
+      [ { military: 1, fame: 3 } ],
+      [],
     ],
     effects: [
       "effects/activate Dépensez resources/gold resources/gold pour ajouter 1 ou deux effects/check .",
@@ -1808,10 +1808,10 @@ export const allCards: GameCard[] = [
     id: 37,
     name: ["STOP !", "", "", ""],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
+      [],
+      [],
+      [],
+      [],
     ],
     effects: [
       "Découvrez les cartes 38 à 42. Choisissez le côté des cartes Objectif.",
@@ -1830,7 +1830,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -1851,10 +1851,10 @@ export const allCards: GameCard[] = [
     id: 38,
     name: ["L'Union fait la Force", "", "Domination Militaire", ""],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
+      [],
+      [],
+      [],
+      [],
     ],
     effects: [
       "Vaut 2 resources/fame par Personne.",
@@ -1873,7 +1873,7 @@ export const allCards: GameCard[] = [
     choice: true,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -1894,10 +1894,10 @@ export const allCards: GameCard[] = [
     id: 39,
     name: ["Elargir les frontières", "", "Optimisation", ""],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
+      [],
+      [],
+      [],
+      [],
     ],
     effects: [
       "Votre royaume doit comprendre 70 cartes ou plus (hors permanentes). Cette carte vaut -2 resources/fame pour chaque carte manquante.",
@@ -1916,7 +1916,7 @@ export const allCards: GameCard[] = [
     choice: true,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -1937,10 +1937,10 @@ export const allCards: GameCard[] = [
     id: 40,
     name: ["Loyauté", "", "Commerce", ""],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
+      [],
+      [],
+      [],
+      [],
     ],
     effects: [
       "Vaut 35 resources/fame s'il n'y a plus d'ennemi dans votre royaume.",
@@ -1959,7 +1959,7 @@ export const allCards: GameCard[] = [
     choice: true,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -1980,10 +1980,10 @@ export const allCards: GameCard[] = [
     id: 41,
     name: ["Bouffon", "", "Marchande", ""],
     resources: [
-      [ { gold: 0, wood: 0, stone: 1, military: 0, ingot: 0, export: 0, fame: 0 } ],
-      [ { ...emptyResource } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 15 } ],
-      [ { ...emptyResource } ],
+      [ { stone: 1 } ],
+      [],
+      [ { fame: 15 } ],
+      [],
     ],
     effects: [
       "effects/passive Reste en jeu. effects/activate Défaussez la carte au sommet de votre pioche. effects/activate Ajoutez 1 effects/check .",
@@ -2062,10 +2062,10 @@ export const allCards: GameCard[] = [
     id: 42,
     name: ["Exploitant", "", "Grenier", ""],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
+      [],
+      [],
+      [],
+      [],
     ],
     effects: [
       "effects/activate Choisissez un Terrain en jeu. Gagnez les ressources qui correspondent à sa production.",
@@ -2084,7 +2084,7 @@ export const allCards: GameCard[] = [
     choice: true,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -2105,10 +2105,10 @@ export const allCards: GameCard[] = [
     id: 43,
     name: ["Maçon", "", "Route Pavée", "Rue Pavée"],
     resources: [
-      [ { gold: 0, wood: 0, stone: 1, military: 0, ingot: 0, export: 0, fame: 0 } ],
-      [ { ...emptyResource } ],
-      [ { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 7 } ],
-      [ { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 3 } ],
+      [ { stone: 1 } ],
+      [],
+      [ { gold: 1, fame: 7 } ],
+      [ { gold: 1, fame: 3 } ],
     ],
     effects: [
       "effects/activate Dépensez resources/gold resources/gold pour découvrir un projet de bâtiment (88/89).",
@@ -2127,7 +2127,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -2148,10 +2148,10 @@ export const allCards: GameCard[] = [
     id: 44,
     name: ["Orage", "", "Pluie", ""],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
+      [],
+      [],
+      [],
+      [],
     ],
     effects: [
       "effects/forced Carte jouée: défaussez les 3 premières cartes de votre pioche, puis -> (Back Up).",
@@ -2170,7 +2170,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -2191,10 +2191,10 @@ export const allCards: GameCard[] = [
     id: 45,
     name: ["Chevalier Noir", "", "Garçon Admiratif", "Ecuyer"],
     resources: [
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: -3 } ],
-      [ { ...emptyResource } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 1, ingot: 0, export: 0, fame: 3 } ],
+      [ { fame: -3 } ],
+      [],
+      [ { gold: 0 } ],
+      [ { military: 1, fame: 3 } ],
     ],
     effects: [
       "effects/passive Vous ne pouvez ni jouer, ni améliorer, de cartes, ni même utiliser les effets effects/time . effects/activate Dépensez resources/military resources/military resources/military pour vaincre (-> Back Up).",
@@ -2213,7 +2213,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -2234,10 +2234,10 @@ export const allCards: GameCard[] = [
     id: 46,
     name: ["Camp", "Camp d'Entrainement", "", "Sir __"],
     resources: [
-      [ { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 1 } ],
-      [ { ...emptyResource } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 2, ingot: 0, export: 0, fame: 3 } ],
+      [ { gold: 1 } ],
+      [ { fame: 1 } ],
+      [],
+      [ { military: 2, fame: 3 } ],
     ],
     effects: [
       "",
@@ -2256,7 +2256,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -2277,10 +2277,10 @@ export const allCards: GameCard[] = [
     id: 47,
     name: ["STOP !", "", "", ""],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
+      [],
+      [],
+      [],
+      [],
     ],
     effects: [
       "Découvrez les cartes 48 à 51. Découvrez-en 2 et détruisez les 2 autres.",
@@ -2299,7 +2299,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -2320,10 +2320,10 @@ export const allCards: GameCard[] = [
     id: 48,
     name: ["Envoyé", "Emissaire", "Ambassadeur", "Diplomate"],
     resources: [
-      [ { ...emptyResource } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 1 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 5 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 2 } ],
+      [],
+      [ { fame: 1 } ],
+      [ { fame: 5 } ],
+      [ { fame: 2 } ],
     ],
     effects: [
       "effects/time Dépensez resources/gold resources/gold resources/gold pour découvrir une Commerçante (119).",
@@ -2342,7 +2342,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -2363,10 +2363,10 @@ export const allCards: GameCard[] = [
     id: 49,
     name: ["Architecte Royal", "", "Pont des Merveilles", ""],
     resources: [
-      [ { gold: 0, wood: 0, stone: 1, military: 0, ingot: 0, export: 0, fame: 0 } ],
-      [ { ...emptyResource } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 15 } ],
-      [ { ...emptyResource } ],
+      [ { stone: 1 } ],
+      [],
+      [ { fame: 15 } ],
+      [],
     ],
     effects: [
       "(Améliorer: Détruisez Pont (Back Up) -> Back Up) effects/activate Détruisez l'une des cartes suivantes: Quartier Général (Back Up) - découvrez (123). Mine (Back Up) - découvrez (124). Autel (Back Up) - découvrez (125). ",
@@ -2385,7 +2385,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -2406,10 +2406,10 @@ export const allCards: GameCard[] = [
     id: 50,
     name: ["Voyageur", "Voyageur", "Voyageur", "Voyageur"],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
+      [],
+      [],
+      [],
+      [],
     ],
     effects: [
       "effects/time Découvrez un Terrain (126).",
@@ -2428,7 +2428,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -2449,10 +2449,10 @@ export const allCards: GameCard[] = [
     id: 51,
     name: ["Magistrat", "Magistrat", "Magistrat", "Stratège"],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 5 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 2 } ],
+      [],
+      [],
+      [ { fame: 5 } ],
+      [ { fame: 2 } ],
     ],
     effects: [
       "effects/time Découvrez une Frontière (130).",
@@ -2471,7 +2471,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -2492,10 +2492,10 @@ export const allCards: GameCard[] = [
     id: 52,
     name: ["Grosse Butte", "Hameau sur la Colline", "Village Culminant", "Village"],
     resources: [
-      [ { ...emptyResource } ],
-      [ { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 1 } ],
-      [ { gold: 2, wood: 0, stone: 0, military: 0, ingot: 0, export: 1, fame: 6 } ],
-      [ { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 2 } ],
+      [],
+      [ { gold: 1, fame: 1 } ],
+      [ { gold: 2, export: 1, fame: 6 } ],
+      [ { gold: 1, fame: 2 } ],
     ],
     effects: [
       "",
@@ -2514,7 +2514,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -2535,10 +2535,10 @@ export const allCards: GameCard[] = [
     id: 53,
     name: ["Sorcière", "", "Hutte de la Sorcière", ""],
     resources: [
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: -3 } ],
-      [ { ...emptyResource } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: -2 } ],
-      [ { ...emptyResource } ],
+      [ { fame: -3 } ],
+      [],
+      [ { fame: -2 } ],
+      [],
     ],
     effects: [
       "effects/activate Dépensez resources/military resources/military resources/military pour vaincre ( effects/destroy ). effects/activate Défaussez 3 Personnes pour -> (Back Up). effects/forced Fin du tour: Découvrez les 2 prochaines cartes de la boîte, puis -> (Back Up).",
@@ -2557,7 +2557,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -2578,10 +2578,10 @@ export const allCards: GameCard[] = [
     id: 54,
     name: ["Scribe", "", "Architecte", ""],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { gold: 0, wood: 0, stone: 1, military: 0, ingot: 0, export: 0, fame: 0 } ],
-      [ { ...emptyResource } ],
+      [],
+      [],
+      [ { stone: 1 } ],
+      [],
     ],
     effects: [
       "effects/optional Fin du tour: Défaussez pour que 1 ou 2 autres cartes restent en jeu.",
@@ -2600,7 +2600,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -2621,10 +2621,10 @@ export const allCards: GameCard[] = [
     id: 55,
     name: ["Lord Aethan", "", "Lord Nimrod", ""],
     resources: [
-      [ { gold: 1, wood: 1, stone: 1, military: 0, ingot: 0, export: 0, fame: 0 } ],
-      [ { ...emptyResource } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 1, ingot: 0, export: 0, fame: 0 } ],
-      [ { ...emptyResource } ],
+      [ { gold: 1, wood: 1, stone: 1 } ],
+      [],
+      [ { military: 1 } ],
+      [],
     ],
     effects: [
       "effects/activate Découvrez la Coopération (80) ou le Domaine (81). effects/passive Ajoutez 1 effects/check .",
@@ -2687,10 +2687,10 @@ export const allCards: GameCard[] = [
     id: 56,
     name: ["Peste", "", "Soldat Ennemi", ""],
     resources: [
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: -2 } ],
-      [ { ...emptyResource } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: -2 } ],
-      [ { ...emptyResource } ],
+      [ { fame: -2 } ],
+      [],
+      [ { fame: -2 } ],
+      [],
     ],
     effects: [
       "effects/passive Reste en jeu. effects/forced Fin de Manche: Détruisez 2 Personnes de votre royaume. Puis -> (Back Front).",
@@ -2709,7 +2709,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -2730,10 +2730,10 @@ export const allCards: GameCard[] = [
     id: 57,
     name: ["Assassin", "", "Soldat Ennemi", ""],
     resources: [
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: -2 } ],
-      [ { ...emptyResource } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: -2 } ],
-      [ { ...emptyResource } ],
+      [ { fame: -2 } ],
+      [],
+      [ { fame: -2 } ],
+      [],
     ],
     effects: [
       "effects/forced Détruisez la prochaine Personne que vous jouez. Lorsque vous le faites, -> (Back Front). effects/activate Dépensez resources/military resources/military resources/military pour vaincre (-> Back Up).",
@@ -2752,7 +2752,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -2773,9 +2773,9 @@ export const allCards: GameCard[] = [
     id: 58,
     name: ["Ville en Flamme", "", "Terre Brûlée", "Jeune Forêt"],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: -2 } ],
+      [],
+      [],
+      [ { fame: -2 } ],
       [ { ...emptyResource }  ],
     ],
     effects: [
@@ -2826,10 +2826,10 @@ export const allCards: GameCard[] = [
     id: 59,
     name: ["Grotte Mystérieuse", "Souterrains", "Trésor", "Civilisation Oubliée"],
     resources: [
-      [ { ...emptyResource } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 2 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 8 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 5 } ],
+      [],
+      [ { fame: 2 } ],
+      [ { fame: 8 } ],
+      [ { fame: 5 } ],
     ],
     effects: [
       "Améliorer: Défausser 1 Personne (Front Down).",
@@ -2848,7 +2848,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -2869,10 +2869,10 @@ export const allCards: GameCard[] = [
     id: 60,
     name: ["Bandit d'Elite", "", "Travailleur", ""],
     resources: [
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: -5 } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
+      [ { fame: -5 } ],
+      [],
+      [],
+      [],
     ],
     effects: [
       "effects/forced Carte jouée: Bloque 3 cartes avec une production. effects/activate Dépensez resources/military resources/military resources/military pour vaincre ( effects/destroy ) et gagner 3 ressources au choix. (Peut être -> (Front Up) par un Missionaire)",
@@ -2891,7 +2891,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -2912,10 +2912,10 @@ export const allCards: GameCard[] = [
     id: 61,
     name: ["Prince des Ténèbres", "", "Garçon Admiratif", "Ecuyer"],
     resources: [
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: -7 } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 3 } ],
+      [ { fame: -7 } ],
+      [],
+      [],
+      [ { fame: 3 } ],
     ],
     effects: [
       "effects/passive Vous ne pouvez ni jouer, ni améliorer de cartes, ni utiliser effects/time . effects/activate Dépensez resources/military resources/military resources/military resources/military resources/military pour vaincre (-> Back Up).",
@@ -2934,7 +2934,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -2955,10 +2955,10 @@ export const allCards: GameCard[] = [
     id: 62,
     name: ["Camp", "Camp d'entrainement", "Sir __", ""],
     resources: [
-      [ { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 1 } ],
-      [ { ...emptyResource } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 2, ingot: 0, export: 0, fame: 3 } ],
+      [ { gold: 1 } ],
+      [ { fame: 1 } ],
+      [],
+      [ { military: 2, fame: 3 } ],
     ],
     effects: [
       "",
@@ -2977,7 +2977,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -2999,16 +2999,16 @@ export const allCards: GameCard[] = [
     name: ["Terres Lointaines", "Auberge", "Muraille", "Aubergiste"],
     resources: [
       [
-        { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 }
+        { gold: 1 }
       ],
       [
-        { gold: 2, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 2 }
+        { gold: 2, fame: 2 }
       ],
       [
-        { gold: 0, wood: 0, stone: 0, military: 1, ingot: 0, export: 0, fame: 3 }
+        { military: 1, fame: 3 }
       ],
       [
-        { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 3 }
+        { fame: 3 }
       ],
     ],
     effects: [
@@ -3028,7 +3028,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -3049,10 +3049,10 @@ export const allCards: GameCard[] = [
     id: 64,
     name: ["Bandit d'Elite", "", "Exploitant", ""],
     resources: [
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: -5 } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
+      [ { fame: -5 } ],
+      [],
+      [],
+      [],
     ],
     effects: [
       "effects/forced Carte jouée: Bloque 3 cartes avec une production. effects/activate Dépensez resources/military resources/military resources/military pour vaincre ( effects/destroy ) et gagner 3 ressources au choix. (Peut être -> (Front Up) par un Missionaire)",
@@ -3071,7 +3071,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -3092,10 +3092,10 @@ export const allCards: GameCard[] = [
     id: 65,
     name: ["Tornade", "", "Innodations", ""],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
+      [],
+      [],
+      [],
+      [],
     ],
     effects: [
       "effects/passive Reste en jeu. effects/forced Fin de Manche: Détruisez 3 cartez alliées du royaume. Puis -> (Back Up).",
@@ -3114,7 +3114,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -3135,10 +3135,10 @@ export const allCards: GameCard[] = [
     id: 66,
     name: ["Jeune Princesse", "Princesse Pourrie Gâtée", "Princesse Bien Elevée", ""],
     resources: [
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 2 } ],
-      [ { ...emptyResource } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 8 } ],
-      [ { ...emptyResource } ],
+      [ { fame: 2 } ],
+      [],
+      [ { fame: 8 } ],
+      [],
     ],
     effects: [
       "Améliorer: Défaussez 2 Personnes, 2 Terrains et 2 Bâtiments -> (Back Up). effects/forced Fin du Tour: Défaussez 2 Personnes ou Front Down.",
@@ -3157,7 +3157,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -3178,10 +3178,10 @@ export const allCards: GameCard[] = [
     id: 67,
     name: ["Maladie", "Diminué", "Festin", ""],
     resources: [
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: -8 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: -2 } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
+      [ { fame: -8 } ],
+      [ { fame: -2 } ],
+      [],
+      [],
     ],
     effects: [
       "effects/forced Carte Jouée: Défaussez la prochaine carte de votre pioche.",
@@ -3203,7 +3203,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -3224,10 +3224,10 @@ export const allCards: GameCard[] = [
     id: 68,
     name: ["STOP !", "", "", ""],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
+      [],
+      [],
+      [],
+      [],
     ],
     effects: [
       "Découvrez les cartes 69 et 70. A la fin de la manche comptez votre resources/fame (Fin du jeu).",
@@ -3246,7 +3246,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -3267,10 +3267,10 @@ export const allCards: GameCard[] = [
     id: 69,
     name: ["Touche Finale", "", "Banquet", ""],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
+      [],
+      [],
+      [],
+      [],
     ],
     effects: [
       "effects/destroy Ajoutez resources/export et resources/fame x5 à une carte en jeu.",
@@ -3289,7 +3289,7 @@ export const allCards: GameCard[] = [
     choice: true,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -3310,10 +3310,10 @@ export const allCards: GameCard[] = [
     id: 70,
     name: ["Visite Royale", "", "Inquisitrice", ""],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 } ],
-      [ { ...emptyResource } ],
+      [],
+      [],
+      [ { gold: 1 } ],
+      [],
     ],
     effects: [
       "effects/activate Barrez 1 icône de ressource dans le coût d'amélioration d'une carte en jeu.",
@@ -3332,7 +3332,7 @@ export const allCards: GameCard[] = [
     choice: true,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -3354,16 +3354,16 @@ export const allCards: GameCard[] = [
     name: ["Montagnes Lointaines", "Zone Rocheuse", "Mine Profonde", "Carrière"],
     resources: [
       [
-        { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 }
+        { gold: 1 }
       ],
       [
-        { gold: 0, wood: 0, stone: 1, military: 0, ingot: 0, export: 0, fame: 0 }
+        { stone: 1 }
       ],
       [
-        { gold: 0, wood: 0, stone: 1, military: 0, ingot: 1, export: 0, fame: 3 }
+        { stone: 1, ingot: 1, fame: 3 }
       ],
       [
-        { gold: 0, wood: 0, stone: 2, military: 0, ingot: 0, export: 0, fame: 0 }
+        { stone: 2 }
       ],
     ],
     effects: [
@@ -3383,7 +3383,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -3405,14 +3405,14 @@ export const allCards: GameCard[] = [
     name: ["Forêt", "Coupe Rase", "Puit Sacré", "Cabane de Bûcheron"],
     resources: [
       [
-        { gold: 0, wood: 1, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 }
+        { wood: 1 }
       ],
       [{ ...emptyResource }],
       [
-        { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 2 }
+        { gold: 1, fame: 2 }
       ],
       [
-        { gold: 0, wood: 2, stone: 0, military: 0, ingot: 0, export: 0, fame: 2 }
+        { wood: 2, fame: 2 }
       ],
     ],
     effects: [
@@ -3432,7 +3432,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -3454,12 +3454,12 @@ export const allCards: GameCard[] = [
     name: ["Canyon de l'Ouest", "Mineurs", "Muraille", "Travaux Forcés"],
     resources: [
       [
-        { gold: 0, wood: 0, stone: 1, military: 0, ingot: 0, export: 0, fame: 0 },
-        { gold: 0, wood: 0, stone: 0, military: 0, ingot: 1, export: 0, fame: 0 }
+        { stone: 1 },
+        { ingot: 1 }
       ],
-      [ { gold: 0, wood: 0, stone: 1, military: 0, ingot: 1, export: 0, fame: 2 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 1, ingot: 0, export: 0, fame: 3 } ],
-      [ { gold: 0, wood: 0, stone: 2, military: 0, ingot: 2, export: 0, fame: -3 } ],
+      [ { stone: 1, ingot: 1, fame: 2 } ],
+      [ { military: 1, fame: 3 } ],
+      [ { stone: 2, ingot: 2, fame: -3 } ],
     ],
     effects: [
       "",
@@ -3481,7 +3481,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -3502,21 +3502,21 @@ export const allCards: GameCard[] = [
     id: 74,
     name: ["Littoral", "Chantiers Navals", "Route Commerciale", "Navire Marchand"],
     resources: [
-      [ { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 } ],
+      [ { gold: 1 } ],
       [
-        { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 },
-        { gold: 0, wood: 1, stone: 0, military: 0, ingot: 0, export: 0, fame: 3 }
+        { gold: 1 },
+        { wood: 1, fame: 3 }
       ],
       [
-        { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 },
-        { gold: 0, wood: 1, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 },
-        { gold: 0, wood: 0, stone: 0, military: 0, ingot: 1, export: 0, fame: 0 },
-        { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 1, fame: 13 }
+        { gold: 1 },
+        { wood: 1 },
+        { ingot: 1 },
+        { export: 1, fame: 13 }
       ],
       [
-        { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 },
-        { gold: 0, wood: 1, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 },
-        { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 1, fame: 6 }
+        { gold: 1 },
+        { wood: 1 },
+        { export: 1, fame: 6 }
       ],
     ],
     effects: [
@@ -3536,7 +3536,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -3557,21 +3557,21 @@ export const allCards: GameCard[] = [
     id: 75,
     name: ["Littoral", "Chantiers Navals", "Route Commerciale", "Navire Marchand"],
     resources: [
-      [ { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 } ],
+      [ { gold: 1 } ],
       [
-        { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 },
-        { gold: 0, wood: 1, stone: 0, military: 0, ingot: 0, export: 0, fame: 3 }
+        { gold: 1 },
+        { wood: 1, fame: 3 }
       ],
       [
-        { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 },
-        { gold: 0, wood: 1, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 },
-        { gold: 0, wood: 0, stone: 0, military: 0, ingot: 1, export: 0, fame: 0 },
-        { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 1, fame: 13 }
+        { gold: 1 },
+        { wood: 1 },
+        { ingot: 1 },
+        { export: 1, fame: 13 }
       ],
       [
-        { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 },
-        { gold: 0, wood: 1, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 },
-        { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 1, fame: 6 }
+        { gold: 1 },
+        { wood: 1 },
+        { export: 1, fame: 6 }
       ],
     ],
     effects: [
@@ -3591,7 +3591,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -3612,11 +3612,11 @@ export const allCards: GameCard[] = [
     id: 76,
     name: ["Pirate", "", "Précieux Allié", ""],
     resources: [
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: -2 } ],
-      [ { ...emptyResource } ],
+      [ { fame: -2 } ],
+      [],
       [
-        { gold: 0, wood: 0, stone: 0, military: 1, ingot: 0, export: 0, fame: 0 },
-        { gold: 0, wood: 0, stone: 0, military: 0, ingot: 1, export: 0, fame: 3 }
+        { military: 1 },
+        { ingot: 1, fame: 3 }
       ],
       [{ ...emptyResource } ],
     ],
@@ -3637,7 +3637,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -3658,10 +3658,10 @@ export const allCards: GameCard[] = [
     id: 77,
     name: ["Lagon", "Canoë", "Île Luxuriante", "Porte Maritime Fortifiée"],
     resources: [
-      [ { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 } ],
-      [ { ...emptyResource } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 1, ingot: 0, export: 0, fame: 3 } ],
-      [ { gold: 2, wood: 0, stone: 0, military: 0, ingot: 0, export: 1, fame: 0 } ],
+      [ { gold: 1 } ],
+      [],
+      [ { military: 1, fame: 3 } ],
+      [ { gold: 2, export: 1 } ],
     ],
     effects: [
       "",
@@ -3683,7 +3683,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -3704,10 +3704,10 @@ export const allCards: GameCard[] = [
     id: 78,
     name: ["Statue", "Monument", "Colonne Dorée", "Obélisque"],
     resources: [
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 2 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 5 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 15 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 10 } ],
+      [ { fame: 2 } ],
+      [ { fame: 5 } ],
+      [ { fame: 15 } ],
+      [ { fame: 10 } ],
     ],
     effects: [
       "",
@@ -3726,7 +3726,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -3747,10 +3747,10 @@ export const allCards: GameCard[] = [
     id: 79,
     name: ["Villa", "Monument", "Colonne Dorée", "Obélisque"],
     resources: [
-      [ { ...emptyResource } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 3 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 12 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 7 } ],
+      [],
+      [ { fame: 3 } ],
+      [ { fame: 12 } ],
+      [ { fame: 7 } ],
     ],
     effects: [
       "effects/optional Fin du Tour: Défaussez pour que 1 Personne reste en jeu.",
@@ -3769,7 +3769,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -3790,10 +3790,10 @@ export const allCards: GameCard[] = [
     id: 80,
     name: ["Coopération", "", "Faveur", ""],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
+      [],
+      [],
+      [],
+      [],
     ],
     effects: [
       "effects/activate Défaussez 2 Personnes pour gagner 3 ressources au choix puis -> Back Up.",
@@ -3812,7 +3812,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -3833,10 +3833,10 @@ export const allCards: GameCard[] = [
     id: 81,
     name: ["Domaine Aethien", "Domaine Aethien", "Domaine Aethien", "Domaine Aethien"],
     resources: [
-      [ { ...emptyResource } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 3 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 10 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 6 } ],
+      [],
+      [ { fame: 3 } ],
+      [ { fame: 10 } ],
+      [ { fame: 6 } ],
     ],
     effects: [
       "",
@@ -3855,7 +3855,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -3877,16 +3877,16 @@ export const allCards: GameCard[] = [
     name: ["Autel", "Sanctuaire", "Temple", "Oratoire"],
     resources: [
       [
-        { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 3 }
+        { fame: 3 }
       ],
       [
-        { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 5 }
+        { fame: 5 }
       ],
       [
-        { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 15 }
+        { fame: 15 }
       ],
       [
-        { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 9 }
+        { fame: 9 }
       ],
     ],
     effects: [
@@ -3906,7 +3906,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -3928,16 +3928,16 @@ export const allCards: GameCard[] = [
     name: ["Autel", "Sanctuaire", "Temple", "Oratoire"],
     resources: [
       [
-        { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 3 }
+        { fame: 3 }
       ],
       [
-        { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 5 }
+        { fame: 5 }
       ],
       [
-        { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 15 }
+        { fame: 15 }
       ],
       [
-        { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 9 }
+        { fame: 9 }
       ],
     ],
     effects: [
@@ -3957,7 +3957,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -3979,16 +3979,16 @@ export const allCards: GameCard[] = [
     name: ["Mine", "Mine Profonde", "Mine de Diamant", "Mine de Rubis"],
     resources: [
       [
-        { gold: 0, wood: 0, stone: 1, military: 0, ingot: 1, export: 0, fame: 4 }
+        { stone: 1, ingot: 1, fame: 4 }
       ],
       [
-        { gold: 0, wood: 0, stone: 1, military: 0, ingot: 2, export: 0, fame: 6 }
+        { stone: 1, ingot: 2, fame: 6 }
       ],
       [
-        { gold: 0, wood: 0, stone: 1, military: 0, ingot: 2, export: 2, fame: 13 }
+        { stone: 1, ingot: 2, export: 2, fame: 13 }
       ],
       [
-        { gold: 0, wood: 0, stone: 1, military: 0, ingot: 2, export: 1, fame: 9 }
+        { stone: 1, ingot: 2, export: 1, fame: 9 }
       ],
     ],
     effects: [
@@ -4008,7 +4008,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -4030,16 +4030,16 @@ export const allCards: GameCard[] = [
     name: ["Mine", "Mine Profonde", "Mine de Diamant", "Mine de Rubis"],
     resources: [
       [
-        { gold: 0, wood: 0, stone: 1, military: 0, ingot: 1, export: 0, fame: 4 }
+        { stone: 1, ingot: 1, fame: 4 }
       ],
       [
-        { gold: 0, wood: 0, stone: 1, military: 0, ingot: 2, export: 0, fame: 6 }
+        { stone: 1, ingot: 2, fame: 6 }
       ],
       [
-        { gold: 0, wood: 0, stone: 1, military: 0, ingot: 2, export: 2, fame: 13 }
+        { stone: 1, ingot: 2, export: 2, fame: 13 }
       ],
       [
-        { gold: 0, wood: 0, stone: 1, military: 0, ingot: 2, export: 1, fame: 9 }
+        { stone: 1, ingot: 2, export: 1, fame: 9 }
       ],
     ],
     effects: [
@@ -4059,7 +4059,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -4080,10 +4080,10 @@ export const allCards: GameCard[] = [
     id: 86,
     name: ["Adoubement", "", "Rénovation", ""],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
+      [],
+      [],
+      [],
+      [],
     ],
     effects: [
       "effects/passive Reste en jeu. effects/forced Fin de Manche: Ajoutez resources/gold resources/military et \"Chevalier\" à 1 Personne. Puis -> Back Up.",
@@ -4102,7 +4102,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -4123,10 +4123,10 @@ export const allCards: GameCard[] = [
     id: 87,
     name: ["Quêtes", "", "", ""],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
+      [],
+      [],
+      [],
+      [],
     ],
     effects: [
       "effects/time défaussez des Personnes (1, 2, 2, 3, 3, 4, 5, 6, 7) pour cocher la case de gauche à droite.",
@@ -4180,10 +4180,10 @@ export const allCards: GameCard[] = [
     id: 88,
     name: ["Une Tour Idéale", "", "", ""],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
+      [],
+      [],
+      [],
+      [],
     ],
     effects: [
       "effects/time dépensez les resources/stone (1 à 10, incrément de 1) pour cocher la case de gauche à droite.",
@@ -4238,10 +4238,10 @@ export const allCards: GameCard[] = [
     id: 89,
     name: ["Fosse Insondable", "Puits du Village", "Colonie de la Fosse", "Prison"],
     resources: [
-      [ { gold: 0, wood: 0, stone: 1, military: 0, ingot: 0, export: 0, fame: 0 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 3 } ],
-      [ { gold: 0, wood: 1, stone: 1, military: 0, ingot: 0, export: 0, fame: 1 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 1, ingot: 0, export: 0, fame: 0 } ],
+      [ { stone: 1 } ],
+      [ { fame: 3 } ],
+      [ { wood: 1, stone: 1, fame: 1 } ],
+      [ { military: 1 } ],
     ],
     effects: [
       "",
@@ -4263,7 +4263,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -4284,10 +4284,10 @@ export const allCards: GameCard[] = [
     id: 90,
     name: ["Bijoux", "", "", ""],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
+      [],
+      [],
+      [],
+      [],
     ],
     effects: [
       "effects/time dépensez les resources/ingot (1 à 10, incrément de 1) pour cocher la case de gauche à droite, puis gagnez 5 resources/export .",
@@ -4342,10 +4342,10 @@ export const allCards: GameCard[] = [
     id: 91,
     name: ["Construire une Arche", "", "L'Arche", ""],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 24 } ],
-      [ { ...emptyResource } ],
+      [],
+      [],
+      [ { fame: 24 } ],
+      [],
     ],
     effects: [
       "effects/time dépensez les resources/wood (2 à 10, incrément de 2) pour cocher la case de gauche à droite. Une fois complétée, -> Back Up",
@@ -4412,10 +4412,10 @@ export const allCards: GameCard[] = [
     id: 92,
     name: ["__", "", "__", ""],
     resources: [
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
+      [ { gold: 0 } ],
+      [],
+      [],
+      [],
     ],
     effects: [
       "effects/forced Jouée la 1ère fois: Donne-lui un nom ! effects/forced Jouée la 2ème fois: Ajoutez resources/military / resources/fame x5. effects/forced Jouée la 3ème fois: Ajoutez resources/export / resources/fame x5.",
@@ -4434,7 +4434,7 @@ export const allCards: GameCard[] = [
     choice: true,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -4455,10 +4455,10 @@ export const allCards: GameCard[] = [
     id: 93,
     name: ["Chasse au Trésor", "Baie des Pirates", "Trésor Pirate", "Carte au Trésor"],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { gold: 2, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 15 } ],
-      [ { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 5 } ],
+      [],
+      [],
+      [ { gold: 2, fame: 15 } ],
+      [ { gold: 1, fame: 5 } ],
     ],
     effects: [
       "",
@@ -4477,7 +4477,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -4498,10 +4498,10 @@ export const allCards: GameCard[] = [
     id: 94,
     name: ["Traître", "", "Malédiction", ""],
     resources: [
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: -2 } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
+      [ { fame: -2 } ],
+      [],
+      [],
+      [],
     ],
     effects: [
       "(Choisissez le côté) effects/forced Carte Jouée: Défaussez 2 Personnes. effects/activate Dépensez resources/military resources/miltary resources/military resources/military pour vaincre ( effects/destroy ).",
@@ -4520,7 +4520,7 @@ export const allCards: GameCard[] = [
     choice: true,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -4541,10 +4541,10 @@ export const allCards: GameCard[] = [
     id: 95,
     name: ["Astronome", "", "Astrologue", ""],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 1, fame: 5 } ],
-      [ { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 2, fame: 10 } ],
+      [],
+      [],
+      [ { gold: 1, export: 1, fame: 5 } ],
+      [ { gold: 1, export: 2, fame: 10 } ],
     ],
     effects: [
       "(Choisissez quand rajoutée.) effects/activate Dépensez resources/gold resources/gold pour inscrire 1 effects/check . (Vaut 2 resources/fame par effects/check )",
@@ -4598,10 +4598,10 @@ export const allCards: GameCard[] = [
     id: 96,
     name: ["Alchimiste", "Potion de Force", "Potion d'Amour", "Potion de Soin"],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
+      [],
+      [],
+      [],
+      [],
     ],
     effects: [
       "effects/activate Dépensez resources/gold resources/gold pour orienter cette carte selon votre choix.",
@@ -4620,7 +4620,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -4641,10 +4641,10 @@ export const allCards: GameCard[] = [
     id: 97,
     name: ["Rouet", "Soie", "Mode", "Exportation d'Etoffe"],
     resources: [
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 2 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 1, fame: 4 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 3, fame: 10 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 2, fame: 6 } ],
+      [ { fame: 2 } ],
+      [ { export: 1, fame: 4 } ],
+      [ { export: 3, fame: 10 } ],
+      [ { export: 2, fame: 6 } ],
     ],
     effects: [
       "effects/activate Dépensez resources/gold resources/gold pour orienter cette carte selon votre choix.",
@@ -4663,7 +4663,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -4684,10 +4684,10 @@ export const allCards: GameCard[] = [
     id: 98,
     name: ["Boussole", "Navigation", "Calendrier", "Astrolabe"],
     resources: [
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 2 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 8 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 15 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 15 } ],
+      [ { fame: 2 } ],
+      [ { fame: 8 } ],
+      [ { fame: 15 } ],
+      [ { fame: 15 } ],
     ],
     effects: [
       "effects/activate Inscrivez 1 effects/check pour chaque carte Maritime en jeu, celle-ci incluse. Une fois complète, Front Down.",
@@ -4750,10 +4750,10 @@ export const allCards: GameCard[] = [
     id: 99,
     name: ["Châtiment Publique", "Instrument de Torture", "Ere Post-Barbare", "Salle de Torture"],
     resources: [
-      [ { gold: 0, wood: 0, stone: 0, military: 1, ingot: 0, export: 0, fame: -2 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 1, ingot: 0, export: 1, fame: -3 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 15 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 2, ingot: 0, export: 0, fame: -6 } ],
+      [ { military: 1, fame: -2 } ],
+      [ { military: 1, export: 1, fame: -3 } ],
+      [ { fame: 15 } ],
+      [ { military: 2, fame: -6 } ],
     ],
     effects: [
       "",
@@ -4772,7 +4772,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -4793,12 +4793,12 @@ export const allCards: GameCard[] = [
     id: 100,
     name: ["Scierie Publique", "Industrie du Bois", "Exportation de Bois", "Cargaison de Bois"],
     resources: [
-      [ { gold: 0, wood: 3, stone: 0, military: 0, ingot: 0, export: 0, fame: 3 } ],
-      [ { gold: 0, wood: 4, stone: 0, military: 0, ingot: 0, export: 0, fame: 3 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 2, fame: 4 } ],
+      [ { wood: 3, fame: 3 } ],
+      [ { wood: 4, fame: 3 } ],
+      [ { export: 2, fame: 4 } ],
       [
-        { gold: 0, wood: 2, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 },
-        { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 2, fame: 6 }
+        { wood: 2 },
+        { export: 2, fame: 6 }
       ],
     ],
     effects: [
@@ -4818,7 +4818,7 @@ export const allCards: GameCard[] = [
     choice: true,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -4839,10 +4839,10 @@ export const allCards: GameCard[] = [
     id: 101,
     name: ["Scierie Publique", "Industrie du Bois", "Exportation de Bois", "Cargaison de Bois"],
     resources: [
-      [ { gold: 3, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 4 } ],
-      [ { gold: 4, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 8 } ],
-      [ { gold: 2, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 3 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 5 } ],
+      [ { gold: 3, fame: 4 } ],
+      [ { gold: 4, fame: 8 } ],
+      [ { gold: 2, fame: 3 } ],
+      [ { fame: 5 } ],
     ],
     effects: [
       "",
@@ -4861,7 +4861,7 @@ export const allCards: GameCard[] = [
     choice: true,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -4882,10 +4882,10 @@ export const allCards: GameCard[] = [
     id: 102,
     name: ["Bateaux de Pêche", "Comme un Poisson (dans l'eau)", "Exportation de Bois", "Cargaison de Bois"],
     resources: [
-      [ { gold: 3, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 2 } ],
-      [ { gold: 2, wood: 0, stone: 0, military: 0, ingot: 0, export: 2, fame: 4 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 13 } ],
-      [ { gold: 2, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 4 } ],
+      [ { gold: 3, fame: 2 } ],
+      [ { gold: 2, export: 2, fame: 4 } ],
+      [ { fame: 13 } ],
+      [ { gold: 2, fame: 4 } ],
     ],
     effects: [
       "",
@@ -4933,10 +4933,10 @@ export const allCards: GameCard[] = [
     id: 103,
     name: ["Missionaire", "", "Apiculteur", ""],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 2 } ],
-      [ { ...emptyResource } ],
+      [],
+      [],
+      [ { gold: 1, fame: 2 } ],
+      [],
     ],
     effects: [
       "effects/activate Dépensez resources/gold resources/gold resources/gold pour convertir (->) un Bandit.",
@@ -4984,10 +4984,10 @@ export const allCards: GameCard[] = [
     id: 104,
     name: ["Prêtre", "", "Cardinal", ""],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 5 } ],
-      [ { ...emptyResource } ],
+      [],
+      [],
+      [ { fame: 5 } ],
+      [],
     ],
     effects: [
       "effects/activate Dépensez resources/gold resources/gold pour améliorer 1 carte en jeu, en payant son coût. Cela ne met pas FIN au tour.",
@@ -5006,7 +5006,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -5027,10 +5027,10 @@ export const allCards: GameCard[] = [
     id: 105,
     name: ["Petit Village sur la Colline", "Village sur la Colline", "Ville sur la Colline", "Grande Ville"],
     resources: [
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 6 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 8 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 12 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 10 } ],
+      [ { fame: 6 } ],
+      [ { fame: 8 } ],
+      [ { fame: 12 } ],
+      [ { fame: 10 } ],
     ],
     effects: [
       "effects/activate Dépensez resources/gold resources/gold pour gagner 1 ressource au choix.",
@@ -5049,7 +5049,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -5070,10 +5070,10 @@ export const allCards: GameCard[] = [
     id: 106,
     name: ["Camelot", "Camelot", "Camelot", "Camelot"],
     resources: [
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 15 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 20 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 30 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 40 } ],
+      [ { fame: 15 } ],
+      [ { fame: 20 } ],
+      [ { fame: 30 } ],
+      [ { fame: 40 } ],
     ],
     effects: [
       "",
@@ -5123,10 +5123,10 @@ export const allCards: GameCard[] = [
     id: 107,
     name: ["Visite Royale", "", "Inquisitrice", ""],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 } ],
-      [ { ...emptyResource } ],
+      [],
+      [],
+      [ { gold: 1 } ],
+      [],
     ],
     effects: [
       "effects/activate Barrez 1 icône de ressource dans le coût d'amélioration d'une carte en jeu.",
@@ -5145,7 +5145,7 @@ export const allCards: GameCard[] = [
     choice: true,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -5166,10 +5166,10 @@ export const allCards: GameCard[] = [
     id: 108,
     name: ["Cristal Ethéré Royale", "", "", ""],
     resources: [
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 10 } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
+      [ { fame: 10 } ],
+      [],
+      [],
+      [],
     ],
     effects: [
       "Cette carte ne peut pas être détruite.",
@@ -5188,7 +5188,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -5209,16 +5209,16 @@ export const allCards: GameCard[] = [
     id: 109,
     name: ["Petite Guilde", "Guilde", "Manoir de la Guilde", "Hotêl de la Guilde"],
     resources: [
-      [ { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 } ],
+      [ { gold: 1 } ],
       [
-        { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 },
-        { gold: 0, wood: 1, stone: 0, military: 0, ingot: 0, export: 0, fame: 2 }
+        { gold: 1 },
+        { wood: 1, fame: 2 }
       ],
-      [ { gold: 1, wood: 1, stone: 1, military: 0, ingot: 0, export: 0, fame: 0 } ],
+      [ { gold: 1, wood: 1, stone: 1 } ],
       [
-        { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 },
-        { gold: 0, wood: 1, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 },
-        { gold: 0, wood: 0, stone: 1, military: 0, ingot: 0, export: 0, fame: 3 }
+        { gold: 1 },
+        { wood: 1 },
+        { stone: 1, fame: 3 }
       ],
     ],
     effects: [
@@ -5268,13 +5268,13 @@ export const allCards: GameCard[] = [
     id: 110,
     name: ["Grange", "Grande Grange", "Campagne", "Campagne Prospère"],
     resources: [
-      [ { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 } ],
+      [ { gold: 1 } ],
       [
-        { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 },
-        { gold: 0, wood: 1, stone: 0, military: 0, ingot: 0, export: 0, fame: 2 }
+        { gold: 1 },
+        { wood: 1, fame: 2 }
       ],
-      [ { gold: 2, wood: 1, stone: 0, military: 0, ingot: 0, export: 0, fame: 5 } ],
-      [ { gold: 1, wood: 1, stone: 0, military: 0, ingot: 0, export: 0, fame: 3 } ],
+      [ { gold: 2, wood: 1, fame: 5 } ],
+      [ { gold: 1, wood: 1, fame: 3 } ],
     ],
     effects: [
       "",
@@ -5293,7 +5293,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -5314,10 +5314,10 @@ export const allCards: GameCard[] = [
     id: 111,
     name: ["Manoir", "Grand Manoir", "Imposante Demeur", "Noble Demeur"],
     resources: [
-      [ { gold: 6, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 } ],
-      [ { gold: 6, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 } ],
-      [ { gold: 3, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 5 } ],
-      [ { gold: 6, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 } ],
+      [ { gold: 6 } ],
+      [ { gold: 6 } ],
+      [ { gold: 3, fame: 5 } ],
+      [ { gold: 6 } ],
     ],
     effects: [
       "effects/forced Lorsqu'elle produit réduisez les resources/gold de 1.",
@@ -5336,7 +5336,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -5379,7 +5379,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -5400,7 +5400,7 @@ export const allCards: GameCard[] = [
     id: 113,
     name: ["Cheval", "", "", ""],
     resources: [
-      [ { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 } ],
+      [ { gold: 1 } ],
       [ { ...emptyResource} ],
       [ { ...emptyResource} ],
       [ { ...emptyResource} ],
@@ -5422,7 +5422,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -5443,7 +5443,7 @@ export const allCards: GameCard[] = [
     id: 114,
     name: ["Cheval", "", "", ""],
     resources: [
-      [ { gold: 0, wood: 0, stone: 0, military: 1, ingot: 0, export: 0, fame: 0 } ],
+      [ { military: 1 } ],
       [ { ...emptyResource} ],
       [ { ...emptyResource} ],
       [ { ...emptyResource} ],
@@ -5465,7 +5465,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -5487,8 +5487,8 @@ export const allCards: GameCard[] = [
     name: ["Cheval", "", "", ""],
     resources: [
       [
-        { gold: 0, wood: 1, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 },
-        { gold: 0, wood: 0, stone: 1, military: 0, ingot: 0, export: 0, fame: 0 }
+        { wood: 1 },
+        { stone: 1 }
       ],
       [ { ...emptyResource} ],
       [ { ...emptyResource} ],
@@ -5511,7 +5511,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -5532,7 +5532,7 @@ export const allCards: GameCard[] = [
     id: 116,
     name: ["Aric Blackwood", "", "Eadric Shadowstrike", ""],
     resources: [
-      [ { gold: 2, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 } ],
+      [ { gold: 2 } ],
       [ { ...emptyResource} ],
       [ { ...emptyResource} ],
       [ { ...emptyResource} ],
@@ -5554,7 +5554,7 @@ export const allCards: GameCard[] = [
     choice: true,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -5597,7 +5597,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -5620,8 +5620,8 @@ export const allCards: GameCard[] = [
     resources: [
       [ { ...emptyResource} ],
       [ { ...emptyResource} ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 6 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 4 } ],
+      [ { fame: 6 } ],
+      [ { fame: 4 } ],
     ],
     effects: [
       "effects/time Améliorez gratuitement 1 Personne en jeux, puis Front Down.",
@@ -5640,7 +5640,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -5663,16 +5663,16 @@ export const allCards: GameCard[] = [
     resources: [
       [{ ...emptyResource }],
       [
-        { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 1 }
+        { fame: 1 }
       ],
       [
-        { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 },
-        { gold: 0, wood: 1, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 },
-        { gold: 0, wood: 0, stone: 1, military: 0, ingot: 0, export: 0, fame: 0 },
-        { gold: 0, wood: 0, stone: 0, military: 0, ingot: 1, export: 0, fame: 4 }
+        { gold: 1 },
+        { wood: 1 },
+        { stone: 1 },
+        { ingot: 1, fame: 4 }
       ],
       [
-        { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 3 }
+        { fame: 3 }
       ],
     ],
     effects: [
@@ -5692,7 +5692,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -5735,7 +5735,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -5756,9 +5756,9 @@ export const allCards: GameCard[] = [
     id: 121,
     name: ["Roi Alahar", "", "Reine Jemimah", ""],
     resources: [
-      [ { gold: 0, wood: 0, stone: 0, military: 2, ingot: 0, export: 0, fame: -5 } ],
+      [ { military: 2, fame: -5 } ],
       [ { ...emptyResource} ],
-      [ { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 } ],
+      [ { gold: 1 } ],
       [ { ...emptyResource} ],
     ],
     effects: [
@@ -5809,9 +5809,9 @@ export const allCards: GameCard[] = [
     id: 122,
     name: ["Consort Royal", "", "Consort Royal", ""],
     resources: [
-      [ { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 2, fame: 0 } ],
+      [ { gold: 1, export: 2 } ],
       [ { ...emptyResource} ],
-      [ { gold: 0, wood: 1, stone: 1, military: 0, ingot: 0, export: 0, fame: 0 } ],
+      [ { wood: 1, stone: 1 } ],
       [ { ...emptyResource} ],
     ],
     effects: [
@@ -5831,7 +5831,7 @@ export const allCards: GameCard[] = [
     choice: true,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -5852,10 +5852,10 @@ export const allCards: GameCard[] = [
     id: 123,
     name: ["Château Majestueux", "Château Monumental", "Forteresse", "Forteresse Imprenable"],
     resources: [
-      [ { gold: 0, wood: 0, stone: 0, military: 1, ingot: 0, export: 0, fame: 15 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 2, ingot: 0, export: 0, fame: 20 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 3, ingot: 0, export: 0, fame: 30 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 2, ingot: 0, export: 0, fame: 25 } ],
+      [ { military: 1, fame: 15 } ],
+      [ { military: 2, fame: 20 } ],
+      [ { military: 3, fame: 30 } ],
+      [ { military: 2, fame: 25 } ],
     ],
     effects: [
       "effects/activate Jouez 1 carte depuis la défausse.",
@@ -5874,7 +5874,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -5895,10 +5895,10 @@ export const allCards: GameCard[] = [
     id: 124,
     name: ["Extraction de joyaux", "Taille de Joyau", "Exposition du Joyau", "Polissage du Joyau"],
     resources: [
-      [ { gold: 0, wood: 0, stone: 1, military: 0, ingot: 2, export: 2, fame: 15 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 2, export: 3, fame: 18 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 3, export: 6, fame: 25 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 3, export: 4, fame: 21 } ],
+      [ { stone: 1, ingot: 2, export: 2, fame: 15 } ],
+      [ { ingot: 2, export: 3, fame: 18 } ],
+      [ { ingot: 3, export: 6, fame: 25 } ],
+      [ { ingot: 3, export: 4, fame: 21 } ],
     ],
     effects: [
       "",
@@ -5917,7 +5917,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -5938,10 +5938,10 @@ export const allCards: GameCard[] = [
     id: 125,
     name: ["Grand Temple", "Temple Sculpté", "Temple de la Lumière", "Temple Légendaire"],
     resources: [
-      [ { gold: 0, wood: 0, stone: 1, military: 0, ingot: 0, export: 0, fame: 18 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 22 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 30 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 28 } ],
+      [ { stone: 1, fame: 18 } ],
+      [ { fame: 22 } ],
+      [ { fame: 30 } ],
+      [ { fame: 28 } ],
     ],
     effects: [
       "effects/optional Fin du Tour: Défaussez pour que 5 autre cartes restent en jeu.",
@@ -5960,7 +5960,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -5981,10 +5981,10 @@ export const allCards: GameCard[] = [
     id: 126,
     name: ["Forêt de Pins", "Forêt de Pins", "Mare", "Mare Poissonneuse"],
     resources: [
-      [ { gold: 0, wood: 1, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 } ],
-      [ { gold: 0, wood: 2, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 } ],
-      [ { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 } ],
-      [ { gold: 2, wood: 0, stone: 0, military: 0, ingot: 0, export: 1, fame: 0 } ],
+      [ { wood: 1 } ],
+      [ { wood: 2 } ],
+      [ { gold: 1 } ],
+      [ { gold: 2, export: 1 } ],
     ],
     effects: [
       "",
@@ -6003,7 +6003,7 @@ export const allCards: GameCard[] = [
     choice: true,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -6024,10 +6024,10 @@ export const allCards: GameCard[] = [
     id: 127,
     name: ["Rochers", "Rochers", "Champignons", "Champignons"],
     resources: [
-      [ { gold: 0, wood: 0, stone: 1, military: 0, ingot: 0, export: 0, fame: 0 } ],
-      [ { gold: 0, wood: 0, stone: 2, military: 0, ingot: 0, export: 0, fame: 0 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 1, fame: 0 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 1, fame: 0 } ],
+      [ { stone: 1 } ],
+      [ { stone: 2 } ],
+      [ { export: 1 } ],
+      [ { export: 1 } ],
     ],
     effects: [
       "",
@@ -6046,7 +6046,7 @@ export const allCards: GameCard[] = [
     choice: true,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -6067,10 +6067,10 @@ export const allCards: GameCard[] = [
     id: 128,
     name: ["Ravin", "Gouffre", "Site de Fouilles", "Ruines Antiques"],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 1, fame: 0 } ],
-      [ { ...emptyResource } ],
+      [],
+      [],
+      [ { gold: 1, export: 1 } ],
+      [],
     ],
     effects: [
       "",
@@ -6120,10 +6120,10 @@ export const allCards: GameCard[] = [
     id: 129,
     name: ["Sources Chaudes", "Fontaine", "Rivière d'Eau Pure", "Canaux"],
     resources: [
-      [ { ...emptyResource } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 2 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 9 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 5 } ],
+      [],
+      [ { fame: 2 } ],
+      [ { fame: 9 } ],
+      [ { fame: 5 } ],
     ],
     effects: [
       "effects/optional Lorsque vous l'améliorez ajoutez 1 resources/gold à un Terrain en jeu.",
@@ -6142,7 +6142,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -6163,10 +6163,10 @@ export const allCards: GameCard[] = [
     id: 130,
     name: ["Ville Frontalière", "Tour de Garde", "Mur Intérieur", "Double Muraille"],
     resources: [
-      [ { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 1, ingot: 0, export: 0, fame: 4 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 1, ingot: 0, export: 0, fame: 3 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 2, ingot: 0, export: 0, fame: 0 } ],
+      [ { gold: 1 } ],
+      [ { military: 1, fame: 4 } ],
+      [ { military: 1, fame: 3 } ],
+      [ { military: 2 } ],
     ],
     effects: [
       "",
@@ -6188,7 +6188,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -6209,10 +6209,10 @@ export const allCards: GameCard[] = [
     id: 131,
     name: ["Plaines du Nord", "Douves", "Muraille", "Pont des Douves"],
     resources: [
-      [ { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 1, ingot: 0, export: 0, fame: 2 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 1, ingot: 0, export: 0, fame: 3 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 1, ingot: 0, export: 0, fame: 3 } ],
+      [ { gold: 1 } ],
+      [ { military: 1, fame: 2 } ],
+      [ { military: 1, fame: 3 } ],
+      [ { military: 1, fame: 3 } ],
     ],
     effects: [
       "",
@@ -6234,7 +6234,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -6255,10 +6255,10 @@ export const allCards: GameCard[] = [
     id: 132,
     name: ["Collines Meridionales", "Terrasses", "Moulin à Vent", "Murailles"],
     resources: [
-      [ { gold: 1, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 0 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 1, ingot: 0, export: 0, fame: 2 } ],
-      [ { gold: 3, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 4 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 1, ingot: 0, export: 0, fame: 3 } ],
+      [ { gold: 1 } ],
+      [ { military: 1, fame: 2 } ],
+      [ { gold: 3, fame: 4 } ],
+      [ { military: 1, fame: 3 } ],
     ],
     effects: [
       "",
@@ -6280,7 +6280,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -6301,10 +6301,10 @@ export const allCards: GameCard[] = [
     id: 133,
     name: ["Raid", "Razzia", "Saccage", "Pillage"],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 5 } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 3 } ],
+      [],
+      [],
+      [ { fame: 5 } ],
+      [ { fame: 3 } ],
     ],
     effects: [
       "effects/activate Gagnez 1 ressource au choix.",
@@ -6323,7 +6323,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -6344,10 +6344,10 @@ export const allCards: GameCard[] = [
     id: 134,
     name: ["Rival Beau-Gosse", "", "Allié Noble", ""],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { gold: 0, wood: 0, stone: 0, military: 0, ingot: 0, export: 0, fame: 6 } ],
-      [ { ...emptyResource } ],
+      [],
+      [],
+      [ { fame: 6 } ],
+      [],
     ],
     effects: [
       "effects/passive Ne peut pas être détruit, à moins que Lord Nimrod n'ai été détruit. effects/activate Défaussez Lord Nimroy et dépensez les ressources d'une case pour inscrire effects/check . Une fois complétées, -> (Back Up). Vaut -5 pour chaque case non effects/check .",
@@ -6397,10 +6397,10 @@ export const allCards: GameCard[] = [
     id: 135,
     name: ["Terres Frontalières", "Occupation", "Etats Vassaux", "Villages Alliés"],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
+      [],
+      [],
+      [],
+      [],
     ],
     effects: [
       "effects/passive Dépensez resources/military resources/military resources/military resources/military resources/military  pour ignorer 1 resources/military du coup d'amélioration. Toutes les étapes ont la même valeur que l'étape finale (Back Up).",
@@ -6419,7 +6419,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -6440,10 +6440,10 @@ export const allCards: GameCard[] = [
     id: 136,
     name: ["Prospérité (extension)", "Engranger des réserves", "Décret Royal", "Soulèvement"],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
+      [],
+      [],
+      [],
+      [],
     ],
     effects: [
       "Jouez 1 manche durant laquelle la production de toutes les cartes alliées ont +1 resources/gold , puis ->.",
@@ -6493,10 +6493,10 @@ export const allCards: GameCard[] = [
     id: 137,
     name: ["Le Moulin à Eau (extension)", "Récolte Productive", "Fermes Abandonnées", "Surplus"],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
+      [],
+      [],
+      [],
+      [],
     ],
     effects: [
       "Jouez 1 manche durant laquelle vous pouvez gagner resources/gold resources/gold resources/gold une fois par tour, puis ->.",
@@ -6515,7 +6515,7 @@ export const allCards: GameCard[] = [
     choice: false,
     up: false,
     flipped: false,
-    checkboxes: undefined,
+    checkboxes: [],
     GetResources: function (): ResourceMap[] {
       throw new Error("Function not implemented.");
     },
@@ -6536,10 +6536,10 @@ export const allCards: GameCard[] = [
     id: 138,
     name: ["Frontière Contestée (extension)", "Espionnage", "Résistance", "Attaque"],
     resources: [
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
-      [ { ...emptyResource } ],
+      [],
+      [],
+      [],
+      [],
     ],
     effects: [
       "Jouez 1 manche durant laquelle tous les Terrains restent en jeu, puis ->.",

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { emptyResource, GameCard, RESOURCE_KEYS, EFFECT_KEYWORDS, TYPE_COLORS, type ResourceMap, type PopupPayload } from "./types";
+import { emptyResource, GameCard, RESOURCE_KEYS, EFFECT_KEYWORDS, TYPE_COLORS, type ResourceMap, type PopupPayload, type Checkbox, type Upgrade } from "./types";
 import { allCards } from "./cards";
 
 // deep-clone preserving prototype/methods
@@ -30,7 +30,7 @@ function cloneGameCard(src: GameCard): GameCard {
   );
 
   // Expected shape: checkboxes: Array< Array<{ content: string, checked: boolean }> > length 4
-  out.checkboxes = (src.checkboxes || []).map((side: any) => side.map((c: any) => ({ ...c })));
+  out.checkboxes = (src.checkboxes || []).map((side: Checkbox[]) => side.map((c: Checkbox) => ({ ...c })));
   while (out.checkboxes.length < 4) out.checkboxes.push([]);
 
   return out;
@@ -68,7 +68,7 @@ function getBackgroundStyle(card: GameCard, sideIdx: number) {
   }
   types = types.filter((t) => t !== "Permanente");
 
-  let colors = types.map((t) => TYPE_COLORS[t] || "#ffffff");
+  const colors = types.map((t) => TYPE_COLORS[t] || "#ffffff");
 
   if (colors.length ===0 ) {
     colors.push(TYPE_COLORS["default"]);
@@ -102,8 +102,8 @@ function CardView({
   fromZone: string;
   onRightClick: (card: GameCard, zone: string) => void;
   onTapAction?: (card: GameCard, zone: string) => void;
-  onUpgrade?: (card: GameCard, upgrade: any, zone: string) => void;
-  onGainResources?: (card: GameCard, resources: any, zone: string) => void;
+  onUpgrade?: (card: GameCard, upgrade: Upgrade, zone: string) => void;
+  onGainResources?: (card: GameCard, resources: Partial<ResourceMap>, zone: string) => void;
   onCardUpdate?: (updatedCard: GameCard, zone: string) => void;
   interactable?: boolean;
 }) {
@@ -111,7 +111,7 @@ function CardView({
   const previewRef = useRef<HTMLDivElement | null>(null);
   const [showPreview, setShowPreview] = useState(false);
   const [previewPosition, setPreviewPosition] = useState({ top: 0, left: 0 });
-  const touchTimeout = useRef<any>(null);
+  const touchTimeout = useRef<string | number | NodeJS.Timeout | undefined>(undefined);
 
   const [, drag] = useDrag(
   () => ({
@@ -203,7 +203,7 @@ function CardView({
   }
 
   // helper to render icons for a single resource option object (opt)
-  function renderOptionIcons(opt: any, keyPrefix = "") {
+  function renderOptionIcons(opt: Record<string, number>, keyPrefix = "") {
     const optMap = (opt || {}) as Record<string, number>;
     const icons = RESOURCE_KEYS.flatMap((k) => {
       const count = optMap[k as string] ?? 0;
@@ -216,13 +216,13 @@ function CardView({
       );
     });
 
-    return icons.length > 0 ? <>{icons}</> : <span className="text-xs text-gray-400">—</span>;
+    return icons.length > 0 ? <>{icons}</> : <span className="text-xs text-gray-400">â€”</span>;
   }
 
   // helper to render a side's options (option objects separated by '/')
-  function renderSideOptions(sideOpts: any[] | undefined, sideIdx: number) {
+  function renderSideOptions(sideOpts: Record<string, number>[] | undefined, sideIdx: number) {
     if (!Array.isArray(sideOpts) || sideOpts.length === 0) {
-      return <span className="text-xs text-gray-400">—</span>;
+      return <span className="text-xs text-gray-400">â€”</span>;
     }
     return (
       <>
@@ -239,7 +239,7 @@ function CardView({
   function parseEffects(raw: string) {
     if (!raw) return { before: "", effects: [] as string[] };
 
-    // On repère toutes les occurrences de keywords
+    // On repÃ¨re toutes les occurrences de keywords
     const pattern = new RegExp(
       `(${EFFECT_KEYWORDS.join("|")})`,
       "g"
@@ -247,7 +247,6 @@ function CardView({
 
     let match: RegExpExecArray | null;
 
-    // On stocke les débuts d’effet via les matches successifs
     const indices: number[] = [];
     while ((match = pattern.exec(raw)) !== null) {
       indices.push(match.index);
@@ -260,16 +259,12 @@ function CardView({
     // Le texte avant le premier effet
     const before = raw.slice(0, indices[0]).trim();
 
-    // Chaque effet commence à un index trouvé,
-    // et se termine juste avant l'index suivant ou la fin
     const effects: string[] = [];
     for (let i = 0; i < indices.length; i++) {
       const start = indices[i];
       const end = i < indices.length - 1 ? indices[i + 1] : raw.length;
       const chunk = raw.slice(start, end).trim();
 
-      // On coupe un effet au premier "." OU ")" final
-      // pour éviter d'inclure un effet suivant
       const stop = chunk.search(/[.)](?!.*[.)])/);
       if (stop !== -1) {
         effects.push(chunk.slice(0, stop + 1).trim());
@@ -318,7 +313,7 @@ function CardView({
           </div>
         )}
 
-        {/* Un bouton par effet détecté */}
+        {/* One button per effect */}
         {effects.map((eff, idx) => (
           <button
             key={idx}
@@ -329,7 +324,7 @@ function CardView({
             }}
             className="text-[10px] px-2 py-1 border rounded bg-white hover:bg-gray-100 transition text-left w-full whitespace-pre-wrap flex flex-wrap justify-center"
           >
-            {renderEffectText(eff)} {/* ⬅ icônes affichées ici */}
+            {renderEffectText(eff)} {/* Icones here */}
           </button>
         ))}
       </div>
@@ -442,7 +437,7 @@ function CardView({
                       <span className="text-[11px]">No cost</span>
                     )}
                   </div>
-                  <div className="text-[11px]">→ {sideLabel(upg.nextSide)}</div>
+                  <div className="text-[11px]">â†’ {sideLabel(upg.nextSide)}</div>
                 </button>
               ))}
             </div>
@@ -451,7 +446,7 @@ function CardView({
           {/* Checkboxes - Fixed size and layout */}
           <div className="mt-2">
             <div className="grid grid-cols-6 gap-1 justify-items-center">
-              {sideCheckboxes.map((box: any, idx: number) => (
+              {sideCheckboxes.map((box: Checkbox, idx: number) => (
                 <button
                   key={idx}
                   onClick={(ev) => {
@@ -497,14 +492,14 @@ function CardView({
           {/* Resources per side (each side's options joined with '/', sides separated by ' | ') */}
           <div className="mt-2 text-xs flex flex-wrap justify-center items-center">
             {Array.isArray(card.resources) && card.resources.length > 0 ? (
-              card.resources.map((sideOpts: any[], sideIdx: number) => (
+              card.resources.map((sideOpts: Record<string, number>[], sideIdx: number) => (
                 <span key={`preview-side-${sideIdx}`} className="inline-flex items-center mr-2">
                   {renderSideOptions(sideOpts, sideIdx)}
                   {sideIdx < card.resources.length - 1 && <span className="mx-1">|</span>}
                 </span>
               ))
             ) : (
-              <span className="text-xs text-gray-400">—</span>
+              <span className="text-xs text-gray-400">â€”</span>
             )}
           </div>
 
@@ -541,8 +536,8 @@ function Zone({
   cards: GameCard[];
   onDrop: (payload: { id: number; fromZone: string }) => void;
   onRightClick: (c: GameCard, zone: string) => void;
-  onUpgrade?: (card: GameCard, upgrade: any, zone: string) => void;
-  onGainResources?: (card: GameCard, resources: any, zone: string) => void;
+  onUpgrade?: (card: GameCard, upgrade: Upgrade, zone: string) => void;
+  onGainResources?: (card: GameCard, resources: Partial<ResourceMap>, zone: string) => void;
   onCardUpdate?: (updatedCard: GameCard, zone: string) => void;
   showAll?: boolean;
   interactable?: boolean;
@@ -678,7 +673,7 @@ function CardPopup({
 
   const applyChanges = () => {
     // 1) if an upgrade was selected, deduct its cost from global resources and set the card's currentSide to nextSide
-    let appliedCard = cloneGameCard(localCard);
+    const appliedCard = cloneGameCard(localCard);
 
     if (selectedUpgradeIndex !== null && currentSideUpgrades[selectedUpgradeIndex]) {
       const upg = currentSideUpgrades[selectedUpgradeIndex];
@@ -705,7 +700,7 @@ function CardPopup({
     appliedCard.name = [...localCard.name]; // Persist name changes
 
     // persist checkboxes
-    appliedCard.checkboxes = localCard.checkboxes?.map((side: any) => side.map((c: any) => ({ ...c }))) ?? [[],[],[],[]];
+    appliedCard.checkboxes = localCard.checkboxes?.map((side: Checkbox[]) => side.map((c: Checkbox) => ({ ...c }))) ?? [[],[],[],[]];
 
     // Replace by id in the original zone (this will keep the card id the same but substitute the instance)
     replaceCardInZone(payload.originZone, payload.originalId, appliedCard);
@@ -719,7 +714,7 @@ function CardPopup({
       <div className="bg-white p-4 rounded-xl space-y-4 max-w-3xl relative max-h-[80vh] overflow-y-auto">
         <h2 className="font-bold">{localCard.GetName()}</h2>
 
-        {/* Éditeur de noms pour chaque face */}
+        {/* Ã‰diteur de noms pour chaque face */}
         <div>
           <h3 className="font-bold">Card Names</h3>
           <div className="grid grid-cols-2 gap-2">
@@ -751,7 +746,7 @@ function CardPopup({
             <h3 className="font-bold flex-1 text-left-center">Back</h3>
           </div>
 
-          {/* Boutons alignés en dessous */}
+          {/* Buttons underneath */}
           <div className="flex">
             {/* Front buttons */}
             <div className="flex gap-2 flex-1 justify-start">
@@ -852,7 +847,7 @@ function CardPopup({
 
           {currentCheckboxes.length === 0 && <div className="text-sm text-gray-400">No checkboxes</div>}
 
-          {currentCheckboxes.map((box: any, idx: number) => (
+          {currentCheckboxes.map((box: Checkbox, idx: number) => (
             <div key={idx} className="border rounded p-2 my-2 flex items-center justify-between gap-2">
               <div className="flex items-center gap-2">
                 <input
@@ -878,7 +873,7 @@ function CardPopup({
           ))}
         </div>
 
-        {/* Upgrades for current side (éditable) */}
+        {/* Upgrades for current side */}
         <div>
           <h3 className="font-bold">Upgrades ({sideLabel(localCard.currentSide)})</h3>
           {currentSideUpgrades.length === 0 ? (
@@ -893,18 +888,18 @@ function CardPopup({
                     selected ? "bg-blue-100 border-blue-400" : "bg-white"
                   }`}
                 >
-                  {/* Header avec sélection */}
+                  {/* Header */}
                   <div
                     className="flex items-center justify-between cursor-pointer mb-2"
                     onClick={() => setSelectedUpgradeIndex(selected ? null : idx)}
                   >
                     <div className="font-medium text-sm">Upgrade {idx + 1}</div>
                     <div className="text-xs text-gray-600">
-                      {selected ? "✓ Selected" : "Click to select"}
+                      {selected ? "âœ“ Selected" : "Click to select"}
                     </div>
                   </div>
 
-                  {/* Éditeur de coût */}
+                  {/* Editor */}
                   <div className="mb-2">
                     <div className="text-xs font-medium mb-1">Cost:</div>
                     <div className="grid grid-cols-3 gap-2">
@@ -926,7 +921,7 @@ function CardPopup({
                     </div>
                   </div>
 
-                  {/* Sélecteur de face cible */}
+                  {/* Select Upgrade */}
                   <div>
                     <div className="text-xs font-medium mb-1">Upgrades to:</div>
                     {sideLabel(upg.nextSide)}: {localCard.name[upg.nextSide - 1] || 'Unnamed'}
@@ -1028,7 +1023,7 @@ export default function Game() {
 
     setResources((prev) => {
       const reset: ResourceMap = { ...emptyResource };
-      if ("fame" in prev) (reset as any).fame = (prev as any).fame;
+      if ("fame" in prev) (reset as Partial<ResourceMap>).fame = (prev as Partial<ResourceMap>).fame;
       return reset;
     });
 
@@ -1091,7 +1086,7 @@ export default function Game() {
     if (toZone === "Deck") setDeck((d) => [toAdd, ...d]);
     if (toZone === "Play Area") setPlayArea((p) => [...p, toAdd]);
     if (toZone === "Discard") setDiscard((f) => [...f, toAdd]);
-    if (toZone === "Destroy") { } // intentionally drop permanently (do nothing but ensure it was removed from source)
+    if (toZone === "Destroy") { /* empty */ } // intentionally drop permanently (do nothing but ensure it was removed from source)
     if (toZone === "Blocked") setBlockedZone((b) => [...b, toAdd]);
     if (toZone === "Permanent") setPermanentZone((pe) => [...pe, toAdd]);
   };
@@ -1200,9 +1195,9 @@ export default function Game() {
     });
   };
 
-  const handleUpgrade = (card: GameCard, upg: any, zone: string) => {
+  const handleUpgrade = (card: GameCard, upg: Upgrade, zone: string) => {
     if (upg.cost) {
-      // Vérifier si les ressources sont suffisantes
+      // Verify
       const hasEnough = Object.entries(upg.cost).every(([k, v]) => {
         const key = k as keyof ResourceMap;
         return (resources[key] || 0) >= (Number(v) || 0);
@@ -1213,10 +1208,10 @@ export default function Game() {
         return; // On sort, pas d'upgrade
       }
 
-      // Déduire les ressources
+      // Deduct
       setResources((prev) => {
         const next = { ...prev };
-        Object.entries(upg.cost).forEach(([k, v]) => {
+        Object.entries(upg.cost !== null ? upg.cost : []).forEach(([k, v]) => {
           const key = k as keyof ResourceMap;
           next[key] = (Number(next[key]) || 0) - (Number(v) || 0);
         });
@@ -1241,7 +1236,7 @@ export default function Game() {
     setHasUpgradedCard(true);
   };
 
-  const handleGainResources = (card: GameCard, resources: any, zone: string) => {
+  const handleGainResources = (card: GameCard, resources: Partial<ResourceMap>, zone: string) => {
     let onlyFame = true;
 
     if (resources) {
@@ -1301,7 +1296,7 @@ export default function Game() {
       const parsed = JSON.parse(raw);
       
       // Helper function to reconstruct GameCard instances from saved data
-      const reconstructCards = (cards: any[]): GameCard[] => {
+      const reconstructCards = (cards: GameCard[]): GameCard[] => {
         return (cards || []).map(cardData => {
           const card = new GameCard({});
           // Copy all properties from saved data
@@ -1353,12 +1348,10 @@ export default function Game() {
   };
 
   useEffect(() => {
-    // Appliquer le style au body
     document.body.style.background = "linear-gradient(to top left, #6d6d6dff, #ebebebff)";
     document.body.style.backgroundAttachment = "fixed";
     document.body.style.minHeight = "100vh";
     
-    // Nettoyer au démontage (optionnel)
     return () => {
       document.body.style.background = "";
       document.body.style.backgroundAttachment = "";
@@ -1534,7 +1527,7 @@ export default function Game() {
                     ))}
                   </select>
 
-                  {/* Input pour nouveau nom si "New Kingdom" est sélectionné */}
+                  {/* Input for new name */}
                   {selectedKingdom === "New Kingdom" && (
                     <input 
                       className="border p-1 rounded" 
@@ -1708,18 +1701,18 @@ export default function Game() {
               <div className="flex gap-4">
                 <div className="flex-1">
                   <p className="font-bold">Campaign Deck</p>
-                  <Zone name="Campaign" cards={campaignDeck.slice(0, 1)} onDrop={() => {}} onTapAction={handleTapAction} onRightClick={() => {handleTapAction}} />
+                  <Zone name="Campaign" cards={campaignDeck.slice(0, 1)} onDrop={() => {}} onTapAction={handleTapAction} onRightClick={handleTapAction} />
                 </div>
 
                 <div className="flex-1">
                   <p className="font-bold">Deck</p>
-                  <Zone name="Deck" cards={deck.slice(0, 1)} onDrop={(p) => dropToDeck(p)} onTapAction={handleTapAction} onRightClick={() => {handleTapAction}} />
+                  <Zone name="Deck" cards={deck.slice(0, 1)} onDrop={(p) => dropToDeck(p)} onTapAction={handleTapAction} onRightClick={handleTapAction} />
                   {<Button onClick={() => setShowDeck(true)}>See deck</Button>}
                 </div>
 
                 <div className="flex-1">
                   <p className="font-bold">Temporary (Blocked)</p>
-                  <Zone name="Blocked" cards={blockedZone.slice(-1)} onDrop={(p) => dropToBlocked(p)} onTapAction={handleTapAction} onRightClick={() => {handleTapAction} } />
+                  <Zone name="Blocked" cards={blockedZone.slice(-1)} onDrop={(p) => dropToBlocked(p)} onTapAction={handleTapAction} onRightClick={handleTapAction} />
                 </div>
 
                 <div className="flex-1">

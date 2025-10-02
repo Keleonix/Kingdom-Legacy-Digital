@@ -12,6 +12,11 @@ export type ResourceMap = {
   fame: number;
 };
 
+export type Checkbox = {
+  content: string;
+  checked: boolean;
+};
+
 export type PopupPayload = {
   originZone: string;
   originalId: number;
@@ -77,10 +82,10 @@ export class GameCard {
   choice = false;
   up = true;
   flipped = false;
-  resources: ResourceMap[][] = [];
+  resources: Partial<ResourceMap>[][] = [];
   effects: string[] = [];
   upgrades: Upgrade[][] = [];
-  checkboxes: any;
+  checkboxes: Checkbox[][] = [];
 
   constructor({
     id = -1,
@@ -127,7 +132,7 @@ export class GameCard {
   }
 
   // returns array of options for the current side
-  GetResources(): ResourceMap[] {
+  GetResources(): Partial<ResourceMap>[] {
     return this.resources[this.currentSide - 1] ?? [{ ...emptyResource }];
   }
 
