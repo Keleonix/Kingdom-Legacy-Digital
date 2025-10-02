@@ -437,7 +437,7 @@ function CardView({
                       <span className="text-[11px]">No cost</span>
                     )}
                   </div>
-                  <div className="text-[11px]">{"->"}{sideLabel(upg.nextSide)}</div>
+                  <div className="text-[11px]">{"→ "}{sideLabel(upg.nextSide)}</div>
                 </button>
               ))}
             </div>
