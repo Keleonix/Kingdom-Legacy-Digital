@@ -216,13 +216,13 @@ function CardView({
       );
     });
 
-    return icons.length > 0 ? <>{icons}</> : <span className="text-xs text-gray-400">â€”</span>;
+    return icons.length > 0 ? <>{icons}</> : <span className="text-xs text-gray-400"></span>;
   }
 
   // helper to render a side's options (option objects separated by '/')
   function renderSideOptions(sideOpts: Record<string, number>[] | undefined, sideIdx: number) {
     if (!Array.isArray(sideOpts) || sideOpts.length === 0) {
-      return <span className="text-xs text-gray-400">â€”</span>;
+      return <span className="text-xs text-gray-400"></span>;
     }
     return (
       <>
@@ -437,7 +437,7 @@ function CardView({
                       <span className="text-[11px]">No cost</span>
                     )}
                   </div>
-                  <div className="text-[11px]">â†’ {sideLabel(upg.nextSide)}</div>
+                  <div className="text-[11px]">{"->"}{sideLabel(upg.nextSide)}</div>
                 </button>
               ))}
             </div>
@@ -499,7 +499,7 @@ function CardView({
                 </span>
               ))
             ) : (
-              <span className="text-xs text-gray-400">â€”</span>
+              <span className="text-xs text-gray-400"></span>
             )}
           </div>
 
@@ -895,7 +895,7 @@ function CardPopup({
                   >
                     <div className="font-medium text-sm">Upgrade {idx + 1}</div>
                     <div className="text-xs text-gray-600">
-                      {selected ? "âœ“ Selected" : "Click to select"}
+                      {selected ? "-> Selected" : "Click to select"}
                     </div>
                   </div>
 
