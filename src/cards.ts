@@ -1,8 +1,7 @@
 import { emptyResource, type GameCard, type ResourceMap, type Upgrade } from "./types";
 
 export const allCards: GameCard[] = [
-  {
-    id: 0,
+  { id: 0,
     name: ["Bienvenue", "", "Règles d'Or", ""],
     resources: [
       [],
@@ -25,129 +24,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Parchemin", "", "Parchemin", ""],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
-      throw new Error("Function not implemented.");
-    },
-  },
-  {
-    id: 1,
-    name: ["Herbes Sauvages", "Plaines", "Grange", "Terres Cultivées"],
-    resources: [
-      [
-        { gold: 1 }
-      ],
-      [
-        { gold: 1 }
-      ],
-      [
-        { gold: 2, fame: 3 }
-      ],
-      [
-        { gold: 2 }
-      ],
-    ],
-    effects: [
-      " ",
-      "effects/activate Défaussez une carte pour gagner resources/gold resources/gold .",
-      "effects/passive Reste en jeu. ",
-      "",
-    ],
-    upgrades: [
-      [{ cost: { gold: 2 }, nextSide: 2 }],
-      [{ cost: { gold: 3 }, nextSide: 4 }],
-      [],
-      [{ cost: { wood: 3 }, nextSide: 3 }],
-    ],
-    currentSide: 1,
-    type: ["Terrain", "Terrain", "Bâtiment", "Terrain"],
-    choice: false,
-    up: false,
-    flipped: false,
-    checkboxes: [],
-    GetResources: function (): ResourceMap[] {
-      throw new Error("Function not implemented.");
-    },
-    GetEffect: function (): string {
-      throw new Error("Function not implemented.");
-    },
     GetUpgrades: function (): Upgrade[] {
-      throw new Error("Function not implemented.");
-    },
-    GetType: function (): string {
-      throw new Error("Function not implemented.");
-    },
-    GetName: function (): string {
-      throw new Error("Function not implemented.");
-    },
-  },
-  {
-    id: 2,
-    name: ["Herbes Sauvages", "Plaines", "Grange", "Terres Cultivées"],
-    resources: [
-      [
-        { gold: 1 }
-      ],
-      [
-        { gold: 1 }
-      ],
-      [
-        { gold: 2, fame: 3 }
-      ],
-      [
-        { gold: 2 }
-      ],
-    ],
-    effects: [
-      " ",
-      "effects/activate Défaussez une carte pour gagner resources/gold resources/gold .",
-      "effects/passive Reste en jeu. ",
-      "",
-    ],
-    upgrades: [
-      [{ cost: { gold: 2 }, nextSide: 2 }],
-      [{ cost: { gold: 3 }, nextSide: 4 }],
-      [],
-      [{ cost: { wood: 3 }, nextSide: 3 }],
-    ],
-    currentSide: 1,
-    type: ["Terrain", "Terrain", "Bâtiment", "Terrain"],
-    choice: false,
-    up: false,
-    flipped: false,
-    checkboxes: [],
-    GetResources: function (): ResourceMap[] {
-      throw new Error("Function not implemented.");
-    },
-    GetEffect: function (): string {
-      throw new Error("Function not implemented.");
-    },
-    GetUpgrades: function (): Upgrade[] {
-      throw new Error("Function not implemented.");
-    },
-    GetType: function (): string {
-      throw new Error("Function not implemented.");
-    },
-    GetName: function (): string {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 3,
+  { id: 1,
     name: ["Herbes Sauvages", "Plaines", "Grange", "Terres Cultivées"],
     resources: [
       [
@@ -165,7 +60,7 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       " ",
-      "effects/activate Défaussez une carte pour gagner resources/gold resources/gold .",
+      "effects/activate Défaussez une carte alliée pour gagner resources/gold resources/gold \.",
       "effects/passive Reste en jeu. ",
       "",
     ],
@@ -178,27 +73,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Terrain", "Terrain", "Bâtiment", "Terrain"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 4,
+  { id: 2,
     name: ["Herbes Sauvages", "Plaines", "Grange", "Terres Cultivées"],
     resources: [
       [
@@ -216,7 +109,7 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       " ",
-      "effects/activate Défaussez une carte pour gagner resources/gold resources/gold .",
+      "effects/activate Défaussez une carte alliée pour gagner resources/gold resources/gold \.",
       "effects/passive Reste en jeu. ",
       "",
     ],
@@ -229,27 +122,123 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Terrain", "Terrain", "Bâtiment", "Terrain"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 5,
+  { id: 3,
+    name: ["Herbes Sauvages", "Plaines", "Grange", "Terres Cultivées"],
+    resources: [
+      [
+        { gold: 1 }
+      ],
+      [
+        { gold: 1 }
+      ],
+      [
+        { gold: 2, fame: 3 }
+      ],
+      [
+        { gold: 2 }
+      ],
+    ],
+    effects: [
+      " ",
+      "effects/activate Défaussez une carte alliée pour gagner resources/gold resources/gold \.",
+      "effects/passive Reste en jeu. ",
+      "",
+    ],
+    upgrades: [
+      [{ cost: { gold: 2 }, nextSide: 2 }],
+      [{ cost: { gold: 3 }, nextSide: 4 }],
+      [],
+      [{ cost: { wood: 3 }, nextSide: 3 }],
+    ],
+    currentSide: 1,
+    type: ["Terrain", "Terrain", "Bâtiment", "Terrain"],
+    choice: false,
+    checkboxes: [],
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 4,
+    name: ["Herbes Sauvages", "Plaines", "Grange", "Terres Cultivées"],
+    resources: [
+      [
+        { gold: 1 }
+      ],
+      [
+        { gold: 1 }
+      ],
+      [
+        { gold: 2, fame: 3 }
+      ],
+      [
+        { gold: 2 }
+      ],
+    ],
+    effects: [
+      " ",
+      "effects/activate Défaussez une carte alliée pour gagner resources/gold resources/gold \.",
+      "effects/passive Reste en jeu. ",
+      "",
+    ],
+    upgrades: [
+      [{ cost: { gold: 2 }, nextSide: 2 }],
+      [{ cost: { gold: 3 }, nextSide: 4 }],
+      [],
+      [{ cost: { wood: 3 }, nextSide: 3 }],
+    ],
+    currentSide: 1,
+    type: ["Terrain", "Terrain", "Bâtiment", "Terrain"],
+    choice: false,
+    checkboxes: [],
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 5,
     name: ["Montagnes Lointaines", "Zone Rocheuse", "Mine Profonde", "Carrière"],
     resources: [
       [
@@ -280,27 +269,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Terrain", "Terrain", "Terrain", "Terrain"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 6,
+  { id: 6,
     name: ["Montagnes Lointaines", "Zone Rocheuse", "Mine Profonde", "Carrière"],
     resources: [
       [
@@ -331,27 +318,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Terrain", "Terrain", "Terrain", "Terrain"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 7,
+  { id: 7,
     name: ["Forêt", "Coupe Rase", "Puit Sacré", "Cabane de Bûcheron"],
     resources: [
       [
@@ -380,27 +365,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Terrain", "Terrain", "Bâtiment", "Bâtiment"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 8,
+  { id: 8,
     name: ["Forêt", "Coupe Rase", "Puit Sacré", "Cabane de Bûcheron"],
     resources: [
       [
@@ -422,34 +405,32 @@ export const allCards: GameCard[] = [
     ],
     upgrades: [
       [{ cost: { stone: 2 }, nextSide: 3 }],
-      [{ cost: { gold: 2 }, nextSide: 1 }, { cost: { gold: 2, wood: 1, stone: 1 }, nextSide: 4 }],
+      [{ cost: { gold: 1 }, nextSide: 1 }, { cost: { gold: 2, wood: 1, stone: 1 }, nextSide: 4 }],
       [],
       [],
     ],
     currentSide: 1,
     type: ["Terrain", "Terrain", "Bâtiment", "Bâtiment"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 9,
+  { id: 9,
     name: ["Quartier Général", "Hôtel de Ville", "Château", "Donjon"],
     resources: [
       [
@@ -480,27 +461,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Bâtiment", "Bâtiment", "Bâtiment", "Bâtiment"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 10,
+  { id: 10,
     name: ["Commerçante", "Bazar", "Festival", "Marché"],
     resources: [
       [{ ...emptyResource }],
@@ -532,27 +511,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Personne", "Bâtiment", "Evénement", "Bâtiment"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 11,
+  { id: 11,
     name: ["Jungle", "Arbres Géants", "Cabanes dans les Arbres", "Jungle Profonde"],
     resources: [
       [{ ...emptyResource }],
@@ -581,27 +558,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Terrain", "Terrain", "Bâtiment", "Terrain"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 12,
+  { id: 12,
     name: ["Rivière", "Pont", "Explorateurs", "Pont de Pierre"],
     resources: [
       [
@@ -632,27 +607,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Terrain", "Terrain", "Personne", "Terrain"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 13,
+  { id: 13,
     name: ["Exploitant", "", "Domestique", ""],
     resources: [
       [{ ...emptyResource }],
@@ -675,27 +648,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Personne", "", "Personne", ""],
     choice: true,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 14,
+  { id: 14,
     name: ["Bandit", "", "Travailleur", ""],
     resources: [
       [ { fame: -2 } ],
@@ -718,27 +689,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Ennemi", "", "Personne", ""],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 15,
+  { id: 15,
     name: ["Montagnes Lointaines", "Zone Rocheuse", "Mine Profonde", "Carrière"],
     resources: [
       [
@@ -769,27 +738,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Terrain", "Terrain", "Terrain", "Terrain"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 16,
+  { id: 16,
     name: ["Bandit", "", "Exploitant", ""],
     resources: [
       [ { fame: -2 } ],
@@ -812,27 +779,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Ennemi", "", "Personne", ""],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 17,
+  { id: 17,
     name: ["Colline", "Chappelle", "Cathédrale", "Eglise"],
     resources: [
       [ { gold: 1 } ],
@@ -855,27 +820,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Terrain", "Bâtiment", "Bâtiment", "Bâtiment"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 18,
+  { id: 18,
     name: ["Falaise de l'Est", "Forge", "Muraille", "Armurerie"],
     resources: [
       [ { stone: 1 } ],
@@ -900,27 +863,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Terrain", "Bâtiment", "Bâtiment", "Bâtiment"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 19,
+  { id: 19,
     name: ["Forêt", "Coupe Rase", "Puit Sacré", "Cabane de Bûcheron"],
     resources: [
       [
@@ -949,27 +910,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Terrain", "Terrain", "Bâtiment", "Bâtiment"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 20,
+  { id: 20,
     name: ["Marais", "Marais Aménagés", "Arbres à Fruits Exotiques", "Jardin du Marais"],
     resources: [
       [{ ...emptyResource }],
@@ -992,27 +951,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Terrain", "Terrain", "Terrain", "Terrain"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 21,
+  { id: 21,
     name: ["Marais", "Marais Aménagés", "Arbres à Fruits Exotiques", "Jardin du Marais"],
     resources: [
       [{ ...emptyResource }],
@@ -1035,27 +992,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Terrain", "Terrain", "Terrain", "Terrain"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 22,
+  { id: 22,
     name: ["Lac", "Chalet du Pêcheur", "Phare", "Bateau de Pêche"],
     resources: [
       [ { gold: 1, fame: 1 } ],
@@ -1078,27 +1033,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Terrain", "Bâtiment", "Bâtiment", "Maritime"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 23,
+  { id: 23,
     name: ["STOP !", "", "", ""],
     resources: [
       [],
@@ -1121,27 +1074,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Parchemin", "", "", ""],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 24,
+  { id: 24,
     name: ["Terre Fertile/Efficacité", "", "", ""],
     resources: [
       [],
@@ -1164,27 +1115,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Parchemin", "", "", ""],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 25,
+  { id: 25,
     name: ["Armée", "", "Grande Armée", ""],
     resources: [
       [],
@@ -1207,8 +1156,6 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Parchemin - Permanente", "", "Parchemin - Permanente", ""],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [
       [ {content: "fame x1", checked: false},
         {content: "fame x4", checked: false},
@@ -1231,24 +1178,24 @@ export const allCards: GameCard[] = [
       ],
       []
     ],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 26,
+  { id: 26,
     name: ["Trésor", "", "Immense Trésor", ""],
     resources: [
       [],
@@ -1271,8 +1218,6 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Parchemin - Permanente", "", "Parchemin - Permanente", ""],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [
       [ {content: "fame x1", checked: false},
         {content: "fame x2", checked: false},
@@ -1297,24 +1242,24 @@ export const allCards: GameCard[] = [
       ],
       []
     ],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 27,
+  { id: 27,
     name: ["Exportations", "", "Exportations de Masse", ""],
     resources: [
       [],
@@ -1337,8 +1282,6 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Parchemin - Permanente", "", "Parchemin - Permanente", ""],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [
       [
         { content: "10", checked: false },
@@ -1361,24 +1304,24 @@ export const allCards: GameCard[] = [
       ],
       [],
     ],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 28,
+  { id: 28,
     name: ["Eruption Volcanique", "", "Terres Brulées", "Jeune Forêt"],
     resources: [
       [],
@@ -1401,8 +1344,6 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Evénement", "", "Terrain", "Terrain"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [
       [],
       [],
@@ -1414,24 +1355,24 @@ export const allCards: GameCard[] = [
         {content: "*", checked: false},
       ],
     ],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 29,
+  { id: 29,
     name: ["Opportuniste", "Recrue", "Artisan", "Prétendu Noble"],
     resources: [
       [ { gold: 1 } ],
@@ -1454,27 +1395,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Personne", "Personne", "Personne", "Personne"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 30,
+  { id: 30,
     name: ["STOP !", "", "", ""],
     resources: [
       [],
@@ -1497,27 +1436,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Parchemin", "", "", ""],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 31,
+  { id: 31,
     name: ["Entrepreneur", "Hôtel", "Taverne", "Bar Confortable"],
     resources: [
       [ { export: 1 } ],
@@ -1540,27 +1477,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Personne", "Bâtiment", "Bâtiment", "Bâtiment"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 32,
+  { id: 32,
     name: ["Scientifique", "", "Observatoire", "Laboratoire"],
     resources: [
       [],
@@ -1583,27 +1518,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Personne", "", "Bâtiment", "Bâtiment"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 33,
+  { id: 33,
     name: ["Ingénieur", "", "Trébuchet", ""],
     resources: [
       [],
@@ -1626,27 +1559,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Personne", "", "Bâtiment", ""],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 34,
+  { id: 34,
     name: ["Inventrice", "", "Inventrice Inspirée", ""],
     resources: [
       [],
@@ -1669,8 +1600,6 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Personne", "", "Personne", ""],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [
       [ {content: "", checked: false},
         {content: "", checked: false},
@@ -1680,24 +1609,24 @@ export const allCards: GameCard[] = [
       [],
       [],
     ],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 35,
+  { id: 35,
     name: ["Montagnes Lointaines", "Zone Rocheuse", "Mine Profonde", "Carrière"],
     resources: [
       [
@@ -1728,27 +1657,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Terrain", "Terrain", "Terrain", "Terrain"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 36,
+  { id: 36,
     name: ["Mercenaire", "", "Sir __", ""],
     resources: [
       [],
@@ -1771,8 +1698,6 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Personne", "", "Personne", ""],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [
       [
         {content: "military", checked: false},
@@ -1788,24 +1713,24 @@ export const allCards: GameCard[] = [
       [],
       [],
     ],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 37,
+  { id: 37,
     name: ["STOP !", "", "", ""],
     resources: [
       [],
@@ -1828,27 +1753,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Parchemin", "", "", ""],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 38,
+  { id: 38,
     name: ["L'Union fait la Force", "", "Domination Militaire", ""],
     resources: [
       [],
@@ -1871,27 +1794,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Objectif - Permanente", "", "Objectif - Permanente", ""],
     choice: true,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 39,
+  { id: 39,
     name: ["Elargir les frontières", "", "Optimisation", ""],
     resources: [
       [],
@@ -1914,27 +1835,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Objectif - Permanente", "", "Objectif - Permanente", ""],
     choice: true,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 40,
+  { id: 40,
     name: ["Loyauté", "", "Commerce", ""],
     resources: [
       [],
@@ -1957,27 +1876,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Objectif - Permanente", "", "Objectif - Permanente", ""],
     choice: true,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 41,
+  { id: 41,
     name: ["Bouffon", "", "Marchande", ""],
     resources: [
       [ { stone: 1 } ],
@@ -2000,8 +1917,6 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Personne", "", "Personne", ""],
     choice: true,
-    up: false,
-    flipped: false,
     checkboxes: [
       [
         {content: "gold, gold", checked: false},
@@ -2042,24 +1957,24 @@ export const allCards: GameCard[] = [
       ],
       [],
     ],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 42,
+  { id: 42,
     name: ["Exploitant", "", "Grenier", ""],
     resources: [
       [],
@@ -2082,27 +1997,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Personne", "", "Bâtiment", ""],
     choice: true,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 43,
+  { id: 43,
     name: ["Maçon", "", "Route Pavée", "Rue Pavée"],
     resources: [
       [ { stone: 1 } ],
@@ -2125,27 +2038,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Personne", "", "Terrain", "Terrain"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 44,
+  { id: 44,
     name: ["Orage", "", "Pluie", ""],
     resources: [
       [],
@@ -2168,27 +2079,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Catastrophe", "", "Catastrophe", ""],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 45,
+  { id: 45,
     name: ["Chevalier Noir", "", "Garçon Admiratif", "Ecuyer"],
     resources: [
       [ { fame: -3 } ],
@@ -2211,27 +2120,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Ennemi", "", "Personne", "Personne"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 46,
+  { id: 46,
     name: ["Camp", "Camp d'Entrainement", "", "Sir __"],
     resources: [
       [ { gold: 1 } ],
@@ -2254,27 +2161,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Terrain", "Terrain", "", "Personne - Chevalier"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 47,
+  { id: 47,
     name: ["STOP !", "", "", ""],
     resources: [
       [],
@@ -2297,27 +2202,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Parchemin", "", "", ""],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 48,
+  { id: 48,
     name: ["Envoyé", "Emissaire", "Ambassadeur", "Diplomate"],
     resources: [
       [],
@@ -2340,27 +2243,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Personne", "Personne", "Personne", "Personne"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 49,
+  { id: 49,
     name: ["Architecte Royal", "", "Pont des Merveilles", ""],
     resources: [
       [ { stone: 1 } ],
@@ -2383,27 +2284,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Personne", "", "Bâtiment", ""],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 50,
+  { id: 50,
     name: ["Voyageur", "Voyageur", "Voyageur", "Voyageur"],
     resources: [
       [],
@@ -2426,27 +2325,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Personne", "Personne", "Personne", "Personne"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 51,
+  { id: 51,
     name: ["Magistrat", "Magistrat", "Magistrat", "Stratège"],
     resources: [
       [],
@@ -2469,27 +2366,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Personne", "Personne", "Personne", "Personne"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 52,
+  { id: 52,
     name: ["Grosse Butte", "Hameau sur la Colline", "Village Culminant", "Village"],
     resources: [
       [],
@@ -2512,27 +2407,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Terrain", "Terrain", "Terrain", "Terrain"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 53,
+  { id: 53,
     name: ["Sorcière", "", "Hutte de la Sorcière", ""],
     resources: [
       [ { fame: -3 } ],
@@ -2555,27 +2448,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Ennemi", "", "Ennemi", ""],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 54,
+  { id: 54,
     name: ["Scribe", "", "Architecte", ""],
     resources: [
       [],
@@ -2598,27 +2489,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Personne", "", "Personne", ""],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 55,
+  { id: 55,
     name: ["Lord Aethan", "", "Lord Nimrod", ""],
     resources: [
       [ { gold: 1, wood: 1, stone: 1 } ],
@@ -2641,8 +2530,6 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Personne", "", "Personne", ""],
     choice: true,
-    up: false,
-    flipped: false,
     checkboxes: [
       [
         {content: "gold, gold", checked: false},
@@ -2667,24 +2554,24 @@ export const allCards: GameCard[] = [
       ],
       [],
     ],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 56,
+  { id: 56,
     name: ["Peste", "", "Soldat Ennemi", ""],
     resources: [
       [ { fame: -2 } ],
@@ -2707,27 +2594,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Evénement", "", "Ennemi", ""],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 57,
+  { id: 57,
     name: ["Assassin", "", "Soldat Ennemi", ""],
     resources: [
       [ { fame: -2 } ],
@@ -2750,27 +2635,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Ennemi", "", "Ennemi", ""],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 58,
+  { id: 58,
     name: ["Ville en Flamme", "", "Terre Brûlée", "Jeune Forêt"],
     resources: [
       [],
@@ -2793,8 +2676,6 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Catastrophe", "", "Terrain", "Terrain"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [
       [],
       [],
@@ -2806,24 +2687,24 @@ export const allCards: GameCard[] = [
         {content: "*", checked: false},
       ],
     ],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 59,
+  { id: 59,
     name: ["Grotte Mystérieuse", "Souterrains", "Trésor", "Civilisation Oubliée"],
     resources: [
       [],
@@ -2846,27 +2727,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Terrain", "Terrain", "Terrain", "Terrain"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 60,
+  { id: 60,
     name: ["Bandit d'Elite", "", "Travailleur", ""],
     resources: [
       [ { fame: -5 } ],
@@ -2889,27 +2768,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Ennemi", "", "Personne", ""],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 61,
+  { id: 61,
     name: ["Prince des Ténèbres", "", "Garçon Admiratif", "Ecuyer"],
     resources: [
       [ { fame: -7 } ],
@@ -2932,27 +2809,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Ennemi", "", "Personne", ""],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 62,
+  { id: 62,
     name: ["Camp", "Camp d'entrainement", "Sir __", ""],
     resources: [
       [ { gold: 1 } ],
@@ -2975,27 +2850,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Terrain", "Terrain", "", "Personne - Chevalier"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 63,
+  { id: 63,
     name: ["Terres Lointaines", "Auberge", "Muraille", "Aubergiste"],
     resources: [
       [
@@ -3026,27 +2899,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Terrain", "Bâtiment", "Bâtiment", "Personne"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 64,
+  { id: 64,
     name: ["Bandit d'Elite", "", "Exploitant", ""],
     resources: [
       [ { fame: -5 } ],
@@ -3069,27 +2940,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Ennemi", "", "Personne", ""],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 65,
+  { id: 65,
     name: ["Tornade", "", "Innodations", ""],
     resources: [
       [],
@@ -3112,27 +2981,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Catastrophe", "", "Catastrophe", ""],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 66,
+  { id: 66,
     name: ["Jeune Princesse", "Princesse Pourrie Gâtée", "Princesse Bien Elevée", ""],
     resources: [
       [ { fame: 2 } ],
@@ -3155,27 +3022,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Personne", "Personne", "Personne - Dame", ""],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 67,
+  { id: 67,
     name: ["Maladie", "Diminué", "Festin", ""],
     resources: [
       [ { fame: -8 } ],
@@ -3201,27 +3066,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Personne", "Personne", "Personne - Dame", ""],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 68,
+  { id: 68,
     name: ["STOP !", "", "", ""],
     resources: [
       [],
@@ -3244,27 +3107,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Parchemin", "", "", ""],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 69,
+  { id: 69,
     name: ["Touche Finale", "", "Banquet", ""],
     resources: [
       [],
@@ -3287,27 +3148,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Evénement", "", "Evénement", ""],
     choice: true,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 70,
+  { id: 70,
     name: ["Visite Royale", "", "Inquisitrice", ""],
     resources: [
       [],
@@ -3330,27 +3189,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Evénement", "", "Evénement", ""],
     choice: true,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 71,
+  { id: 71,
     name: ["Montagnes Lointaines", "Zone Rocheuse", "Mine Profonde", "Carrière"],
     resources: [
       [
@@ -3381,27 +3238,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Terrain", "Terrain", "Terrain", "Terrain"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 72,
+  { id: 72,
     name: ["Forêt", "Coupe Rase", "Puit Sacré", "Cabane de Bûcheron"],
     resources: [
       [
@@ -3430,27 +3285,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Terrain", "Terrain", "Bâtiment", "Bâtiment"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 73,
+  { id: 73,
     name: ["Canyon de l'Ouest", "Mineurs", "Muraille", "Travaux Forcés"],
     resources: [
       [
@@ -3479,27 +3332,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Terrain", "Personne", "Bâtiment", "Evénement"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 74,
+  { id: 74,
     name: ["Littoral", "Chantiers Navals", "Route Commerciale", "Navire Marchand"],
     resources: [
       [ { gold: 1 } ],
@@ -3534,27 +3385,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Terrain", "Bâtiment", "Maritime - Navire", "Maritime - Navire"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 75,
+  { id: 75,
     name: ["Littoral", "Chantiers Navals", "Route Commerciale", "Navire Marchand"],
     resources: [
       [ { gold: 1 } ],
@@ -3589,27 +3438,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Terrain", "Bâtiment", "Maritime - Navire", "Maritime - Navire"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 76,
+  { id: 76,
     name: ["Pirate", "", "Précieux Allié", ""],
     resources: [
       [ { fame: -2 } ],
@@ -3635,27 +3482,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Ennemi", "", "Personne - Maritime", ""],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 77,
+  { id: 77,
     name: ["Lagon", "Canoë", "Île Luxuriante", "Porte Maritime Fortifiée"],
     resources: [
       [ { gold: 1 } ],
@@ -3681,27 +3526,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Terrain", "Maritime", "Bâtiment", "Terrain - Maritime"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 78,
+  { id: 78,
     name: ["Statue", "Monument", "Colonne Dorée", "Obélisque"],
     resources: [
       [ { fame: 2 } ],
@@ -3724,27 +3567,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Bâtiment", "Bâtiment", "Bâtiment", "Bâtiment"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 79,
+  { id: 79,
     name: ["Villa", "Monument", "Colonne Dorée", "Obélisque"],
     resources: [
       [],
@@ -3767,27 +3608,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Bâtiment", "Bâtiment", "Bâtiment", "Bâtiment"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 80,
+  { id: 80,
     name: ["Coopération", "", "Faveur", ""],
     resources: [
       [],
@@ -3810,27 +3649,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Evénement", "", "Evénement", ""],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 81,
+  { id: 81,
     name: ["Domaine Aethien", "Domaine Aethien", "Domaine Aethien", "Domaine Aethien"],
     resources: [
       [],
@@ -3853,27 +3690,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Terrain", "Terrain", "Terrain", "Terrain"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 82,
+  { id: 82,
     name: ["Autel", "Sanctuaire", "Temple", "Oratoire"],
     resources: [
       [
@@ -3904,27 +3739,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Terrain", "Bâtiment", "Bâtiment", "Bâtiment"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 83,
+  { id: 83,
     name: ["Autel", "Sanctuaire", "Temple", "Oratoire"],
     resources: [
       [
@@ -3955,27 +3788,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Terrain", "Bâtiment", "Bâtiment", "Bâtiment"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 84,
+  { id: 84,
     name: ["Mine", "Mine Profonde", "Mine de Diamant", "Mine de Rubis"],
     resources: [
       [
@@ -4006,27 +3837,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Bâtiment", "Bâtiment", "Bâtiment", "Bâtiment"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 85,
+  { id: 85,
     name: ["Mine", "Mine Profonde", "Mine de Diamant", "Mine de Rubis"],
     resources: [
       [
@@ -4057,27 +3886,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Bâtiment", "Bâtiment", "Bâtiment", "Bâtiment"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 86,
+  { id: 86,
     name: ["Adoubement", "", "Rénovation", ""],
     resources: [
       [],
@@ -4100,27 +3927,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Evénement", "", "Evénement", ""],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 87,
+  { id: 87,
     name: ["Quêtes", "", "", ""],
     resources: [
       [],
@@ -4143,8 +3968,6 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Parchemin - Permanente", "", "", ""],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [
       [ {content: "fame x1", checked: false},
         {content: "fame x3", checked: false},
@@ -4160,24 +3983,24 @@ export const allCards: GameCard[] = [
       [],
       []
     ],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 88,
+  { id: 88,
     name: ["Une Tour Idéale", "", "", ""],
     resources: [
       [],
@@ -4200,8 +4023,6 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Parchemin - Permanente", "", "", ""],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [
       [ {content: "fame x3", checked: false},
         {content: "fame x6", checked: false},
@@ -4218,24 +4039,24 @@ export const allCards: GameCard[] = [
       [],
       []
     ],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 89,
+  { id: 89,
     name: ["Fosse Insondable", "Puits du Village", "Colonie de la Fosse", "Prison"],
     resources: [
       [ { stone: 1 } ],
@@ -4261,27 +4082,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Terrain", "Terrain", "Bâtiment", "Bâtiment"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 90,
+  { id: 90,
     name: ["Bijoux", "", "", ""],
     resources: [
       [],
@@ -4304,8 +4123,6 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Parchemin - Permanente", "", "", ""],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [
       [ {content: "fame x1", checked: false},
         {content: "fame x2", checked: false},
@@ -4322,24 +4139,24 @@ export const allCards: GameCard[] = [
       [],
       []
     ],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 91,
+  { id: 91,
     name: ["Construire une Arche", "", "L'Arche", ""],
     resources: [
       [],
@@ -4362,8 +4179,6 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Parchemin - Permanente", "", "Maritime", ""],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [
       [ {content: "", checked: false},
         {content: "", checked: false},
@@ -4392,24 +4207,24 @@ export const allCards: GameCard[] = [
       ],
       []
     ],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 92,
+  { id: 92,
     name: ["__", "", "__", ""],
     resources: [
       [ { gold: 0 } ],
@@ -4432,27 +4247,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Personne", "", "Personne", ""],
     choice: true,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 93,
+  { id: 93,
     name: ["Chasse au Trésor", "Baie des Pirates", "Trésor Pirate", "Carte au Trésor"],
     resources: [
       [],
@@ -4475,27 +4288,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Maritime", "Maritime", "Evénement", "Maritime"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 94,
+  { id: 94,
     name: ["Traître", "", "Malédiction", ""],
     resources: [
       [ { fame: -2 } ],
@@ -4518,27 +4329,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Ennemi", "", "Evénement", ""],
     choice: true,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 95,
+  { id: 95,
     name: ["Astronome", "", "Astrologue", ""],
     resources: [
       [],
@@ -4561,8 +4370,6 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Personne", "", "Personne", ""],
     choice: true,
-    up: false,
-    flipped: false,
     checkboxes: [
       [
         { content: "", checked: false }, { content: "", checked: false },
@@ -4578,24 +4385,24 @@ export const allCards: GameCard[] = [
       [],
       [],
     ],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 96,
+  { id: 96,
     name: ["Alchimiste", "Potion de Force", "Potion d'Amour", "Potion de Soin"],
     resources: [
       [],
@@ -4618,27 +4425,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Personne", "Potion - Objet", "Potion - Objet", "Potion - Objet"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 97,
+  { id: 97,
     name: ["Rouet", "Soie", "Mode", "Exportation d'Etoffe"],
     resources: [
       [ { fame: 2 } ],
@@ -4661,27 +4466,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Invention", "Invention", "Invention", "Invention"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 98,
+  { id: 98,
     name: ["Boussole", "Navigation", "Calendrier", "Astrolabe"],
     resources: [
       [ { fame: 2 } ],
@@ -4704,8 +4507,6 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Maritime", "Maritime", "Invention", "Maritime"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [
       [
         { content: "", checked: false }, { content: "", checked: false },
@@ -4730,24 +4531,24 @@ export const allCards: GameCard[] = [
         { content: "", checked: false }, { content: "", checked: false },
       ],
     ],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 99,
+  { id: 99,
     name: ["Châtiment Publique", "Instrument de Torture", "Ere Post-Barbare", "Salle de Torture"],
     resources: [
       [ { military: 1, fame: -2 } ],
@@ -4770,27 +4571,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Invention", "Invention - Objet", "Etat", "Bâtiment"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 100,
+  { id: 100,
     name: ["Scierie Publique", "Industrie du Bois", "Exportation de Bois", "Cargaison de Bois"],
     resources: [
       [ { wood: 3, fame: 3 } ],
@@ -4816,27 +4615,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Bâtiment", "Bâtiment", "Bâtiment", "Maritime"],
     choice: true,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 101,
+  { id: 101,
     name: ["Scierie Publique", "Industrie du Bois", "Exportation de Bois", "Cargaison de Bois"],
     resources: [
       [ { gold: 3, fame: 4 } ],
@@ -4859,27 +4656,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Terrain", "Bâtiment - Terrain", "Bâtiment", "Bâtiment"],
     choice: true,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 102,
+  { id: 102,
     name: ["Bateaux de Pêche", "Comme un Poisson (dans l'eau)", "Exportation de Bois", "Cargaison de Bois"],
     resources: [
       [ { gold: 3, fame: 2 } ],
@@ -4902,8 +4697,6 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Maritime", "Maritime", "Maritime", "Etat - Permanente"],
     choice: true,
-    up: false,
-    flipped: false,
     checkboxes: [
       [],
       [],
@@ -4913,24 +4706,24 @@ export const allCards: GameCard[] = [
       ],
       [],
     ],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 103,
+  { id: 103,
     name: ["Missionaire", "", "Apiculteur", ""],
     resources: [
       [],
@@ -4953,8 +4746,6 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Personne", "", "Personne", ""],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [
       [],
       [],
@@ -4964,24 +4755,24 @@ export const allCards: GameCard[] = [
       ],
       [],
     ],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 104,
+  { id: 104,
     name: ["Prêtre", "", "Cardinal", ""],
     resources: [
       [],
@@ -5004,27 +4795,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Personne", "", "Personne", ""],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 105,
+  { id: 105,
     name: ["Petit Village sur la Colline", "Village sur la Colline", "Ville sur la Colline", "Grande Ville"],
     resources: [
       [ { fame: 6 } ],
@@ -5047,27 +4836,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Terrain", "Terrain", "Terrain", "Terrain"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 106,
+  { id: 106,
     name: ["Camelot", "Camelot", "Camelot", "Camelot"],
     resources: [
       [ { fame: 15 } ],
@@ -5090,8 +4877,6 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Bâtiment", "Bâtiment", "Bâtiment", "Bâtiment"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [
       [],
       [],
@@ -5103,24 +4888,24 @@ export const allCards: GameCard[] = [
       ],
       [],
     ],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 107,
+  { id: 107,
     name: ["Visite Royale", "", "Inquisitrice", ""],
     resources: [
       [],
@@ -5143,27 +4928,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Evénement", "", "Evénement", ""],
     choice: true,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 108,
+  { id: 108,
     name: ["Cristal Ethéré Royale", "", "", ""],
     resources: [
       [ { fame: 10 } ],
@@ -5186,27 +4969,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Artefact - Permanente", "", "", ""],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 109,
+  { id: 109,
     name: ["Petite Guilde", "Guilde", "Manoir de la Guilde", "Hotêl de la Guilde"],
     resources: [
       [ { gold: 1 } ],
@@ -5236,8 +5017,6 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Bâtiment", "Bâtiment", "Bâtiment", "Bâtiment"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [
       [],
       [],
@@ -5248,24 +5027,24 @@ export const allCards: GameCard[] = [
       ],
       [],
     ],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 110,
+  { id: 110,
     name: ["Grange", "Grande Grange", "Campagne", "Campagne Prospère"],
     resources: [
       [ { gold: 1 } ],
@@ -5291,27 +5070,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Bâtiment", "Bâtiment", "Terrain", "Terrain"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 111,
+  { id: 111,
     name: ["Manoir", "Grand Manoir", "Imposante Demeur", "Noble Demeur"],
     resources: [
       [ { gold: 6 } ],
@@ -5334,27 +5111,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Bâtiment", "Bâtiment", "Bâtiment", "Bâtiment"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 112,
+  { id: 112,
     name: ["Etable", "Etable", "Palfrenier", "Grande Etable"],
     resources: [
       [ { ...emptyResource} ],
@@ -5377,27 +5152,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Bâtiment", "Bâtiment", "Personne", "Bâtiment"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 113,
+  { id: 113,
     name: ["Cheval", "", "", ""],
     resources: [
       [ { gold: 1 } ],
@@ -5420,27 +5193,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Elevage - Cheval", "", "", ""],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 114,
+  { id: 114,
     name: ["Cheval", "", "", ""],
     resources: [
       [ { military: 1 } ],
@@ -5463,27 +5234,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Elevage - Cheval", "", "", ""],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 115,
+  { id: 115,
     name: ["Cheval", "", "", ""],
     resources: [
       [
@@ -5509,27 +5278,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Elevage - Cheval", "", "", ""],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 116,
+  { id: 116,
     name: ["Aric Blackwood", "", "Eadric Shadowstrike", ""],
     resources: [
       [ { gold: 2 } ],
@@ -5552,27 +5319,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Personne", "", "Personne", ""],
     choice: true,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 117,
+  { id: 117,
     name: ["Relations Commerciales", "", "", ""],
     resources: [
       [ { ...emptyResource} ],
@@ -5595,27 +5360,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Permanente", "", "", ""],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 118,
+  { id: 118,
     name: ["Petite Ecole", "Ecole", "Ecole Réputée", "Ecole Reconnue"],
     resources: [
       [ { ...emptyResource} ],
@@ -5638,27 +5401,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Bâtiment", "Bâtiment", "Bâtiment", "Bâtiment"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 119,
+  { id: 119,
     name: ["Commerçante", "Bazar", "Festival", "Marché"],
     resources: [
       [{ ...emptyResource }],
@@ -5690,27 +5451,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Personne", "Bâtiment", "Evénement", "Bâtiment"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 120,
+  { id: 120,
     name: ["Investisseur", "Investisseur", "Investisseur", "Investisseur"],
     resources: [
       [ { ...emptyResource} ],
@@ -5733,27 +5492,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Personne - Dame", "Personne - Dame", "Personne - Dame", "Personne - Dame"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 121,
+  { id: 121,
     name: ["Roi Alahar", "", "Reine Jemimah", ""],
     resources: [
       [ { military: 2, fame: -5 } ],
@@ -5776,8 +5533,6 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Personne", "", "Personne - Dame", ""],
     choice: true,
-    up: false,
-    flipped: false,
     checkboxes:  [
       [],
       [],
@@ -5789,24 +5544,24 @@ export const allCards: GameCard[] = [
       ],
       [],
     ],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 122,
+  { id: 122,
     name: ["Consort Royal", "", "Consort Royal", ""],
     resources: [
       [ { gold: 1, export: 2 } ],
@@ -5829,27 +5584,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Personne - Dame", "", "Personne - Chevalier", ""],
     choice: true,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 123,
+  { id: 123,
     name: ["Château Majestueux", "Château Monumental", "Forteresse", "Forteresse Imprenable"],
     resources: [
       [ { military: 1, fame: 15 } ],
@@ -5872,27 +5625,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Bâtiment", "Bâtiment", "Bâtiment", "Bâtiment"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 124,
+  { id: 124,
     name: ["Extraction de joyaux", "Taille de Joyau", "Exposition du Joyau", "Polissage du Joyau"],
     resources: [
       [ { stone: 1, ingot: 2, export: 2, fame: 15 } ],
@@ -5915,27 +5666,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Evénement", "Evénement", "Evénement", "Evénement"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 125,
+  { id: 125,
     name: ["Grand Temple", "Temple Sculpté", "Temple de la Lumière", "Temple Légendaire"],
     resources: [
       [ { stone: 1, fame: 18 } ],
@@ -5958,27 +5707,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Bâtiment", "Bâtiment", "Bâtiment", "Bâtiment"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 126,
+  { id: 126,
     name: ["Forêt de Pins", "Forêt de Pins", "Mare", "Mare Poissonneuse"],
     resources: [
       [ { wood: 1 } ],
@@ -6001,27 +5748,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Terrain", "Terrain", "Terrain", "Terrain"],
     choice: true,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 127,
+  { id: 127,
     name: ["Rochers", "Rochers", "Champignons", "Champignons"],
     resources: [
       [ { stone: 1 } ],
@@ -6044,27 +5789,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Terrain", "Terrain", "Terrain", "Terrain"],
     choice: true,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 128,
+  { id: 128,
     name: ["Ravin", "Gouffre", "Site de Fouilles", "Ruines Antiques"],
     resources: [
       [],
@@ -6087,8 +5830,6 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Terrain", "Terrain", "Terrain", "Terrain"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes:  [
       [],
       [],
@@ -6100,24 +5841,24 @@ export const allCards: GameCard[] = [
       ],
       [],
     ],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 129,
+  { id: 129,
     name: ["Sources Chaudes", "Fontaine", "Rivière d'Eau Pure", "Canaux"],
     resources: [
       [],
@@ -6140,27 +5881,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Terrain", "Terrain", "Terrain", "Terrain"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 130,
+  { id: 130,
     name: ["Ville Frontalière", "Tour de Garde", "Mur Intérieur", "Double Muraille"],
     resources: [
       [ { gold: 1 } ],
@@ -6186,27 +5925,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Terrain", "Bâtiment", "Bâtiment", "Bâtiment"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 131,
+  { id: 131,
     name: ["Plaines du Nord", "Douves", "Muraille", "Pont des Douves"],
     resources: [
       [ { gold: 1 } ],
@@ -6232,27 +5969,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Terrain", "Terrain", "Bâtiment", "Bâtiment"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 132,
+  { id: 132,
     name: ["Collines Meridionales", "Terrasses", "Moulin à Vent", "Murailles"],
     resources: [
       [ { gold: 1 } ],
@@ -6278,27 +6013,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Terrain", "Terrain", "Bâtiment", "Bâtiment"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 133,
+  { id: 133,
     name: ["Raid", "Razzia", "Saccage", "Pillage"],
     resources: [
       [],
@@ -6321,27 +6054,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Evénement", "Evénement", "Evénement", "Evénement"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 134,
+  { id: 134,
     name: ["Rival Beau-Gosse", "", "Allié Noble", ""],
     resources: [
       [],
@@ -6364,8 +6095,6 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Personne", "", "Personne", ""],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes:  [
       [
         { content: "gold, gold, gold, gold, gold", checked: false },
@@ -6377,24 +6106,24 @@ export const allCards: GameCard[] = [
       [],
       [],
     ],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 135,
+  { id: 135,
     name: ["Terres Frontalières", "Occupation", "Etats Vassaux", "Villages Alliés"],
     resources: [
       [],
@@ -6417,27 +6146,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Terrain - Ennemi", "Evénement", "Terrain", "Terrain"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 136,
+  { id: 136,
     name: ["Prospérité (extension)", "Engranger des réserves", "Décret Royal", "Soulèvement"],
     resources: [
       [],
@@ -6460,8 +6187,6 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Evénement - Permanente", "Evénement - Permanente", "Evénement - Permanente", "Evénement - Permanente"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [
       [],
       [],
@@ -6473,24 +6198,24 @@ export const allCards: GameCard[] = [
         { content: "", checked: false }, { content: "", checked: false },
       ],
     ],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 137,
+  { id: 137,
     name: ["Le Moulin à Eau (extension)", "Récolte Productive", "Fermes Abandonnées", "Surplus"],
     resources: [
       [],
@@ -6513,27 +6238,25 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Evénement - Permanente", "Evénement - Permanente", "Evénement - Permanente", "Evénement - Permanente"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },
-  {
-    id: 138,
+  { id: 138,
     name: ["Frontière Contestée (extension)", "Espionnage", "Résistance", "Attaque"],
     resources: [
       [],
@@ -6556,8 +6279,6 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Evénement - Permanente", "Evénement - Permanente", "Evénement - Permanente", "Evénement - Permanente"],
     choice: false,
-    up: false,
-    flipped: false,
     checkboxes: [
       [],
       [
@@ -6568,19 +6289,20 @@ export const allCards: GameCard[] = [
       [],
       [],
     ],
-    GetResources: function (): ResourceMap[] {
+    enemy: [false, false, false],
+    GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
     GetEffect: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetUpgrades: function (): Upgrade[] {
+    GetName: function (): string {
       throw new Error("Function not implemented.");
     },
     GetType: function (): string {
       throw new Error("Function not implemented.");
     },
-    GetName: function (): string {
+    GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
   },

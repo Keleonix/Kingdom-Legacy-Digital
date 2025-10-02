@@ -3,8 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { emptyResource, GameCard, RESOURCE_KEYS, EFFECT_KEYWORDS, TYPE_COLORS, type ResourceMap, type PopupPayload, type Checkbox, type Upgrade } from "./types";
+import { emptyResource, GameCard, RESOURCE_KEYS, EFFECT_KEYWORDS, TYPE_COLORS, type ResourceMap, type PopupPayload, type DropPayload, type Checkbox, type Upgrade } from "./types";
 import { allCards } from "./cards";
+import { getCardEffects, type GameContext } from "./cardEffects";
 
 // deep-clone preserving prototype/methods
 function cloneGameCard(src: GameCard): GameCard {
@@ -15,8 +16,7 @@ function cloneGameCard(src: GameCard): GameCard {
   out.currentSide = src.currentSide || 1;
   out.type = [...src.type];
   out.choice = src.choice;
-  out.up = src.up;
-  out.flipped = src.flipped;
+  out.enemy = [...src.enemy];
 
   // deep-copy resources (sides -> options -> resource keys)
   out.resources = src.resources.map((side) =>
@@ -70,7 +70,11 @@ function getBackgroundStyle(card: GameCard, sideIdx: number) {
 
   const colors = types.map((t) => TYPE_COLORS[t] || "#ffffff");
 
-  if (colors.length ===0 ) {
+  if (card.enemy[card.currentSide - 1]) {
+    colors.push(TYPE_COLORS["Ennemi"]);
+  }
+
+  if (colors.length === 0) {
     colors.push(TYPE_COLORS["default"]);
   }
 
@@ -96,6 +100,7 @@ function CardView({
   onUpgrade,
   onGainResources,
   onCardUpdate,
+  onExecuteCardEffect,
   interactable = true,
 }: {
   card: GameCard;
@@ -105,6 +110,7 @@ function CardView({
   onUpgrade?: (card: GameCard, upgrade: Upgrade, zone: string) => void;
   onGainResources?: (card: GameCard, resources: Partial<ResourceMap>, zone: string) => void;
   onCardUpdate?: (updatedCard: GameCard, zone: string) => void;
+  onExecuteCardEffect?: (card: GameCard, zone: string) => Promise<void>;
   interactable?: boolean;
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -303,30 +309,42 @@ function CardView({
 
   function renderEffect(raw: string) {
     const { before, effects } = parseEffects(raw);
+    
+    // Récupérer les effets programmés
+    const cardEffects = getCardEffects(card.id, card.currentSide || 1);
 
     return (
       <div className="flex flex-col gap-1">
-        {/* Texte avant les effets */}
         {before && (
           <div className="text-sm">
-            {renderEffectText(before)} {/* <-- rendu avec icones si besoin */}
+            {renderEffectText(before)}
           </div>
         )}
 
-        {/* One button per effect */}
-        {effects.map((eff, idx) => (
-          <button
-            key={idx}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              console.log("Effet déclenché :", eff);
-            }}
-            className="text-[10px] px-2 py-1 border rounded bg-white hover:bg-gray-100 transition text-left w-full whitespace-pre-wrap flex flex-wrap justify-center"
-          >
-            {renderEffectText(eff)} {/* Icones here */}
-          </button>
-        ))}
+        {effects.map((eff, idx) => {
+          const hasEffect = cardEffects[idx] !== undefined;
+          
+          return (
+            <button
+              key={idx}
+              onClick={async (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                if (hasEffect) {
+                  await onExecuteCardEffect?.(card, fromZone);
+                }
+              }}
+              className={`text-[10px] px-2 py-1 border rounded transition text-left w-full ${
+                hasEffect 
+                  ? "bg-blue-50 hover:bg-blue-100 border-blue-300" 
+                  : "bg-white hover:bg-gray-100"
+              }`}
+            >
+              {renderEffectText(eff)}
+            </button>
+          );
+        })}
       </div>
     );
   }
@@ -528,6 +546,7 @@ function Zone({
   onUpgrade,
   onGainResources,
   onCardUpdate,
+  onExecuteCardEffect,
   showAll = true,
   interactable = true,
   onTapAction,
@@ -539,6 +558,7 @@ function Zone({
   onUpgrade?: (card: GameCard, upgrade: Upgrade, zone: string) => void;
   onGainResources?: (card: GameCard, resources: Partial<ResourceMap>, zone: string) => void;
   onCardUpdate?: (updatedCard: GameCard, zone: string) => void;
+  onExecuteCardEffect?: (card: GameCard, zone: string) => Promise<void>;
   showAll?: boolean;
   interactable?: boolean;
   onTapAction?: (card: GameCard, zone: string) => void;
@@ -588,7 +608,7 @@ if (name === "Play Area" || name === "Blocked") {
         {displayCards.length > 0 ? (
           displayCards.map((c) => (
             <CardView
-              key={`${name}-${c.id}-${c.currentSide}-${c.flipped}`}
+              key={`${name}-${c.id}-${c.currentSide}`}
               card={c}
               fromZone={name}
               onRightClick={onRightClick}
@@ -597,6 +617,7 @@ if (name === "Play Area" || name === "Blocked") {
               onUpgrade={onUpgrade}
               onGainResources={onGainResources}
               onCardUpdate={onCardUpdate}
+              onExecuteCardEffect={onExecuteCardEffect}
             />
           ))
         ) : (
@@ -942,6 +963,191 @@ function CardPopup({
 }
 
 // -------------------
+// Cards Selection Popup
+// -------------------
+function CardSelectionPopup({
+  cards,
+  requiredCount,
+  onConfirm,
+  onCancel
+}: {
+  cards: GameCard[];
+  requiredCount: number;
+  onConfirm: (selectedCards: GameCard[]) => void;
+  onCancel: () => void;
+}) {
+  const [selectedCards, setSelectedCards] = useState<GameCard[]>(() => {
+    if (cards.length <= requiredCount) {
+      return [...cards];
+    }
+    return [];
+  });
+
+  const toggleCard = (card: GameCard) => {
+    setSelectedCards(prev => {
+      const isSelected = prev.some(c => c.id === card.id);
+      if (isSelected) {
+        return prev.filter(c => c.id !== card.id);
+      } else if (prev.length < requiredCount) {
+        return [...prev, card];
+      }
+      return prev;
+    });
+  };
+
+  const canConfirm = selectedCards.length === requiredCount;
+
+  return (
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[80]">
+      <div className="bg-white p-4 rounded-xl space-y-4 max-w-4xl max-h-[80vh] overflow-hidden flex flex-col">
+        <h2 className="font-bold">
+          Select {requiredCount} card(s)
+          {cards.length <= requiredCount && " (Auto-selected)"}
+        </h2>
+        
+        <div className="flex-1 overflow-y-auto p-2 border rounded">
+          <div className="grid grid-cols-3 gap-2">
+            {cards.map((card) => {
+              const isSelected = selectedCards.some(c => c.id === card.id);
+              return (
+                <div
+                  key={`select-${card.id}-${card.currentSide}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleCard(card);
+                  }}
+                  className={`cursor-pointer transition-all relative ${
+                    isSelected 
+                      ? "ring-4 ring-blue-500 scale-105" 
+                      : "hover:ring-2 hover:ring-gray-300"
+                  }`}
+                >
+                  {/* Overlay cliquable sur toute la carte */}
+                  <div className="absolute inset-0 z-10" />
+                  <CardView
+                    card={card}
+                    fromZone="Play Area"
+                    onRightClick={() => {}}
+                    interactable={false}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="flex justify-between items-center pt-2 border-t">
+          <span className="text-sm text-gray-600">
+            Selected: {selectedCards.length} / {requiredCount}
+          </span>
+          <div className="flex gap-2">
+            <Button onClick={onCancel} variant="secondary">
+              Cancel
+            </Button>
+            <Button 
+              onClick={() => onConfirm(selectedCards)}
+              disabled={!canConfirm}
+            >
+              Confirm
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// -------------------
+// Cards Discovery Popup
+// -------------------
+function CardDiscoveryPopup({
+  cards,
+  requiredCount,
+  onConfirm
+}: {
+  cards: GameCard[];
+  requiredCount: number;
+  onConfirm: (selectedCards: GameCard[]) => void;
+}) {
+  const [selectedCards, setSelectedCards] = useState<GameCard[]>(() => {
+    if (cards.length <= requiredCount) {
+      return [...cards];
+    }
+    return [];
+  });
+
+  const toggleCard = (card: GameCard) => {
+    setSelectedCards(prev => {
+      const isSelected = prev.some(c => c.id === card.id);
+      if (isSelected) {
+        return prev.filter(c => c.id !== card.id);
+      } else if (prev.length < requiredCount) {
+        return [...prev, card];
+      }
+      return prev;
+    });
+  };
+
+  const canConfirm = selectedCards.length === requiredCount;
+
+  return (
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[80]">
+      <div className="bg-white p-4 rounded-xl space-y-4 max-w-4xl max-h-[80vh] overflow-hidden flex flex-col">
+        <h2 className="font-bold">
+          Select {requiredCount} card(s)
+          {cards.length <= requiredCount && " (Auto-selected)"}
+        </h2>
+        
+        <div className="flex-1 overflow-y-auto p-2 border rounded">
+          <div className="grid grid-cols-3 gap-2">
+            {cards.map((card) => {
+              const isSelected = selectedCards.some(c => c.id === card.id);
+              return (
+                <div
+                  key={`select-${card.id}-${card.currentSide}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleCard(card);
+                  }}
+                  className={`cursor-pointer transition-all relative ${
+                    isSelected 
+                      ? "ring-4 ring-green-500 scale-105" 
+                      : "hover:ring-2 hover:ring-gray-300"
+                  }`}
+                >
+                  {/* Overlay cliquable sur toute la carte */}
+                  <div className="absolute inset-0 z-10" />
+                  <CardView
+                    card={card}
+                    fromZone="Campaign"
+                    onRightClick={() => {}}
+                    interactable={false}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="flex justify-between items-center pt-2 border-t">
+          <span className="text-sm text-gray-600">
+            Selected: {selectedCards.length} / {requiredCount}
+          </span>
+          <div className="flex gap-2">
+            <Button 
+              onClick={() => onConfirm(selectedCards)}
+              disabled={!canConfirm}
+            >
+              Confirm
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// -------------------
 // The Game
 // -------------------
 
@@ -964,6 +1170,24 @@ export default function Game() {
 
   const [hasUpgradedCard, setHasUpgradedCard] = useState(false);
   const [hasEndedBaseGame, setHasEndedBaseGame] = useState(false);
+
+  // Effects handling
+  const [resourceChoicePopup, setResourceChoicePopup] = useState<{
+    options: Array<Partial<ResourceMap>>;
+    resolve: (choice: Partial<ResourceMap> | null) => void;
+  } | null>(null);
+
+  const [cardSelectionPopup, setCardSelectionPopup] = useState<{
+    cards: GameCard[];
+    requiredCount: number;
+    resolve: (selectedCards: GameCard[]) => void;
+  } | null>(null);
+
+  const [cardDiscoveryPopup, setCardDiscoveryPopup] = useState<{
+  cards: GameCard[];
+  requiredCount: number;
+  resolve: (selectedCards: GameCard[] | null) => void;
+} | null>(null);
 
   // -------------------
   // Init
@@ -1035,12 +1259,92 @@ export default function Game() {
     setHasEndedBaseGame(true);
   };
 
+  const selectResourceChoice = (options: Array<Partial<ResourceMap>>): Promise<Partial<ResourceMap> | null> => {
+    return new Promise((resolve) => {
+      setResourceChoicePopup({ options, resolve });
+    });
+  };
+
+  const selectCardsFromPlay = (
+    filter: (card: GameCard) => boolean,
+    requiredCount: number
+  ): Promise<GameCard[]> => {
+    return new Promise((resolve) => {
+      const filteredCards = playArea.filter(filter);
+      setCardSelectionPopup({
+        cards: filteredCards,
+        requiredCount,
+        resolve
+      });
+    });
+  };
+
+  const discoverCard = (
+    filter: (card: GameCard) => boolean,
+    requiredCount: number
+  ): Promise<boolean> => {
+    return new Promise((resolve) => {
+      const filteredCards = campaignDeck.filter(filter);
+      
+      if (filteredCards.length === 0) {
+        resolve(false);
+        return;
+      }
+      
+      setCardDiscoveryPopup({
+        cards: filteredCards,
+        requiredCount,
+        resolve: (selectedCards: GameCard[] | null) => {
+          if (selectedCards) {
+            for(const card of selectedCards) {
+              setCampaignDeck(prev => prev.filter(c => c.id !== card.id));
+              setDiscard(prev => [...prev, cloneGameCard(card)]);
+            }
+            resolve(true);
+          } else {
+            resolve(false);
+          }
+        }
+      });
+    });
+  };
+
+  const handleExecuteCardEffect = async (card: GameCard, zone: string) => {
+    const effects = getCardEffects(card.id, card.currentSide);
+    
+    if (effects.length === 0) {
+      return;
+    }
+
+    const context: GameContext = {
+      card,
+      zone,
+      resources,
+      setResources,
+      draw,
+      dropToDiscard,
+      setDeck,
+      setPlayArea,
+      setDiscard,
+      setPermanentZone,
+      setBlockedZone,
+      deleteCardInZone,
+      replaceCardInZone,
+      selectResourceChoice,
+      selectCardsFromPlay,
+      discoverCard,
+    };
+
+    for (const effect of effects) {
+      if(await effect.execute(context)) {
+        dropToDiscard({ id: card.id, fromZone: zone });
+      }
+    }
+  };
+
   // -------------------
   // Drag & Drop Handlers
   // -------------------
-
-  type DropPayload = { id: number; fromZone: string };
-
   const handleDropToZone = (toZone: string) => (payload: DropPayload) => {
     const { id, fromZone } = payload;
     if (fromZone === toZone) return;
@@ -1205,7 +1509,7 @@ export default function Game() {
 
       if (!hasEnough) {
         console.warn("Pas assez de ressources pour cet upgrade");
-        return; // On sort, pas d'upgrade
+        return;
       }
 
       // Deduct
@@ -1413,6 +1717,7 @@ export default function Game() {
                 onRightClick={(c, zone) => setPopupCard({ originZone: zone, originalId: c.id, editable: cloneGameCard(c) })}
                 onTapAction={handleTapAction}
                 onCardUpdate={handleCardUpdate}
+                onExecuteCardEffect={handleExecuteCardEffect}
                 interactable={true}
               />
             </div>
@@ -1448,6 +1753,7 @@ export default function Game() {
               onCardUpdate={handleCardUpdate}
               onUpgrade={handleUpgrade}
               onGainResources={handleGainResources}
+              onExecuteCardEffect={handleExecuteCardEffect}
             />
           </div>
 
@@ -1761,6 +2067,75 @@ export default function Game() {
             </div>
           </div>
         )}
+
+        {resourceChoicePopup && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[70]">
+          <div className="bg-white p-4 rounded-xl space-y-4 max-w-md">
+            <h2 className="font-bold">Choose Resources</h2>
+            
+            <div className="space-y-2">
+              {resourceChoicePopup.options.map((option, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => {
+                    resourceChoicePopup.resolve(option);
+                    setResourceChoicePopup(null);
+                  }}
+                  className="w-full p-3 border rounded hover:bg-gray-100 transition flex items-center gap-2 justify-center"
+                >
+                  {Object.entries(option).map(([key, value]) => (
+                    <div key={key} className="flex items-center gap-1">
+                      <img 
+                        src={resourceIconPath(key as keyof ResourceMap)} 
+                        alt={key} 
+                        className="w-5 h-5" 
+                      />
+                      <span className="text-sm">x{value}</span>
+                    </div>
+                  ))}
+                </button>
+              ))}
+            </div>
+
+            <Button 
+              onClick={() => {
+                resourceChoicePopup.resolve(null);
+                setResourceChoicePopup(null);
+              }}
+              variant="secondary"
+              className="w-full"
+            >
+              Cancel
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {cardSelectionPopup && (
+        <CardSelectionPopup
+          cards={cardSelectionPopup.cards}
+          requiredCount={cardSelectionPopup.requiredCount}
+          onConfirm={(selectedCards) => {
+            cardSelectionPopup.resolve(selectedCards);
+            setCardSelectionPopup(null);
+          }}
+          onCancel={() => {
+            cardSelectionPopup.resolve([]);
+            setCardSelectionPopup(null);
+          }}
+        />
+      )}
+
+      {cardDiscoveryPopup && (
+        <CardDiscoveryPopup
+          cards={cardDiscoveryPopup.cards}
+          requiredCount={cardDiscoveryPopup.requiredCount}
+          onConfirm={(selectedCard) => {
+            cardDiscoveryPopup.resolve(selectedCard);
+            setCardDiscoveryPopup(null);
+          }}
+        />
+      )}
       </div>
     </DndProvider>
   );

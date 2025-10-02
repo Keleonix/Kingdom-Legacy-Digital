@@ -36,6 +36,7 @@ export const RESOURCE_KEYS: (keyof ResourceMap)[] = [
 export const EFFECT_KEYWORDS = [
   "effects/time",
   "effects/activate",
+  "effects/destroy",
   "effects/optional",
   "effects/oneTime"
 ];
@@ -74,18 +75,22 @@ export type Upgrade = {
   nextSide: number; // 1..4
 };
 
+export type DropPayload = {
+  id: number;
+  fromZone: string
+};
+
 export class GameCard {
   id = -1;
   name: string[] = ["", "", "", ""];
   currentSide = 1; // 1..4
   type = ["", "", "", ""];
   choice = false;
-  up = true;
-  flipped = false;
   resources: Partial<ResourceMap>[][] = [];
   effects: string[] = [];
   upgrades: Upgrade[][] = [];
   checkboxes: Checkbox[][] = [];
+  enemy: Boolean[] = [false, false, false];
 
   constructor({
     id = -1,
@@ -93,8 +98,6 @@ export class GameCard {
     currentSide = 1,
     type = ["", "", "", ""],
     choice = false,
-    up = true,
-    flipped = false,
     resources = [
       [{ ...emptyResource }],
       [{ ...emptyResource }],
@@ -103,32 +106,31 @@ export class GameCard {
     ],
     effects = ["", "", "", ""],
     upgrades = [[], [], [], []],
+    enemy = [false, false, false],
   }: Partial<{
     id: number;
     name: string[];
     currentSide: number;
     type: string[];
-    permanent: boolean;
-    choice: boolean;
-    up: boolean;
-    flipped: boolean;
-    resources: ResourceMap[][];
-    effects: string[];
-    upgrades: Upgrade[][];
+    permanent?: boolean;
+    choice?: boolean;
+    resources?: ResourceMap[][];
+    effects?: string[];
+    upgrades?: Upgrade[][];
+    enemy?: Boolean[];
   }> = {}) {
     this.id = id;
     this.name = name;
     this.currentSide = currentSide;
     this.type = type;
     this.choice = choice;
-    this.up = up;
-    this.flipped = flipped;
     this.resources = Array.isArray(resources)
       ? resources.map((side) => side.map((r) => ({ ...emptyResource, ...r })))
       : [];
     while (this.resources.length < 4) this.resources.push([{ ...emptyResource }]);
     this.effects = effects;
     this.upgrades = upgrades;
+    this.enemy = enemy;
   }
 
   // returns array of options for the current side
