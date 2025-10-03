@@ -1029,12 +1029,14 @@ function CardPopup({
 // -------------------
 function CardSelectionPopup({
   cards,
+  effectDescription,
   zone,
   requiredCount,
   onConfirm,
   onCancel
 }: {
   cards: GameCard[];
+  effectDescription: string,
   zone: string;
   requiredCount: number;
   onConfirm: (selectedCards: GameCard[]) => void;
@@ -1193,7 +1195,7 @@ function CardSelectionPopup({
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[80]">
       <div className="bg-white p-4 rounded-xl space-y-4 max-w-4xl max-h-[80vh] overflow-hidden flex flex-col">
         <h2 className="font-bold">
-          Select {requiredCount} card(s)
+          Select {requiredCount} card(s) : {effectDescription} 
           {cards.length <= requiredCount && " (Auto-selected)"}
         </h2>
         
@@ -1409,6 +1411,7 @@ export default function Game() {
 
   const [cardSelectionPopup, setCardSelectionPopup] = useState<{
     cards: GameCard[];
+    effectDescription: string;
     zone: string;
     requiredCount: number;
     resolve: (selectedCards: GameCard[]) => void;
@@ -1421,6 +1424,8 @@ export default function Game() {
   const [onCheckboxConfirm, setOnCheckboxConfirm] = useState<
     ((selected: Checkbox[]) => void) | null
   >(null);
+
+  const [pendingPlayedCards, setPendingPlayedCards] = useState<GameCard[]>([]);
 
   // -------------------
   // Init
@@ -1463,9 +1468,22 @@ export default function Game() {
 
   const draw = (nbCards: number) => {
     const drawn = deck.slice(0, nbCards);
-    setPlayArea((p) => [...p, ...drawn.map(cloneGameCard)]);
+    const newCards = drawn.map(cloneGameCard);
+    
+    setPlayArea((p) => [...p, ...newCards]);
     setDeck((d) => d.slice(nbCards));
+    setPendingPlayedCards(newCards);
   };
+
+  // Trigger effects after cards are in Play Area
+  useEffect(() => {
+    if (pendingPlayedCards.length > 0) {
+      pendingPlayedCards.forEach(card => {
+        handleExecuteCardEffect(card, "Play Area", "played");
+      });
+      setPendingPlayedCards([]);
+    }
+  }, [pendingPlayedCards]);
 
   const drawNewTurn = () => {
     discardEndTurn();
@@ -1473,6 +1491,19 @@ export default function Game() {
   }
   
   const progress = () => draw(2);
+
+  const effectEndTurn = () => {
+    setDiscard((d) => [...d, ...playArea]);
+    setPlayArea([]);
+
+    setResources((prev) => {
+      const reset: ResourceMap = { ...emptyResource };
+      if ("fame" in prev) (reset as Partial<ResourceMap>).fame = (prev as Partial<ResourceMap>).fame;
+      return reset;
+    });
+
+    setHasUpgradedCard(true);
+  };
 
   const discardEndTurn = () => {
     setDiscard((d) => [...d, ...playArea]);
@@ -1524,12 +1555,14 @@ export default function Game() {
 
   const selectCardsFromPlay = (
     filter: (card: GameCard) => boolean,
+    effectDescription: string,
     requiredCount: number
   ): Promise<GameCard[]> => {
     return new Promise((resolve) => {
       const filteredCards = playArea.filter(filter);
       setCardSelectionPopup({
         cards: filteredCards,
+        effectDescription: effectDescription,
         zone: "Play Area",
         requiredCount,
         resolve
@@ -1539,12 +1572,14 @@ export default function Game() {
 
   const selectCardsFromDiscard = (
     filter: (card: GameCard) => boolean,
+    effectDescription: string,
     requiredCount: number
   ): Promise<GameCard[]> => {
     return new Promise((resolve) => {
       const filteredCards = discard.filter(filter);
       setCardSelectionPopup({
         cards: filteredCards,
+        effectDescription: effectDescription,
         zone: "Discard",
         requiredCount,
         resolve
@@ -1554,6 +1589,7 @@ export default function Game() {
 
   const discoverCard = (
     filter: (card: GameCard) => boolean,
+    effectDescription: string,
     requiredCount: number
   ): Promise<boolean> => {
     return new Promise((resolve) => {
@@ -1566,6 +1602,7 @@ export default function Game() {
       
       setCardSelectionPopup({
         cards: filteredCards,
+        effectDescription: effectDescription,
         zone: "Campaign",
         requiredCount,
         resolve: (selectedCards: GameCard[] | null) => {
@@ -1585,9 +1622,10 @@ export default function Game() {
 
   const boostProductivity = (
     filter: (card: GameCard) => boolean,
+    effectDescription: string,
     prodBoost: Partial<ResourceMap> | null
   ): Promise<boolean> => {
-    return new Promise((resolve) => {
+    return new Promise(async (resolve) => {
       const filteredCards = deck.filter(filter);
       
       if (filteredCards.length === 0) {
@@ -1597,23 +1635,52 @@ export default function Game() {
       
       setCardSelectionPopup({
         cards: filteredCards,
+        effectDescription: effectDescription,
         zone: "Deck",
         requiredCount: 1,
-        resolve: (selectedCards: GameCard[] | null) => {
-          if (selectedCards) {
-            if (prodBoost === null) {
-              Object.entries(selectResourceChoice(selectedCards[0].resources[selectedCards[0].currentSide])).forEach(([k, v]) => {
-                prodBoost = emptyResource;
-                prodBoost[k as keyof ResourceMap] = (prodBoost[k as keyof ResourceMap] || 0) + v;
-              });
+        resolve: async (cards: GameCard[] | null) => {
+          if (cards && cards.length > 0) {
+            const selectedCard = cards[0];
+            let finalBoost = prodBoost;
+            
+            if (finalBoost === null) {
+              // Filtrer les options : retirer fame et les valeurs <= 0
+              const filteredOptions = selectedCard.resources[selectedCard.currentSide - 1].map(option => {
+                const filtered: Partial<ResourceMap> = {};
+                Object.entries(option).forEach(([key, value]) => {
+                  if (key !== 'fame' && typeof value === 'number' && value > 0) {
+                    filtered[key as keyof ResourceMap] = value;
+                  }
+                });
+                return filtered;
+              }).filter(option => Object.keys(option).length > 0); // Retirer les options vides
+              
+              if (filteredOptions.length === 0) {
+                resolve(false);
+                return;
+              }
+              
+              // Attendre le choix de l'utilisateur
+              const chosenResources = await selectResourceChoice(filteredOptions);
+              if (chosenResources) {
+                finalBoost = chosenResources;
+              } else {
+                resolve(false);
+                return;
+              }
             }
-            for (const resourceChoice of selectedCards[0].resources[selectedCards[0].currentSide]) {
-              for (const key in prodBoost) {
+            
+            // Appliquer le boost à toutes les options de ressources de la carte
+            for (const resourceChoice of selectedCard.resources[selectedCard.currentSide - 1]) {
+              for (const key in finalBoost) {
                 const resourceKey = key as keyof ResourceMap;
-                const amount = prodBoost[resourceKey] ?? 0;
+                const amount = finalBoost[resourceKey] ?? 0;
                 resourceChoice[resourceKey] = (resourceChoice[resourceKey] ?? 0) + amount;
               }
             }
+            
+            // Mettre à jour la carte dans le deck
+            replaceCardInZone("Deck", selectedCard.id, selectedCard);
             resolve(true);
           } else {
             resolve(false);
@@ -1651,6 +1718,7 @@ export default function Game() {
       filterZone,
       setResources,
       draw,
+      effectEndTurn,
       dropToPlayArea,
       dropToBlocked,
       dropToDiscard,
@@ -1739,7 +1807,7 @@ export default function Game() {
     if (toZone === "Permanent") setPermanentZone((pe) => [...pe, toAdd]);
     if (toZone === "Play Area"){
       setPlayArea((p) => [...p, toAdd]);
-      handleExecuteCardEffect(toAdd, "Play Area", "played", -1);
+      handleExecuteCardEffect(toAdd, "Play Area", "played");
     }
   };
 
@@ -2480,6 +2548,7 @@ export default function Game() {
       {cardSelectionPopup && (
         <CardSelectionPopup
             cards={cardSelectionPopup.cards}
+            effectDescription={cardSelectionPopup.effectDescription}
             requiredCount={cardSelectionPopup.requiredCount}
             onConfirm={(selectedCards) => {
               cardSelectionPopup.resolve(selectedCards);
