@@ -38,7 +38,17 @@ export const EFFECT_KEYWORDS = [
   "effects/activate",
   "effects/destroy",
   "effects/optional",
-  "effects/oneTime"
+  "effects/oneTime",
+  "effects/forced",
+  "effects/passive",
+];
+
+export const EFFECT_BUTTON_KEYWORDS = [
+  "effects/time",
+  "effects/activate",
+  "effects/destroy",
+  "effects/optional",
+  "effects/oneTime",
 ];
 
 export const TYPE_COLORS: Record<string, string> = {
@@ -79,6 +89,16 @@ export type DropPayload = {
   id: number;
   fromZone: string
 };
+
+export type EffectTiming =
+  "played" |
+  "endOfTurn" |
+  "otherCardPlayed" |
+  "onClick" |
+  "stayInPlay" |
+  "onResourceGain" |
+  "doesNothing"
+;
 
 export class GameCard {
   id = -1;

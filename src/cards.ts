@@ -675,7 +675,7 @@ export const allCards: GameCard[] = [
       [{ ...emptyResource }],
     ],
     effects: [
-      "effects/forced Carte Jouée : bloque 1 carte avec production d' resources/gold . effects/activate Dépensez resources/military pour vaincre ( effects/destroy ) et gagner 2 ressources au choix. (Peut être retournée par un Missionaire)",
+      "effects/forced Carte Jouée : Bloque 1 carte avec production d' resources/gold . effects/activate Dépensez resources/military pour vaincre ( effects/destroy ) et gagner 2 ressources au choix. (Peut être retournée par un Missionaire)",
       "",
       "effects/activate Choisissez un Bâtiment en jeu. Gagnez les ressources qui correspondent à sa production.",
       "",
@@ -765,7 +765,7 @@ export const allCards: GameCard[] = [
       [{ ...emptyResource }],
     ],
     effects: [
-      "effects/forced Carte Jouée : bloque 1 carte avec production d' resources/gold . effects/activate Dépensez resources/military pour vaincre ( effects/destroy ) et gagner 2 ressources au choix. (Peut être retournée par un Missionaire)",
+      "effects/forced Carte Jouée : Bloque 1 carte avec production d' resources/gold . effects/activate Dépensez resources/military pour vaincre ( effects/destroy ) et gagner 2 ressources au choix. (Peut être retournée par un Missionaire)",
       "",
       "effects/activate Choisissez un Terrain en jeu. Gagnez les ressources qui correspondent à sa production.",
       "",
@@ -1101,7 +1101,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "Ajoutez 1 resources/gold à la production d'un terrain. Puis choisissez un Bâtiment et rajoutez 1 à une ressource qu'il produit déjà.",
+      "effects/destroy Ajoutez 1 resources/gold à la production d'un terrain, puis choisissez un Bâtiment et rajoutez 1 à une ressource qu'il produit déjà.",
       "",
       "",
       "",
@@ -1142,9 +1142,9 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "effects/time dépensez les resources/military (1 à 10, incrément de 1) pour cocher la case de gauche à droite. A la dernière carte, Face UP et découvrez l'Etat Vassal (135).",
+      "effects/time Dépensez les resources/military (1 à 10, incrément de 1) pour cocher la case de gauche à droite, à la dernière carte, Back Up et découvrez l'Etat Vassal (135).",
       "",
-      "effects/time dépensez les resources/military (10, 10, 12, 12, 15) pour cocher la case de gauche à droite.",
+      "effects/time Dépensez les resources/military (10, 10, 12, 12, 15) pour cocher la case de gauche à droite.",
       "",
     ],
     upgrades: [
@@ -1897,7 +1897,7 @@ export const allCards: GameCard[] = [
   { id: 41,
     name: ["Bouffon", "", "Marchande", ""],
     resources: [
-      [ { stone: 1 } ],
+      [],
       [],
       [ { fame: 15 } ],
       [],
@@ -2582,7 +2582,7 @@ export const allCards: GameCard[] = [
     effects: [
       "effects/passive Reste en jeu. effects/forced Fin de Manche: Détruisez 2 Personnes de votre royaume. Puis -> (Back Front).",
       "",
-      "effects/forced Carte Jouée: bloque 1 Bâtiment/Terrain en jeu. effects/passive: Reste en jeu. effects/forced Fin de Manche: Détruisez la carte bloquée. effects/activate Dépensez resources/military resources/military pour vaincre ( effects/destroy ).",
+      "effects/forced Carte Jouée: Bloque 1 Bâtiment/Terrain en jeu. effects/passive: Reste en jeu. effects/forced Fin de Manche: Détruisez la carte bloquée. effects/activate Dépensez resources/military resources/military pour vaincre ( effects/destroy ).",
       "",
     ],
     upgrades: [
@@ -2623,7 +2623,7 @@ export const allCards: GameCard[] = [
     effects: [
       "effects/forced Détruisez la prochaine Personne que vous jouez. Lorsque vous le faites, -> (Back Front). effects/activate Dépensez resources/military resources/military resources/military pour vaincre (-> Back Up).",
       "",
-      "effects/forced Carte Jouée: bloque 1 Bâtiment/Terrain en jeu. effects/passive: Reste en jeu. effects/forced Fin de Manche: Détruisez la carte bloquée. effects/activate Dépensez resources/military resources/military pour vaincre ( effects/destroy ).",
+      "effects/forced Carte Jouée: Bloque 1 Bâtiment/Terrain en jeu. effects/passive: Reste en jeu. effects/forced Fin de Manche: Détruisez la carte bloquée. effects/activate Dépensez resources/military resources/military pour vaincre ( effects/destroy ).",
       "",
     ],
     upgrades: [
