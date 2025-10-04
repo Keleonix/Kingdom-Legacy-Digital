@@ -1,4 +1,4 @@
-import { GameCard, type ResourceMap, type DropPayload, type EffectTiming, type Checkbox, RESOURCE_KEYS, emptyResource } from "./types";
+import { GameCard, type ResourceMap, type DropPayload, type EffectTiming, type Checkbox, RESOURCE_KEYS } from "./types";
 
 export type GameContext = {
   card: GameCard;
