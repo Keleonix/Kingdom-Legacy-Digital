@@ -1,4 +1,4 @@
-import { GameCard, type ResourceMap, type DropPayload, type EffectTiming, type Checkbox, RESOURCE_KEYS } from "./types";
+import { GameCard, type ResourceMap, type DropPayload, type EffectTiming, type Checkbox, RESOURCE_KEYS, emptyResource } from "./types";
 
 export type GameContext = {
   card: GameCard;
@@ -91,6 +91,22 @@ function applyResourceMapDelta(
     }
     return updated;
   });
+}
+
+function addResourceMapToCard(
+  card: GameCard,
+  added: Partial<ResourceMap> | undefined
+) {
+  if(!added) {
+    return;
+  }
+  for (const key in added) {
+    const resourceKey = key as keyof ResourceMap;
+    const amount = added[resourceKey] ?? 0;
+    for(const resourceMap of card.GetResources()) {
+      resourceMap[resourceKey] = (resourceMap[resourceKey] ?? 0) + amount;
+    }
+  }
 }
 
 function checkBoxes(
@@ -811,21 +827,18 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
             checkbox.checked ? militaryToPay+= 1 : militaryToPay += 0;
           }
-          let allChecked = true;
           if (ctx.resources.military >= militaryToPay) {
             for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
               if (!checkbox.checked) {
                 checkbox.checked = true;
+                let checkboxResources = getCheckboxResources(checkbox.content);
+                if (checkboxResources) {
+                  ctx.card.resources[ctx.card.currentSide - 1] = [checkboxResources];
+                }
                 break;
               }
             }
-            for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
-              if(!checkbox.checked) {
-                allChecked = false;
-                break;
-              }
-            }
-            if (allChecked) {
+            if (militaryToPay === 10) {
               ctx.card.currentSide = 3;
               await ctx.discoverCard(
                 (card) => ([135].includes(card.id)),
@@ -842,21 +855,79 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         description: "End pour payer des military",
         timing: "onClick",
         execute: async function (ctx) {
-          while(!await ctx.boostProductivity((card: GameCard) => (card.GetType() === "Terrain"), this.description, { gold: 1 }));
-          while(!await ctx.boostProductivity((card: GameCard) => (card.GetType() === "Bâtiment"), this.description, null));
-          ctx.deleteCardInZone(ctx.zone, ctx.card.id);
+          let checkedBoxes = 0;
+          const militaryToPay = [10, 10, 12, 12, 15];
+          for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
+            checkbox.checked ? checkedBoxes+= 1 : checkedBoxes += 0;
+          }
+          if (checkedBoxes === ctx.card.checkboxes[ctx.card.currentSide - 1].length) {
+            return false;
+          }
+          if (ctx.resources.military >= militaryToPay[checkedBoxes]) {
+            for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
+              if (!checkbox.checked) {
+                checkbox.checked = true;
+                ctx.card.GetResources()[0] = { fame: 50 };
+                addResourceMapToCard(ctx.card, getCheckboxResources(checkbox.content));
+                break;
+              }
+            }
+            ctx.effectEndTurn();
+          }
           return false;
         }
       }],
   },
   26: {
-    1: [{ // Terre Fertile/Efficacité
-        description: "Ajoute 1 gold à 1 Terrain et boost 1 Bâtiment",
+    1: [{ // Trésor
+        description: "End pour payer des military",
         timing: "onClick",
         execute: async function (ctx) {
-          while(!await ctx.boostProductivity((card: GameCard) => (card.GetType() === "Terrain"), this.description, { gold: 1 }));
-          while(!await ctx.boostProductivity((card: GameCard) => (card.GetType() === "Bâtiment"), this.description, null));
-          ctx.deleteCardInZone(ctx.zone, ctx.card.id);
+          let goldToPay = 1;
+          for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
+            checkbox.checked ? goldToPay+= 1 : goldToPay += 0;
+          }
+          if (ctx.resources.gold >= goldToPay) {
+            for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
+              if (!checkbox.checked) {
+                checkbox.checked = true;
+                let checkboxResources = getCheckboxResources(checkbox.content);
+                if (checkboxResources) {
+                  ctx.card.resources[ctx.card.currentSide - 1] = [checkboxResources];
+                }
+                break;
+              }
+            }
+            if (goldToPay === 12) {
+              ctx.card.currentSide = 3;
+            }
+            ctx.effectEndTurn();
+          }
+          return false;
+        }
+      }],
+    3: [{ // Immense Trésor
+        description: "End pour payer des military",
+        timing: "onClick",
+        execute: async function (ctx) {
+          let goldToPay = 13;
+          for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
+            checkbox.checked ? goldToPay+= 1 : goldToPay += 0;
+          }
+          if (goldToPay > 17) {
+            return false;
+          }
+          if (ctx.resources.gold >= goldToPay) {
+            for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
+              if (!checkbox.checked) {
+                checkbox.checked = true;
+                ctx.card.GetResources()[0] = { fame: 50 };
+                addResourceMapToCard(ctx.card, getCheckboxResources(checkbox.content));
+                break;
+              }
+            }
+            ctx.effectEndTurn();
+          }
           return false;
         }
       }],
