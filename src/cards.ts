@@ -1136,7 +1136,7 @@ export const allCards: GameCard[] = [
   { id: 25,
     name: ["Armée", "", "Grande Armée", ""],
     resources: [
-      [],
+      [ emptyResource ],
       [],
       [ { fame: 50 } ],
       [],
@@ -1198,7 +1198,7 @@ export const allCards: GameCard[] = [
   { id: 26,
     name: ["Trésor", "", "Immense Trésor", ""],
     resources: [
-      [],
+      [ emptyResource ],
       [],
       [ { fame: 50 } ],
       [],
@@ -1262,15 +1262,15 @@ export const allCards: GameCard[] = [
   { id: 27,
     name: ["Exportations", "", "Exportations de Masse", ""],
     resources: [
-      [],
+      [ {...emptyResource}],
       [],
       [ { fame: 25 } ],
       [],
     ],
     effects: [
-      "effects/passive dépensez des resources/export . 10: Ajoutez resources/gold / resources/wood / resources/stone sur un Terrain. 20: Un Personnage gagne \" effects/passive Reste en jeu.\". 30 Découvrez Adoubement (80). 40: Ajoutez resources/ingot / resources/military / resources/export sur 1 Bâtiment. 55: Ajoutez resources/wood / resources/stone / resources/ingot / resources/military sur une carte. 75: Ajoutez resources/fame x5 sur une carte. 100: Face Up.",
+      "10: Ajoutez resources/gold / resources/wood / resources/stone sur un Terrain, 20: Un Personnage gagne \" effects/passive Reste en jeu.\", 30: Découvrez Adoubement (80), 40: Ajoutez resources/ingot / resources/military / resources/export sur 1 Bâtiment, 55: Ajoutez resources/wood / resources/stone / resources/ingot / resources/military sur une carte, 75: Ajoutez resources/fame x5 sur une carte, 100: -> Back Up. effects/passive Dépensez des resources/export .",
       "",
-      "effects/passive dépensez des resources/export . 25: Ajoutez resources/fame sur deux Terrains. 50: Ajoutez resources/fame x5 sur une Personne. 75: Découvrez Visite Royale (107). 100: Ajoutez resources/fame x5 sur un Bâtiment. 150: effects/check une autre carte Permanente. 200: effects/check toutes les autres cartes Permanentes au choix. 250: Découvrez Relations Commerciales (117).",
+      "25: Ajoutez resources/fame sur deux Terrains, 50: Ajoutez resources/fame x5 sur une Personne, 75: Découvrez Visite Royale (107), 100: Ajoutez resources/fame x5 sur un Bâtiment, 150: effects/check une autre carte Permanente, 200: effects/check toutes les autres cartes Permanentes au choix, 250: Découvrez Relations Commerciales (117). effects/passive Dépensez des resources/export .",
       "",
     ],
     upgrades: [
@@ -1282,28 +1282,7 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Parchemin - Permanente", "", "Parchemin - Permanente", ""],
     choice: false,
-    checkboxes: [
-      [
-        { content: "10", checked: false },
-        { content: "20", checked: false },
-        { content: "30", checked: false },
-        { content: "40", checked: false },
-        { content: "55", checked: false },
-        { content: "75", checked: false },
-        { content: "100", checked: false }
-      ],
-      [],
-      [
-        { content: "25", checked: false },
-        { content: "50", checked: false },
-        { content: "75", checked: false },
-        { content: "100", checked: false },
-        { content: "150", checked: false },
-        { content: "200", checked: false },
-        { content: "250", checked: false }
-      ],
-      [],
-    ],
+    checkboxes: [],
     enemy: [false, false, false, false],
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
@@ -1333,7 +1312,7 @@ export const allCards: GameCard[] = [
       "effects/forced Tant qu'elle est en jeu, détruisez le prochain Terrain que vous jouez. Lorsque vous le faite, Back Up.",
       "",
       "",
-      "effects/time Ajoutez 1 effects/check dans l'ordre. *: Ajoutez resources/wood à la production de cette carte.",
+      "effects/time Ajoutez 1 effects/check dans l'ordre et à *: Ajoutez resources/wood à la production de cette carte.",
     ],
     upgrades: [
       [],
@@ -1389,8 +1368,8 @@ export const allCards: GameCard[] = [
     upgrades: [
       [{ cost: {  }, nextSide: 2 }, { cost: {  }, nextSide: 3 }],
       [{ cost: {  }, nextSide: 1 }, { cost: {  }, nextSide: 4 }],
-      [{ cost: {  }, nextSide: 2 }, { cost: {  }, nextSide: 4 }],
-      [{ cost: {  }, nextSide: 1 }, { cost: {  }, nextSide: 3 }],
+      [{ cost: {  }, nextSide: 1 }, { cost: {  }, nextSide: 4 }],
+      [{ cost: {  }, nextSide: 2 }, { cost: {  }, nextSide: 3 }],
     ],
     currentSide: 1,
     type: ["Personne", "Personne", "Personne", "Personne"],

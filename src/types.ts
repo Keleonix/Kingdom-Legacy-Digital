@@ -41,6 +41,7 @@ export const EFFECT_KEYWORDS = [
   "effects/oneTime",
   "effects/forced",
   "effects/passive",
+  "effects/description",
 ];
 
 export const EFFECT_BUTTON_KEYWORDS = [

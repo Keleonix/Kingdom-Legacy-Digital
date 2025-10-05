@@ -3,9 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { emptyResource, GameCard, RESOURCE_KEYS, EFFECT_KEYWORDS, EFFECT_BUTTON_KEYWORDS, TYPE_COLORS, type ResourceMap, type PopupPayload, type DropPayload, type Checkbox, type Upgrade, type EffectTiming } from "./types";
+import { emptyResource, GameCard, RESOURCE_KEYS, EFFECT_KEYWORDS, TYPE_COLORS, type ResourceMap, type PopupPayload, type DropPayload, type Checkbox, type Upgrade, type EffectTiming } from "./types";
 import { allCards } from "./cards";
-import { getCardEffects, type GameContext } from "./cardEffects";
+import { getCardEffects, type GameContext, type CardEffect, cardEffectsRegistry } from "./cardEffects";
 
 // deep-clone preserving prototype/methods
 function cloneGameCard(src: GameCard): GameCard {
@@ -372,15 +372,24 @@ function CardView({
 
     return (
       <div className="flex flex-col gap-1">
-        {before && <div className="text-sm">{renderEffectText(before)}</div>}
+        {before && (
+          <div 
+            className="text-sm overflow-hidden" 
+            style={{
+              display: '-webkit-box',
+              WebkitLineClamp: 5,
+              WebkitBoxOrient: 'vertical'
+            }}
+          >
+            {renderEffectText(before)}
+          </div>
+        )}
 
         {effects.map((effObj, idx) => {
-          const keyword = (effObj.keyword || "").toLowerCase();
-          const isButtonKeyword = EFFECT_BUTTON_KEYWORDS.map(k => k.toLowerCase()).includes(keyword);
+          const effect = cardEffects[idx];
+          const isClickable = effect && effect.timing === "onClick";
 
-          const hasEffect = cardEffects[idx] !== undefined;
-
-          if (isButtonKeyword && hasEffect) {
+          if (isClickable) {
             return (
               <button
                 key={idx}
@@ -389,17 +398,12 @@ function CardView({
                   e.stopPropagation();
                   await onExecuteCardEffect?.(card, fromZone, "onClick", idx);
                 }}
-                className={`text-[10px] px-2 py-1 border rounded transition text-left w-full ${
-                  hasEffect
-                    ? "bg-blue-50 hover:bg-blue-100 border-blue-300"
-                    : "bg-white hover:bg-gray-100"
-                }`}
+                className="text-[10px] px-2 py-1 border rounded transition text-left w-full bg-blue-50 hover:bg-blue-100 border-blue-300"
               >
                 {renderEffectText(effObj.text)}
               </button>
             );
           } else {
-            // rendu non-cliquable (simple bloc)
             return (
               <div key={idx} className="text-[10px] px-2 py-1">
                 {renderEffectText(effObj.text)}
@@ -569,7 +573,7 @@ function CardView({
           </div>
           <div className="my-1">-----</div>
 
-          {/* Resources per side (each side's options joined with '/', sides separated by ' | ') */}
+          {/* Resources per side */}
           <div className="mt-2 text-xs flex flex-wrap justify-center items-center">
             {Array.isArray(card.resources) && card.resources.length > 0 ? (
               card.resources.map((sideOpts: Record<string, number>[], sideIdx: number) => (
@@ -583,14 +587,26 @@ function CardView({
             )}
           </div>
 
-          {/* Effects per side */}
+          {/* Effects per side - WITHOUT line-clamp */}
           <div className="my-1">-----</div>
-          {card.effects?.map((eff, idx) => (
-            <div key={idx}>
-              {idx > 0 && <div className="my-1">-----</div>}
-              <div className="text-xs mt-1">{renderEffect(eff)}</div>
-            </div>
-          ))}
+          {card.effects?.map((eff, idx) => {
+            const { before, effects } = parseEffects(eff);
+            return (
+              <div key={idx}>
+                {idx > 0 && <div className="my-1">-----</div>}
+                <div className="text-xs mt-1">
+                  {/* Display full before text without truncation */}
+                  {before && <div className="text-xs mb-1">{renderEffectText(before)}</div>}
+                  {/* Display effect buttons/blocks */}
+                  {effects.map((effObj, effIdx) => (
+                    <div key={effIdx} className="text-[9px] px-1 py-0.5 border rounded bg-white mb-1">
+                      {renderEffectText(effObj.text)}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
@@ -1301,6 +1317,45 @@ function CardSelectionPopup({
 }
 
 // -------------------
+// Effect Confirmation Popup
+// -------------------
+function EffectConfirmationPopup({
+  description,
+  onConfirm,
+  onSkip
+}: {
+  description: string;
+  onConfirm: () => void;
+  onSkip: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[80]">
+      <div className="bg-white p-6 rounded-xl space-y-4 max-w-md">
+        <h2 className="font-bold text-lg">Effet de fin de round</h2>
+        
+        <div className="text-sm py-4">
+          <p>{description}</p>
+        </div>
+
+        <div className="flex justify-end gap-3">
+          <Button 
+            onClick={onSkip}
+            variant="secondary"
+          >
+            Reporter au prochain round
+          </Button>
+          <Button 
+            onClick={onConfirm}
+          >
+            Résoudre maintenant
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// -------------------
 // Checkbox Selection Popup
 // -------------------
 const CheckboxSelectionPopup: React.FC<{
@@ -1381,6 +1436,88 @@ const CheckboxSelectionPopup: React.FC<{
 };
 
 // -------------------
+// Card Side Selection Popup
+// -------------------
+const CardSideSelectionPopup: React.FC<{
+  card: GameCard;
+  requiredCount: number;
+  optionalCount: number;
+  onConfirm: (selectedSides: number[]) => void;
+  onCancel: () => void;
+}> = ({ card, requiredCount, optionalCount, onConfirm, onCancel }) => {
+  const [selected, setSelected] = useState<number[]>([]);
+
+  const toggle = (sideIndex: number) => {
+    if (selected.includes(sideIndex)) {
+      setSelected(selected.filter((s) => s !== sideIndex));
+    } else if (selected.length < requiredCount + optionalCount) {
+      setSelected([...selected, sideIndex]);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex justify-center items-center">
+      <div className="bg-white p-4 rounded shadow-lg max-w-md w-full">
+        <h2 className="text-lg font-bold mb-2">
+          Select between {requiredCount} and {requiredCount + optionalCount} side(s)
+        </h2>
+        <div className="flex flex-col gap-2 mb-4">
+          <div className="grid grid-cols-2 gap-2">
+            {[1, 3, 2, 4].map((sideNum) => {
+              const isSelected = selected.includes(sideNum);
+              const sideName = card.name[sideNum - 1] || `Side ${sideNum}`;
+              return (
+                <label
+                  key={sideNum}
+                  className={`flex items-center gap-2 p-3 rounded cursor-pointer border-2 transition ${
+                    isSelected 
+                      ? "bg-blue-100 border-blue-500" 
+                      : "bg-gray-50 border-gray-300 hover:border-gray-400"
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={isSelected}
+                    onChange={() => toggle(sideNum)}
+                    disabled={
+                      !isSelected && selected.length >= requiredCount + optionalCount
+                    }
+                    className="w-4 h-4"
+                  />
+                  <div className="flex flex-col">
+                    <span className="font-medium text-sm">{sideLabel(sideNum)}</span>
+                    <span className="text-xs text-gray-600">{sideName}</span>
+                  </div>
+                </label>
+              );
+            })}
+          </div>
+        </div>
+        <div className="flex justify-end gap-2">
+          <button
+            onClick={onCancel}
+            className="px-3 py-1 bg-gray-300 hover:bg-gray-400 rounded"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => onConfirm(selected)}
+            disabled={selected.length < requiredCount || selected.length > requiredCount + optionalCount}
+            className={`px-3 py-1 rounded ${
+              (selected.length >= requiredCount && selected.length <= requiredCount + optionalCount)
+                ? "bg-blue-500 hover:bg-blue-600 text-white"
+                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+            }`}
+          >
+            Confirm
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// -------------------
 // The Game
 // -------------------
 export default function Game() {
@@ -1426,6 +1563,26 @@ export default function Game() {
   >(null);
 
   const [pendingPlayedCards, setPendingPlayedCards] = useState<GameCard[]>([]);
+
+  const [pendingEndRoundEffects, setPendingEndRoundEffects] = useState<Array<{
+    description: string;
+    effect: () => Promise<void>;
+    forceResolve: boolean;
+  }>>([]);
+
+  const [effectConfirmationPopup, setEffectConfirmationPopup] = useState<{
+    description: string;
+    onConfirm: () => void;
+    onSkip: () => void;
+  } | null>(null);
+
+  const [showCardSidePopup, setShowCardSidePopup] = useState(false);
+  const [cardSidePopupCard, setCardSidePopupCard] = useState<GameCard | null>(null);
+  const [cardSideRequiredCount, setCardSideRequiredCount] = useState(1);
+  const [cardSideOptionalCount, setCardSideOptionalCount] = useState(0);
+  const [onCardSideConfirm, setOnCardSideConfirm] = useState<
+    ((selected: number[]) => void) | null
+  >(null);
 
   // -------------------
   // Init
@@ -1480,6 +1637,7 @@ export default function Game() {
     if (pendingPlayedCards.length > 0) {
       pendingPlayedCards.forEach(card => {
         handleExecuteCardEffect(card, "Play Area", "played");
+        handleExecuteCardEffect(card, "Play Area", "otherCardPlayed", pendingPlayedCards);
       });
       setPendingPlayedCards([]);
     }
@@ -1505,9 +1663,18 @@ export default function Game() {
     setHasUpgradedCard(true);
   };
 
-  const discardEndTurn = () => {
-    setDiscard((d) => [...d, ...playArea]);
-    setPlayArea([]);
+  const discardEndTurn = async (endRound?: boolean) => {
+    if (endRound) {
+      setDeck((d) => [...d, ...playArea, ...blockedZone, ...discard]);
+      setPlayArea([]);
+      setBlockedZone([]);
+      setDiscard([]);
+    }
+    else {
+      setDiscard((d) => [...d, ...playArea, ...blockedZone]);
+      setPlayArea([]);
+      setBlockedZone([]);
+    }
 
     setResources((prev) => {
       const reset: ResourceMap = { ...emptyResource };
@@ -1516,6 +1683,8 @@ export default function Game() {
     });
 
     setHasUpgradedCard(false);
+
+    await new Promise(resolve => setTimeout(resolve, 100));
   };
 
   const handleEndBaseGame = () => {
@@ -1543,6 +1712,12 @@ export default function Game() {
       case "Discard":
         filteredCards = discard.filter(filter);
         break;
+      case "Deck":
+        filteredCards = deck.filter(filter);
+        break;
+      case "Permanent":
+        filteredCards = permanentZone.filter(filter);
+        break;
     }
     return filteredCards;
   };
@@ -1553,34 +1728,35 @@ export default function Game() {
     });
   };
 
-  const selectCardsFromPlay = (
+  const selectCardsFromZone = (
     filter: (card: GameCard) => boolean,
+    zone: string,
     effectDescription: string,
     requiredCount: number
   ): Promise<GameCard[]> => {
     return new Promise((resolve) => {
-      const filteredCards = playArea.filter(filter);
+      const filteredCards = filterZone(zone, filter);
       setCardSelectionPopup({
         cards: filteredCards,
         effectDescription: effectDescription,
-        zone: "Play Area",
+        zone: zone,
         requiredCount,
         resolve
       });
     });
   };
 
-  const selectCardsFromDiscard = (
-    filter: (card: GameCard) => boolean,
+  const selectCardsFromArray = (
+    cards: GameCard[],
+    zone: string,
     effectDescription: string,
     requiredCount: number
   ): Promise<GameCard[]> => {
     return new Promise((resolve) => {
-      const filteredCards = discard.filter(filter);
       setCardSelectionPopup({
-        cards: filteredCards,
+        cards: cards,
         effectDescription: effectDescription,
-        zone: "Discard",
+        zone: zone,
         requiredCount,
         resolve
       });
@@ -1590,7 +1766,8 @@ export default function Game() {
   const discoverCard = (
     filter: (card: GameCard) => boolean,
     effectDescription: string,
-    requiredCount: number
+    requiredCount: number,
+    zone?: string
   ): Promise<boolean> => {
     return new Promise((resolve) => {
       const filteredCards = campaignDeck.filter(filter);
@@ -1609,7 +1786,14 @@ export default function Game() {
           if (selectedCards) {
             for(const card of selectedCards) {
               setCampaignDeck(prev => prev.filter(c => c.id !== card.id));
-              setDiscard(prev => [...prev, cloneGameCard(card)]);
+              if(zone) {
+                if(zone === "Deck") {
+                  setDeck(prev => [...prev, cloneGameCard(card)]);
+                }
+              }
+              else {
+                setDiscard(prev => [...prev, cloneGameCard(card)]);
+              }
             }
             resolve(true);
           } else {
@@ -1622,11 +1806,12 @@ export default function Game() {
 
   const boostProductivity = (
     filter: (card: GameCard) => boolean,
+    zone: string,
     effectDescription: string,
     prodBoost: Partial<ResourceMap> | null
   ): Promise<boolean> => {
     return new Promise(async (resolve) => {
-      const filteredCards = deck.filter(filter);
+      const filteredCards = filterZone(zone, filter);
       
       if (filteredCards.length === 0) {
         resolve(false);
@@ -1636,7 +1821,7 @@ export default function Game() {
       setCardSelectionPopup({
         cards: filteredCards,
         effectDescription: effectDescription,
-        zone: "Deck",
+        zone: zone,
         requiredCount: 1,
         resolve: async (cards: GameCard[] | null) => {
           if (cards && cards.length > 0) {
@@ -1680,7 +1865,7 @@ export default function Game() {
             }
             
             // Mettre à jour la carte dans le deck
-            replaceCardInZone("Deck", selectedCard.id, selectedCard);
+            replaceCardInZone(zone, selectedCard.id, selectedCard);
             resolve(true);
           } else {
             resolve(false);
@@ -1701,10 +1886,113 @@ export default function Game() {
     setShowCheckboxPopup(true);
   }
 
+  const registerEndRoundEffect = (
+    description: string, 
+    effect: () => Promise<void>,
+    forceResolve: boolean = false
+  ) => {
+    setPendingEndRoundEffects(prev => [...prev, { description, effect, forceResolve }]);
+  };
+
+  const showEffectConfirmation = (description: string): Promise<boolean> => {
+    return new Promise((resolve) => {
+      setEffectConfirmationPopup({
+        description,
+        onConfirm: () => resolve(true),
+        onSkip: () => resolve(false)
+      });
+    });
+  };
+
+  const resolveEndRoundEffects = async () => {
+    const effectsToKeep: typeof pendingEndRoundEffects = [];
+    
+    for (const pending of pendingEndRoundEffects) {
+      if (pending.forceResolve) {
+        await pending.effect();
+      } else {
+        const shouldResolve = await showEffectConfirmation(pending.description);
+        
+        if (shouldResolve) {
+          await pending.effect();
+        } else {
+          effectsToKeep.push(pending);
+        }
+      }
+    }
+    setPendingEndRoundEffects(effectsToKeep);
+  };
+
+  const addCardEffect = (
+    id: number,
+    face: number,
+    zone: string,
+    effect: CardEffect,
+    effectText: string
+  ) => {
+    if (!cardEffectsRegistry[id]) {
+      cardEffectsRegistry[id] = {};
+    }
+    if (!cardEffectsRegistry[id][face]) {
+      cardEffectsRegistry[id][face] = [];
+    }
+    
+    cardEffectsRegistry[id][face].push(effect);
+    
+    if (zone === "Deck") {
+      setDeck(prev => prev.map(c => {
+        if (c.id === id) {
+          const updated = cloneGameCard(c);
+          updated.effects[updated.currentSide - 1] += " " + effectText;
+          return updated;
+        }
+        return c;
+      }));
+    } else if (zone === "Play Area") {
+      setPlayArea(prev => prev.map(c => {
+        if (c.id === id) {
+          const updated = cloneGameCard(c);
+          updated.effects[updated.currentSide - 1] += " " + effectText;
+          return updated;
+        }
+        return c;
+      }));
+    } else if (zone === "Discard") {
+      setDiscard(prev => prev.map(c => {
+        if (c.id === id) {
+          const updated = cloneGameCard(c);
+          updated.effects[updated.currentSide - 1] += " " + effectText;
+          return updated;
+        }
+        return c;
+      }));
+    } else if (zone === "Permanent") {
+      setPermanentZone(prev => prev.map(c => {
+        if (c.id === id) {
+          const updated = cloneGameCard(c);
+          updated.effects[updated.currentSide - 1] += " " + effectText;
+          return updated;
+        }
+        return c;
+      }));
+    }
+  };
+
+  function selectCardSides(card: GameCard, requiredCount: number, optionalCount: number, callback: (selectedSides: number[]) => void) {
+    setCardSidePopupCard(card);
+    setCardSideRequiredCount(requiredCount);
+    setCardSideOptionalCount(optionalCount);
+    setOnCardSideConfirm(() => (selected: number[]) => {
+      callback(selected);
+    });
+    setShowCardSidePopup(true);
+  }
+
   const handleExecuteCardEffect = async (
     card: GameCard,
     zone: string,
     timing: EffectTiming,
+    cardsPlayed?: GameCard[],
     effectIndex?: number
   ) => {
     const effects = getCardEffects(card.id, card.currentSide);
@@ -1713,6 +2001,7 @@ export default function Game() {
 
     const context: GameContext = {
       card,
+      cardsPlayed,
       zone,
       resources,
       filterZone,
@@ -1732,10 +2021,14 @@ export default function Game() {
       mill,
       openCheckboxPopup,
       selectResourceChoice,
-      selectCardsFromPlay,
-      selectCardsFromDiscard,
+      selectCardsFromZone,
+      selectCardsFromArray,
       discoverCard,
       boostProductivity,
+      registerEndRoundEffect,
+      addCardEffect,
+      fetchCardsInZone,
+      selectCardSides,
     };
 
     if (typeof effectIndex === "number" && effectIndex >= 0) {
@@ -1808,6 +2101,9 @@ export default function Game() {
     if (toZone === "Play Area"){
       setPlayArea((p) => [...p, toAdd]);
       handleExecuteCardEffect(toAdd, "Play Area", "played");
+      for(const card of playArea) {
+        handleExecuteCardEffect(card, "Play Area", "otherCardPlayed", [toAdd]);
+      }
     }
   };
 
@@ -1822,12 +2118,11 @@ export default function Game() {
   // -------------------
   // End Round / Shuffle
   // -------------------
+  const handleEndRound = async () => {
+    await discardEndTurn(true);
 
-  const handleEndRound = () => {
-    setDeck((d) => [...discard.map(cloneGameCard), ...playArea.map(cloneGameCard), ...blockedZone.map(cloneGameCard), ...d]);
-    setDiscard([]);
-    setPlayArea([]);
-    setBlockedZone([]);
+    await resolveEndRoundEffects();
+
     setShowEndRound(true);
   };
 
@@ -1902,6 +2197,23 @@ export default function Game() {
     } else if (zone === "Permanent") {
       setPermanentZone((pe) => pe.filter((card) => card.id !== id));
     }
+  }
+
+  function fetchCardsInZone(filter: (card: GameCard) => boolean, zone: string): GameCard[] {
+    if (zone === "Deck") {
+      return deck.filter(filter);
+    } else if (zone === "Play Area") {
+      return playArea.filter(filter);
+    } else if (zone === "Discard") {
+      return discard.filter(filter);
+    } else if (zone === "Campaign") {
+      return campaignDeck.filter(filter);
+    } else if (zone === "Blocked") {
+      return blockedZone.filter(filter);
+    } else if (zone === "Permanent") {
+      return permanentZone.filter(filter);
+    }
+    return [];
   }
 
   // -------------------
@@ -2133,7 +2445,7 @@ export default function Game() {
                 onRightClick={(c, zone) => setPopupCard({ originZone: zone, originalId: c.id, editable: cloneGameCard(c) })}
                 onTapAction={handleTapAction}
                 onCardUpdate={handleCardUpdate}
-                onExecuteCardEffect={handleExecuteCardEffect}
+                onExecuteCardEffect={(card, zone, timing) => handleExecuteCardEffect(card, zone, timing)}
                 interactable={true}
               />
             </div>
@@ -2169,7 +2481,7 @@ export default function Game() {
               onCardUpdate={handleCardUpdate}
               onUpgrade={handleUpgrade}
               onGainResources={handleGainResources}
-              onExecuteCardEffect={handleExecuteCardEffect}
+              onExecuteCardEffect={(card, zone, timing) => handleExecuteCardEffect(card, zone, timing)}
             />
           </div>
 
@@ -2192,7 +2504,7 @@ export default function Game() {
         {/* Action Buttons (with Shuffle next to End Round) */}
         <div className="space-x-2">
           <Button onClick={drawNewTurn}>{"New Turn"}</Button>
-          <Button onClick={discardEndTurn}>{"Pass"}</Button>
+          <Button onClick={() => discardEndTurn(false)}>{"Pass"}</Button>
           <Button onClick={progress} disabled={hasUpgradedCard}>{"Progress"}</Button>
           {/* Conditionnal controls */}
           <Button disabled={deck.length > 0} className="bg-red-600 hover:bg-red-500 text-white" onClick={handleEndRound}>End Round</Button>
@@ -2576,6 +2888,37 @@ export default function Game() {
           onCancel={() => {
             setShowCheckboxPopup(false);
             setCheckboxPopupCard(null);
+          }}
+        />
+      )}
+
+      {effectConfirmationPopup && (
+        <EffectConfirmationPopup
+          description={effectConfirmationPopup.description}
+          onConfirm={() => {
+            effectConfirmationPopup.onConfirm();
+            setEffectConfirmationPopup(null);
+          }}
+          onSkip={() => {
+            effectConfirmationPopup.onSkip();
+            setEffectConfirmationPopup(null);
+          }}
+        />
+      )}
+
+      {showCardSidePopup && cardSidePopupCard && onCardSideConfirm && (
+        <CardSideSelectionPopup
+          card={cardSidePopupCard}
+          requiredCount={cardSideRequiredCount}
+          optionalCount={cardSideOptionalCount}
+          onConfirm={(selectedSides) => {
+            onCardSideConfirm(selectedSides);
+            setShowCardSidePopup(false);
+            setCardSidePopupCard(null);
+          }}
+          onCancel={() => {
+            setShowCardSidePopup(false);
+            setCardSidePopupCard(null);
           }}
         />
       )}

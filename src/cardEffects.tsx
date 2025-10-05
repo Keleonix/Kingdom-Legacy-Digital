@@ -1,7 +1,11 @@
-import { GameCard, type ResourceMap, type DropPayload, type EffectTiming, type Checkbox, RESOURCE_KEYS } from "./types";
+import { GameCard, type ResourceMap, type DropPayload, type EffectTiming, type Checkbox, RESOURCE_KEYS, emptyResource } from "./types";
 
+// -------------------
+// Types
+// -------------------
 export type GameContext = {
   card: GameCard;
+  cardsPlayed?: GameCard[];
   zone: string;
   resources: ResourceMap;
   filterZone: (zone: string, filter: (card: GameCard) => boolean) => GameCard[],
@@ -21,10 +25,14 @@ export type GameContext = {
   mill: (nbCards: number) => void;
   openCheckboxPopup: (card: GameCard, requiredCount: number, optionalCount: number, callback: (selected: Checkbox[]) => void) => void ;
   selectResourceChoice: (options: Array<Partial<ResourceMap>>) => Promise<Partial<ResourceMap> | null>;
-  selectCardsFromPlay: (filter: (card: GameCard) => boolean, effectDescription: string, requiredCount: number) => Promise<GameCard[]>;
-  selectCardsFromDiscard: (filter: (card: GameCard) => boolean, effectDescription: string, requiredCount: number) => Promise<GameCard[]>;
-  discoverCard: (filter: (card: GameCard) => boolean, effectDescription: string, requiredCount: number) => Promise<Boolean>;
-  boostProductivity: (filter: (card: GameCard) => boolean, effectDescription: string, prodBoost: Partial<ResourceMap> | null) => Promise<Boolean>;
+  selectCardsFromZone: (filter: (card: GameCard) => boolean, zone: string, effectDescription: string, requiredCount: number) => Promise<GameCard[]>;
+  selectCardsFromArray: (cards: GameCard[], zone: string, effectDescription: string, requiredCount: number) => Promise<GameCard[]>;
+  discoverCard: (filter: (card: GameCard) => boolean, effectDescription: string, requiredCount: number, zone?: string) => Promise<Boolean>;
+  boostProductivity: (filter: (card: GameCard) => boolean, zone: string, effectDescription: string, prodBoost: Partial<ResourceMap> | null) => Promise<Boolean>;
+  registerEndRoundEffect: (description: string, effect: () => Promise<void>, forceResolve?: boolean) => void;
+  addCardEffect: (id: number, face: number, zone: string, effect: CardEffect, effectText: string) => void;
+  fetchCardsInZone: (filter: (card: GameCard) => boolean, zone: string) => GameCard[];
+  selectCardSides: (card: GameCard, requiredCount: number, optionalCount: number, callback: (selectedSides: number[]) => void) => void;
 };
 
 export type CardEffect = {
@@ -35,7 +43,25 @@ export type CardEffect = {
   choices?: string[];
 };
 
+// -------------------
+// Effects
+// -------------------
+const stayInPlayText: string = "effects/passive Reste en jeu.";
 
+const stayInPlayEffect: CardEffect = {
+  description: "Reste en jeu",
+  timing: "stayInPlay",
+  execute: async function (ctx: GameContext) {
+    if(ctx) {
+      return false;
+    }
+    return true;
+  }
+}
+
+// -------------------
+// Private Stuff
+// -------------------
 const applyChoice = (ctx: GameContext, choice: Partial<ResourceMap>)=> {
   ctx.setResources(prev => {
     const next = { ...prev };
@@ -93,18 +119,35 @@ function applyResourceMapDelta(
   });
 }
 
-function addResourceMapToCard(
+async function addResourceMapToCard(
   card: GameCard,
   added: Partial<ResourceMap> | undefined
 ) {
-  if(!added) {
+  if (!added) {
     return;
   }
   for (const key in added) {
     const resourceKey = key as keyof ResourceMap;
     const amount = added[resourceKey] ?? 0;
-    for(const resourceMap of card.GetResources()) {
+    for (const resourceMap of card.GetResources() ?? []) {
       resourceMap[resourceKey] = (resourceMap[resourceKey] ?? 0) + amount;
+    }
+  }
+}
+
+async function setResourceMapToCard(
+  card: GameCard,
+  added: Partial<ResourceMap> | undefined
+) {
+  if (!added) {
+    return;
+  }
+  for (const key in added) {
+    const resourceKey = key as keyof ResourceMap;
+    const amount = added[resourceKey] ?? 0;
+    card.resources[card.currentSide - 1] = [ emptyResource ];
+    for (const resourceMap of card.GetResources()) {
+      resourceMap[resourceKey] = amount;
     }
   }
 }
@@ -123,15 +166,29 @@ function checkBoxes(
   }
 }
 
-// Registry des effets par ID de carte et par side
+function getresourcesCount(
+  res: Partial<ResourceMap>
+) {
+  let resTot = 0;
+  for (const key in res) {
+    const resourceKey = key as keyof ResourceMap;
+    resTot += (res[resourceKey] ?? 0);
+  }
+  return resTot;
+}
+
+// -------------------
+// Get Effects
+// -------------------
 export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> = {
   1: {
     2: [{ // Plaines
       description: "Défaussez une autre carte alliée pour gagner 2 gold",
       timing: "onClick",
       execute: async function(ctx)  {
-        const selectedCards = await ctx.selectCardsFromPlay(
+        const selectedCards = await ctx.selectCardsFromZone(
           (card) => (!(card.enemy[card.currentSide - 1]) && card.id != ctx.card.id),
+          "Play Area",
           this.description,
           1
         );
@@ -149,8 +206,9 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: "Défaussez une autre carte alliée pour gagner 2 gold",
       timing: "onClick",
       execute: async function(ctx)  {
-        const selectedCards = await ctx.selectCardsFromPlay(
+        const selectedCards = await ctx.selectCardsFromZone(
           (card) => (!(card.enemy[card.currentSide - 1]) && card.id != ctx.card.id),
+          "Play Area",
           this.description,
           1
         );
@@ -168,8 +226,9 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: "Défaussez une autre carte alliée pour gagner 2 gold",
       timing: "onClick",
       execute: async function(ctx)  {
-        const selectedCards = await ctx.selectCardsFromPlay(
+        const selectedCards = await ctx.selectCardsFromZone(
           (card) => (!(card.enemy[card.currentSide - 1]) && card.id != ctx.card.id),
+          "Play Area",
           this.description,
           1
         );
@@ -187,8 +246,9 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: "Défaussez une autre carte alliée pour gagner 2 gold",
       timing: "onClick",
       execute: async function(ctx)  {
-        const selectedCards = await ctx.selectCardsFromPlay(
+        const selectedCards = await ctx.selectCardsFromZone(
           (card) => (!(card.enemy[card.currentSide - 1]) && card.id != ctx.card.id),
+          "Play Area",
           this.description,
           1
         );
@@ -310,8 +370,9 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: "Jouez un Terrain depuis votre Défausse",
       timing: "onClick",
       execute: async function(ctx) {
-        const selectedCards = await ctx.selectCardsFromDiscard(
+        const selectedCards = await ctx.selectCardsFromZone(
           (card) => (card.GetType().includes("Terrain")),
+          "Discard",
           this.description,
           1
         );
@@ -326,8 +387,9 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: "Jouez une carte depuis votre Défausse",
       timing: "onClick",
       execute: async function(ctx) {
-        const selectedCards = await ctx.selectCardsFromDiscard(
+        const selectedCards = await ctx.selectCardsFromZone(
           () => (true),
+          "Discard",
           this.description,
           1
         );
@@ -342,8 +404,9 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: "Jouez un Terrain ou un Bâtiment depuis votre Défausse",
       timing: "onClick",
       execute: async function(ctx) {
-        const selectedCards = await ctx.selectCardsFromDiscard(
+        const selectedCards = await ctx.selectCardsFromZone(
           (card) => (card.GetType().includes("Terrain") || card.GetType().includes("Bâtiment")),
+          "Discard",
           this.description,
           1
         );
@@ -451,8 +514,9 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: "Gagnez les ressources produitent par un Terrain",
       timing: "onClick",
       execute: async function (ctx) {
-        const selectedCards = await ctx.selectCardsFromPlay(
+        const selectedCards = await ctx.selectCardsFromZone(
           (card) => (card.GetType().includes("Terrain")),
+          "Play Area",
           this.description,
           1
         );
@@ -491,7 +555,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         let selectedCards: GameCard[] = [];
         const filter = (card: GameCard) => (card.GetResources().some((res) => (res.gold ?? 0) >= 1));
         while (selectedCards.length == 0 && ctx.filterZone(ctx.zone, filter).length !== 0) {
-          selectedCards = await ctx.selectCardsFromPlay(filter, this.description, 1);
+          selectedCards = await ctx.selectCardsFromZone(filter, "Play Area", this.description, 1);
         }
         if (selectedCards.length !== 0) {
           ctx.dropToBlocked({id: selectedCards[0].id, fromZone: ctx.zone});
@@ -535,8 +599,9 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: "Gagnez les ressources produitent par un Bâtiment",
       timing: "onClick",
       execute: async function (ctx) {
-        const selectedCards = await ctx.selectCardsFromPlay(
+        const selectedCards = await ctx.selectCardsFromZone(
           (card) => (card.GetType().includes("Bâtiment")),
+          "Play Area",
           this.description,
           1
         );
@@ -586,7 +651,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         let selectedCards: GameCard[] = [];
         const filter = (card: GameCard) => (card.GetResources().some((res) => (res.gold ?? 0) >= 1));
         while (selectedCards.length == 0 && ctx.filterZone(ctx.zone, filter).length !== 0) {
-          selectedCards = await ctx.selectCardsFromPlay(filter, this.description, 1);
+          selectedCards = await ctx.selectCardsFromZone(filter, "Play Area", this.description, 1);
         }
         if (selectedCards.length !== 0) {
           ctx.dropToBlocked({id: selectedCards[0].id, fromZone: ctx.zone});
@@ -630,8 +695,9 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: "Gagnez les ressources produitent par un Terrain",
       timing: "onClick",
       execute: async function (ctx) {
-        const selectedCards = await ctx.selectCardsFromPlay(
+        const selectedCards = await ctx.selectCardsFromZone(
           (card) => (card.GetType().includes("Terrain")),
+          "Play Area",
           this.description,
           1
         );
@@ -811,8 +877,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         description: "Ajoute 1 gold à 1 Terrain et boost 1 Bâtiment",
         timing: "onClick",
         execute: async function (ctx) {
-          while(!await ctx.boostProductivity((card: GameCard) => (card.GetType() === "Terrain"), this.description, { gold: 1 }));
-          while(!await ctx.boostProductivity((card: GameCard) => (card.GetType() === "Bâtiment"), this.description, null));
+          while(!await ctx.boostProductivity((card: GameCard) => (card.GetType() === "Terrain"), "Deck", this.description, { gold: 1 }));
+          while(!await ctx.boostProductivity((card: GameCard) => (card.GetType() === "Bâtiment"), "Deck", this.description, null));
           ctx.deleteCardInZone(ctx.zone, ctx.card.id);
           return false;
         }
@@ -827,25 +893,36 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
             checkbox.checked ? militaryToPay+= 1 : militaryToPay += 0;
           }
+          // Checkbox
           if (ctx.resources.military >= militaryToPay) {
             for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
               if (!checkbox.checked) {
                 checkbox.checked = true;
-                let checkboxResources = getCheckboxResources(checkbox.content);
-                if (checkboxResources) {
-                  ctx.card.resources[ctx.card.currentSide - 1] = [checkboxResources];
-                }
                 break;
               }
             }
-            if (militaryToPay === 10) {
-              ctx.card.currentSide = 3;
-              await ctx.discoverCard(
-                (card) => ([135].includes(card.id)),
-                this.description,
-                1
-              )
+          }
+          // Apply resource effect
+          let lastCheckbox;
+          for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
+            if (!checkbox.checked) {
+              let checkboxResources = getCheckboxResources(lastCheckbox?.content);
+              if (checkboxResources) {
+                await setResourceMapToCard(ctx.card, checkboxResources);
+              }
+              break;
             }
+            lastCheckbox = checkbox;
+          }
+          if (ctx.card.checkboxes[ctx.card.currentSide - 1][-1].checked) {
+            ctx.card.currentSide = 3;
+            await ctx.discoverCard(
+              (card) => ([135].includes(card.id)),
+              this.description,
+              1
+            )
+          }
+          if (ctx.resources.military >= militaryToPay) {
             ctx.effectEndTurn();
           }
           return false;
@@ -858,20 +935,33 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           let checkedBoxes = 0;
           const militaryToPay = [10, 10, 12, 12, 15];
           for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
-            checkbox.checked ? checkedBoxes+= 1 : checkedBoxes += 0;
+            checkbox.checked ? checkedBoxes += 1 : checkedBoxes += 0;
           }
-          if (checkedBoxes === ctx.card.checkboxes[ctx.card.currentSide - 1].length) {
-            return false;
-          }
+          // Checkbox
           if (ctx.resources.military >= militaryToPay[checkedBoxes]) {
             for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
               if (!checkbox.checked) {
                 checkbox.checked = true;
-                ctx.card.GetResources()[0] = { fame: 50 };
-                addResourceMapToCard(ctx.card, getCheckboxResources(checkbox.content));
                 break;
               }
             }
+          }
+          // Apply resource effect
+          let lastCheckbox;
+          for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
+            if (!checkbox.checked) {
+              let checkboxResources = getCheckboxResources(lastCheckbox?.content);
+              if (checkboxResources) {
+                await setResourceMapToCard(ctx.card, {fame: (checkboxResources.fame?? 0) + 50});
+              }
+              break;
+            }
+            lastCheckbox = checkbox;
+          }
+          if (ctx.card.checkboxes[ctx.card.currentSide - 1][ctx.card.checkboxes[ctx.card.currentSide - 1].length - 1].checked) {
+            await setResourceMapToCard(ctx.card, {fame: 100});
+          }
+          if (checkedBoxes < ctx.card.checkboxes[ctx.card.currentSide - 1].length) {
             ctx.effectEndTurn();
           }
           return false;
@@ -880,52 +970,76 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   26: {
     1: [{ // Trésor
-        description: "End pour payer des military",
+        description: "End pour payer des gold",
         timing: "onClick",
         execute: async function (ctx) {
           let goldToPay = 1;
           for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
             checkbox.checked ? goldToPay+= 1 : goldToPay += 0;
           }
+          // Checkbox
           if (ctx.resources.gold >= goldToPay) {
             for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
               if (!checkbox.checked) {
                 checkbox.checked = true;
-                let checkboxResources = getCheckboxResources(checkbox.content);
-                if (checkboxResources) {
-                  ctx.card.resources[ctx.card.currentSide - 1] = [checkboxResources];
-                }
                 break;
               }
             }
-            if (goldToPay === 12) {
-              ctx.card.currentSide = 3;
+          }
+          // Apply resource effect
+          let lastCheckbox;
+          for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
+            if (!checkbox.checked) {
+              let checkboxResources = getCheckboxResources(lastCheckbox?.content);
+              if (checkboxResources) {
+                await setResourceMapToCard(ctx.card, checkboxResources);
+              }
+              break;
             }
+            lastCheckbox = checkbox;
+          }
+          if(ctx.card.checkboxes[ctx.card.currentSide - 1][-1].checked) {
+            ctx.card.currentSide = 3;
+          }
+          if (ctx.resources.gold >= goldToPay) {
             ctx.effectEndTurn();
           }
           return false;
         }
       }],
     3: [{ // Immense Trésor
-        description: "End pour payer des military",
+        description: "End pour payer des gold",
         timing: "onClick",
         execute: async function (ctx) {
-          let goldToPay = 13;
+          let goldToPay = 12;
           for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
             checkbox.checked ? goldToPay+= 1 : goldToPay += 0;
           }
-          if (goldToPay > 17) {
-            return false;
-          }
+          // Checkbox
           if (ctx.resources.gold >= goldToPay) {
             for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
               if (!checkbox.checked) {
                 checkbox.checked = true;
-                ctx.card.GetResources()[0] = { fame: 50 };
-                addResourceMapToCard(ctx.card, getCheckboxResources(checkbox.content));
                 break;
               }
             }
+          }
+          // Apply resource effect
+          let lastCheckbox;
+          for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
+            if (!checkbox.checked) {
+              let checkboxResources = getCheckboxResources(lastCheckbox?.content);
+              if (checkboxResources) {
+                await setResourceMapToCard(ctx.card, {fame: (checkboxResources.fame?? 0) + 50});
+              }
+              break;
+            }
+            lastCheckbox = checkbox;
+          }
+          if (ctx.card.checkboxes[ctx.card.currentSide - 1][ctx.card.checkboxes[ctx.card.currentSide - 1].length - 1].checked) {
+            await setResourceMapToCard(ctx.card, {fame: 100});
+          }
+          if (ctx.resources.gold >= goldToPay && goldToPay <= 17) {
             ctx.effectEndTurn();
           }
           return false;
@@ -933,16 +1047,316 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }],
   },
   27: {
-    1: [{ // Terre Fertile/Efficacité
-        description: "Ajoute 1 gold à 1 Terrain et boost 1 Bâtiment",
+    1: [{ // Exportation
+        description: "Dépensez des export, recevez des récompenses",
         timing: "onClick",
         execute: async function (ctx) {
-          while(!await ctx.boostProductivity((card: GameCard) => (card.GetType() === "Terrain"), this.description, { gold: 1 }));
-          while(!await ctx.boostProductivity((card: GameCard) => (card.GetType() === "Bâtiment"), this.description, null));
-          ctx.deleteCardInZone(ctx.zone, ctx.card.id);
+          const oldExportValue = ctx.card.GetResources()[0].export ?? 0;
+          const thresholdValues = [10, 20, 30, 40, 55, 75, 100];
+
+          if (ctx.resources.export > 0) {
+            await addResourceMapToCard(ctx.card, { export: ctx.resources.export });
+            ctx.setResources(prev => ({ ...prev, export: 0 }));
+          }
+
+          const newExport = ctx.card.GetResources()[0].export ?? 0;
+          for (const threshold of thresholdValues) {
+            if (oldExportValue < threshold && newExport >= threshold) {
+              switch(threshold) {
+                case 10:
+                  ctx.registerEndRoundEffect(
+                    "Récompense export (seuil 10): Ajoutez gold/wood/stone à 1 Terrain",
+                    async () => {
+                      const choice = await ctx.selectResourceChoice([
+                        { gold: 1 },  
+                        { wood: 1 },
+                        { stone: 1 }
+                      ]);
+                      if(choice) {
+                        await ctx.boostProductivity((card: GameCard) => (card.GetType() === "Terrain"), "Deck", this.description, choice);
+                      }
+                    },
+                    false
+                  );
+                  break;
+                case 20:
+                  ctx.registerEndRoundEffect(
+                    "Récompense export (seuil 20): Ajoute \"Reste en Jeu\" à une personne",
+                    async () => {
+                      const card = (await ctx.selectCardsFromZone((card) => (card.GetType().includes("Personne")), "Deck", "Récompense export (seuil 20): Ajoute \"Reste en Jeu\" à une personne", 1)).slice(0)[0];
+                      ctx.addCardEffect(card.id, card.currentSide, "Deck", stayInPlayEffect, stayInPlayText);
+                    },
+                    false
+                  );
+                  break;
+                case 30:
+                  ctx.registerEndRoundEffect(
+                    "Récompense export (seuil 30): Découvre Adoubement (80)",
+                    async () => {
+                      await ctx.discoverCard(
+                        (card) => [80].includes(card.id),
+                        this.description,
+                        1,
+                        "Deck"
+                      );
+                    },
+                    false
+                  );
+                  break;
+                case 40:
+                  ctx.registerEndRoundEffect(
+                    "Récompense export (seuil 40): Ajoutez ingot/military/export à 1 Bâtiment",
+                    async () => {
+                      const choice = await ctx.selectResourceChoice([
+                        { ingot: 1 },  
+                        { military: 1 },
+                        { export: 1 }
+                      ]);
+                      if(choice) {
+                        await ctx.boostProductivity((card: GameCard) => (card.GetType() === "Bâtiment"), "Deck", this.description, choice);
+                      }
+                    },
+                    false
+                  );
+                  break;
+                case 55:
+                  ctx.registerEndRoundEffect(
+                    "Récompense export (seuil 55): Ajoutez wood/stone/ingot/military à 1 carte",
+                    async () => {
+                      const choice = await ctx.selectResourceChoice([
+                        { wood: 1 },  
+                        { stone: 1 },  
+                        { ingot: 1 },  
+                        { military: 1 },
+                      ]);
+                      if(choice) {
+                        await ctx.boostProductivity(() => (true), "Deck", this.description, choice);
+                      }
+                    },
+                    false
+                  );
+                  break;
+                case 75:
+                  ctx.registerEndRoundEffect(
+                    "Récompense export (seuil 75): Ajoutez fame x5 à 1 carte",
+                    async () => {
+                      await ctx.boostProductivity(() => (true), "Deck", this.description, { fame: 5 });
+                    },
+                    false
+                  );
+                  break;
+                case 100:
+                  ctx.registerEndRoundEffect(
+                    "Récompense export (seuil 100): Retournez la carte",
+                    async () => {
+                      ctx.card.currentSide = 3;
+                    },
+                    false
+                  );
+                  break;
+              }
+            }
+          }
           return false;
         }
       }],
+    3: [{ // Exportation de Masse
+        description: "Dépensez des export, recevez des récompenses",
+        timing: "onClick",
+        execute: async function (ctx) {
+          const oldExportValue = ctx.card.GetResources()[0].export ?? 0;
+          const thresholdValues = [25, 50, 75, 100, 150, 200, 250];
+
+          if (ctx.resources.export > 0) {
+            await addResourceMapToCard(ctx.card, { export: ctx.resources.export });
+            ctx.setResources(prev => ({ ...prev, export: 0 }));
+          }
+
+          const newExport = ctx.card.GetResources()[0].export ?? 0;
+          for (const threshold of thresholdValues) {
+            if (oldExportValue < threshold && newExport >= threshold) {
+              switch(threshold) {
+                case 25:
+                  ctx.registerEndRoundEffect(
+                    "Récompense export (seuil 25): Ajoute 1 fame à 2 Terrains",
+                    async () => {
+                      await ctx.boostProductivity((card) => (card.GetType().includes("Terrain")), "Deck", this.description, { fame: 1 });
+                      await ctx.boostProductivity((card) => (card.GetType().includes("Terrain")), "Deck", this.description, { fame: 1 });
+                    },
+                    false
+                  );
+                  break;
+                case 50:
+                  ctx.registerEndRoundEffect(
+                    "Récompense export (seuil 50): Ajoute 5 fame à 1 Personne",
+                    async () => {
+                      await ctx.boostProductivity((card) => (card.GetType().includes("Personne")), "Deck", this.description, { fame: 5 });
+                    },
+                    false
+                  );
+                  break;
+                case 75:
+                  ctx.registerEndRoundEffect(
+                    "Récompense export (seuil 75): Décrouvrez la Visite Royale (107)",
+                    async () => {
+                      await ctx.discoverCard(
+                        (card) => [107].includes(card.id),
+                        this.description,
+                        1,
+                        "Deck"
+                      );
+                    },
+                    false
+                  );
+                  break;
+                case 100:
+                  ctx.registerEndRoundEffect(
+                    "Récompense export (seuil 100): Ajoute 5 fame à 1 Bâtiment",
+                    async () => {
+                      await ctx.boostProductivity((card) => (card.GetType().includes("Bâtiment")), "Deck", this.description, { fame: 5 });
+                    },
+                    false
+                  );
+                  break;
+                case 150:
+                  ctx.registerEndRoundEffect(
+                    "Récompense export (seuil 150): Check une carte Permanente",
+                    async () => {
+                      const card = (await ctx.selectCardsFromZone(
+                          (card) => (card.id !== ctx.card.id && card.checkboxes.length !== 0),
+                          "Permanent",
+                          "Récompense export (seuil 150): Check une carte Permanente",
+                          1
+                      ))[0];
+                      const subCtx = ctx;
+                      subCtx.card = card;
+                      for (const checkbox of card.checkboxes[card.currentSide - 1]) {
+                        if (!checkbox.checked) {
+                          checkbox.checked = true;
+                          for(const effect of cardEffectsRegistry[card.id][card.currentSide]) {
+                            await effect.execute(ctx);
+                          }
+                          break;
+                        }
+                      }
+                    },
+                    false
+                  );
+                  break;
+                case 200:
+                  ctx.registerEndRoundEffect(
+                    "Récompense export (seuil 200): Check toutes les cartes Permanentes souhaitées",
+                    async () => {
+                      const cards = ctx.fetchCardsInZone(
+                        (card) => (card.id !== ctx.card.id && card.checkboxes.length !== 0),
+                        "Permanent"
+                      );
+                      let subCtx = ctx;
+                      for(const card of cards) {
+                        subCtx.card = card;
+                        for (const checkbox of card.checkboxes[card.currentSide - 1]) {
+                          if (!checkbox.checked) {
+                            checkbox.checked = true;
+                            for(const effect of cardEffectsRegistry[card.id][card.currentSide]) {
+                              await effect.execute(ctx);
+                            }
+                            break;
+                          }
+                        }
+                      }
+                    },
+                    false
+                  );
+                  break;
+                case 250:
+                  ctx.registerEndRoundEffect(
+                    "Récompense export (seuil 250): Découvrez les Relation Commerciales (117)",
+                    async () => {
+                      await ctx.discoverCard(
+                        (card) => [117].includes(card.id),
+                        this.description,
+                        1,
+                        "Deck"
+                      );
+                    },
+                    false
+                  );
+                  break;
+              }
+            }
+          }
+          return false;
+        }
+      }],
+  },
+  28: {
+    1: [{ // Eruption Volcanique
+      description: "Détruit le prochain terrain joué",
+      timing: "otherCardPlayed",
+      execute: async function (ctx) {
+        let selectableCards = [];
+        for (const card of (ctx.cardsPlayed?? [])) {
+          if (card.GetType().includes("Terrain")) selectableCards.push(card);
+        }
+        if(selectableCards.length !== 0) {
+          ctx.deleteCardInZone("Play Area", (await ctx.selectCardsFromArray(selectableCards, "Play Area", this.description, 1))[0].id);
+          ctx.card.currentSide = 3;
+          return true;
+        }
+        return false;
+      }
+    }],
+    4: [{ // Jeune Forêt
+      description: "Checkez puis gagne 1 wood sur *",
+      timing: "onClick",
+      execute: async function (ctx) {
+        let i = 0;
+        for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
+          if(!checkbox.checked){
+            checkbox.checked = true;
+            if (i % 2 === 0) {
+              await addResourceMapToCard(ctx.card, { wood: 1 });
+            }
+            break;
+          }
+          i++;
+        }
+        ctx.effectEndTurn();
+        return false;
+      }
+    }],
+  },
+  29: {
+    4: [{ // Prétendu Noble
+      description: "Réinitialise cette carte et ajoute une ressource à une étape de cette carte sans modification",
+      timing: "onClick",
+      execute: async function (ctx) {
+        ctx.selectCardSides(ctx.card, 1, 0, async (selectedSides) => {
+          const resourcesCount = getresourcesCount(ctx.card.resources[selectedSides[0] - 1][0]);
+          if (selectedSides.length > 0 && ((selectedSides[0] !== 4 && resourcesCount <= 1) || (selectedSides[0] === 4 && resourcesCount <= 4))) {
+            const targetSide = selectedSides[0];
+            
+            const resourceChoice = await ctx.selectResourceChoice([
+              { gold: 1 }, { wood: 1 }, { stone: 1 }, { ingot: 1 }, {military: 1} 
+            ]);
+            
+            if (resourceChoice) {
+              ctx.card.resources[targetSide - 1].forEach(option => {
+                Object.entries(resourceChoice).forEach(([key, value]) => {
+                  option[key as keyof ResourceMap] = 
+                    (option[key as keyof ResourceMap] || 0) + value;
+                });
+              });
+            }
+            
+            ctx.card.currentSide = 1;
+            ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+            return true;
+          }
+        });
+        return false;
+      }
+    }],
   },
   35: {
     2: [{ // Zone Rocheuse
