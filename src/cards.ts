@@ -1401,7 +1401,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "Découvrez les cartes 31 à 34, choisissez-en 2 à découvrir et détruisez les 2 autres.",
+      "effects/destroy Découvrez les cartes 31 à 34, choisissez-en 2 à découvrir et détruisez les 2 autres.",
       "",
       "",
       "",

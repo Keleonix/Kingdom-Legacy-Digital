@@ -98,7 +98,8 @@ export type EffectTiming =
   "onClick" |
   "stayInPlay" |
   "onResourceGain" |
-  "doesNothing"
+  "doesNothing" |
+  "onEndOfGame"
 ;
 
 export class GameCard {

@@ -5,7 +5,7 @@ import { GameCard, type ResourceMap, type DropPayload, type EffectTiming, type C
 // -------------------
 export type GameContext = {
   card: GameCard;
-  cardsPlayed?: GameCard[];
+  cardsForTrigger?: GameCard[];
   zone: string;
   resources: ResourceMap;
   filterZone: (zone: string, filter: (card: GameCard) => boolean) => GameCard[],
@@ -166,7 +166,7 @@ function checkBoxes(
   }
 }
 
-function getresourcesCount(
+function getResourcesCount(
   res: Partial<ResourceMap>
 ) {
   let resTot = 0;
@@ -175,6 +175,31 @@ function getresourcesCount(
     resTot += (res[resourceKey] ?? 0);
   }
   return resTot;
+}
+
+function checkNextBox(
+  card: GameCard
+) {
+  for (const checkbox of card.checkboxes[card.currentSide - 1]) {
+    if (!checkbox.checked) {
+      checkbox.checked = true;
+      break;
+    }
+  }
+}
+
+async function checkNextBoxApplyEffect(
+  ctx: GameContext
+) {
+  for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
+    if (!checkbox.checked) {
+      checkbox.checked = true;
+      for(const effect of cardEffectsRegistry[ctx.card.id][ctx.card.currentSide]) {
+        await effect.execute(ctx);
+      }
+      break;
+    }
+  }
 }
 
 // -------------------
@@ -732,7 +757,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     }],
     3: [{ // Cathédrale
       description: "Gagnez 1 gold/personne",
-      timing: "onResourceGain",
+      timing: "onClick",
       execute: async function (ctx) {
         ctx.setResources(prev => ({ ...prev, gold: prev.gold + ctx.filterZone("Play Area", (card: GameCard) => (card.GetType() == "Personne")).length }));
         return true;
@@ -765,7 +790,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           (card) => ([90].includes(card.id)),
           this.description,
           1
-        )) {
+          )) {
           ctx.card.currentSide = 1;
           return true;
         }
@@ -898,6 +923,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
               if (!checkbox.checked) {
                 checkbox.checked = true;
+                ctx.setResources(prev => ({ ...prev, military: prev.military - militaryToPay }));
+                ctx.effectEndTurn();
                 break;
               }
             }
@@ -914,16 +941,13 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             }
             lastCheckbox = checkbox;
           }
-          if (ctx.card.checkboxes[ctx.card.currentSide - 1][-1].checked) {
+          if (lastCheckbox?.checked) {
             ctx.card.currentSide = 3;
             await ctx.discoverCard(
               (card) => ([135].includes(card.id)),
               this.description,
               1
             )
-          }
-          if (ctx.resources.military >= militaryToPay) {
-            ctx.effectEndTurn();
           }
           return false;
         }
@@ -942,6 +966,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
               if (!checkbox.checked) {
                 checkbox.checked = true;
+                ctx.setResources(prev => ({ ...prev, military: prev.military - militaryToPay[checkedBoxes] }));
+                ctx.effectEndTurn();
                 break;
               }
             }
@@ -958,11 +984,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             }
             lastCheckbox = checkbox;
           }
-          if (ctx.card.checkboxes[ctx.card.currentSide - 1][ctx.card.checkboxes[ctx.card.currentSide - 1].length - 1].checked) {
+          if (lastCheckbox?.checked) {
             await setResourceMapToCard(ctx.card, {fame: 100});
-          }
-          if (checkedBoxes < ctx.card.checkboxes[ctx.card.currentSide - 1].length) {
-            ctx.effectEndTurn();
           }
           return false;
         }
@@ -982,6 +1005,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
               if (!checkbox.checked) {
                 checkbox.checked = true;
+                ctx.setResources(prev => ({ ...prev, gold: prev.gold - goldToPay }));
+                ctx.effectEndTurn();
                 break;
               }
             }
@@ -998,11 +1023,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             }
             lastCheckbox = checkbox;
           }
-          if(ctx.card.checkboxes[ctx.card.currentSide - 1][-1].checked) {
+          if(lastCheckbox?.checked) {
             ctx.card.currentSide = 3;
-          }
-          if (ctx.resources.gold >= goldToPay) {
-            ctx.effectEndTurn();
           }
           return false;
         }
@@ -1020,6 +1042,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
               if (!checkbox.checked) {
                 checkbox.checked = true;
+                ctx.setResources(prev => ({ ...prev, gold: prev.gold - goldToPay }));
+                ctx.effectEndTurn();
                 break;
               }
             }
@@ -1036,11 +1060,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             }
             lastCheckbox = checkbox;
           }
-          if (ctx.card.checkboxes[ctx.card.currentSide - 1][ctx.card.checkboxes[ctx.card.currentSide - 1].length - 1].checked) {
+          if (lastCheckbox?.checked) {
             await setResourceMapToCard(ctx.card, {fame: 100});
-          }
-          if (ctx.resources.gold >= goldToPay && goldToPay <= 17) {
-            ctx.effectEndTurn();
           }
           return false;
         }
@@ -1230,15 +1251,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                       ))[0];
                       const subCtx = ctx;
                       subCtx.card = card;
-                      for (const checkbox of card.checkboxes[card.currentSide - 1]) {
-                        if (!checkbox.checked) {
-                          checkbox.checked = true;
-                          for(const effect of cardEffectsRegistry[card.id][card.currentSide]) {
-                            await effect.execute(ctx);
-                          }
-                          break;
-                        }
-                      }
+                      await checkNextBoxApplyEffect(subCtx);
                     },
                     false
                   );
@@ -1254,15 +1267,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                       let subCtx = ctx;
                       for(const card of cards) {
                         subCtx.card = card;
-                        for (const checkbox of card.checkboxes[card.currentSide - 1]) {
-                          if (!checkbox.checked) {
-                            checkbox.checked = true;
-                            for(const effect of cardEffectsRegistry[card.id][card.currentSide]) {
-                              await effect.execute(ctx);
-                            }
-                            break;
-                          }
-                        }
+                        await checkNextBoxApplyEffect(subCtx);
                       }
                     },
                     false
@@ -1295,7 +1300,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       timing: "otherCardPlayed",
       execute: async function (ctx) {
         let selectableCards = [];
-        for (const card of (ctx.cardsPlayed?? [])) {
+        for (const card of (ctx.cardsForTrigger?? [])) {
           if (card.GetType().includes("Terrain")) selectableCards.push(card);
         }
         if(selectableCards.length !== 0) {
@@ -1332,7 +1337,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       timing: "onClick",
       execute: async function (ctx) {
         ctx.selectCardSides(ctx.card, 1, 0, async (selectedSides) => {
-          const resourcesCount = getresourcesCount(ctx.card.resources[selectedSides[0] - 1][0]);
+          const resourcesCount = getResourcesCount(ctx.card.resources[selectedSides[0] - 1][0]);
           if (selectedSides.length > 0 && ((selectedSides[0] !== 4 && resourcesCount <= 1) || (selectedSides[0] === 4 && resourcesCount <= 4))) {
             const targetSide = selectedSides[0];
             
@@ -1354,6 +1359,197 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             return true;
           }
         });
+        return false;
+      }
+    }],
+  },
+  30: {
+    1: [{ // STOP !
+      description: "Découvrez 31 à 34 et choisissez en 2 (détruisez 2)",
+      timing: "onClick",
+      execute: async function (ctx) {
+        const cards = (await ctx.selectCardsFromZone((card) => (card.id >= 31 && card.id <= 34), "Campaign", this.description, 2)).splice(0);
+        const ids = [31, 32, 33, 34];
+
+        ctx.setDeck((d) => [...d, ...cards]);
+        
+        for (const id of ids) {
+          ctx.deleteCardInZone("Campaign", id);
+        }
+
+        ctx.deleteCardInZone(ctx.zone, ctx.card.id);
+        return false;
+      }
+    }],
+  },
+  31: {
+    1: [{ // Entrepreneur
+      description: "Découvrez l'Ecole (118)",
+      timing: "onClick",
+      execute: async function (ctx) {
+        if (await ctx.discoverCard((card) => card.id === 118, this.description, 1)) {
+          ctx.effectEndTurn();
+        }
+        return false;
+      }
+    }],
+    2: [{ // Hôtel
+      description: "Gagnez 1 gold par personne en jeu",
+      timing: "onClick",
+      execute: async function (ctx) {
+        ctx.setResources(prev => (
+          { ...prev, gold: prev.gold + ctx.fetchCardsInZone((card) => card.GetType().includes("Personne"), "Play Area").length }
+        ));
+        ;
+        return true;
+      }
+    }],
+    3: [{ // Taverne
+      description: "Découvrez des Quêtes (87)",
+      timing: "onClick",
+      execute: async function (ctx) {
+        return (await ctx.discoverCard((card) => card.id === 87, this.description, 1)).valueOf();
+      }
+    }],
+    4: [{ // Bar Confortable
+      description: "Défaussez une Personne pour découvrir un Etranger (92)",
+      timing: "onClick",
+      execute: async function (ctx) {
+        if (ctx.fetchCardsInZone((card) => card.id === 92, "Campaign").length !== 1) return false;
+        const card = (await ctx.selectCardsFromZone((card) => card.GetType().includes("Personne"), "Play Area", this.description, 1)).splice(0)[0];
+        if(card && (await ctx.discoverCard((card) => card.id === 92, this.description, 1)).valueOf()) {
+          ctx.dropToDiscard({id: card.id, fromZone: "Play Area"});
+          return true;
+        }
+        return false;
+      }
+    }],
+  },
+  32: {
+    1: [{ // TODO: Scientifique
+      description: "Les Personnes produisent 1 gold de plus",
+      timing: "onResourceGain",
+      execute: async function (ctx) {
+        for(const card of ctx.cardsForTrigger?? []) {
+          if (card.GetType().includes("Personne")) {
+            ctx.setResources(prev => ({ ...prev, gold: prev.gold + 1 }));
+          }
+        }
+        return false;
+      }
+    }],
+    3: [{ // Observatoire
+      description: "Découvrez l'Astronome (95)",
+      timing: "onClick",
+      execute: async function (ctx) {
+        if (ctx.discoverCard((card) => card.id === 95, this.description, 1).valueOf()) {
+          ctx.effectEndTurn();
+        }
+        return false
+      }
+    }],
+    4: [{ // Laboratoire
+      description: "Découvrez l'Alchimiste (96)",
+      timing: "onClick",
+      execute: async function (ctx) {
+        if (ctx.discoverCard((card) => card.id === 96, this.description, 1).valueOf()) {
+          ctx.effectEndTurn();
+        }
+        return false
+      }
+    }],
+  },
+  33: {
+    1: [{ // Ingénieur
+      description: "Détruisez Cabane de Bûcheron/Grange/Bâteau de pêche pour découvrir (100)/(101)/(102)",
+      timing: "onClick",
+      execute: async function (ctx) {
+        const cardsNames = ["Cabane de Bûcheron", "Grange", "Bâteau de pêche"];
+        const card = (await ctx.selectCardsFromZone((card) => cardsNames.includes(card.GetName()), "Play Area", this.description, 1)).slice(0)[0];
+        if ((await ctx.discoverCard((c) => c.id === (100 + cardsNames.indexOf(card.GetName())), this.description, 1)).valueOf()) {
+          ctx.deleteCardInZone("Play Area", card.id);
+          return true;
+        }
+        return false;
+      }
+    }],
+    3: [{ // Trébuchet
+      description: "Détruisez pour vaincre un ennemi et marquer la prochaine case de l'Armée (27)",
+      timing: "onClick",
+      execute: async function (ctx) {
+        const playAreaCards = ctx.fetchCardsInZone((card) => card.GetType().includes("Ennemi"), "Play Area");
+        const discardCards = ctx.fetchCardsInZone((card) => card.GetType().includes("Ennemi"), "Discard");
+        const permanentCards = ctx.fetchCardsInZone((card) => card.GetType().includes("Ennemi"), "Permanent");
+        const card = (await ctx.selectCardsFromArray([...playAreaCards, ...discardCards, ...permanentCards], "Play Area", this.description, 1)).splice(0)[0];
+        if (card) {
+          let zone = "Play Area"
+
+          if (discardCards.includes(card)) {
+            zone = "Discard";
+          }
+          else if (permanentCards.includes(card)) {
+            zone = "Permanent";
+          }
+
+          ctx.deleteCardInZone(ctx.zone, ctx.card.id);
+          ctx.deleteCardInZone(zone, card.id);
+
+          const subCtx = ctx;
+          subCtx.card = ctx.fetchCardsInZone((c) => c.id === 25, "Permanent")[0];
+          subCtx.zone = "Permanent";
+          
+          await checkNextBoxApplyEffect(subCtx);
+        }
+        return false;
+      }
+    }],
+  },
+  34: {
+    3: [{ // Inventrice Inspirée
+      description: "Réinitialisez et check Inventrice, puis découvrez une invention (97/98/99) ou 1 ressource par check",
+      timing: "onClick",
+      execute: async function (ctx) {
+        let checkedBoxes = 1;
+        for (const checkbox of ctx.card.checkboxes[0]) {
+          if (checkbox.checked) checkedBoxes++;
+        }
+        if(checkedBoxes > 3) checkedBoxes = 3;
+        
+        const resourcesChoice = [
+          {gold: checkedBoxes},
+          {wood: checkedBoxes},
+          {stone: checkedBoxes},
+          {ingot: checkedBoxes},
+          {military: checkedBoxes},
+          {export: checkedBoxes}
+        ];
+        
+        const selectedResource = await ctx.selectResourceChoice(resourcesChoice);
+        
+        if (selectedResource !== null) {
+          ctx.setResources(prev => {
+            const next = { ...prev };
+            for (const key in selectedResource) {
+              const resourceKey = key as keyof ResourceMap;
+              next[resourceKey] = (next[resourceKey] || 0) + (selectedResource[resourceKey] || 0);
+            }
+            return next;
+          });
+          ctx.card.currentSide = 1;
+          checkNextBox(ctx.card);
+          return true;
+        }
+        else {
+          if((await ctx.discoverCard(
+            (card) => card.id >= 97 && card.id <= 99, 
+            this.description, 
+            1
+          )).valueOf()) {
+            ctx.card.currentSide = 1;
+            checkNextBox(ctx.card);
+            return true;
+          }
+        }
         return false;
       }
     }],

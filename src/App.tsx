@@ -1718,6 +1718,9 @@ export default function Game() {
       case "Permanent":
         filteredCards = permanentZone.filter(filter);
         break;
+      case "Campaign":
+        filteredCards = campaignDeck.filter(filter);
+        break;
     }
     return filteredCards;
   };
@@ -1736,6 +1739,10 @@ export default function Game() {
   ): Promise<GameCard[]> => {
     return new Promise((resolve) => {
       const filteredCards = filterZone(zone, filter);
+      if (filteredCards.length === 0) {
+        resolve([]);
+        return;
+      }
       setCardSelectionPopup({
         cards: filteredCards,
         effectDescription: effectDescription,
@@ -1753,6 +1760,10 @@ export default function Game() {
     requiredCount: number
   ): Promise<GameCard[]> => {
     return new Promise((resolve) => {
+      if (cards.length === 0) {
+        resolve([]);
+        return;
+      }
       setCardSelectionPopup({
         cards: cards,
         effectDescription: effectDescription,
@@ -1992,7 +2003,7 @@ export default function Game() {
     card: GameCard,
     zone: string,
     timing: EffectTiming,
-    cardsPlayed?: GameCard[],
+    cardsForTrigger?: GameCard[],
     effectIndex?: number
   ) => {
     const effects = getCardEffects(card.id, card.currentSide);
@@ -2001,7 +2012,7 @@ export default function Game() {
 
     const context: GameContext = {
       card,
-      cardsPlayed,
+      cardsForTrigger,
       zone,
       resources,
       filterZone,
@@ -2268,22 +2279,66 @@ export default function Game() {
     setHasUpgradedCard(true);
   };
 
-  const handleGainResources = (card: GameCard, resources: Partial<ResourceMap>, zone: string) => {
-    let onlyFame = true;
+  const handleGainResources = async (card: GameCard, resources: Partial<ResourceMap>, zone: string) => {
+    for (const c of [...playArea]) {
+      const effects = getCardEffects(c.id, c.currentSide, "onResourceGain");
+      for (const effect of effects) {
+        if (effect.timing === "onResourceGain") {
+          const context: GameContext = {
+            card: c,
+            zone: playArea.includes(c) ? "Play Area" : "Permanent",
+            resources: { ...emptyResource, ...resources },
+            cardsForTrigger: [card],
+            filterZone,
+            setResources,
+            draw,
+            effectEndTurn,
+            dropToPlayArea,
+            dropToBlocked,
+            dropToDiscard,
+            setDeck,
+            setPlayArea,
+            setDiscard,
+            setPermanentZone,
+            setBlockedZone,
+            deleteCardInZone,
+            replaceCardInZone,
+            mill,
+            openCheckboxPopup,
+            selectResourceChoice,
+            selectCardsFromZone,
+            selectCardsFromArray,
+            discoverCard,
+            boostProductivity,
+            registerEndRoundEffect,
+            addCardEffect,
+            fetchCardsInZone,
+            selectCardSides,
+          };
+          
+          await effect.execute(context);
+        }
+      }
+    }
 
+    // Vérifier si les ressources contiennent autre chose que fame AVANT setResources
+    const onlyFame = !Object.entries(resources || {}).some(([key, value]) => 
+      key !== "fame" && Number(value) !== 0
+    );
+    
     if (resources) {
       setResources((prev) => {
         const next = { ...prev };
         Object.entries(resources).forEach(([k, v]) => {
           const key = k as keyof ResourceMap;
-          if(key !== "fame" && Number(v) != 0){
-            onlyFame = false;
+          if(key !== "fame" && Number(v) !== 0){
             next[key] = (Number(next[key]) || 0) + (Number(v) || 0);
           }
         });
         return next;
       });
     }
+    
     if(onlyFame) {
       return;
     }
