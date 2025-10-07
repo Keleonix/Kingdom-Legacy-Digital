@@ -60,7 +60,7 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       " ",
-      "effects/activate Défaussez une carte alliée pour gagner resources/gold resources/gold \.",
+      "effects/activate Défaussez une carte alliée pour gagner resources/gold resources/gold .",
       "effects/passive Reste en jeu. ",
       "",
     ],
@@ -109,7 +109,7 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       " ",
-      "effects/activate Défaussez une carte alliée pour gagner resources/gold resources/gold \.",
+      "effects/activate Défaussez une carte alliée pour gagner resources/gold resources/gold .",
       "effects/passive Reste en jeu. ",
       "",
     ],
@@ -158,7 +158,7 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       " ",
-      "effects/activate Défaussez une carte alliée pour gagner resources/gold resources/gold \.",
+      "effects/activate Défaussez une carte alliée pour gagner resources/gold resources/gold .",
       "effects/passive Reste en jeu. ",
       "",
     ],
@@ -207,7 +207,7 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       " ",
-      "effects/activate Défaussez une carte alliée pour gagner resources/gold resources/gold \.",
+      "effects/activate Défaussez une carte alliée pour gagner resources/gold resources/gold .",
       "effects/passive Reste en jeu. ",
       "",
     ],

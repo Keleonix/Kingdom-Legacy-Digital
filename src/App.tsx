@@ -368,7 +368,7 @@ function CardView({
 
   function renderEffect(raw: string) {
     const { before, effects } = parseEffects(raw);
-    const cardEffects = getCardEffects(card.id, card.currentSide || 1);
+    const cardEffects = getCardEffects(card.id, card.currentSide);
 
     return (
       <div className="flex flex-col gap-1">
@@ -385,18 +385,20 @@ function CardView({
           </div>
         )}
 
-        {effects.map((effObj, idx) => {
-          const effect = cardEffects[idx];
+        {effects.map((effObj, parsedIdx) => {
+          // L'index dans cardEffects correspond directement à parsedIdx
+          // car les deux tableaux sont construits dans le même ordre
+          const effect = cardEffects[parsedIdx];
           const isClickable = effect && effect.timing === "onClick";
 
           if (isClickable) {
             return (
               <button
-                key={idx}
+                key={parsedIdx}
                 onClick={async (e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  await onExecuteCardEffect?.(card, fromZone, "onClick", idx);
+                  await onExecuteCardEffect?.(card, fromZone, "onClick", parsedIdx);
                 }}
                 className="text-[10px] px-2 py-1 border rounded transition text-left w-full bg-blue-50 hover:bg-blue-100 border-blue-300"
               >
@@ -405,7 +407,7 @@ function CardView({
             );
           } else {
             return (
-              <div key={idx} className="text-[10px] px-2 py-1">
+              <div key={parsedIdx} className="text-[10px] px-2 py-1">
                 {renderEffectText(effObj.text)}
               </div>
             );
@@ -813,7 +815,7 @@ function CardPopup({
       <div className="bg-white p-4 rounded-xl space-y-4 max-w-3xl relative max-h-[80vh] overflow-y-auto">
         <h2 className="font-bold">{localCard.GetName()}</h2>
 
-        {/* Ã‰diteur de noms pour chaque face */}
+        {/* Editeur de noms pour chaque face */}
         <div>
           <h3 className="font-bold">Card Names</h3>
           <div className="grid grid-cols-2 gap-2">
@@ -1641,6 +1643,7 @@ export default function Game() {
       });
       setPendingPlayedCards([]);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pendingPlayedCards]);
 
   const drawNewTurn = () => {
@@ -1821,7 +1824,7 @@ export default function Game() {
     effectDescription: string,
     prodBoost: Partial<ResourceMap> | null
   ): Promise<boolean> => {
-    return new Promise(async (resolve) => {
+    return new Promise((resolve) => {
       const filteredCards = filterZone(zone, filter);
       
       if (filteredCards.length === 0) {
@@ -2042,7 +2045,7 @@ export default function Game() {
       selectCardSides,
     };
 
-    if (typeof effectIndex === "number" && effectIndex >= 0) {
+    if (typeof effectIndex === "number" && effectIndex >= 0 && effectIndex < effects.length) {
       const eff = effects[effectIndex];
       if (await eff.execute(context)) {
         dropToDiscard({ id: card.id, fromZone: zone });
@@ -2054,6 +2057,7 @@ export default function Game() {
       if (effect.timing === timing) {
         if (await effect.execute(context)) {
           dropToDiscard({ id: card.id, fromZone: zone });
+          break;
         }
       }
     }

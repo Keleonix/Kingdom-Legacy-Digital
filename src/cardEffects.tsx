@@ -27,8 +27,8 @@ export type GameContext = {
   selectResourceChoice: (options: Array<Partial<ResourceMap>>) => Promise<Partial<ResourceMap> | null>;
   selectCardsFromZone: (filter: (card: GameCard) => boolean, zone: string, effectDescription: string, requiredCount: number) => Promise<GameCard[]>;
   selectCardsFromArray: (cards: GameCard[], zone: string, effectDescription: string, requiredCount: number) => Promise<GameCard[]>;
-  discoverCard: (filter: (card: GameCard) => boolean, effectDescription: string, requiredCount: number, zone?: string) => Promise<Boolean>;
-  boostProductivity: (filter: (card: GameCard) => boolean, zone: string, effectDescription: string, prodBoost: Partial<ResourceMap> | null) => Promise<Boolean>;
+  discoverCard: (filter: (card: GameCard) => boolean, effectDescription: string, requiredCount: number, zone?: string) => Promise<boolean>;
+  boostProductivity: (filter: (card: GameCard) => boolean, zone: string, effectDescription: string, prodBoost: Partial<ResourceMap> | null) => Promise<boolean>;
   registerEndRoundEffect: (description: string, effect: () => Promise<void>, forceResolve?: boolean) => void;
   addCardEffect: (id: number, face: number, zone: string, effect: CardEffect, effectText: string) => void;
   fetchCardsInZone: (filter: (card: GameCard) => boolean, zone: string) => GameCard[];
@@ -41,6 +41,7 @@ export type CardEffect = {
   execute: (context: GameContext) => boolean | Promise<boolean>;
   requiresChoice?: boolean;
   choices?: string[];
+  alreadyUsed?: boolean;
 };
 
 // -------------------
@@ -859,14 +860,12 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           return true;
         }
       },
-      {
+      { // Phare
         description: "Défaussez la carte du dessus du deck",
-        timing: "doesNothing",
+        timing: "onClick",
         execute: async function (ctx) {
-          if(ctx) {
-            return false;
-          }
-          return true;
+          ctx.mill(1);
+          return false;
         }
       },
     ],
@@ -916,7 +915,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         execute: async function (ctx) {
           let militaryToPay = 1;
           for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
-            checkbox.checked ? militaryToPay+= 1 : militaryToPay += 0;
+            militaryToPay += checkbox.checked ? 1 : 0;
           }
           // Checkbox
           if (ctx.resources.military >= militaryToPay) {
@@ -933,7 +932,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           let lastCheckbox;
           for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
             if (!checkbox.checked) {
-              let checkboxResources = getCheckboxResources(lastCheckbox?.content);
+              const checkboxResources = getCheckboxResources(lastCheckbox?.content);
               if (checkboxResources) {
                 await setResourceMapToCard(ctx.card, checkboxResources);
               }
@@ -959,7 +958,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           let checkedBoxes = 0;
           const militaryToPay = [10, 10, 12, 12, 15];
           for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
-            checkbox.checked ? checkedBoxes += 1 : checkedBoxes += 0;
+            checkedBoxes += checkbox.checked ? 1 : 0;
           }
           // Checkbox
           if (ctx.resources.military >= militaryToPay[checkedBoxes]) {
@@ -976,7 +975,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           let lastCheckbox;
           for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
             if (!checkbox.checked) {
-              let checkboxResources = getCheckboxResources(lastCheckbox?.content);
+              const checkboxResources = getCheckboxResources(lastCheckbox?.content);
               if (checkboxResources) {
                 await setResourceMapToCard(ctx.card, {fame: (checkboxResources.fame?? 0) + 50});
               }
@@ -998,7 +997,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         execute: async function (ctx) {
           let goldToPay = 1;
           for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
-            checkbox.checked ? goldToPay+= 1 : goldToPay += 0;
+            goldToPay += checkbox.checked ? 1 : 0;
           }
           // Checkbox
           if (ctx.resources.gold >= goldToPay) {
@@ -1015,7 +1014,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           let lastCheckbox;
           for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
             if (!checkbox.checked) {
-              let checkboxResources = getCheckboxResources(lastCheckbox?.content);
+              const checkboxResources = getCheckboxResources(lastCheckbox?.content);
               if (checkboxResources) {
                 await setResourceMapToCard(ctx.card, checkboxResources);
               }
@@ -1035,7 +1034,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         execute: async function (ctx) {
           let goldToPay = 12;
           for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
-            checkbox.checked ? goldToPay+= 1 : goldToPay += 0;
+            goldToPay += checkbox.checked ? 1 : 0;
           }
           // Checkbox
           if (ctx.resources.gold >= goldToPay) {
@@ -1052,7 +1051,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           let lastCheckbox;
           for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
             if (!checkbox.checked) {
-              let checkboxResources = getCheckboxResources(lastCheckbox?.content);
+              const checkboxResources = getCheckboxResources(lastCheckbox?.content);
               if (checkboxResources) {
                 await setResourceMapToCard(ctx.card, {fame: (checkboxResources.fame?? 0) + 50});
               }
@@ -1264,7 +1263,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                         (card) => (card.id !== ctx.card.id && card.checkboxes.length !== 0),
                         "Permanent"
                       );
-                      let subCtx = ctx;
+                      const subCtx = ctx;
                       for(const card of cards) {
                         subCtx.card = card;
                         await checkNextBoxApplyEffect(subCtx);
@@ -1299,7 +1298,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: "Détruit le prochain terrain joué",
       timing: "otherCardPlayed",
       execute: async function (ctx) {
-        let selectableCards = [];
+        const selectableCards = [];
         for (const card of (ctx.cardsForTrigger?? [])) {
           if (card.GetType().includes("Terrain")) selectableCards.push(card);
         }
@@ -1580,6 +1579,59 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         return false;
       }
     }],
+  },
+  36: {
+    1: [{ // Mercenaire
+      description: "Dépensez 1 gold pour obtenir 2 stone",
+      timing: "onClick",
+      execute: async function (ctx) {
+        if(ctx.resources.gold >= 2) {
+          ctx.openCheckboxPopup(ctx.card, 1, 1, (boxes) => {
+            if(boxes.length !== 0) {
+              for(const box of boxes) {
+                applyResourceMapDelta(ctx.setResources, getCheckboxResources(box.content));
+              }
+              checkBoxes(ctx.card, boxes);
+              ctx.setResources(prev => ({ ...prev, gold: prev.gold - 2 }));
+              return true;
+            }
+          });
+        }
+        return false;
+      }
+    }],
+    3: [
+        { // Sir ___
+        description: "Dépensez 3 ingot pour gagner 1 military",
+        timing: "onClick",
+        alreadyUsed: false,
+        execute: async function (ctx) {
+          if(ctx.resources.ingot >= 3 && !this.alreadyUsed) {
+            addResourceMapToCard(ctx.card, { military: 1});
+            ctx.setResources(prev => ({ ...prev, ingot: prev.ingot - 3 }));
+            ctx.effectEndTurn();
+            this.alreadyUsed = true;
+            return false;
+          }
+          return false;
+        }
+      },
+      { // Sir ___
+        description: "Dépensez 4 ingot pour gagner 1 military",
+        timing: "onClick",
+        alreadyUsed: false,
+        execute: async function (ctx) {
+          if(ctx.resources.ingot >= 4 && !this.alreadyUsed) {
+            addResourceMapToCard(ctx.card, { military: 1});
+            ctx.setResources(prev => ({ ...prev, ingot: prev.ingot - 4 }));
+            ctx.effectEndTurn();
+            this.alreadyUsed = true;
+            return false;
+          }
+          return false;
+        }
+      }
+    ],
   },
   41: {
     1: [
