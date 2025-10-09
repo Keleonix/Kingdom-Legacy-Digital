@@ -1633,6 +1633,18 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     ],
   },
+  37: {
+
+  },
+  38: { //TODO : Fame
+
+  },
+  39: { //TODO : Fame
+
+  },
+  40: { //TODO : Fame
+
+  },
   41: {
     1: [
       { // Bouffon
@@ -1692,6 +1704,50 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           });
         }
     }],
+  },
+  42: {
+    1: [{ // Exploitant
+      description: "Gagnez les ressources produitent par un Terrain",
+      timing: "onClick",
+      execute: async function (ctx) {
+        const selectedCards = await ctx.selectCardsFromZone(
+          (card) => (card.GetType().includes("Terrain")),
+          "Play Area",
+          this.description,
+          1
+        );
+        if (selectedCards.length > 0) {
+          const choice = await ctx.selectResourceChoice(selectedCards[0].GetResources());
+            if(choice) {
+              applyChoice(ctx, choice);
+              return true;
+            }
+          }
+          return false;
+      }
+    }],
+    3: [
+      { // Grenier
+        description: "Reste en jeu",
+        timing: "stayInPlay",
+        execute: async function (ctx) {
+          if(ctx) {
+            return false;
+          }
+          return true;
+        }
+      },
+      { // Grenier
+        description: "Reste en jeu",
+        timing: "endOfTurn",
+        execute: async function (ctx) {
+          if(ctx) {
+            return false;
+          }
+          return true;
+        }
+      },
+    ]
   },
   71: {
     2: [{ // Zone Rocheuse
