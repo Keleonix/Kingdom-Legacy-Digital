@@ -1526,6 +1526,7 @@ export default function Game() {
   const [discard, setDiscard] = useState<GameCard[]>([]);
   const [playArea, setPlayArea] = useState<GameCard[]>([]);
   const [permanentZone, setPermanentZone] = useState<GameCard[]>([]);
+  const [temporaryCardList, setTemporaryCardList] = useState<GameCard[]>([]);
   const [popupCard, setPopupCard] = useState<PopupPayload | null>(null);
   const [showDiscard, setShowDiscard] = useState(false);
   const [showDeck, setShowDeck] = useState(false);
@@ -1585,6 +1586,49 @@ export default function Game() {
   const [onCardSideConfirm, setOnCardSideConfirm] = useState<
     ((selected: number[]) => void) | null
   >(null);
+
+  // ----------- immediate refs & setters (à ajouter près des useState) -----------
+  const playAreaRef = useRef<GameCard[]>([]);
+  const discardRef = useRef<GameCard[]>([]);
+  const temporaryCardListRef = useRef<GameCard[]>([]);
+
+  // Keep refs in sync if other code uses setPlayArea / setDiscard directly
+  useEffect(() => { playAreaRef.current = playArea; }, [playArea]);
+  useEffect(() => { discardRef.current = discard; }, [discard]);
+  useEffect(() => { temporaryCardListRef.current = temporaryCardList; }, [temporaryCardList]);
+
+  function setPlayAreaImmediate(next: React.SetStateAction<GameCard[]>) {
+    if (typeof next === "function") {
+      const v = (next as (prev: GameCard[]) => GameCard[])(playAreaRef.current);
+      playAreaRef.current = v;
+      setPlayArea(v);
+    } else {
+      playAreaRef.current = next as GameCard[];
+      setPlayArea(next as GameCard[]);
+    }
+  }
+
+  function setDiscardImmediate(next: React.SetStateAction<GameCard[]>) {
+    if (typeof next === "function") {
+      const v = (next as (prev: GameCard[]) => GameCard[])(discardRef.current);
+      discardRef.current = v;
+      setDiscard(v);
+    } else {
+      discardRef.current = next as GameCard[];
+      setDiscard(next as GameCard[]);
+    }
+  }
+
+  function setTemporaryCardListImmediate(next: React.SetStateAction<GameCard[]>) {
+    if (typeof next === "function") {
+      const v = (next as (prev: GameCard[]) => GameCard[])(temporaryCardListRef.current);
+      temporaryCardListRef.current = v;
+      setTemporaryCardList(v);
+    } else {
+      temporaryCardListRef.current = next as GameCard[];
+      setTemporaryCardList(next as GameCard[]);
+    }
+  }
 
   // -------------------
   // Init
@@ -1646,37 +1690,51 @@ export default function Game() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pendingPlayedCards]);
 
-  const drawNewTurn = () => {
-    discardEndTurn();
+  const drawNewTurn = async () => {
+    await discardEndTurn();
     draw(4);
   }
   
   const progress = () => draw(2);
 
-  const effectEndTurn = () => {
-    setDiscard((d) => [...d, ...playArea]);
-    setPlayArea([]);
+  const handleEffectsEndOfTurn = async () => {
+    for(const card of playArea) {
+      await handleExecuteCardEffect(card, "Play Area", "endOfTurn");
+    }
+  }
 
-    setResources((prev) => {
-      const reset: ResourceMap = { ...emptyResource };
-      if ("fame" in prev) (reset as Partial<ResourceMap>).fame = (prev as Partial<ResourceMap>).fame;
-      return reset;
-    });
-
-    setHasUpgradedCard(true);
+  const effectEndTurn = async () => {
+    await discardEndTurn(true);
   };
 
   const discardEndTurn = async (endRound?: boolean) => {
+    await handleEffectsEndOfTurn();
+
     if (endRound) {
       setDeck((d) => [...d, ...playArea, ...blockedZone, ...discard]);
       setPlayArea([]);
       setBlockedZone([]);
       setDiscard([]);
+      setTemporaryCardList([]);
     }
     else {
-      setDiscard((d) => [...d, ...playArea, ...blockedZone]);
-      setPlayArea([]);
+      const cardsToDiscard: GameCard[] = [];
+      const cardsToKeep: GameCard[] = [];
+
+      const currentPlayArea = playAreaRef.current;
+      currentPlayArea.forEach(card => {
+        const effects = getCardEffects(card.id, card.currentSide);
+        const hasStayInPlay = effects.some(eff => eff.timing === "stayInPlay");
+        const isInTemporaryList = temporaryCardListRef.current.some(tempCard => tempCard.id === card.id);
+
+        if (hasStayInPlay || isInTemporaryList) cardsToKeep.push(card);
+        else cardsToDiscard.push(card);
+      });
+
+      setDiscard((d) => [...d, ...cardsToDiscard, ...blockedZone]);
+      setPlayArea(cardsToKeep);
       setBlockedZone([]);
+      setTemporaryCardList([]);
     }
 
     setResources((prev) => {
@@ -1690,8 +1748,8 @@ export default function Game() {
     await new Promise(resolve => setTimeout(resolve, 100));
   };
 
-  const handleEndBaseGame = () => {
-    discardEndTurn();
+  const handleEndBaseGame = async () => {
+    await discardEndTurn();
     setHasEndedBaseGame(true);
   };
 
@@ -2029,6 +2087,8 @@ export default function Game() {
       setPlayArea,
       setDiscard,
       setPermanentZone,
+      setTemporaryCardList,
+      setTemporaryCardListImmediate,
       setBlockedZone,
       deleteCardInZone,
       replaceCardInZone,
@@ -2070,10 +2130,9 @@ export default function Game() {
     const { id, fromZone } = payload;
     if (fromZone === toZone) return;
 
-    // helper: remove a card by id from a given array
-    const removeById = (arr: GameCard[], removeId: number) => arr.filter((c) => c.id !== removeId);
+    const removeById = (arr: GameCard[], removeId: number) =>
+      arr.filter((c) => c.id !== removeId);
 
-    // Find the original card object to clone for adding to destination (search current states first).
     const findCardInAllZones = (snap?: {
       deck?: GameCard[];
       playArea?: GameCard[];
@@ -2082,8 +2141,16 @@ export default function Game() {
       blockedZone?: GameCard[];
       permanentZone?: GameCard[];
     }) => {
-      const sources = snap ?? { deck, playArea, discard, campaignDeck, blockedZone, permanentZone };
-      const find = (arr?: GameCard[]) => (arr ? arr.find((c) => c.id === id) ?? null : null);
+      const sources = snap ?? {
+        deck,
+        playArea,
+        discard,
+        campaignDeck,
+        blockedZone,
+        permanentZone,
+      };
+      const find = (arr?: GameCard[]) =>
+        arr ? arr.find((c) => c.id === id) ?? null : null;
       return (
         find(sources.deck) ||
         find(sources.playArea) ||
@@ -2095,28 +2162,37 @@ export default function Game() {
       );
     };
 
-    // find source BEFORE we remove it
     const sourceCard = findCardInAllZones();
-    const toAdd = sourceCard ? cloneGameCard(sourceCard) : new GameCard({ id });
+    if (!sourceCard) return;
 
-    // Remove from source zone (functional updates to avoid stale closures)
+    let toAdd: GameCard = sourceCard;
+
     if (fromZone === "Deck") setDeck((d) => removeById(d, id));
-    if (fromZone === "Play Area") setPlayArea((p) => removeById(p, id));
-    if (fromZone === "Discard") setDiscard((f) => removeById(f, id));
+    if (fromZone === "Play Area") setPlayAreaImmediate((p) => removeById(p, id));
+    if (fromZone === "Discard") setDiscardImmediate((f) => removeById(f, id));
     if (fromZone === "Campaign") setCampaignDeck((g) => removeById(g, id));
     if (fromZone === "Blocked") setBlockedZone((b) => removeById(b, id));
     if (fromZone === "Permanent") setPermanentZone((pe) => removeById(pe, id));
 
-    // Add to destination zone (add cloned instance)
-    if (toZone === "Deck") setDeck((d) => [toAdd, ...d]);
-    if (toZone === "Discard") setDiscard((f) => [...f, toAdd]);
-    if (toZone === "Destroy") { /* empty */ } // intentionally drop permanently (do nothing but ensure it was removed from source)
-    if (toZone === "Blocked") setBlockedZone((b) => [...b, toAdd]);
-    if (toZone === "Permanent") setPermanentZone((pe) => [...pe, toAdd]);
-    if (toZone === "Play Area"){
+    if (toZone === "Deck") {
+      setDeck((d) => [cloneGameCard(toAdd), ...d]);
+    }
+    if (toZone === "Discard") {
+      setDiscard((f) => [...f, toAdd]);
+    }
+    if (toZone === "Destroy") {
+    }
+    if (toZone === "Blocked") {
+      setBlockedZone((b) => [...b, toAdd]);
+    }
+    if (toZone === "Permanent") {
+      setPermanentZone((pe) => [...pe, toAdd]);
+    }
+    if (toZone === "Play Area") {
       setPlayArea((p) => [...p, toAdd]);
+
       handleExecuteCardEffect(toAdd, "Play Area", "played");
-      for(const card of playArea) {
+      for (const card of playArea) {
         handleExecuteCardEffect(card, "Play Area", "otherCardPlayed", [toAdd]);
       }
     }
@@ -2304,6 +2380,8 @@ export default function Game() {
             setPlayArea,
             setDiscard,
             setPermanentZone,
+            setTemporaryCardList,
+            setTemporaryCardListImmediate,
             setBlockedZone,
             deleteCardInZone,
             replaceCardInZone,
@@ -2422,7 +2500,6 @@ export default function Game() {
     return kingdoms.sort();
   };
 
-  // Reset game (fail-safe confirmation)
   const resetGame = () => {
     if (!confirm("Are you sure you want to reset the entire game? This cannot be undone without reloading. Type YES to confirm.")) return;
     const answer = prompt("Type YES to confirm full reset:");

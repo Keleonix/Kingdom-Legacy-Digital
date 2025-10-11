@@ -19,6 +19,8 @@ export type GameContext = {
   setPlayArea: React.Dispatch<React.SetStateAction<GameCard[]>>;
   setDiscard: React.Dispatch<React.SetStateAction<GameCard[]>>;
   setPermanentZone: React.Dispatch<React.SetStateAction<GameCard[]>>;
+  setTemporaryCardList: React.Dispatch<React.SetStateAction<GameCard[]>>;
+  setTemporaryCardListImmediate: (cards: GameCard[]) => void;
   setBlockedZone: React.Dispatch<React.SetStateAction<GameCard[]>>;
   deleteCardInZone: (zone: string, id: number) => void;
   replaceCardInZone: (zone: string, id: number, newCard: GameCard) => void;
@@ -1738,12 +1740,20 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       { // Grenier
-        description: "Reste en jeu",
+        description: "Défaussez pour qu'une autre carte reste en jeu",
         timing: "endOfTurn",
         execute: async function (ctx) {
-          if(ctx) {
-            return false;
-          }
+          const selected = await ctx.selectCardsFromZone(
+            (card) => card.id !== ctx.card.id, "Play Area", this.description, 1
+          );
+          if (!selected || selected.length === 0) return false;
+
+          ctx.setTemporaryCardListImmediate
+            ? ctx.setTemporaryCardListImmediate(selected)
+            : ctx.setTemporaryCardList(selected);
+
+          ctx.setPlayArea(prev => prev.filter(c => c.id !== ctx.card.id));
+
           return true;
         }
       },
