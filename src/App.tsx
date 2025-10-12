@@ -132,6 +132,101 @@ function renderCheckboxContent(content: string | undefined) {
   );
 }
 
+function parseEffects(raw: string) {
+  if (!raw) return { before: "", effects: [] as { text: string; keyword: string }[] };
+
+  const pattern = new RegExp(`\\b(${EFFECT_KEYWORDS.join("|")})`, "gi");
+
+  const matches: Array<{ index: number; keyword: string }> = [];
+  let match: RegExpExecArray | null;
+  while ((match = pattern.exec(raw)) !== null) {
+    matches.push({ index: match.index, keyword: match[0].toLowerCase() });
+  }
+
+  if (matches.length === 0) {
+    return { before: raw.trim(), effects: [] };
+  }
+
+  const validMatches = matches.filter(m => {
+    let depth = 0;
+    for (let i = 0; i < m.index; i++) {
+      if (raw[i] === '(') depth++;
+      else if (raw[i] === ')') depth--;
+    }
+    if (depth !== 0) return false;
+
+    let lastPeriodIndex = -1;
+    for (let i = m.index - 1; i >= 0; i--) {
+      if (raw[i] === '.') { lastPeriodIndex = i; break; }
+    }
+    const textBefore = raw.slice(lastPeriodIndex + 1, m.index);
+    return /^\s*$/.test(textBefore);
+  });
+
+  if (validMatches.length === 0) {
+    return { before: raw.trim(), effects: [] };
+  }
+
+  const before = raw.slice(0, validMatches[0].index).trim();
+  const effects: { text: string; keyword: string }[] = [];
+
+  for (let i = 0; i < validMatches.length; i++) {
+    const start = validMatches[i].index;
+    let effectText = "";
+    let depth = 0;
+    let foundEnd = false;
+
+    for (let j = start; j < raw.length; j++) {
+      const ch = raw[j];
+
+      if (ch === '(') depth++;
+      else if (ch === ')') depth--;
+      else if (ch === '.' && depth === 0) {
+        const nextKeywordIndex = i < validMatches.length - 1 ? validMatches[i + 1].index : Infinity;
+
+        let hasParenAfter = false;
+        let parenStart = -1;
+        for (let k = j + 1; k < nextKeywordIndex && k < raw.length; k++) {
+          if (raw[k] === '(') { hasParenAfter = true; parenStart = k; break; }
+          else if (raw[k].trim() && validMatches.some(vm => vm.index === k)) { break; }
+        }
+
+        if (hasParenAfter && parenStart < nextKeywordIndex) {
+          let parenDepth = 1;
+          let parenEnd = -1;
+          for (let k = parenStart + 1; k < raw.length; k++) {
+            if (raw[k] === '(') parenDepth++;
+            else if (raw[k] === ')') {
+              parenDepth--;
+              if (parenDepth === 0) { parenEnd = k; break; }
+            }
+          }
+          if (parenEnd !== -1) {
+            effectText = raw.slice(start, parenEnd + 1).trim();
+            foundEnd = true;
+            break;
+          }
+        } else {
+          effectText = raw.slice(start, j + 1).trim();
+          foundEnd = true;
+          break;
+        }
+      }
+    }
+
+    if (!foundEnd) {
+      const end = i < validMatches.length - 1 ? validMatches[i + 1].index : raw.length;
+      effectText = raw.slice(start, end).trim();
+    }
+
+    if (effectText) {
+      effects.push({ text: effectText, keyword: validMatches[i].keyword });
+    }
+  }
+
+  return { before, effects };
+}
+
 // -------------------
 // Card View Component
 // -------------------
@@ -240,105 +335,6 @@ function CardView({
         ))}
       </>
     );
-  }
-
-  function parseEffects(raw: string) {
-    if (!raw) return { before: "", effects: [] as { text: string; keyword: string }[] };
-
-    // Pattern sur la liste complète (EFFECT_KEYWORDS)
-    const pattern = new RegExp(`\\b(${EFFECT_KEYWORDS.join("|")})`, "gi");
-
-    const matches: Array<{ index: number; keyword: string }> = [];
-    let match: RegExpExecArray | null;
-    while ((match = pattern.exec(raw)) !== null) {
-      matches.push({ index: match.index, keyword: match[0].toLowerCase() });
-    }
-
-    if (matches.length === 0) {
-      return { before: raw.trim(), effects: [] };
-    }
-
-    // Filtrer les matches invalides (entre parenthèses ou en milieu de phrase)
-    const validMatches = matches.filter(m => {
-      let depth = 0;
-      for (let i = 0; i < m.index; i++) {
-        if (raw[i] === '(') depth++;
-        else if (raw[i] === ')') depth--;
-      }
-      if (depth !== 0) return false;
-
-      // Vérifier que le mot-clé est en début de phrase (texte avant = espaces ou début)
-      let lastPeriodIndex = -1;
-      for (let i = m.index - 1; i >= 0; i--) {
-        if (raw[i] === '.') { lastPeriodIndex = i; break; }
-      }
-      const textBefore = raw.slice(lastPeriodIndex + 1, m.index);
-      return /^\s*$/.test(textBefore);
-    });
-
-    if (validMatches.length === 0) {
-      return { before: raw.trim(), effects: [] };
-    }
-
-    const before = raw.slice(0, validMatches[0].index).trim();
-    const effects: { text: string; keyword: string }[] = [];
-
-    for (let i = 0; i < validMatches.length; i++) {
-      const start = validMatches[i].index;
-      let effectText = "";
-      let depth = 0;
-      let foundEnd = false;
-
-      for (let j = start; j < raw.length; j++) {
-        const ch = raw[j];
-
-        if (ch === '(') depth++;
-        else if (ch === ')') depth--;
-        else if (ch === '.' && depth === 0) {
-          const nextKeywordIndex = i < validMatches.length - 1 ? validMatches[i + 1].index : Infinity;
-
-          // si après le point il y a une parenthèse avant le prochain keyword, inclure jusqu'à fermeture
-          let hasParenAfter = false;
-          let parenStart = -1;
-          for (let k = j + 1; k < nextKeywordIndex && k < raw.length; k++) {
-            if (raw[k] === '(') { hasParenAfter = true; parenStart = k; break; }
-            else if (raw[k].trim() && validMatches.some(vm => vm.index === k)) { break; }
-          }
-
-          if (hasParenAfter && parenStart < nextKeywordIndex) {
-            let parenDepth = 1;
-            let parenEnd = -1;
-            for (let k = parenStart + 1; k < raw.length; k++) {
-              if (raw[k] === '(') parenDepth++;
-              else if (raw[k] === ')') {
-                parenDepth--;
-                if (parenDepth === 0) { parenEnd = k; break; }
-              }
-            }
-            if (parenEnd !== -1) {
-              effectText = raw.slice(start, parenEnd + 1).trim();
-              foundEnd = true;
-              break;
-            }
-          } else {
-            effectText = raw.slice(start, j + 1).trim();
-            foundEnd = true;
-            break;
-          }
-        }
-      }
-
-      if (!foundEnd) {
-        const end = i < validMatches.length - 1 ? validMatches[i + 1].index : raw.length;
-        effectText = raw.slice(start, end).trim();
-      }
-
-      if (effectText) {
-        effects.push({ text: effectText, keyword: validMatches[i].keyword });
-      }
-    }
-
-    return { before, effects };
   }
 
   function renderEffectText(effect: string) {
@@ -1587,6 +1583,11 @@ export default function Game() {
     ((selected: number[]) => void) | null
   >(null);
 
+  const [isPlayBlocked, setIsPlayBlocked] = useState(false);
+  useEffect(() => {
+    setIsPlayBlocked(checkPlayRestrictions());
+  }, [playArea, permanentZone]);
+
   // ----------- immediate refs & setters (à ajouter près des useState) -----------
   const playAreaRef = useRef<GameCard[]>([]);
   const discardRef = useRef<GameCard[]>([]);
@@ -1669,7 +1670,57 @@ export default function Game() {
     setResources((r) => ({ ...r, [key]: r[key] + delta }));
   };
 
+  const checkPlayRestrictions = (): boolean => {
+    const allActiveCards = [...playArea];
+    
+    for (const card of allActiveCards) {
+      const effects = getCardEffects(card.id, card.currentSide);
+      for (const effect of effects) {
+        if (effect.timing === "restrictPlay" || effect.timing === "restrictAll") {
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+
+  const checkUpgradeRestrictions = (): boolean => {
+    const allActiveCards = [...playArea];
+    
+    for (const card of allActiveCards) {
+      const effects = getCardEffects(card.id, card.currentSide);
+      for (const effect of effects) {
+        if (effect.timing === "restrictAll") {
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+
+  const checkTimeEffectRestrictions = (): boolean => {
+    const allActiveCards = [...playArea];
+    
+    for (const card of allActiveCards) {
+      const effects = getCardEffects(card.id, card.currentSide);
+      for (const effect of effects) {
+        if (effect.timing === "restrictAll") {
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+
+  const isTimeEffect = (effectText: string): boolean => {
+    return effectText.startsWith("effects/time");
+  };
+
   const draw = (nbCards: number) => {
+    if (checkPlayRestrictions()) {
+      return;
+    }
+
     const drawn = deck.slice(0, nbCards);
     const newCards = drawn.map(cloneGameCard);
     
@@ -2107,6 +2158,18 @@ export default function Game() {
 
     if (typeof effectIndex === "number" && effectIndex >= 0 && effectIndex < effects.length) {
       const eff = effects[effectIndex];
+      
+      const effectText = card.effects[card.currentSide - 1];
+      const { effects: parsedEffects } = parseEffects(effectText);
+      
+      if (effectIndex < parsedEffects.length) {
+        const currentEffectText = parsedEffects[effectIndex].text;
+        
+        if (isTimeEffect(currentEffectText) && checkTimeEffectRestrictions()) {
+          return;
+        }
+      }
+      
       if (await eff.execute(context)) {
         dropToDiscard({ id: card.id, fromZone: zone });
       }
@@ -2129,6 +2192,10 @@ export default function Game() {
   const handleDropToZone = (toZone: string) => (payload: DropPayload) => {
     const { id, fromZone } = payload;
     if (fromZone === toZone) return;
+
+    if (toZone === "Play Area" && checkPlayRestrictions()) {
+      return;
+    }
 
     const removeById = (arr: GameCard[], removeId: number) =>
       arr.filter((c) => c.id !== removeId);
@@ -2319,19 +2386,20 @@ export default function Game() {
   };
 
   const handleUpgrade = (card: GameCard, upg: Upgrade, zone: string) => {
+    if (checkUpgradeRestrictions()) {
+      return;
+    }
+    
     if (upg.cost) {
-      // Verify
       const hasEnough = Object.entries(upg.cost).every(([k, v]) => {
         const key = k as keyof ResourceMap;
         return (resources[key] || 0) >= (Number(v) || 0);
       });
 
       if (!hasEnough) {
-        console.warn("Pas assez de ressources pour cet upgrade");
         return;
       }
 
-      // Deduct
       setResources((prev) => {
         const next = { ...prev };
         Object.entries(upg.cost !== null ? upg.cost : []).forEach(([k, v]) => {
@@ -2581,7 +2649,7 @@ export default function Game() {
                 onRightClick={(c, zone) => setPopupCard({ originZone: zone, originalId: c.id, editable: cloneGameCard(c) })}
                 onTapAction={handleTapAction}
                 onCardUpdate={handleCardUpdate}
-                onExecuteCardEffect={(card, zone, timing) => handleExecuteCardEffect(card, zone, timing)}
+                onExecuteCardEffect={(card, zone, timing, effectIndex) => handleExecuteCardEffect(card, zone, timing, undefined, effectIndex)}
                 interactable={true}
               />
             </div>
@@ -2617,7 +2685,7 @@ export default function Game() {
               onCardUpdate={handleCardUpdate}
               onUpgrade={handleUpgrade}
               onGainResources={handleGainResources}
-              onExecuteCardEffect={(card, zone, timing) => handleExecuteCardEffect(card, zone, timing)}
+              onExecuteCardEffect={(card, zone, timing, effectIndex) => handleExecuteCardEffect(card, zone, timing, undefined, effectIndex)}
             />
           </div>
 
@@ -2641,7 +2709,7 @@ export default function Game() {
         <div className="space-x-2">
           <Button onClick={drawNewTurn}>{"New Turn"}</Button>
           <Button onClick={() => discardEndTurn(false)}>{"Pass"}</Button>
-          <Button onClick={progress} disabled={hasUpgradedCard}>{"Progress"}</Button>
+          <Button onClick={progress} disabled={hasUpgradedCard || isPlayBlocked}>{"Progress"}</Button>
           {/* Conditionnal controls */}
           <Button disabled={deck.length > 0} className="bg-red-600 hover:bg-red-500 text-white" onClick={handleEndRound}>End Round</Button>
           {/* Manual actions */}

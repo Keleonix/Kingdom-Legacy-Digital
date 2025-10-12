@@ -615,7 +615,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if(choice1 && choice2) {
             applyChoice(ctx, choice1);
             applyChoice(ctx, choice2);
-            ctx.setResources(prev => ({ ...prev, gold: prev.military - 1}));
+            ctx.setResources(prev => ({ ...prev, military: prev.military - 1}));
             return true;
           }
         }
@@ -711,7 +711,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if(choice1 && choice2) {
             applyChoice(ctx, choice1);
             applyChoice(ctx, choice2);
-            ctx.setResources(prev => ({ ...prev, gold: prev.military - 1}));
+            ctx.setResources(prev => ({ ...prev, military: prev.military - 1}));
             return true;
           }
         }
@@ -942,7 +942,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             }
             lastCheckbox = checkbox;
           }
-          if (lastCheckbox?.checked) {
+          const allChecked = ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked);
+          if (allChecked) {
             ctx.card.currentSide = 3;
             await ctx.discoverCard(
               (card) => ([135].includes(card.id)),
@@ -985,7 +986,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             }
             lastCheckbox = checkbox;
           }
-          if (lastCheckbox?.checked) {
+          const allChecked = ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked);
+          if (allChecked) {
             await setResourceMapToCard(ctx.card, {fame: 100});
           }
           return false;
@@ -1024,7 +1026,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             }
             lastCheckbox = checkbox;
           }
-          if(lastCheckbox?.checked) {
+          const allChecked = ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked);
+          if (allChecked) {
             ctx.card.currentSide = 3;
           }
           return false;
@@ -1061,7 +1064,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             }
             lastCheckbox = checkbox;
           }
-          if (lastCheckbox?.checked) {
+          const allChecked = ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked);
+          if (allChecked) {
             await setResourceMapToCard(ctx.card, {fame: 100});
           }
           return false;
@@ -1819,6 +1823,112 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           return false;
         }
       }],
+  },
+  44: {
+    1: [{ // Orage
+      description: "Défaussez les 3 premières cartes de votre pioche",
+      timing: "played",
+      execute: async function (ctx) {
+        ctx.mill(3);
+        ctx.card.currentSide = 3;
+        return true;
+      }
+    }],
+    3: [
+      { // Pluie
+        description: "Doublez la production des terrains",
+        timing: "onResourceGain",
+        execute: async function (ctx) {
+          const card = (ctx.cardsForTrigger?ctx.cardsForTrigger:[])[0];
+          if(card.GetType().includes("Terrain")) {
+            applyResourceMapDelta(ctx.setResources, ctx.resources);
+          }
+          return false;
+        }
+      },
+      {
+        description: "Vous ne pouvez pas jouer de cartes",
+        timing: "restrictPlay",
+        execute: async function () {
+          return false;
+        }
+      },
+      {
+        description: "Retournez à la fin du tour",
+        timing: "endOfTurn",
+        execute: async function (ctx) {
+          ctx.card.currentSide = 1;
+          return false;
+        }
+      }
+    ]
+  },
+  45: {
+    1: [
+      { // Chevalier Noir
+        description: "Vous ne pouvez ni jouer, ni améliorer de cartes, ni même utiliser les effets time",
+        timing: "restrictAll",
+        execute: async function () {
+          return false;
+        }
+      },
+      { // Chevalier Noir
+      description: "Dépensez 3 military pour vaincre et retourner",
+      timing: "onClick",
+      execute: async function (ctx) {
+        if (ctx.resources.military >= 3) {
+          ctx.setResources(prev => ({ ...prev, military: prev.military - 3}));
+          ctx.card.currentSide = 3;
+          return true;
+        }
+        return false;
+      }
+    },
+    ],
+    3: [{ // Garçon Admiratif
+        description: "Détruisez et gagnez military x2",
+        timing: "onClick",
+        execute: async function (ctx) {
+          ctx.setResources(prev => ({ ...prev, military: prev.military + 2 }));
+          ctx.deleteCardInZone(ctx.zone, ctx.card.id);
+          return false;
+        }
+      }],
+    4: [{ // Ecuyer
+      description: "Détruisez et gagnez military x3",
+      timing: "onClick",
+      execute: async function (ctx) {
+        ctx.setResources(prev => ({ ...prev, military: prev.military + 3 }));
+        ctx.deleteCardInZone(ctx.zone, ctx.card.id);
+        return false;
+      }
+    }]
+  },
+  46: {
+    2: [{ // Camp d'Entrainement
+        description: "Dépensez gold pour gagner military",
+        timing: "onClick",
+        execute: async function (ctx) {
+          if(ctx.resources.gold >= 1) {
+            ctx.setResources(prev => ({ ...prev, gold: prev.gold - 1, military: prev.military + 1 }));
+            return true;
+          }
+          return false;
+        }
+      }]
+  },
+  62: {
+    2: [{ // Camp d'Entrainement
+        description: "Dépensez gold pour gagner military",
+        timing: "onClick",
+        execute: async function (ctx) {
+          if(ctx.resources.gold >= 1) {
+            ctx.setResources(prev => ({ ...prev, gold: prev.gold - 1, military: prev.military + 1 }));
+            return true;
+          }
+          return false;
+        }
+      }]
   },
   71: {
     2: [{ // Zone Rocheuse

@@ -99,6 +99,8 @@ export type EffectTiming =
   "stayInPlay" |
   "onResourceGain" |
   "doesNothing" |
+  "restrictPlay" |
+  "restrictAll" |
   "onEndOfGame"
 ;
 

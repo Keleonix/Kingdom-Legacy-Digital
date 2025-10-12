@@ -1999,14 +1999,14 @@ export const allCards: GameCard[] = [
     resources: [
       [ { stone: 1 } ],
       [],
-      [ { gold: 1, fame: 7 } ],
       [ { gold: 1, fame: 3 } ],
+      [ { gold: 1, fame: 7 } ],
     ],
     effects: [
       "effects/activate Dépensez resources/gold resources/gold pour découvrir un projet de bâtiment (88/89).",
       "",
-      "effects/time Inspectez les cartes (109) et (110). Détruisez l'une et découvrez l'autre.",
-      "effects/time Inspectez les cartes (111) et (112). Détruisez l'une et découvrez l'autre.",
+      "effects/time Inspectez les cartes (109) et (110), détruisez l'une et découvrez l'autre.",
+      "effects/time Inspectez les cartes (111) et (112), détruisez l'une et découvrez l'autre.",
     ],
     upgrades: [
       [{ cost: { gold: 1, stone: 2 }, nextSide: 3 }],
@@ -2085,7 +2085,7 @@ export const allCards: GameCard[] = [
       [ { military: 1, fame: 3 } ],
     ],
     effects: [
-      "effects/passive Vous ne pouvez ni jouer, ni améliorer, de cartes, ni même utiliser les effets effects/time . effects/activate Dépensez resources/military resources/military resources/military pour vaincre (-> Back Up).",
+      "effects/passive Vous ne pouvez ni jouer, ni améliorer de cartes, ni même utiliser les effets effects/time . effects/activate Dépensez resources/military resources/military resources/military pour vaincre (-> Back Up).",
       "",
       "effects/destroy Gagnez resources/military resources/military .",
       "effects/destroy Gagnez resources/military resources/military resources/military .",
