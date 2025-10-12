@@ -1704,7 +1704,7 @@ export default function Game() {
   }
 
   const effectEndTurn = async () => {
-    await discardEndTurn(true);
+    await discardEndTurn(false);
   };
 
   const discardEndTurn = async (endRound?: boolean) => {

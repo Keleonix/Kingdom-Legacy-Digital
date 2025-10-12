@@ -1759,6 +1759,67 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       },
     ]
   },
+  43: {
+    1: [{ // Maçon
+      description: "Dépensez 2 golds pour découvrir 88/89",
+      timing: "onClick",
+      execute: async function (ctx) {
+        if(ctx.resources.gold >= 2) {
+          if (await ctx.discoverCard(
+            (card) => ([88, 89].includes(card.id)),
+            this.description,
+            1
+          )) {
+            ctx.setResources(prev => ({ ...prev, gold: prev.gold - 2 }));
+            return true;
+          }
+        }
+        return false;
+      }
+    }],
+    3: [{ // Route Pavée
+        description: "Inspectez 109 et 110, découvrez une, détruisez l'autre",
+        timing: "onClick",
+        execute: async function (ctx) {
+          const cards = await ctx.selectCardsFromZone(
+            (card) => ([109, 110].includes(card.id)),
+            "Campaign",
+            this.description,
+            1
+          );
+          const card = cards[0];
+          if (card) {
+            ctx.dropToDiscard({id: card.id, fromZone: "Campaign"});
+            const id = (card.id === 109) ? 110 : 109;
+            ctx.deleteCardInZone("Campaign", id);
+            ctx.effectEndTurn();
+            return false;
+          }
+          return false;
+        }
+      }],
+      4: [{ // Rue Pavée
+        description: "Inspectez 111 et 112, découvrez une, détruisez l'autre",
+        timing: "onClick",
+        execute: async function (ctx) {
+          const cards = await ctx.selectCardsFromZone(
+            (card) => ([111, 112].includes(card.id)),
+            "Campaign",
+            this.description,
+            1
+          );
+          const card = cards[0];
+          if (card) {
+            ctx.dropToDiscard({id: card.id, fromZone: "Campaign"});
+            const id = (card.id === 111) ? 112 : 111;
+            ctx.deleteCardInZone("Campaign", id);
+            ctx.effectEndTurn();
+            return false;
+          }
+          return false;
+        }
+      }],
+  },
   71: {
     2: [{ // Zone Rocheuse
       description: "Dépensez 1 gold pour obtenir 2 stone",
