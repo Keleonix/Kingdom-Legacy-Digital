@@ -2167,7 +2167,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "Découvrez les cartes 48 à 51. Découvrez-en 2 et détruisez les 2 autres.",
+      "effects/destroy Découvrez les cartes 48 à 51. Découvrez-en 2 et détruisez les 2 autres.",
       "",
       "",
       "",
@@ -2249,13 +2249,13 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "(Améliorer: Détruisez Pont (Back Up) -> Back Up) effects/activate Détruisez l'une des cartes suivantes: Quartier Général (Back Up) - découvrez (123). Mine (Back Up) - découvrez (124). Autel (Back Up) - découvrez (125). ",
+      "Améliorer: Détruisez le Pont de Pierre -> Back Up. effects/activate Détruisez l'une des cartes suivantes: Château (10) - découvrez (123), Mine de Diamant (84/85) - découvrez (124), Temple (82/83) - découvrez (125). ",
       "",
       "",
       "",
     ],
     upgrades: [
-      [],
+      [ {cost: {}, nextSide: 3} ],
       [],
       [],
       [],
@@ -2323,7 +2323,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 51,
-    name: ["Magistrat", "Magistrat", "Magistrat", "Stratège"],
+    name: ["Magistrat", "Magistrat", "Stratège", "Magistrat"],
     resources: [
       [],
       [],

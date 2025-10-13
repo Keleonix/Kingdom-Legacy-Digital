@@ -1586,6 +1586,7 @@ export default function Game() {
   const [isPlayBlocked, setIsPlayBlocked] = useState(false);
   useEffect(() => {
     setIsPlayBlocked(checkPlayRestrictions());
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [playArea, permanentZone]);
 
   // ----------- immediate refs & setters (à ajouter près des useState) -----------
@@ -2232,7 +2233,7 @@ export default function Game() {
     const sourceCard = findCardInAllZones();
     if (!sourceCard) return;
 
-    let toAdd: GameCard = sourceCard;
+    const toAdd: GameCard = sourceCard;
 
     if (fromZone === "Deck") setDeck((d) => removeById(d, id));
     if (fromZone === "Play Area") setPlayAreaImmediate((p) => removeById(p, id));
@@ -2246,8 +2247,6 @@ export default function Game() {
     }
     if (toZone === "Discard") {
       setDiscard((f) => [...f, toAdd]);
-    }
-    if (toZone === "Destroy") {
     }
     if (toZone === "Blocked") {
       setBlockedZone((b) => [...b, toAdd]);

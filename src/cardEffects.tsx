@@ -1471,9 +1471,14 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       execute: async function (ctx) {
         const cardsNames = ["Cabane de Bûcheron", "Grange", "Bâteau de pêche"];
         const card = (await ctx.selectCardsFromZone((card) => cardsNames.includes(card.GetName()), "Play Area", this.description, 1)).slice(0)[0];
-        if ((await ctx.discoverCard((c) => c.id === (100 + cardsNames.indexOf(card.GetName())), this.description, 1)).valueOf()) {
-          ctx.deleteCardInZone("Play Area", card.id);
-          return true;
+        await new Promise(resolve => setTimeout(resolve, 100));
+        if (card) {
+          const discovered = await ctx.discoverCard((c) => c.id === (100 + cardsNames.indexOf(card.GetName())), this.description, 1);
+          if (discovered) {
+            ctx.deleteCardInZone("Play Area", card.id);
+            await new Promise(resolve => setTimeout(resolve, 100));
+            return true;
+          }
         }
         return false;
       }
@@ -1752,9 +1757,12 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           );
           if (!selected || selected.length === 0) return false;
 
-          ctx.setTemporaryCardListImmediate
-            ? ctx.setTemporaryCardListImmediate(selected)
-            : ctx.setTemporaryCardList(selected);
+          if(ctx.setTemporaryCardListImmediate) {
+            ctx.setTemporaryCardListImmediate(selected);
+          }
+          else {
+            ctx.setTemporaryCardList(selected);
+          }
 
           ctx.setPlayArea(prev => prev.filter(c => c.id !== ctx.card.id));
 
@@ -1916,6 +1924,283 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           return false;
         }
       }]
+  },
+  47: {
+    1: [{ // STOP !
+      description: "Découvrez 48 à 51 et choisissez en 2 (détruisez 2)",
+      timing: "onClick",
+      execute: async function (ctx) {
+        const cards = (await ctx.selectCardsFromZone((card) => (card.id >= 48 && card.id <= 51), "Campaign", this.description, 2)).splice(0);
+        const ids = [48, 49, 50, 51];
+
+        ctx.setDeck((d) => [...d, ...cards]);
+        
+        for (const id of ids) {
+          ctx.deleteCardInZone("Campaign", id);
+        }
+
+        ctx.deleteCardInZone(ctx.zone, ctx.card.id);
+        return false;
+      }
+    }],
+  },
+  48: {
+    1: [{ // Envoyé
+      description: "Dépensez gold x3 pour découvrir (119)",
+      timing: "onClick",
+      execute: async function (ctx) {
+        if (ctx.resources.gold >= 3) {
+          if (await ctx.discoverCard(
+            (card) => ([119].includes(card.id)),
+            this.description,
+            1
+          )) {
+            ctx.effectEndTurn();
+          }
+        }
+        return false;
+      }
+    }],
+    2: [{ // Emissaire
+      description: "Dépensez gold x3 pour découvrir (120)",
+      timing: "onClick",
+      execute: async function (ctx) {
+        if (ctx.resources.gold >= 3) {
+          if (await ctx.discoverCard(
+            (card) => ([120].includes(card.id)),
+            this.description,
+            1
+          )) {
+            ctx.effectEndTurn();
+          }
+        }
+        return false;
+      }
+    }],
+    3: [{ // Ambassadeur
+      description: "Dépensez gold x3 pour découvrir (122)",
+      timing: "onClick",
+      execute: async function (ctx) {
+        if (ctx.resources.gold >= 3) {
+          if (await ctx.discoverCard(
+            (card) => ([121].includes(card.id)),
+            this.description,
+            1
+          )) {
+            ctx.effectEndTurn();
+          }
+        }
+        return false;
+      }
+    }],
+    4: [{ // Diplomate
+      description: "Dépensez gold x3 pour découvrir (121)",
+      timing: "onClick",
+      execute: async function (ctx) {
+        if (ctx.resources.gold >= 3) {
+          if (await ctx.discoverCard(
+            (card) => ([122].includes(card.id)),
+            this.description,
+            1
+          )) {
+            ctx.effectEndTurn();
+          }
+        }
+        return false;
+      }
+    }],
+  },
+  49: {
+    1: [{ // Architecte Royal
+      description: "Détruisez Château/Mine de Diamant/Temple pour découvrir (123)/(124)/(125)",
+      timing: "onClick",
+      execute: async function (ctx) {
+        const cardsNames = ["Château", "Mine de Diamant", "Temple"];
+        const card = (await ctx.selectCardsFromZone((card) => cardsNames.includes(card.GetName()), "Play Area", this.description, 1)).slice(0)[0];
+        await new Promise(resolve => setTimeout(resolve, 100));
+        if (card) {
+          const discovered = await ctx.discoverCard((c) => c.id === (123 + cardsNames.indexOf(card.GetName())), this.description, 1);
+          if (discovered) {
+            ctx.deleteCardInZone("Play Area", card.id);
+            await new Promise(resolve => setTimeout(resolve, 100));
+            return true;
+          }
+        }
+        return false;
+      }
+    }],
+  },
+  50: {
+    1: [{ // Voyageur
+      description: "Découvrez (126)",
+      timing: "onClick",
+      execute: async function (ctx) {
+        if (await ctx.discoverCard(
+          (card) => ([126].includes(card.id)),
+          this.description,
+          1
+        )) {
+          ctx.effectEndTurn();
+        }
+        return false;
+      }
+    }],
+    2: [{ // Voyageur
+      description: "Découvrez (127)",
+      timing: "onClick",
+      execute: async function (ctx) {
+        if (await ctx.discoverCard(
+          (card) => ([127].includes(card.id)),
+          this.description,
+          1
+        )) {
+          ctx.effectEndTurn();
+        }
+        return false;
+      }
+    }],
+    3: [
+      { // Voyageur
+        description: "Découvrez (129)",
+        timing: "onClick",
+        execute: async function (ctx) {
+          if (await ctx.discoverCard(
+            (card) => ([129].includes(card.id)),
+            this.description,
+            1
+          )) {
+            ctx.effectEndTurn();
+          }
+          return false;
+        }
+      },
+      {
+        description: "Défaussez un terrain pour gagner 2 ressources",
+        timing: "onClick",
+        execute: async function (ctx) {
+          const cards = await ctx.selectCardsFromZone((card) => card.GetType().includes("Terrain"), "Play Area", this.description, 1);
+          const card = cards[0];
+          if (card) {
+            const choice1 = await ctx.selectResourceChoice([
+              { gold: 1 },  
+              { wood: 1 },
+              { stone: 1 },
+              { military: 1 },
+              { ingot: 1 },
+              { export: 1 },
+            ]);
+            const choice2 = await ctx.selectResourceChoice([
+              { gold: 1 },  
+              { wood: 1 },
+              { stone: 1 },
+              { military: 1 },
+              { ingot: 1 },
+              { export: 1 },
+            ]);
+            if(choice1 && choice2) {
+              applyChoice(ctx, choice1);
+              applyChoice(ctx, choice2);
+              ctx.dropToDiscard({id: card.id, fromZone: "Play Area"});
+              return true;
+            }
+          }
+          return false;
+        }
+      },
+    ],
+    4: [{ // Voyageur
+      description: "Découvrez (128)",
+      timing: "onClick",
+      execute: async function (ctx) {
+        if (await ctx.discoverCard(
+          (card) => ([128].includes(card.id)),
+          this.description,
+          1
+        )) {
+          ctx.effectEndTurn();
+        }
+        return false;
+      }
+    }],
+  },
+  51: {
+    1: [{ // Magistrat
+      description: "Découvrez (130)",
+      timing: "onClick",
+      execute: async function (ctx) {
+        if (await ctx.discoverCard(
+          (card) => ([130].includes(card.id)),
+          this.description,
+          1
+        )) {
+          ctx.effectEndTurn();
+        }
+        return false;
+      }
+    }],
+    2: [{ // Magistrat
+      description: "Découvrez (131)",
+      timing: "onClick",
+      execute: async function (ctx) {
+        if (await ctx.discoverCard(
+          (card) => ([131].includes(card.id)),
+          this.description,
+          1
+        )) {
+          ctx.effectEndTurn();
+        }
+        return false;
+      }
+    }],
+    3: [{ // Stratège
+      description: "Jouez une Muraille ou un Chevalier de la défausse",
+      timing: "onClick",
+      execute: async function (ctx) {
+        const cards = await ctx.selectCardsFromZone(
+          (card) => card.GetName().includes("Muraille") || card.GetType().includes("Chevalier"),
+          "Discard",
+          this.description,
+          1
+        );
+        const card = cards[0];
+        if (card) {
+          ctx.dropToPlayArea({id: card.id, fromZone: "Discard"});
+          return true;
+        }
+        return false;
+      }
+    }],
+    4: [{ // Magistrat
+      description: "Découvrez (132)",
+      timing: "onClick",
+      execute: async function (ctx) {
+        if (await ctx.discoverCard(
+          (card) => ([132].includes(card.id)),
+          this.description,
+          1
+        )) {
+          ctx.effectEndTurn();
+        }
+        return false;
+      }
+    }],
+  },
+  52: {
+    3: [{ // Village Culminant
+      description: "Réinitialisez pour découvrir (105)",
+      timing: "onClick",
+      execute: async function (ctx) {
+        if (await ctx.discoverCard(
+          (card) => ([105].includes(card.id)),
+          this.description,
+          1
+        )) {
+          ctx.card.currentSide = 1;
+          return true;
+        }
+        return false;
+      }
+    }],
   },
   62: {
     2: [{ // Camp d'Entrainement
