@@ -94,6 +94,7 @@ export type DropPayload = {
 export type EffectTiming =
   "played" |
   "endOfTurn" |
+  "endOfRound" |
   "otherCardPlayed" |
   "onClick" |
   "stayInPlay" |

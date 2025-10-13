@@ -1046,18 +1046,21 @@ function CardSelectionPopup({
   effectDescription,
   zone,
   requiredCount,
+  optionalCount,
   onConfirm,
-  onCancel
+  onCancel,
 }: {
   cards: GameCard[];
-  effectDescription: string,
+  effectDescription: string;
   zone: string;
   requiredCount: number;
+  optionalCount?: number;
   onConfirm: (selectedCards: GameCard[]) => void;
   onCancel: () => void;
 }) {
+  const maxCount = requiredCount + (optionalCount ?? 0);
   const [selectedCards, setSelectedCards] = useState<GameCard[]>(() => {
-    if (cards.length <= requiredCount) {
+    if (cards.length <= maxCount) {
       return [...cards];
     }
     return [];
@@ -1072,7 +1075,7 @@ function CardSelectionPopup({
       const isSelected = prev.some(c => c.id === card.id);
       if (isSelected) {
         return prev.filter(c => c.id !== card.id);
-      } else if (prev.length < requiredCount) {
+      } else if (prev.length < maxCount) {
         return [...prev, card];
       }
       return prev;
@@ -1109,7 +1112,7 @@ function CardSelectionPopup({
     }
   }, [hoveredCard]);
 
-  const canConfirm = selectedCards.length === requiredCount;
+  const canConfirm = selectedCards.length >= requiredCount && selectedCards.length <= maxCount;
 
   // Helper functions from CardView for preview
   function resourceIconPath(key: keyof ResourceMap) {
@@ -1205,12 +1208,16 @@ function CardSelectionPopup({
     );
   }
 
+  const displayMessage = optionalCount 
+    ? `Select between ${requiredCount} and ${maxCount} card(s) : ${effectDescription}`
+    : `Select ${requiredCount} card(s) : ${effectDescription}`;
+
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[80]">
       <div className="bg-white p-4 rounded-xl space-y-4 max-w-4xl max-h-[80vh] overflow-hidden flex flex-col">
         <h2 className="font-bold">
-          Select {requiredCount} card(s) : {effectDescription} 
-          {cards.length <= requiredCount && " (Auto-selected)"}
+          {displayMessage}
+          {cards.length <= maxCount && " (Auto-selected)"}
         </h2>
         
         <div className="flex-1 overflow-y-auto p-2 border rounded">
@@ -1254,7 +1261,7 @@ function CardSelectionPopup({
 
         <div className="flex justify-between items-center pt-2 border-t">
           <span className="text-sm text-gray-600">
-            Selected: {selectedCards.length} / {requiredCount}
+            Selected: {selectedCards.length} / {optionalCount ? `${requiredCount}-${maxCount}` : requiredCount}
           </span>
           <div className="flex gap-2">
             <Button onClick={onCancel} variant="secondary" hidden={zone === "Campaign"}>
@@ -1550,6 +1557,7 @@ export default function Game() {
     effectDescription: string;
     zone: string;
     requiredCount: number;
+    optionalCount?: number;
     resolve: (selectedCards: GameCard[]) => void;
   } | null>(null);
 
@@ -1755,6 +1763,28 @@ export default function Game() {
     }
   }
 
+  const gatherEffectsEndOfRound = async () => {
+    const cardIdList: Array<number> = [];
+    
+    for (const card of playArea) {
+      const effects = getCardEffects(card.id, card.currentSide);
+      const hasEndOfRoundEffect = effects.some(effect => effect.timing === "endOfRound");
+      
+      if (hasEndOfRoundEffect) {
+        cardIdList.push(card.id);
+      }
+    }
+    
+    return cardIdList;
+  };
+
+  const handleEffectsEndOfRound = async (cardIdList: number[]) => {
+    for(const cardId of cardIdList) {
+      const card = fetchCardsInZone((c) => c.id === cardId, "Deck")[0];
+      await handleExecuteCardEffect(card, "Deck", "endOfRound");
+    }
+  }
+
   const effectEndTurn = async () => {
     await discardEndTurn(false);
   };
@@ -1763,11 +1793,15 @@ export default function Game() {
     await handleEffectsEndOfTurn();
 
     if (endRound) {
+      const endOfRoundCardList = await gatherEffectsEndOfRound();
+
       setDeck((d) => [...d, ...playArea, ...blockedZone, ...discard]);
       setPlayArea([]);
       setBlockedZone([]);
       setDiscard([]);
       setTemporaryCardList([]);
+
+      await handleEffectsEndOfRound(endOfRoundCardList);
     }
     else {
       const cardsToDiscard: GameCard[] = [];
@@ -1848,7 +1882,8 @@ export default function Game() {
     filter: (card: GameCard) => boolean,
     zone: string,
     effectDescription: string,
-    requiredCount: number
+    requiredCount: number,
+    optionalCount?: number
   ): Promise<GameCard[]> => {
     return new Promise((resolve) => {
       const filteredCards = filterZone(zone, filter);
@@ -1856,12 +1891,14 @@ export default function Game() {
         resolve([]);
         return;
       }
+      const adjustedCount = Math.min(requiredCount, filteredCards.length);
       setCardSelectionPopup({
         cards: filteredCards,
         effectDescription: effectDescription,
         zone: zone,
-        requiredCount,
-        resolve
+        requiredCount: adjustedCount,
+        optionalCount: optionalCount,
+        resolve,
       });
     });
   };
@@ -1877,11 +1914,12 @@ export default function Game() {
         resolve([]);
         return;
       }
+      const adjustedCount = Math.min(requiredCount, cards.length);
       setCardSelectionPopup({
         cards: cards,
         effectDescription: effectDescription,
         zone: zone,
-        requiredCount,
+        requiredCount: adjustedCount,
         resolve
       });
     });
@@ -1891,6 +1929,7 @@ export default function Game() {
     filter: (card: GameCard) => boolean,
     effectDescription: string,
     requiredCount: number,
+    optionalCount?: number,
     zone?: string
   ): Promise<boolean> => {
     return new Promise((resolve) => {
@@ -1901,11 +1940,13 @@ export default function Game() {
         return;
       }
       
+      const adjustedCount = Math.min(requiredCount, filteredCards.length);
       setCardSelectionPopup({
         cards: filteredCards,
         effectDescription: effectDescription,
         zone: "Campaign",
-        requiredCount,
+        requiredCount: adjustedCount,
+        optionalCount: optionalCount,
         resolve: (selectedCards: GameCard[] | null) => {
           if (selectedCards) {
             for(const card of selectedCards) {
@@ -3062,18 +3103,18 @@ export default function Game() {
 
       {cardSelectionPopup && (
         <CardSelectionPopup
-            cards={cardSelectionPopup.cards}
-            effectDescription={cardSelectionPopup.effectDescription}
-            requiredCount={cardSelectionPopup.requiredCount}
-            onConfirm={(selectedCards) => {
-              cardSelectionPopup.resolve(selectedCards);
-              setCardSelectionPopup(null);
-            } }
-            onCancel={() => {
-              cardSelectionPopup.resolve([]);
-              setCardSelectionPopup(null);
-            }
-          }
+          cards={cardSelectionPopup.cards}
+          effectDescription={cardSelectionPopup.effectDescription}
+          requiredCount={cardSelectionPopup.requiredCount}
+          optionalCount={cardSelectionPopup.optionalCount}
+          onConfirm={(selectedCards) => {
+            cardSelectionPopup.resolve(selectedCards);
+            setCardSelectionPopup(null);
+          }}
+          onCancel={() => {
+            cardSelectionPopup.resolve([]);
+            setCardSelectionPopup(null);
+          }}
           zone={cardSelectionPopup.zone}
         />
       )}

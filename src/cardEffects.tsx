@@ -27,9 +27,9 @@ export type GameContext = {
   mill: (nbCards: number) => void;
   openCheckboxPopup: (card: GameCard, requiredCount: number, optionalCount: number, callback: (selected: Checkbox[]) => void) => void ;
   selectResourceChoice: (options: Array<Partial<ResourceMap>>) => Promise<Partial<ResourceMap> | null>;
-  selectCardsFromZone: (filter: (card: GameCard) => boolean, zone: string, effectDescription: string, requiredCount: number) => Promise<GameCard[]>;
+  selectCardsFromZone: (filter: (card: GameCard) => boolean, zone: string, effectDescription: string, requiredCount: number, optionalCount?: number) => Promise<GameCard[]>;
   selectCardsFromArray: (cards: GameCard[], zone: string, effectDescription: string, requiredCount: number) => Promise<GameCard[]>;
-  discoverCard: (filter: (card: GameCard) => boolean, effectDescription: string, requiredCount: number, zone?: string) => Promise<boolean>;
+  discoverCard: (filter: (card: GameCard) => boolean, effectDescription: string, requiredCount: number, optionalCount?: number, zone?: string) => Promise<boolean>;
   boostProductivity: (filter: (card: GameCard) => boolean, zone: string, effectDescription: string, prodBoost: Partial<ResourceMap> | null) => Promise<boolean>;
   registerEndRoundEffect: (description: string, effect: () => Promise<void>, forceResolve?: boolean) => void;
   addCardEffect: (id: number, face: number, zone: string, effect: CardEffect, effectText: string) => void;
@@ -1123,6 +1123,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                         (card) => [80].includes(card.id),
                         this.description,
                         1,
+                        0,
                         "Deck"
                       );
                     },
@@ -1229,6 +1230,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                         (card) => [107].includes(card.id),
                         this.description,
                         1,
+                        0,
                         "Deck"
                       );
                     },
@@ -1286,6 +1288,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                         (card) => [117].includes(card.id),
                         this.description,
                         1,
+                        0,
                         "Deck"
                       );
                     },
@@ -2201,6 +2204,258 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         return false;
       }
     }],
+  },
+  53: {
+    1: [
+      { // Sorcière
+        description: "Payez military x3 pour détruire",
+        timing: "onClick",
+        execute: async function (ctx) {
+          if (ctx.resources.military >= 3) {
+            ctx.setResources(prev => ({ ...prev, military: prev.military - 3 }));
+            ctx.deleteCardInZone(ctx.zone, ctx.card.id);
+          }
+          return false;
+        }
+      },
+      {
+        description: "Défaussez 3 personnes pour retourner",
+        timing: "onClick",
+        execute: async function (ctx) {
+          const cards = ctx.fetchCardsInZone((card) => card.GetType().includes("Personne"), "Play Area");
+          if (cards.length >= 3) {
+            const selected = await ctx.selectCardsFromArray(cards, "Play Area", this.description, 3);
+            if(selected.length === 3) {
+              for (const card of selected) {
+                ctx.dropToDiscard({id: card.id, fromZone: "Play Area"})
+              }
+              ctx.card.currentSide = 3;
+              return true;
+            }
+          }
+          return false;
+        }
+      },
+      {
+        description: "Découvrez les 2 prochaines cartes",
+        timing: "endOfTurn",
+        execute: async function (ctx) {
+          const result: number[] = ctx.fetchCardsInZone((card) => card.id <= 70, "Campaign") // TODO : attribute discoverable?
+            .sort((a, b) => a.id - b.id)
+            .slice(0, 2)
+            .map(item => item.id);
+          await ctx.discoverCard((card) => result.includes(card.id), this.description, 2);
+          ctx.card.currentSide = 3;
+          return false;
+        }
+      }
+    ],
+    3: [
+      { // Hutte de la Sorcière
+        description: "Payez military x3 pour détruire",
+        timing: "onClick",
+        execute: async function (ctx) {
+          if (ctx.resources.military >= 3) {
+            ctx.setResources(prev => ({ ...prev, military: prev.military - 3 }));
+            ctx.deleteCardInZone(ctx.zone, ctx.card.id);
+          }
+          return false;
+        }
+      },
+      {
+        description: "Détruisez 1 Personnes pour détruire",
+        timing: "onClick",
+        execute: async function (ctx) {
+          const cards = ctx.fetchCardsInZone((card) => card.GetType().includes("Personne"), "Play Area");
+          if (cards.length > 0) {
+            const selected = await ctx.selectCardsFromArray(cards, "Play Area", this.description, 1);
+            ctx.deleteCardInZone("Play Area", selected[0].id);
+            ctx.deleteCardInZone("Play Area", ctx.card.id);
+          }
+          return false;
+        }
+      },
+      {
+        description: "Découvrez les 2 prochaines cartes",
+        timing: "endOfTurn",
+        execute: async function (ctx) {
+          const result: number[] = ctx.fetchCardsInZone((card) => card.id <= 70, "Campaign") // TODO : attribute discoverable?
+            .sort((a, b) => a.id - b.id)
+            .slice(0, 2)
+            .map(item => item.id);
+          await ctx.discoverCard((card) => result.includes(card.id), this.description, 2);
+          ctx.deleteCardInZone("Play Area", ctx.card.id);
+          return false;
+        }
+      }
+    ]
+  },
+  54: {
+    1: [{ // Scribe
+      description: "Défaussez pour faire rester 1 ou 2 cartes",
+      timing: "endOfTurn",
+      execute: async function (ctx) {
+        const selected = await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, "Play Area", this.description, 1, 1);
+        ctx.setTemporaryCardListImmediate(selected);
+        return false;
+      }
+    }],
+    3: [{ // Architecte
+      description: "Découvrez 78/79",
+      timing: "onClick",
+      execute: async function (ctx) {
+        if (await ctx.discoverCard(
+          (card) => ([78, 79].includes(card.id)),
+          this.description,
+          1
+        )) {
+          ctx.card.currentSide = 1;
+          ctx.effectEndTurn();
+        }
+        return false;
+      }
+    }],
+  },
+  55: {
+    1: [
+      { // Lord Aethan
+        description: "Découvrez la Coopération (80) ou le Domaine (81)",
+        timing: "onClick",
+        execute: async function (ctx) {
+          if (await ctx.discoverCard(
+            (card) => ([80, 81].includes(card.id)),
+            this.description,
+            1
+          )) {
+            return true;
+          }
+          return false;
+        }
+      },
+      {
+        description: "Ajoutez 1 check",
+        timing: "onClick",
+        execute: async function (ctx) {
+          return new Promise<boolean>((resolve) => {
+            ctx.openCheckboxPopup(ctx.card, 1, 0, (boxes) => {
+              if(boxes.length !== 0) {
+                for(const box of boxes) {
+                  applyResourceMapDelta(ctx.setResources, getCheckboxResources(box.content));
+                }
+                checkBoxes(ctx.card, boxes);
+              }
+              resolve(false);
+            });
+          });
+        }
+      }
+    ],
+    3: [
+      { // Lord Nimrod
+        description: "Découvrez un Raid (133) ou un Rival (134)",
+        timing: "onClick",
+        execute: async function (ctx) {
+          if (await ctx.discoverCard(
+            (card) => ([133, 134].includes(card.id)),
+            this.description,
+            1
+          )) {
+            ctx.effectEndTurn();
+          }
+          return false;
+        }
+      },
+      {
+        description: "Ajoutez 1 check",
+        timing: "onClick",
+        execute: async function (ctx) {
+          return new Promise<boolean>((resolve) => {
+            ctx.openCheckboxPopup(ctx.card, 1, 0, (boxes) => {
+              if(boxes.length !== 0) {
+                for(const box of boxes) {
+                  applyResourceMapDelta(ctx.setResources, getCheckboxResources(box.content));
+                }
+                checkBoxes(ctx.card, boxes);
+                resolve(true);
+              } else {
+                resolve(false);
+              }
+            });
+          });
+        }
+      }
+    ],
+  },
+  56: {
+    1: [
+      { // Peste
+        description: "Reste en jeu",
+        timing: "stayInPlay",
+        execute: async function (ctx) {
+          if(ctx) {
+            return false;
+          }
+          return true;
+        }
+      },
+      {
+        description: "Détruisez 2 Personnes",
+        timing: "endOfRound",
+        execute: async function (ctx) {
+          const selected = await ctx.selectCardsFromZone((card) => card.GetType().includes("Personne"), "Deck", this.description, 2);
+          for (const card of selected) {
+            ctx.deleteCardInZone("Deck", card.id);
+          }
+          ctx.card.currentSide = 3;
+          return false;
+        }
+      },
+    ],
+    3: [
+      { // Soldat Ennemi
+        description: "Bloque un Bâtiment/Terrain",
+        timing: "played",
+        execute: async function (ctx) {
+          let selectedCards: GameCard[] = [];
+          const filter = (card: GameCard) => (card.GetType().includes("Terrain") || card.GetType().includes("Bâtiment"));
+          while (selectedCards.length === 0 && ctx.filterZone(ctx.zone, filter).length !== 0) {
+            selectedCards = await ctx.selectCardsFromZone(filter, "Play Area", this.description, 1);
+          }
+          if (selectedCards.length !== 0) {
+            ctx.dropToBlocked({id: selectedCards[0].id, fromZone: ctx.zone});
+          }
+          return false;
+        }
+      },
+      {
+        description: "Reste en jeu",
+        timing: "stayInPlay",
+        execute: async function (ctx) {
+          if(ctx) {
+            return false;
+          }
+          return true;
+        }
+      },
+      {
+        description: "Détruisez la carte bloquée", // TODO : Link blocked cards to blocker
+        timing: "endOfRound",
+        execute: async function () {
+          return false;
+        }
+      },
+      {
+        description: "Dépensez military x2 pour détruire",
+        timing: "onClick",
+        execute: async function (ctx) {
+          if (ctx.resources.military >= 2) {
+            ctx.setResources(prev => ({ ...prev, military: prev.military - 2 }));
+            ctx.deleteCardInZone("Play Area", ctx.card.id);
+          }
+          return false;
+        }
+      },
+    ]
   },
   62: {
     2: [{ // Camp d'Entrainement

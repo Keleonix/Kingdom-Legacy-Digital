@@ -2059,7 +2059,7 @@ export const allCards: GameCard[] = [
     type: ["Catastrophe", "", "Catastrophe", ""],
     choice: false,
     checkboxes: [],
-    enemy: [false, false, false, false],
+    enemy: [true, false, true, false],
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -2100,7 +2100,7 @@ export const allCards: GameCard[] = [
     type: ["Ennemi", "", "Personne", "Personne"],
     choice: false,
     checkboxes: [],
-    enemy: [false, false, false, false],
+    enemy: [true, false, false, false],
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -2415,7 +2415,7 @@ export const allCards: GameCard[] = [
     effects: [
       "effects/activate Dépensez resources/military resources/military resources/military pour vaincre ( effects/destroy ). effects/activate Défaussez 3 Personnes pour -> (Back Up). effects/forced Fin du tour: Découvrez les 2 prochaines cartes de la boîte, puis -> (Back Up).",
       "",
-      "effects/activate Dépensez resources/military resources/military resources/military pour vaincre ( effects/destroy ). Dépensez Détruisez une Personne pour effects/destroy . effects/forced Fin du Tour: Découvre les 2 prochaines cartes de la boîte, puis effects/destroy .",
+      "effects/activate Dépensez resources/military resources/military resources/military pour vaincre ( effects/destroy ). effects/activate Détruisez une Personne pour effects/destroy . effects/forced Fin du Tour: Découvre les 2 prochaines cartes de la boîte, puis effects/destroy .",
       "",
     ],
     upgrades: [
@@ -2428,7 +2428,7 @@ export const allCards: GameCard[] = [
     type: ["Ennemi", "", "Ennemi", ""],
     choice: false,
     checkboxes: [],
-    enemy: [false, false, false, false],
+    enemy: [true, false, false, true],
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -2561,7 +2561,7 @@ export const allCards: GameCard[] = [
     effects: [
       "effects/passive Reste en jeu. effects/forced Fin de Manche: Détruisez 2 Personnes de votre royaume. Puis -> (Back Front).",
       "",
-      "effects/forced Carte Jouée: Bloque 1 Bâtiment/Terrain en jeu. effects/passive: Reste en jeu. effects/forced Fin de Manche: Détruisez la carte bloquée. effects/activate Dépensez resources/military resources/military pour vaincre ( effects/destroy ).",
+      "effects/forced Carte Jouée: Bloque 1 Bâtiment/Terrain en jeu. effects/passive : Reste en jeu. effects/forced Fin de Manche: Détruisez la carte bloquée. effects/activate Dépensez resources/military resources/military pour vaincre ( effects/destroy ).",
       "",
     ],
     upgrades: [
@@ -2574,7 +2574,7 @@ export const allCards: GameCard[] = [
     type: ["Evénement", "", "Ennemi", ""],
     choice: false,
     checkboxes: [],
-    enemy: [false, false, false, false],
+    enemy: [true, false, true, false],
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -3656,15 +3656,15 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "",
-      "effects/passive Lorsque vous purgez cette carte, vous pouvez annuler la purge d'1 autre carte.",
-      "effects/passive Lorsque vous purgez cette carte, vous pouvez annuler la purge d'3 autre carte.",
-      "effects/passive Lorsque vous purgez cette carte, vous pouvez annuler la purge d'2 autre carte.",
+      "effects/passive Lorsque vous purgez cette carte, vous pouvez annuler la purge de 1 autre carte.",
+      "effects/passive Lorsque vous purgez cette carte, vous pouvez annuler la purge de 3 autres cartes.",
+      "effects/passive Lorsque vous purgez cette carte, vous pouvez annuler la purge de 2 autres cartes.",
     ],
     upgrades: [
+      [ { cost: { wood: 2, stone: 2 }, nextSide: 2 } ],
+      [ { cost: { wood: 4 }, nextSide: 4 } ],
       [],
-      [],
-      [],
-      [],
+      [ { cost: { wood: 3, stone: 3 }, nextSide: 3 } ],
     ],
     currentSide: 1,
     type: ["Terrain", "Terrain", "Terrain", "Terrain"],
