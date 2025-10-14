@@ -26,6 +26,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -75,6 +76,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -124,6 +126,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -173,6 +176,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -222,6 +226,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -271,6 +276,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -320,6 +326,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -367,6 +374,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -414,6 +422,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -463,6 +472,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -513,6 +523,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -560,6 +571,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -609,6 +621,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -650,6 +663,7 @@ export const allCards: GameCard[] = [
     choice: true,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -691,6 +705,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [true, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -740,6 +755,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -781,6 +797,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [true, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -822,6 +839,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -865,6 +883,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -912,6 +931,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -953,6 +973,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -994,6 +1015,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -1035,6 +1057,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -1076,6 +1099,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -1117,6 +1141,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -1179,6 +1204,7 @@ export const allCards: GameCard[] = [
       []
     ],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -1243,6 +1269,7 @@ export const allCards: GameCard[] = [
       []
     ],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -1284,6 +1311,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -1335,6 +1363,7 @@ export const allCards: GameCard[] = [
       ],
     ],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -1376,6 +1405,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -1417,6 +1447,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -1458,6 +1489,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -1499,6 +1531,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -1540,6 +1573,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -1589,6 +1623,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -1638,6 +1673,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -1693,6 +1729,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -1734,6 +1771,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -1775,6 +1813,7 @@ export const allCards: GameCard[] = [
     choice: true,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -1816,6 +1855,7 @@ export const allCards: GameCard[] = [
     choice: true,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -1857,6 +1897,7 @@ export const allCards: GameCard[] = [
     choice: true,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -1937,6 +1978,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -1978,6 +2020,7 @@ export const allCards: GameCard[] = [
     choice: true,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -2019,6 +2062,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -2060,6 +2104,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [true, false, true, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -2101,6 +2146,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [true, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -2142,6 +2188,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -2183,6 +2230,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -2224,6 +2272,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -2249,13 +2298,13 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "Améliorer: Détruisez le Pont de Pierre -> Back Up. effects/activate Détruisez l'une des cartes suivantes: Château (10) - découvrez (123), Mine de Diamant (84/85) - découvrez (124), Temple (82/83) - découvrez (125). ",
+      "effects/activate Détruisez l'une des cartes suivantes: Château (10) - découvrez (123), Mine de Diamant (84/85) - découvrez (124), Temple (82/83) - découvrez (125). ",
       "",
       "",
       "",
     ],
     upgrades: [
-      [ {cost: {}, nextSide: 3} ],
+      [ {cost: {}, nextSide: 3, otherCost: "Détruisez le Pont de Pierre (12)" } ],
       [],
       [],
       [],
@@ -2265,6 +2314,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -2306,6 +2356,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -2347,6 +2398,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -2388,6 +2440,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -2429,6 +2482,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [true, false, false, true],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -2470,6 +2524,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -2534,6 +2589,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -2575,6 +2631,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [true, false, true, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -2616,6 +2673,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -2667,6 +2725,7 @@ export const allCards: GameCard[] = [
       ],
     ],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -2692,14 +2751,14 @@ export const allCards: GameCard[] = [
       [ { fame: 5 } ],
     ],
     effects: [
-      "Améliorer: Défausser 1 Personne (Front Down).",
-      "Améliorer: Défausser 2 Personne (Back Down).",
+      "",
+      "",
       "effects/passive Reste en jeu. ",
       "effects/activate Défaussez 6 cartes alliées pour découvrir un Artefact (108).",
     ],
     upgrades: [
-      [],
-      [],
+      [{ cost: {}, nextSide: 2, otherCost: "1 Personne" }],
+      [{ cost: {}, nextSide: 4, otherCost: "2 Personnes" }],
       [],
       [{ cost: { gold: 1, ingot: 2 }, nextSide: 3 }],
     ],
@@ -2708,6 +2767,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -2749,6 +2809,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -2790,6 +2851,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -2831,6 +2893,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -2880,6 +2943,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -2921,6 +2985,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -2962,6 +3027,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -2987,14 +3053,14 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "Améliorer: Défaussez 2 Personnes, 2 Terrains et 2 Bâtiments -> (Back Up). effects/forced Fin du Tour: Défaussez 2 Personnes ou Front Down.",
-      "Améliorer: Défaussez 2 Personnes -> (Front Up). effects/forced Carte Jouée: Défaussez 2 cartes alliées en jeu.",
+      "effects/forced Fin du Tour: Défaussez 2 Personnes ou Front Down.",
+      "effects/forced Carte Jouée: Défaussez 2 cartes alliées en jeu.",
       "effects/activate Gagnez 1 ressource de votre choix.",
       "",
     ],
     upgrades: [
-      [],
-      [],
+      [{ cost: {}, nextSide: 2, otherCost: "2 Personnes, 2 Terrains, 2 Bâtiments" }],
+      [{ cost: {}, nextSide: 4, otherCost: "2 Personnes" }],
       [],
       [],
     ],
@@ -3003,6 +3069,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -3047,6 +3114,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -3088,6 +3156,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -3129,6 +3198,7 @@ export const allCards: GameCard[] = [
     choice: true,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -3170,6 +3240,7 @@ export const allCards: GameCard[] = [
     choice: true,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -3219,6 +3290,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -3266,6 +3338,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -3313,6 +3386,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -3353,19 +3427,20 @@ export const allCards: GameCard[] = [
       "",
       "",
       "effects/forced Carte Jouée: Découvrez le Pirate (76).",
-      "Améliorer: Nécessite 2 Personnes",
+      "",
     ],
     upgrades: [
       [{ cost: { gold: 1, wood: 3 }, nextSide: 2 }],
       [{ cost: { gold: 1, wood: 4 }, nextSide: 4 }],
       [],
-      [{ cost: { gold: 1, wood : 2}, nextSide: 3 }],
+      [{ cost: { gold: 1, wood : 2}, nextSide: 3, otherCost: "2 Personnes" }],
     ],
     currentSide: 1,
     type: ["Terrain", "Bâtiment", "Maritime - Navire", "Maritime - Navire"],
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -3406,19 +3481,20 @@ export const allCards: GameCard[] = [
       "",
       "",
       "effects/forced Carte Jouée: Découvrez le Pirate (76).",
-      "Améliorer: Nécessite 2 Personnes",
+      "",
     ],
     upgrades: [
       [{ cost: { gold: 1, wood: 3 }, nextSide: 2 }],
       [{ cost: { gold: 1, wood: 4 }, nextSide: 4 }],
       [],
-      [{ cost: { gold: 1, wood : 2}, nextSide: 3 }],
+      [{ cost: { gold: 1, wood : 2}, nextSide: 3, otherCost: "2 Personnes" }],
     ],
     currentSide: 1,
     type: ["Terrain", "Bâtiment", "Maritime - Navire", "Maritime - Navire"],
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -3463,6 +3539,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -3507,6 +3584,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -3548,6 +3626,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -3589,6 +3668,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -3630,6 +3710,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -3671,6 +3752,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -3720,6 +3802,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -3769,6 +3852,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -3818,6 +3902,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -3867,6 +3952,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -3908,6 +3994,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -3963,6 +4050,7 @@ export const allCards: GameCard[] = [
       []
     ],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -4019,6 +4107,7 @@ export const allCards: GameCard[] = [
       []
     ],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -4061,8 +4150,28 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Terrain", "Terrain", "Bâtiment", "Bâtiment"],
     choice: false,
-    checkboxes: [],
+    checkboxes: [
+      [],
+      [],
+      [
+        {content: "", checked: false},
+        {content: "", checked: false},
+        {content: "", checked: false}
+      ],
+      [
+        {content: "", checked: false},
+        {content: "", checked: false},
+        {content: "", checked: false},
+        {content: "military", checked: false},
+        {content: "military", checked: false},
+        {content: "gold", checked: false},
+        {content: "gold x2", checked: false},
+        {content: "gold x3", checked: false}
+      ],
+      [],
+    ],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -4119,6 +4228,7 @@ export const allCards: GameCard[] = [
       []
     ],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -4187,6 +4297,7 @@ export const allCards: GameCard[] = [
       []
     ],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -4228,6 +4339,7 @@ export const allCards: GameCard[] = [
     choice: true,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -4254,21 +4366,22 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "",
-      "Améliorer: Défaussez 2 Personnes. effects/forced Fin du Tour: Hélas, vous découvrez un Traître (94).",
+      "effects/forced Fin du Tour: Hélas, vous découvrez un Traître (94).",
       "",
-      "Améliorer: Défaussez 2 cartes Maritime.",
+      "",
     ],
     upgrades: [
       [ {cost: {gold: 1, wood: 1, ingot: 1}, nextSide: 2} ],
-      [ {cost: {military: 1, ingot: 1}, nextSide: 4} ],
+      [ {cost: {military: 1, ingot: 1}, nextSide: 4, otherCost: "2 Personnes" } ],
       [],
-      [],
+      [ {cost: {}, nextSide: 3, otherCost: "2 Maritimes" } ],
     ],
     currentSide: 1,
     type: ["Maritime", "Maritime", "Evénement", "Maritime"],
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -4310,6 +4423,7 @@ export const allCards: GameCard[] = [
     choice: true,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -4335,7 +4449,7 @@ export const allCards: GameCard[] = [
       [ { gold: 1, export: 2, fame: 10 } ],
     ],
     effects: [
-      "(Choisissez quand rajoutée.) effects/activate Dépensez resources/gold resources/gold pour inscrire 1 effects/check . (Vaut 2 resources/fame par effects/check )",
+      "effects/activate Dépensez resources/gold resources/gold pour inscrire 1 effects/check . (Vaut 2 resources/fame par effects/check )",
       "",
       "effects/activate Remettez au-dessus ou en-dessous de votre pioche jusqu'à 3 autres de vos cartes en jeu.",
       "",
@@ -4365,6 +4479,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -4406,6 +4521,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -4447,6 +4563,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -4511,6 +4628,7 @@ export const allCards: GameCard[] = [
       ],
     ],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -4552,6 +4670,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -4596,6 +4715,7 @@ export const allCards: GameCard[] = [
     choice: true,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -4637,6 +4757,7 @@ export const allCards: GameCard[] = [
     choice: true,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -4686,6 +4807,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -4735,6 +4857,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -4776,6 +4899,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -4817,6 +4941,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -4868,6 +4993,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -4909,6 +5035,7 @@ export const allCards: GameCard[] = [
     choice: true,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -4950,6 +5077,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -4982,16 +5110,16 @@ export const allCards: GameCard[] = [
       ],
     ],
     effects: [
-      "Améliorer: Défaussez 1 Personne.",
-      "Améliorer: Défaussez 2 Personnes.",
+      "",
+      "",
       "effects/activate Défaussez le nombre de personne de votre choix pour gagner autant de resources/fame . Puis inscrivez 1 effects/check .",
       "",
     ],
     upgrades: [
-      [ {cost: { wood: 2 }, nextSide: 2} ],
-      [ {cost: { stone: 2 }, nextSide: 4} ],
+      [ { cost: { wood: 2 }, nextSide: 2, otherCost: "1 Personne" } ],
+      [ { cost: { stone: 2 }, nextSide: 4, otherCost: "2 Personnes" } ],
       [],
-      [ {cost: { stone: 4 }, nextSide: 3} ],
+      [ { cost: { stone: 4 }, nextSide: 3 } ],
     ],
     currentSide: 1,
     type: ["Bâtiment", "Bâtiment", "Bâtiment", "Bâtiment"],
@@ -5007,6 +5135,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -5051,6 +5180,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -5092,6 +5222,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -5133,6 +5264,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -5174,6 +5306,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -5215,6 +5348,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -5259,6 +5393,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -5300,6 +5435,7 @@ export const allCards: GameCard[] = [
     choice: true,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -5341,6 +5477,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -5382,6 +5519,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -5432,6 +5570,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -5473,6 +5612,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -5524,6 +5664,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -5565,6 +5706,7 @@ export const allCards: GameCard[] = [
     choice: true,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -5606,6 +5748,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -5647,6 +5790,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -5686,8 +5830,17 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ["Bâtiment", "Bâtiment", "Bâtiment", "Bâtiment"],
     choice: false,
-    checkboxes: [],
+    checkboxes: [
+      [],
+      [],
+      [
+        {content: "", checked: false}, {content: "", checked: false},
+        {content: "", checked: false}, {content: "", checked: false},
+      ],
+      []
+    ],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -5729,6 +5882,7 @@ export const allCards: GameCard[] = [
     choice: true,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -5756,13 +5910,13 @@ export const allCards: GameCard[] = [
     effects: [
       "",
       "",
-      "Améliorer: Défaussez 2 Personnes (Back Down).",
+      "",
       "effects/passive Défaussez 1 Personne pour gagner resources/export resources/export .",
     ],
     upgrades: [
       [ { cost: { ingot: 2 }, nextSide: 2 } ],
       [],
-      [],
+      [ { cost: {}, nextSide: 4, otherCost: "2 Personnes" } ],
       [],
     ],
     currentSide: 1,
@@ -5770,6 +5924,7 @@ export const allCards: GameCard[] = [
     choice: true,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -5796,15 +5951,15 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "",
-      "Améliorer: Défaussez 2 Personnes (Back Down).",
+      "",
       "Vaut 7 par effects/check . effects/time Défaussez 1 Personne et dépensez resources/stone resources/stone resources/stone pour inscrire effects/check .",
-      "Améliorer: Défaussez 2 Personnes (Back UP).",
+      "",
     ],
     upgrades: [
       [ { cost: { gold: 2, wood: 2 }, nextSide: 2 } ],
+      [ { cost: {}, nextSide: 4, otherCost: "2 Personnes" } ],
       [],
-      [],
-      [],
+      [ { cost: {}, nextSide: 3, otherCost: "2 Personnes" } ],
     ],
     currentSide: 1,
     type: ["Terrain", "Terrain", "Terrain", "Terrain"],
@@ -5821,6 +5976,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -5862,6 +6018,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -5906,6 +6063,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -5950,6 +6108,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -5994,6 +6153,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -6035,6 +6195,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -6086,6 +6247,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -6111,7 +6273,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "effects/passive Dépensez resources/military resources/military resources/military resources/military resources/military  pour ignorer 1 resources/military du coup d'amélioration. Toutes les étapes ont la même valeur que l'étape finale (Back Up).",
+      "effects/passive Dépensez resources/military resources/military resources/military resources/military resources/military  pour ignorer 1 resources/military du coup d'amélioration. Toutes les étapes ont la même valeur que l'étape finale.",
       "effects/passive Dépensez resources/military resources/military resources/military resources/military resources/military  pour ignorer 1 resources/military du coup d'amélioration.",
       "effects/activate Réinitialisez cette carte.",
       "effects/passive Dépensez resources/military resources/military resources/military resources/military resources/military  pour ignorer 1 resources/military du coup d'amélioration. Lorsque vous l'améliorez, ajoutez 20 resources/fame à l'étape finale (Back Up).",
@@ -6127,6 +6289,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -6178,6 +6341,7 @@ export const allCards: GameCard[] = [
       ],
     ],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -6219,6 +6383,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -6269,6 +6434,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     enemy: [false, false, false, false],
+    discoverable: false,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },

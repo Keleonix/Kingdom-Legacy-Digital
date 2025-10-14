@@ -84,6 +84,7 @@ export const emptyResource: ResourceMap = {
 export type Upgrade = {
   cost: Partial<ResourceMap> | null;
   nextSide: number; // 1..4
+  otherCost?: string;
 };
 
 export type DropPayload = {
@@ -115,8 +116,8 @@ export class GameCard {
   effects: string[] = [];
   upgrades: Upgrade[][] = [];
   checkboxes: Checkbox[][] = [];
-  enemy: Boolean[] = [false, false, false];
-
+  enemy: boolean[] = [false, false, false];
+  discoverable: boolean = false;
   constructor({
     id = -1,
     name = ["", "", "", ""],
@@ -142,7 +143,8 @@ export class GameCard {
     resources?: ResourceMap[][];
     effects?: string[];
     upgrades?: Upgrade[][];
-    enemy?: Boolean[];
+    enemy?: boolean[];
+    discoverable?: boolean;
   }> = {}) {
     this.id = id;
     this.name = name;
@@ -156,6 +158,7 @@ export class GameCard {
     this.effects = effects;
     this.upgrades = upgrades;
     this.enemy = enemy;
+    this.discoverable = this.discoverable;
   }
 
   // returns array of options for the current side

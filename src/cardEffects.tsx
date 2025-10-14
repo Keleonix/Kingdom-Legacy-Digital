@@ -46,6 +46,16 @@ export type CardEffect = {
   alreadyUsed?: boolean;
 };
 
+export type CardFameValue = {
+  description: string;
+  execute: (context: GameContext) => boolean | Promise<number>;
+};
+
+export type CardUpgradeCost = {
+  description: string;
+  execute: (context: GameContext) => boolean | Promise<boolean>;
+};
+
 // -------------------
 // Effects
 // -------------------
@@ -2240,7 +2250,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         description: "Découvrez les 2 prochaines cartes",
         timing: "endOfTurn",
         execute: async function (ctx) {
-          const result: number[] = ctx.fetchCardsInZone((card) => card.id <= 70, "Campaign") // TODO : attribute discoverable?
+          const result: number[] = ctx.fetchCardsInZone((card) => card.discoverable, "Campaign")
             .sort((a, b) => a.id - b.id)
             .slice(0, 2)
             .map(item => item.id);
@@ -2279,7 +2289,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         description: "Découvrez les 2 prochaines cartes",
         timing: "endOfTurn",
         execute: async function (ctx) {
-          const result: number[] = ctx.fetchCardsInZone((card) => card.id <= 70, "Campaign") // TODO : attribute discoverable?
+          const result: number[] = ctx.fetchCardsInZone((card) => card.discoverable, "Campaign")
             .sort((a, b) => a.id - b.id)
             .slice(0, 2)
             .map(item => item.id);
@@ -2574,8 +2584,431 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
 };
 
-// Fonction helper pour récupérer les effets d'une carte
+export const cardFameValueRegistry: Record<number, Record<number, CardFameValue>> = {
+  34: {
+    1: { // Inventrice
+      description: "Vaut 5 par check",
+      execute: async function(ctx)  {
+        return 5 * (ctx.card.checkboxes[1].filter(cb => cb.checked).length);
+      }
+    },
+    3: { // Inventrice Inspirée
+      description: "Vaut 5 par check",
+      execute: async function(ctx)  {
+        return 5 * (ctx.card.checkboxes[1].filter(cb => cb.checked).length);
+      }
+    }
+  },
+  38: {
+    1: { // L'Union fait la Force
+      description: "Vaut 2 par Personne",
+      execute: async function(ctx)  {
+        return 2 * (ctx.fetchCardsInZone((c) => c.GetType().includes("Personne"), "Deck").length);
+      }
+    },
+    3: { // Domination Militaire
+      description: "Vaut 2 par production de military",
+      execute: async function(ctx)  {
+        const cards = ctx.fetchCardsInZone(() => true, "Deck");
+
+        const totalMilitary = cards.reduce((sum, card) => {
+          const resourceMaps = card.GetResources() || [];
+
+          const maxMilitary = resourceMaps.reduce(
+            (max, res) => Math.max(max, res.military || 0),
+            0
+          );
+
+          return sum + maxMilitary;
+        }, 0);
+
+        return totalMilitary * 2;
+      }
+    }
+  },
+  39: {
+    1: { // Elargir les frontières
+      description: "Vaut -2 par carte manquante jusqu'à la taille de 70",
+      execute: async function(ctx)  {
+        return Math.min(-2 * (70 - (ctx.fetchCardsInZone(() => (true), "Deck").length)), 0);
+      }
+    },
+    3: { // Optimisation
+      description: "Vaut -1 par carte sans fame",
+      execute: async function(ctx)  {
+        const cards = ctx.fetchCardsInZone(() => true, "Deck");
+
+        const noFameCount = cards.filter(card => {
+          const resourceMaps = card.GetResources() || [];
+          return resourceMaps.every(res => (res.fame || 0) === 0);
+        }).length;
+
+        return -1 * noFameCount;
+      }
+    }
+  },
+  40: {
+    1: { // Loyauté
+      description: "Vaut 35 s'il n'y a plus d'Ennemi",
+      execute: async function(ctx)  {
+        return (ctx.fetchCardsInZone((c) => c.GetType().includes("Ennemi"), "Deck").length === 0) ? 35 : 0;
+      }
+    },
+    3: { // Commerce
+      description: "Vaut 25 si vous produisez 8+ export",
+      execute: async function(ctx)  {
+        const cards = ctx.fetchCardsInZone(() => true, "Deck");
+
+        const totalExport = cards.reduce((sum, card) => {
+          const resourceMaps = card.GetResources() || [];
+
+          const exportProduced = resourceMaps.reduce(
+            (max, res) => Math.max(max, res.export || 0),
+            0
+          );
+
+          return sum + exportProduced;
+        }, 0);
+
+        return (totalExport >= 8) ? 25 : 0;
+      }
+    }
+  },
+  89: {
+    4: { // Prison
+      description: "Vaut 2 par check",
+      execute: async function(ctx)  {
+        return 2 * (ctx.card.checkboxes[ctx.card.currentSide - 1].filter(cb => cb.checked).length);
+      }
+    }
+  },
+  91: {
+    3: { // L'Arche
+      description: "Vaut 1 par check",
+      execute: async function(ctx)  {
+        return (ctx.card.checkboxes[ctx.card.currentSide - 1].filter(cb => cb.checked).length);
+      }
+    }
+  },
+  95: {
+    1: { // Astronome
+      description: "Vaut 2 par check",
+      execute: async function(ctx)  {
+        return 2 * (ctx.card.checkboxes[ctx.card.currentSide - 1].filter(cb => cb.checked).length);
+      }
+    }
+  },
+  106: {
+    3: { // Camelot
+      description: "Vaut 5 par check",
+      execute: async function(ctx)  {
+        return 5 * (ctx.card.checkboxes[ctx.card.currentSide - 1].filter(cb => cb.checked).length);
+      }
+    }
+  },
+  121: {
+    3: { // Reine Jemimah
+      description: "Vaut 3 par check",
+      execute: async function(ctx)  {
+        return 3 * (ctx.card.checkboxes[ctx.card.currentSide - 1].filter(cb => cb.checked).length);
+      }
+    }
+  },
+  125: {
+    3: { // Temple de la Lumière
+      description: "Vaut 10 par check",
+      execute: async function(ctx)  {
+        return 3 * (ctx.card.checkboxes[ctx.card.currentSide - 1].filter(cb => cb.checked).length);
+      }
+    }
+  },
+  128: {
+    3: { // Site de Fouilles
+      description: "Vaut 7 par check",
+      execute: async function(ctx)  {
+        return 7 * (ctx.card.checkboxes[ctx.card.currentSide - 1].filter(cb => cb.checked).length);
+      }
+    }
+  },
+  130: {
+    3: { // Double Muraille
+      description: "Vaut 4 par Muraille",
+      execute: async function(ctx)  {
+        return 4 * (ctx.fetchCardsInZone((c) => c.GetName().includes("Muraille"), "Deck").length);
+      }
+    }
+  },
+  134: {
+    3: { // Rival Beau-Gosse
+      description: "Vaut -5 par non-check",
+      execute: async function(ctx)  {
+        return -5 * (ctx.card.checkboxes[ctx.card.currentSide - 1].filter(cb => !cb.checked).length);
+      }
+    }
+  },
+  135: {
+   1: { // Terres Frontalières
+      description: "Vaut side 3",
+      execute: async function(ctx)  {
+        return [ctx.card].reduce((sum, card) => {
+          const resourceMaps = card.resources[3] || [];
+
+          const fameCount = resourceMaps.reduce(
+            (max, res) => Math.max(max, res.fame || 0),
+            0
+          );
+
+          return sum + fameCount;
+        }, 0);
+      }
+    },
+    2: { // Occupation
+      description: "Vaut side 3",
+      execute: async function(ctx)  {
+        return [ctx.card].reduce((sum, card) => {
+          const resourceMaps = card.resources[3] || [];
+
+          const fameCount = resourceMaps.reduce(
+            (max, res) => Math.max(max, res.fame || 0),
+            0
+          );
+
+          return sum + fameCount;
+        }, 0);
+      }
+    },
+    4: { // Villages Alliés
+      description: "Vaut side 3",
+      execute: async function(ctx)  {
+        return [ctx.card].reduce((sum, card) => {
+          const resourceMaps = card.resources[3] || [];
+
+          const fameCount = resourceMaps.reduce(
+            (max, res) => Math.max(max, res.fame || 0),
+            0
+          );
+
+          return sum + fameCount;
+        }, 0);
+      }
+    }
+  },
+}
+
+export const cardUpgradeAdditionalCostRegistry: Record<number, Record<number, CardUpgradeCost>> = {
+  49: {
+    1: {
+      description: "Détruisez le Pont de Pierre (12)",
+      execute: async function (ctx) {
+        const card = ctx.fetchCardsInZone((c) => c.GetName() === "Pont de Pierre", "Play Area")[0];
+        if(card) {
+          ctx.deleteCardInZone("Play Area", card.id);
+          return true;
+        }
+        return false;
+      }
+    }
+  },
+  59: {
+    1: {
+      description: "Défaussez 1 Personne",
+      execute: async function (ctx) {
+        const cards = await ctx.selectCardsFromZone((c) => c.GetType().includes("Personne"), "Play Area", this.description, 1);
+        if(cards.length === 1) {
+          for(const card of cards) {
+            ctx.dropToDiscard({fromZone: "Play Area", id: card.id});
+          }
+          return true;
+        }
+        return false;
+      }
+    },
+    2: {
+      description: "Défaussez 2 Personnes",
+      execute: async function (ctx) {
+        const cards = await ctx.selectCardsFromZone((c) => c.GetType().includes("Personne"), "Play Area", this.description, 2);
+        if(cards.length === 2) {
+          for(const card of cards) {
+            ctx.dropToDiscard({fromZone: "Play Area", id: card.id});
+          }
+          return true;
+        }
+        return false;
+      }
+    },
+  },
+  66: {
+    1: {
+      description: "Défaussez 2 Personnes, 2 Terrains, 2 Bâtiments",
+      execute: async function (ctx) {
+        const cards = [
+          ...await ctx.selectCardsFromZone((c) => c.GetType().includes("Personne"), "Play Area", this.description, 2),
+          ...await ctx.selectCardsFromZone((c) => c.GetType().includes("Terrain"), "Play Area", this.description, 2),
+          ...await ctx.selectCardsFromZone((c) => c.GetType().includes("Bâtiment"), "Play Area", this.description, 2)
+        ];
+        if(cards.length === 6) {
+          for(const card of cards) {
+            ctx.dropToDiscard({fromZone: "Play Area", id: card.id});
+          }
+          return true;
+        }
+        return false;
+      }
+    },
+    2: {
+      description: "Défaussez 2 Personnes",
+      execute: async function (ctx) {
+        const cards = await ctx.selectCardsFromZone((c) => c.GetType().includes("Personne"), "Play Area", this.description, 2);
+        if(cards.length === 2) {
+          for(const card of cards) {
+            ctx.dropToDiscard({fromZone: "Play Area", id: card.id});
+          }
+          return true;
+        }
+        return false;
+      }
+    },
+  },
+  74: {
+    4: {
+      description: "Défaussez 2 Personnes",
+      execute: async function (ctx) {
+        const cards = await ctx.selectCardsFromZone((c) => c.GetType().includes("Personne"), "Play Area", this.description, 2);
+        if(cards.length === 2) {
+          for(const card of cards) {
+            ctx.dropToDiscard({fromZone: "Play Area", id: card.id});
+          }
+          return true;
+        }
+        return false;
+      }
+    },
+  },
+  75: {
+    4: {
+      description: "Défaussez 2 Personnes",
+      execute: async function (ctx) {
+        const cards = await ctx.selectCardsFromZone((c) => c.GetType().includes("Personne"), "Play Area", this.description, 2);
+        if(cards.length === 2) {
+          for(const card of cards) {
+            ctx.dropToDiscard({fromZone: "Play Area", id: card.id});
+          }
+          return true;
+        }
+        return false;
+      }
+    },
+  },
+  93: {
+    2: {
+      description: "Défaussez 2 Personnes",
+      execute: async function (ctx) {
+        const cards = await ctx.selectCardsFromZone((c) => c.GetType().includes("Personne"), "Play Area", this.description, 2);
+        if(cards.length === 2) {
+          for(const card of cards) {
+            ctx.dropToDiscard({fromZone: "Play Area", id: card.id});
+          }
+          return true;
+        }
+        return false;
+      }
+    },
+    4: {
+      description: "Défaussez 2 Maritimes",
+      execute: async function (ctx) {
+        const cards = await ctx.selectCardsFromZone((c) => c.GetType().includes("Maritime"), "Play Area", this.description, 2);
+        if(cards.length === 2) {
+          for(const card of cards) {
+            ctx.dropToDiscard({fromZone: "Play Area", id: card.id});
+          }
+          return true;
+        }
+        return false;
+      }
+    },
+  },
+  109: {
+    1: {
+      description: "Défaussez 1 Personne",
+      execute: async function (ctx) {
+        const cards = await ctx.selectCardsFromZone((c) => c.GetType().includes("Personne"), "Play Area", this.description, 1);
+        if(cards.length === 1) {
+          for(const card of cards) {
+            ctx.dropToDiscard({fromZone: "Play Area", id: card.id});
+          }
+          return true;
+        }
+        return false;
+      }
+    },
+    2: {
+      description: "Défaussez 2 Personnes",
+      execute: async function (ctx) {
+        const cards = await ctx.selectCardsFromZone((c) => c.GetType().includes("Personne"), "Play Area", this.description, 2);
+        if(cards.length === 2) {
+          for(const card of cards) {
+            ctx.dropToDiscard({fromZone: "Play Area", id: card.id});
+          }
+          return true;
+        }
+        return false;
+      }
+    },
+  },
+  127: {
+    3: {
+      description: "Défaussez 2 Personnes",
+      execute: async function (ctx) {
+        const cards = await ctx.selectCardsFromZone((c) => c.GetType().includes("Personne"), "Play Area", this.description, 2);
+        if(cards.length === 2) {
+          for(const card of cards) {
+            ctx.dropToDiscard({fromZone: "Play Area", id: card.id});
+          }
+          return true;
+        }
+        return false;
+      }
+    },
+  },
+  128: {
+    2: {
+      description: "Défaussez 2 Personnes",
+      execute: async function (ctx) {
+        const cards = await ctx.selectCardsFromZone((c) => c.GetType().includes("Personne"), "Play Area", this.description, 2);
+        if(cards.length === 2) {
+          for(const card of cards) {
+            ctx.dropToDiscard({fromZone: "Play Area", id: card.id});
+          }
+          return true;
+        }
+        return false;
+      }
+    },
+    4: {
+      description: "Défaussez 2 Personnes",
+      execute: async function (ctx) {
+        const cards = await ctx.selectCardsFromZone((c) => c.GetType().includes("Personne"), "Play Area", this.description, 2);
+        if(cards.length === 2) {
+          for(const card of cards) {
+            ctx.dropToDiscard({fromZone: "Play Area", id: card.id});
+          }
+          return true;
+        }
+        return false;
+      }
+    },
+  },
+}
+
 export function getCardEffects(cardId: number, side: number, timing?: EffectTiming) {
   const effects = cardEffectsRegistry[cardId]?.[side] ?? [];
   return timing ? effects.filter(e => e.timing === timing) : effects;
+}
+
+export function getCardFameValue(cardId: number, side: number) {
+  return cardFameValueRegistry[cardId]?.[side] ?? [];
+}
+
+export function getCardUpgradeAdditionalCost(cardId: number, side: number) {
+  return cardUpgradeAdditionalCostRegistry[cardId]?.[side] ?? [];
 }

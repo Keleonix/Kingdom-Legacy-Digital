@@ -26,7 +26,11 @@ function cloneGameCard(src: GameCard): GameCard {
   
   out.effects = [...src.effects];
   out.upgrades = src.upgrades.map((arr) =>
-    arr.map((u) => ({ cost: u.cost ? { ...u.cost } : null, nextSide: u.nextSide }))
+    arr.map((u) => ({ 
+      cost: u.cost ? { ...u.cost } : null, 
+      nextSide: u.nextSide,
+      otherCost: u.otherCost 
+    }))
   );
 
   // Expected shape: checkboxes: Array< Array<{ content: string, checked: boolean }> > length 4
@@ -518,6 +522,9 @@ function CardView({
                     ) : (
                       <span className="text-[11px]">No cost</span>
                     )}
+                    {upg.otherCost && (
+                      <span className="text-[11px] italic">{upg.otherCost}</span>
+                    )}
                   </div>
                   <div className="text-[11px]">{"→ "}{sideLabel(upg.nextSide)}</div>
                 </button>
@@ -768,6 +775,12 @@ function CardPopup({
     setLocalCard(cloneGameCard(localCard));
   };
 
+  const updateUpgradeOtherCost = (upgradeIdx: number, value: string) => {
+    const upg = localCard.upgrades[currentSideIdx][upgradeIdx];
+    upg.otherCost = value;
+    setLocalCard(cloneGameCard(localCard));
+  };
+
   const applyChanges = () => {
     // 1) if an upgrade was selected, deduct its cost from global resources and set the card's currentSide to nextSide
     const appliedCard = cloneGameCard(localCard);
@@ -792,7 +805,7 @@ function CardPopup({
     appliedCard.resources = localCard.resources.map((side) => side.map((r) => ({ ...r })));
     appliedCard.effects = [...localCard.effects];
     appliedCard.upgrades = localCard.upgrades.map((arr) =>
-      arr.map((u) => ({ cost: u.cost ? { ...u.cost } : null, nextSide: u.nextSide }))
+      arr.map((u) => ({ cost: u.cost ? { ...u.cost } : null, nextSide: u.nextSide, otherCost: u.otherCost }))
     );
     appliedCard.name = [...localCard.name]; // Persist name changes
 
@@ -998,8 +1011,8 @@ function CardPopup({
 
                   {/* Editor */}
                   <div className="mb-2">
-                    <div className="text-xs font-medium mb-1">Cost:</div>
-                    <div className="grid grid-cols-3 gap-2">
+                    <div className="text-xs font-medium mb-1">Resource Cost:</div>
+                    <div className="grid grid-cols-3 gap-2 mb-2">
                       {RESOURCE_KEYS.map((key) => (
                         <div key={key} className="flex items-center gap-1">
                           <img src={resourceIconPath(key)} alt={key} className="w-4 h-4" />
@@ -1016,6 +1029,15 @@ function CardPopup({
                         </div>
                       ))}
                     </div>
+                    <div className="text-xs font-medium mb-1">Other Cost:</div>
+                    <input
+                      type="text"
+                      className="w-full border rounded px-2 py-1 text-sm"
+                      value={upg.otherCost || ""}
+                      onChange={(e) => updateUpgradeOtherCost(idx, e.target.value)}
+                      onClick={(e) => e.stopPropagation()}
+                      placeholder="e.g., 'Discard 2 cards' or 'Pay 1 fame'"
+                    />
                   </div>
 
                   {/* Select Upgrade */}
