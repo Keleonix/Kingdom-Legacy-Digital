@@ -68,6 +68,7 @@ export const TYPE_COLORS: Record<string, string> = {
   Elevage: "#f8ad70ff",
   Cheval: "#f8ad70ff",
   Cargaison: "#c59f90ff",
+  Etat: "#f4c2d7",
   default: "#f4c2d7"
 };
 
@@ -103,7 +104,7 @@ export type EffectTiming =
   "doesNothing" |
   "restrictPlay" |
   "restrictAll" |
-  "onEndOfGame"
+  "onEndOfGame" 
 ;
 
 export class GameCard {

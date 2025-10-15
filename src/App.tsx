@@ -5,7 +5,7 @@ import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { emptyResource, GameCard, RESOURCE_KEYS, EFFECT_KEYWORDS, TYPE_COLORS, type ResourceMap, type PopupPayload, type DropPayload, type Checkbox, type Upgrade, type EffectTiming } from "./types";
 import { allCards } from "./cards";
-import { getCardEffects, type GameContext, type CardEffect, cardEffectsRegistry, getCardFameValue, getCardUpgradeAdditionalCost } from "./cardEffects";
+import { getCardEffects, type GameContext, type CardEffect, cardEffectsRegistry, getCardFameValue, getCardUpgradeAdditionalCost, getCardSelectionValue } from "./cardEffects";
 
 // deep-clone preserving prototype/methods
 function cloneGameCard(src: GameCard): GameCard {
@@ -1069,6 +1069,7 @@ function CardSelectionPopup({
   zone,
   requiredCount,
   optionalCount,
+  searchType,
   onConfirm,
   onCancel,
 }: {
@@ -1077,28 +1078,54 @@ function CardSelectionPopup({
   zone: string;
   requiredCount: number;
   optionalCount?: number;
+  searchType?: string;
   onConfirm: (selectedCards: GameCard[]) => void;
   onCancel: () => void;
 }) {
   const maxCount = requiredCount + (optionalCount ?? 0);
+  
   const [selectedCards, setSelectedCards] = useState<GameCard[]>(() => {
-    if (cards.length <= maxCount) {
+    let totalValue = 0;
+    const selected: GameCard[] = [];
+    
+    for (const card of cards) {
+      const cardValue = getCardSelectionValue(card, searchType || "");
+      if (totalValue + cardValue <= maxCount) {
+        selected.push(card);
+        totalValue += cardValue;
+      } else {
+        break;
+      }
+    }
+    
+    const allCardsValue = cards.reduce((sum, c) => sum + getCardSelectionValue(c, searchType || ""), 0);
+    if (allCardsValue <= maxCount) {
       return [...cards];
     }
+    
     return [];
   });
+  
   const [hoveredCard, setHoveredCard] = useState<GameCard | null>(null);
   const [previewPosition, setPreviewPosition] = useState({ top: 0, left: 0 });
   const previewRef = useRef<HTMLDivElement | null>(null);
   const cardRefs = useRef<Map<number, HTMLDivElement>>(new Map());
 
+  // Calculer la valeur totale sélectionnée
+  const selectedValue = selectedCards.reduce((sum, card) => {
+    return sum + getCardSelectionValue(card, searchType || "");
+  }, 0);
+  
   const toggleCard = (card: GameCard) => {
     setSelectedCards(prev => {
       const isSelected = prev.some(c => c.id === card.id);
       if (isSelected) {
         return prev.filter(c => c.id !== card.id);
-      } else if (prev.length < maxCount) {
-        return [...prev, card];
+      } else {
+        const cardValue = getCardSelectionValue(card, searchType || "");
+        if (selectedValue + cardValue <= maxCount) {
+          return [...prev, card];
+        }
       }
       return prev;
     });
@@ -1134,7 +1161,7 @@ function CardSelectionPopup({
     }
   }, [hoveredCard]);
 
-  const canConfirm = selectedCards.length >= requiredCount && selectedCards.length <= maxCount;
+  const canConfirm = selectedValue >= requiredCount && selectedValue <= maxCount;
 
   // Helper functions from CardView for preview
   function resourceIconPath(key: keyof ResourceMap) {
@@ -1230,22 +1257,27 @@ function CardSelectionPopup({
     );
   }
 
-  const displayMessage = optionalCount 
-    ? `Select between ${requiredCount} and ${maxCount} card(s) : ${effectDescription}`
-    : `Select ${requiredCount} card(s) : ${effectDescription}`;
+  const displayMessage = (() => {
+  const allCardsValue = cards.reduce((sum, c) => sum + getCardSelectionValue(c, searchType || ""), 0);
+  const autoSelected = allCardsValue <= maxCount;
+  
+  if (optionalCount) {
+    return `${effectDescription} (${requiredCount}-${maxCount} valeur${autoSelected ? ' - Auto-selected' : ''})`;
+  }
+    return `${effectDescription} (${requiredCount} valeur${autoSelected ? ' - Auto-selected' : ''})`;
+  })();
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[80]">
       <div className="bg-white p-4 rounded-xl space-y-4 max-w-4xl max-h-[80vh] overflow-hidden flex flex-col">
-        <h2 className="font-bold">
-          {displayMessage}
-          {cards.length <= maxCount && " (Auto-selected)"}
-        </h2>
+        <h2 className="font-bold">{displayMessage}</h2>
         
         <div className="flex-1 overflow-y-auto p-2 border rounded">
           <div className="grid grid-cols-3 gap-2">
             {cards.map((card) => {
               const isSelected = selectedCards.some(c => c.id === card.id);
+              const cardValue = getCardSelectionValue(card, searchType || "");
+              
               return (
                 <div
                   key={`select-${card.id}-${card.currentSide}`}
@@ -1260,6 +1292,13 @@ function CardSelectionPopup({
                   onMouseEnter={() => setHoveredCard(card)}
                   onMouseLeave={() => setHoveredCard(null)}
                 >
+                  {/* Badge pour afficher la valeur si > 1 */}
+                  {cardValue > 1 && (
+                    <div className="absolute top-2 right-2 z-20 bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold text-sm">
+                      {cardValue}
+                    </div>
+                  )}
+                  
                   <div 
                     className="absolute inset-0 z-10"
                     onClick={(e) => {
@@ -1283,7 +1322,7 @@ function CardSelectionPopup({
 
         <div className="flex justify-between items-center pt-2 border-t">
           <span className="text-sm text-gray-600">
-            Selected: {selectedCards.length} / {optionalCount ? `${requiredCount}-${maxCount}` : requiredCount}
+            Valeur: {selectedValue} / {optionalCount ? `${requiredCount}-${maxCount}` : requiredCount}
           </span>
           <div className="flex gap-2">
             <Button onClick={onCancel} variant="secondary" hidden={zone === "Campaign"}>
@@ -1545,6 +1584,131 @@ const CardSideSelectionPopup: React.FC<{
 }
 
 // -------------------
+// Upgrade Cost Selection Popup
+// -------------------
+const UpgradeCostSelectionPopup: React.FC<{
+  card: GameCard;
+  onConfirm: (upgradeIndex: number, resourceKey: keyof ResourceMap) => void;
+  onCancel: () => void;
+}> = ({ card, onConfirm, onCancel }) => {
+  const [selectedUpgradeIndex, setSelectedUpgradeIndex] = useState<number | null>(null);
+  const [selectedResourceKey, setSelectedResourceKey] = useState<keyof ResourceMap | null>(null);
+
+  const currentUpgrades = card.GetUpgrades();
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex justify-center items-center">
+      <div className="bg-white p-4 rounded shadow-lg max-w-md w-full">
+        <h2 className="text-lg font-bold mb-2">
+          Sélectionnez un upgrade et une ressource à retirer
+        </h2>
+        
+        {currentUpgrades.length === 0 ? (
+          <div className="text-sm mb-4">Aucun upgrade disponible.</div>
+        ) : (
+          <>
+            <div className="flex flex-col gap-2 mb-4">
+              <h3 className="text-sm font-medium">1. Choisissez un upgrade :</h3>
+              {currentUpgrades.map((upg, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => {
+                    setSelectedUpgradeIndex(idx);
+                    setSelectedResourceKey(null);
+                  }}
+                  className={`p-3 border rounded transition text-left ${
+                    selectedUpgradeIndex === idx
+                      ? "bg-blue-100 border-blue-500"
+                      : "bg-gray-50 border-gray-300 hover:border-gray-400"
+                  }`}
+                >
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="font-medium text-sm">Upgrade {idx + 1}</span>
+                    <span className="text-xs text-gray-600">
+                      → {sideLabel(upg.nextSide)}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {upg.cost && Object.keys(upg.cost).length > 0 ? (
+                      Object.entries(upg.cost).map(([key, value]) => (
+                        <span key={key} className="flex items-center gap-1 text-xs">
+                          <img 
+                            src={resourceIconPath(key as keyof ResourceMap)} 
+                            alt={key} 
+                            className="w-4 h-4" 
+                          />
+                          x{value}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="text-xs text-gray-400">Pas de coût</span>
+                    )}
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            {selectedUpgradeIndex !== null && currentUpgrades[selectedUpgradeIndex].cost && (
+              <div className="flex flex-col gap-2 mb-4">
+                <h3 className="text-sm font-medium">2. Choisissez une ressource à retirer :</h3>
+                <div className="grid grid-cols-3 gap-2">
+                  {Object.entries(currentUpgrades[selectedUpgradeIndex].cost || {})
+                    .filter(([_, value]) => value > 0)
+                    .map(([key, value]) => (
+                      <button
+                        key={key}
+                        onClick={() => setSelectedResourceKey(key as keyof ResourceMap)}
+                        className={`p-2 border rounded transition ${
+                          selectedResourceKey === key
+                            ? "bg-green-100 border-green-500"
+                            : "bg-gray-50 border-gray-300 hover:border-gray-400"
+                        }`}
+                      >
+                        <div className="flex flex-col items-center gap-1">
+                          <img 
+                            src={resourceIconPath(key as keyof ResourceMap)} 
+                            alt={key} 
+                            className="w-6 h-6" 
+                          />
+                          <span className="text-xs">x{value}</span>
+                        </div>
+                      </button>
+                    ))}
+                </div>
+              </div>
+            )}
+          </>
+        )}
+
+        <div className="flex justify-end gap-2">
+          <button
+            onClick={onCancel}
+            className="px-3 py-1 bg-gray-300 hover:bg-gray-400 rounded"
+          >
+            Annuler
+          </button>
+          <button
+            onClick={() => {
+              if (selectedUpgradeIndex !== null && selectedResourceKey !== null) {
+                onConfirm(selectedUpgradeIndex, selectedResourceKey);
+              }
+            }}
+            disabled={selectedUpgradeIndex === null || selectedResourceKey === null}
+            className={`px-3 py-1 rounded ${
+              selectedUpgradeIndex !== null && selectedResourceKey !== null
+                ? "bg-blue-500 hover:bg-blue-600 text-white"
+                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+            }`}
+          >
+            Confirmer
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// -------------------
 // The Game
 // -------------------
 export default function Game() {
@@ -1582,6 +1746,7 @@ export default function Game() {
     zone: string;
     requiredCount: number;
     optionalCount?: number;
+    searchType?: string;
     resolve: (selectedCards: GameCard[]) => void;
   } | null>(null);
 
@@ -1620,6 +1785,12 @@ export default function Game() {
     setIsPlayBlocked(checkPlayRestrictions());
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [playArea, permanentZone]);
+
+  const [showUpgradeCostPopup, setShowUpgradeCostPopup] = useState(false);
+  const [upgradeCostPopupCard, setUpgradeCostPopupCard] = useState<GameCard | null>(null);
+  const [onUpgradeCostConfirm, setOnUpgradeCostConfirm] = useState<
+    ((upgradeIndex: number, resourceKey: keyof ResourceMap) => void) | null
+  >(null);
 
   // ----------- immediate refs & setters (à ajouter près des useState) -----------
   const playAreaRef = useRef<GameCard[]>([]);
@@ -1914,6 +2085,7 @@ export default function Game() {
             addCardEffect,
             fetchCardsInZone,
             selectCardSides,
+            selectUpgradeCost,
             updateBlocks,
             getBlockedBy,
           };
@@ -1981,6 +2153,12 @@ export default function Game() {
         resolve([]);
         return;
       }
+      let searchType = "";
+      const typeMatch = effectDescription.match(/\b(Personne|Bâtiment|Terrain|Chevalier|Dame|Maritime|Navire|Evénement)\b/i);
+      if (typeMatch) {
+        searchType = typeMatch[1];
+      }
+      
       const adjustedCount = Math.min(requiredCount, filteredCards.length);
       setCardSelectionPopup({
         cards: filteredCards,
@@ -1988,6 +2166,7 @@ export default function Game() {
         zone: zone,
         requiredCount: adjustedCount,
         optionalCount: optionalCount,
+        searchType: searchType,
         resolve,
       });
     });
@@ -2243,6 +2422,14 @@ export default function Game() {
     setShowCardSidePopup(true);
   }
 
+  function selectUpgradeCost(card: GameCard, callback: (upgradeIndex: number, resourceKey: keyof ResourceMap) => void) {
+    setUpgradeCostPopupCard(card);
+    setOnUpgradeCostConfirm(() => (upgradeIndex: number, resourceKey: keyof ResourceMap) => {
+      callback(upgradeIndex, resourceKey);
+    });
+    setShowUpgradeCostPopup(true);
+  }
+
   function updateBlocks(blocker: number, blockedCards: number[] | null) {
     setBlockMap(prev => {
       const next = new Map(prev);
@@ -2307,6 +2494,7 @@ export default function Game() {
       addCardEffect,
       fetchCardsInZone,
       selectCardSides,
+      selectUpgradeCost,
       updateBlocks,
       getBlockedBy,
     };
@@ -2602,6 +2790,7 @@ export default function Game() {
           addCardEffect,
           fetchCardsInZone,
           selectCardSides,
+          selectUpgradeCost,
           updateBlocks,
           getBlockedBy,
         };
@@ -2677,6 +2866,7 @@ export default function Game() {
             addCardEffect,
             fetchCardsInZone,
             selectCardSides,
+            selectUpgradeCost,
             updateBlocks,
             getBlockedBy,
           };
@@ -3338,6 +3528,21 @@ export default function Game() {
           onCancel={() => {
             setShowCardSidePopup(false);
             setCardSidePopupCard(null);
+          }}
+        />
+      )}
+
+      {showUpgradeCostPopup && upgradeCostPopupCard && onUpgradeCostConfirm && (
+        <UpgradeCostSelectionPopup
+          card={upgradeCostPopupCard}
+          onConfirm={(upgradeIndex, resourceKey) => {
+            onUpgradeCostConfirm(upgradeIndex, resourceKey);
+            setShowUpgradeCostPopup(false);
+            setUpgradeCostPopupCard(null);
+          }}
+          onCancel={() => {
+            setShowUpgradeCostPopup(false);
+            setUpgradeCostPopupCard(null);
           }}
         />
       )}

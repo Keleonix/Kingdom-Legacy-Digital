@@ -1362,7 +1362,7 @@ export const allCards: GameCard[] = [
         {content: "*", checked: false},
       ],
     ],
-    enemy: [false, false, false, false],
+    enemy: [true, false, false, false],
     discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
@@ -2808,7 +2808,7 @@ export const allCards: GameCard[] = [
     type: ["Ennemi", "", "Personne", ""],
     choice: false,
     checkboxes: [],
-    enemy: [false, false, false, false],
+    enemy: [true, false, false, false],
     discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
@@ -2850,7 +2850,7 @@ export const allCards: GameCard[] = [
     type: ["Ennemi", "", "Personne", ""],
     choice: false,
     checkboxes: [],
-    enemy: [false, false, false, false],
+    enemy: [true, false, false, false],
     discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
@@ -3110,10 +3110,10 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Personne", "Personne", "Personne - Dame", ""],
+    type: ["Evénement", "Etat - Permanente", "Evénement", ""],
     choice: false,
     checkboxes: [],
-    enemy: [false, false, false, false],
+    enemy: [true, false, false, false],
     discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
@@ -3236,7 +3236,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Evénement", "", "Evénement", ""],
+    type: ["Evénement", "", "Personne", ""],
     choice: true,
     checkboxes: [],
     enemy: [false, false, false, false],
@@ -3523,7 +3523,7 @@ export const allCards: GameCard[] = [
       [{ ...emptyResource } ],
     ],
     effects: [
-      "effects/passive Reste en jeux. effects/passive Lorsque vous gagnez des resources/gold , gagnez 1 resources/gold de moins. effects/Activate Dépensez resources/military resources/military pour vaincre ( effects/destroy ) puis découvrez le Lagon (77).",
+      "effects/passive Reste en jeux. effects/passive Lorsque vous gagnez des resources/gold , gagnez 1 resources/gold de moins. effects/activate Dépensez resources/military resources/military pour vaincre ( effects/destroy ) puis découvrez le Lagon (77).",
       "",
       "effects/activate Découvrez la Chasse au Trésor (93).",
       "",
@@ -5031,7 +5031,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Evénement", "", "Evénement", ""],
+    type: ["Evénement", "", "Personne", ""],
     choice: true,
     checkboxes: [],
     enemy: [false, false, false, false],
