@@ -6,7 +6,7 @@ It provides an **interactive card game interface** built with **React, TypeScrip
 
 ---
 
-## ✨ Features
+## Features
 
 - **Interactive Card Zones**
   - Deck, Discard, Play Area, Blocked, Permanent, Campaign, and Destroy zones.
@@ -39,7 +39,7 @@ It provides an **interactive card game interface** built with **React, TypeScrip
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **React** + **TypeScript**
 - **Tailwind CSS** for styling
@@ -49,7 +49,7 @@ It provides an **interactive card game interface** built with **React, TypeScrip
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### 1. Clone the Repository
 
@@ -72,7 +72,7 @@ npm run dev
 
 Then open [http://localhost:5173](http://localhost:5173) in your browser.
 
-## 📖 Usage
+## Usage
 
 - Drag cards between zones to play, discard, or block them.
 - Tap a card (on mobile) or right-click (on desktop) to open the Card Editor.
@@ -81,7 +81,7 @@ Then open [http://localhost:5173](http://localhost:5173) in your browser.
 - Save/Load kingdoms via the Settings modal.
 - Follow the rules from the official rulebook: [Full Rules (PDF)](https://fryxgames.se/wp-content/uploads/2023/12/FK-Rules-Small.pdf)
 
-## 📂 Project Structure
+## Project Structure
 
     src/
      ├── App.tsx        # Main game implementation
@@ -92,7 +92,7 @@ Then open [http://localhost:5173](http://localhost:5173) in your browser.
      ├── effects/       # Effect icons
      └── resources/     # Resource icons
 
-## 🎨 Credits
+## Credits
 
 - **Original Game Design:** Jonathan Fryxelius  
 - **Publisher:** FryxGames / Intrafin  
@@ -100,8 +100,15 @@ Then open [http://localhost:5173](http://localhost:5173) in your browser.
 - **Assets:** Freepik, Smashicons  
 - **Playtesting:** Keleonix  
 
-## ⚠️ Disclaimer
+## Disclaimer
 
 This is an **unofficial fan project**.  
 It is **not affiliated with, endorsed by, or sponsored by FryxGames, Intrafin, or Jonathan Fryxelius**.  
 All rights to the original **Kingdom Legacy** game, rules, and artwork remain with their respective copyright holders.
+
+## Known bugs
+
+- When a card is blocked, if unblocked because of EoT and the card has "stay in play", it does not stay in play.
+- End of Round effects are bugged and do not trigger.
+- With the Scientist, if a Person doen't have a production, you cannot automatically produce 1 gold.
+- When selecting cards for upgrade additional costs, if you currently don't have enough of cards of the required type, you still can upgrade the card.

@@ -35,6 +35,8 @@ export type GameContext = {
   addCardEffect: (id: number, face: number, zone: string, effect: CardEffect, effectText: string) => void;
   fetchCardsInZone: (filter: (card: GameCard) => boolean, zone: string) => GameCard[];
   selectCardSides: (card: GameCard, requiredCount: number, optionalCount: number, callback: (selectedSides: number[]) => void) => void;
+  updateBlocks: (blocker: number, blocked: number[] | null) => void;
+  getBlockedBy: (blocker: number) => GameCard[];
 };
 
 export type CardEffect = {
@@ -48,7 +50,7 @@ export type CardEffect = {
 
 export type CardFameValue = {
   description: string;
-  execute: (context: GameContext) => boolean | Promise<number>;
+  execute: (context: GameContext) => number | Promise<number>;
 };
 
 export type CardUpgradeCost = {
@@ -238,6 +240,16 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         return false;
       }
     }],
+    3: [{ // Grange
+        description: "Reste en jeu",
+        timing: "stayInPlay",
+        execute: async function (ctx) {
+          if(ctx) {
+            return false;
+          }
+          return true;
+        }
+    }],
   },
   2: {
     2: [{ // Plaines
@@ -257,6 +269,16 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
         return false;
       }
+    }],
+    3: [{ // Grange
+        description: "Reste en jeu",
+        timing: "stayInPlay",
+        execute: async function (ctx) {
+          if(ctx) {
+            return false;
+          }
+          return true;
+        }
     }],
   },
   3: {
@@ -278,6 +300,16 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         return false;
       }
     }],
+    3: [{ // Grange
+        description: "Reste en jeu",
+        timing: "stayInPlay",
+        execute: async function (ctx) {
+          if(ctx) {
+            return false;
+          }
+          return true;
+        }
+    }],
   },
   4: {
     2: [{ // Plaines
@@ -297,6 +329,16 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
         return false;
       }
+    }],
+    3: [{ // Grange
+        description: "Reste en jeu",
+        timing: "stayInPlay",
+        execute: async function (ctx) {
+          if(ctx) {
+            return false;
+          }
+          return true;
+        }
     }],
   },
   5: {
@@ -597,6 +639,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
         if (selectedCards.length !== 0) {
           ctx.dropToBlocked({id: selectedCards[0].id, fromZone: ctx.zone});
+          ctx.updateBlocks(ctx.card.id, [selectedCards[0].id]);
         }
         return false;
       }
@@ -626,7 +669,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             applyChoice(ctx, choice1);
             applyChoice(ctx, choice2);
             ctx.setResources(prev => ({ ...prev, military: prev.military - 1}));
-            return true;
+            ctx.deleteCardInZone(ctx.zone, ctx.card.id);
           }
         }
         return false;
@@ -693,6 +736,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
         if (selectedCards.length !== 0) {
           ctx.dropToBlocked({id: selectedCards[0].id, fromZone: ctx.zone});
+          ctx.updateBlocks(ctx.card.id, [selectedCards[0].id]);
         }
         return false;
       }
@@ -722,7 +766,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             applyChoice(ctx, choice1);
             applyChoice(ctx, choice2);
             ctx.setResources(prev => ({ ...prev, military: prev.military - 1}));
-            return true;
+            ctx.deleteCardInZone(ctx.zone, ctx.card.id);
           }
         }
         return false;
@@ -1660,13 +1704,13 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   37: {
 
   },
-  38: { //TODO : Fame
+  38: {
 
   },
-  39: { //TODO : Fame
+  39: {
 
   },
-  40: { //TODO : Fame
+  40: {
 
   },
   41: {
@@ -1893,7 +1937,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           return false;
         }
       },
-      { // Chevalier Noir
+      {
       description: "Dépensez 3 military pour vaincre et retourner",
       timing: "onClick",
       execute: async function (ctx) {
@@ -2416,7 +2460,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           for (const card of selected) {
             ctx.deleteCardInZone("Deck", card.id);
           }
-          ctx.card.currentSide = 3;
+          const currCard = ctx.fetchCardsInZone((c) => c.id === ctx.card.id, "Deck")[0];
+          currCard.currentSide = 3;
           return false;
         }
       },
@@ -2433,6 +2478,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           }
           if (selectedCards.length !== 0) {
             ctx.dropToBlocked({id: selectedCards[0].id, fromZone: ctx.zone});
+            ctx.updateBlocks(ctx.card.id, [selectedCards[0].id]);
           }
           return false;
         }
@@ -2448,9 +2494,14 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: "Détruisez la carte bloquée", // TODO : Link blocked cards to blocker
+        description: "Détruisez la carte bloquée",
         timing: "endOfRound",
-        execute: async function () {
+        execute: async function (ctx) {
+          const blocked = ctx.getBlockedBy(ctx.card.id)[0];
+          if (blocked) {
+            ctx.deleteCardInZone("Deck", blocked.id);
+            ctx.updateBlocks(ctx.card.id, null);
+          }
           return false;
         }
       },
@@ -2467,6 +2518,288 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       },
     ]
   },
+  57: {
+    1: [
+      { // Assassin
+        description: "Détruit la prochainne Personne jouée",
+        timing: "otherCardPlayed",
+        execute: async function (ctx) {
+          const selectableCards = [];
+          for (const card of (ctx.cardsForTrigger?? [])) {
+            if (card.GetType().includes("Personne")) selectableCards.push(card);
+          }
+          if(selectableCards.length !== 0) {
+            ctx.deleteCardInZone("Play Area", (await ctx.selectCardsFromArray(selectableCards, "Play Area", this.description, 1))[0].id);
+            ctx.card.currentSide = 3;
+            return true;
+          }
+          return false;
+        }
+      },
+      {
+        description: "Dépensez military x3 pour vaincre",
+        timing: "onClick",
+        execute: async function (ctx) {
+          if (ctx.resources.military >= 3) {
+            ctx.setResources(prev => ({ ...prev, military: prev.military - 3 }));
+            ctx.card.currentSide = 3;
+            return true;
+          }
+          return false;
+        }
+      }
+    ],
+    3: [
+      { // Soldat Ennemi
+        description: "Bloque un Bâtiment/Terrain",
+        timing: "played",
+        execute: async function (ctx) {
+          let selectedCards: GameCard[] = [];
+          const filter = (card: GameCard) => (card.GetType().includes("Terrain") || card.GetType().includes("Bâtiment"));
+          while (selectedCards.length === 0 && ctx.filterZone(ctx.zone, filter).length !== 0) {
+            selectedCards = await ctx.selectCardsFromZone(filter, "Play Area", this.description, 1);
+          }
+          if (selectedCards.length !== 0) {
+            ctx.dropToBlocked({id: selectedCards[0].id, fromZone: ctx.zone});
+            ctx.updateBlocks(ctx.card.id, [selectedCards[0].id]);
+          }
+          return false;
+        }
+      },
+      {
+        description: "Reste en jeu",
+        timing: "stayInPlay",
+        execute: async function (ctx) {
+          if(ctx) {
+            return false;
+          }
+          return true;
+        }
+      },
+      {
+        description: "Détruisez la carte bloquée",
+        timing: "endOfRound",
+        execute: async function (ctx) {
+          const blocked = ctx.getBlockedBy(ctx.card.id)[0];
+          if (blocked) {
+            ctx.deleteCardInZone("Deck", blocked.id);
+            ctx.updateBlocks(ctx.card.id, null);
+          }
+          return false;
+        }
+      },
+      {
+        description: "Dépensez military x2 pour détruire",
+        timing: "onClick",
+        execute: async function (ctx) {
+          if (ctx.resources.military >= 2) {
+            ctx.setResources(prev => ({ ...prev, military: prev.military - 2 }));
+            ctx.deleteCardInZone("Play Area", ctx.card.id);
+          }
+          return false;
+        }
+      }
+    ],
+  },
+  58: {
+    1: [
+      { // Ville en Flamme
+        description: "Reste en jeu",
+        timing: "stayInPlay",
+        execute: async function (ctx) {
+          if(ctx) {
+            return false;
+          }
+          return true;
+        }
+      },
+      {
+        description: "Détruisez 1 Bâtiment",
+        timing: "endOfRound",
+        execute: async function (ctx) {
+          const selected = await ctx.selectCardsFromZone((card) => card.GetType().includes("Bâtiment"), "Deck", this.description, 1);
+          for (const card of selected) {
+            ctx.deleteCardInZone("Deck", card.id);
+          }
+          const currCard = ctx.fetchCardsInZone((c) => c.id === ctx.card.id, "Deck")[0];
+          currCard.currentSide = 3;
+          return false;
+        }
+      },
+    ],
+    4: [{ // Jeune Forêt
+      description: "Checkez puis gagne 1 wood sur *",
+      timing: "onClick",
+      execute: async function (ctx) {
+        let i = 0;
+        for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
+          if(!checkbox.checked){
+            checkbox.checked = true;
+            if (i % 2 === 0) {
+              await addResourceMapToCard(ctx.card, { wood: 1 });
+            }
+            break;
+          }
+          i++;
+        }
+        ctx.effectEndTurn();
+        return false;
+      }
+    }],
+  },
+  59: {
+    3: [{ // Trésor
+        description: "Reste en jeu",
+        timing: "stayInPlay",
+        execute: async function (ctx) {
+          if(ctx) {
+            return false;
+          }
+          return true;
+        }
+      }],
+    4: [{ // Civilisation Oubliée
+      description: "Défaussez 6 cartes alliées pour découvrir un Artefact (108)",
+      timing: "onClick",
+      execute: async function (ctx) {
+        const cards = await ctx.selectCardsFromZone((card) => !card.enemy[card.currentSide - 1], "Play Area", this.description, 6);
+        if (cards.length === 6) {
+          if (await ctx.discoverCard((card) => [108].includes(card.id), this.description, 1)) {
+            for(const card of cards) {
+              ctx.dropToDiscard({id: card.id, fromZone: "Play Area"});
+            }
+            return true;
+          }
+        }
+        return false;
+        }
+    }],
+  },
+  60: {
+    1: [{ // Bandit d'Elite
+      description: "Bloque 3 cartes avec une production",
+      timing: "played",
+      execute: async function (ctx) {
+        let selectedCards: GameCard[] = [];
+        const filter = (card: GameCard) =>
+          (card.GetResources().some(
+            (res) => ((res.gold ?? 0) + (res.wood ?? 0) + (res.stone ?? 0) + (res.ingot ?? 0) + (res.military ?? 0) + (res.export ?? 0)) >= 1));
+        while (selectedCards.length == 0 && ctx.filterZone(ctx.zone, filter).length !== 0) {
+          selectedCards = await ctx.selectCardsFromZone(filter, "Play Area", this.description, 3);
+        }
+        if (selectedCards.length !== 0) {
+          for (const card of selectedCards) {
+            ctx.dropToBlocked({id: card.id, fromZone: ctx.zone});
+            ctx.updateBlocks(ctx.card.id, [card.id]);
+          }
+        }
+        return false;
+      }
+    },
+    {
+      description: "Dépensez 3 military pour vaincre et gagner 3 ressources",
+      timing: "onClick",
+      execute: async function (ctx) {
+        if (ctx.resources.military >= 3) {
+          const choice1 = await ctx.selectResourceChoice([
+            { gold: 1 },  
+            { wood: 1 },
+            { stone: 1 },
+            { military: 1 },
+            { ingot: 1 },
+            { export: 1 },
+          ]);
+          const choice2 = await ctx.selectResourceChoice([
+            { gold: 1 },  
+            { wood: 1 },
+            { stone: 1 },
+            { military: 1 },
+            { ingot: 1 },
+            { export: 1 },
+          ]);
+          const choice3 = await ctx.selectResourceChoice([
+            { gold: 1 },  
+            { wood: 1 },
+            { stone: 1 },
+            { military: 1 },
+            { ingot: 1 },
+            { export: 1 },
+          ]);
+          if(choice1 && choice2 && choice3) {
+            applyChoice(ctx, choice1);
+            applyChoice(ctx, choice2);
+            applyChoice(ctx, choice3);
+            ctx.setResources(prev => ({ ...prev, military: prev.military - 3}));
+            ctx.deleteCardInZone(ctx.zone, ctx.card.id);
+            return false;
+          }
+        }
+        return false;
+      }
+    },
+    ],
+    3: [{ // Travailleur
+      description: "Gagnez les ressources produitent par un Bâtiment",
+      timing: "onClick",
+      execute: async function (ctx) {
+        const selectedCards = await ctx.selectCardsFromZone(
+          (card) => (card.GetType().includes("Bâtiment")),
+          "Play Area",
+          this.description,
+          1
+        );
+        if (selectedCards.length > 0) {
+          const choice = await ctx.selectResourceChoice(selectedCards[0].GetResources());
+            if(choice) {
+              applyChoice(ctx, choice);
+              return true;
+            }
+          }
+          return false;
+      }
+    }],
+  },
+  61: {
+    1: [
+      { // Prince des Ténèbres
+        description: "Vous ne pouvez ni jouer, ni améliorer de cartes, ni même utiliser les effets time",
+        timing: "restrictAll",
+        execute: async function () {
+          return false;
+        }
+      },
+      {
+      description: "Dépensez 5 military pour vaincre ->",
+      timing: "onClick",
+      execute: async function (ctx) {
+        if (ctx.resources.military >= 5) {
+          ctx.setResources(prev => ({ ...prev, military: prev.military - 5}));
+          ctx.card.currentSide = 3;
+          return true;
+        }
+        return false;
+      }
+    },
+    ],
+    3: [{ // Garçon Admiratif
+        description: "Détruisez et gagnez military x2",
+        timing: "onClick",
+        execute: async function (ctx) {
+          ctx.setResources(prev => ({ ...prev, military: prev.military + 2 }));
+          ctx.deleteCardInZone(ctx.zone, ctx.card.id);
+          return false;
+        }
+    }],
+    4: [{ // Ecuyer
+      description: "Détruisez et gagnez military x3",
+      timing: "onClick",
+      execute: async function (ctx) {
+        ctx.setResources(prev => ({ ...prev, military: prev.military + 3 }));
+        ctx.deleteCardInZone(ctx.zone, ctx.card.id);
+        return false;
+      }
+    }]
+  },
   62: {
     2: [{ // Camp d'Entrainement
         description: "Dépensez gold pour gagner military",
@@ -2479,6 +2812,221 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           return false;
         }
       }]
+  },
+  63: {
+    3: [{ // Muraille
+      description: "Reste en jeu",
+      timing: "stayInPlay",
+      execute: async function (ctx) {
+        if(ctx) {
+          return false;
+        }
+        return true;
+      }
+    }],
+    4: [{ // Aubergiste
+      description: "Défaussez 1 Personne pour gagner 2 ressources",
+      timing: "onClick",
+      execute: async function (ctx) {
+        const selected = await ctx.selectCardsFromZone((c) => c.GetType().includes("Personne") && c.id !== ctx.card.id, "Play Area", this.description, 1);
+        if (selected.length === 1) {
+          const choice1 = await ctx.selectResourceChoice([
+            { gold: 1 },  
+            { wood: 1 },
+            { stone: 1 },
+            { military: 1 },
+            { ingot: 1 },
+            { export: 1 },
+          ]);
+          const choice2 = await ctx.selectResourceChoice([
+            { gold: 1 },  
+            { wood: 1 },
+            { stone: 1 },
+            { military: 1 },
+            { ingot: 1 },
+            { export: 1 },
+          ]);
+          if(choice1 && choice2) {
+            applyChoice(ctx, choice1);
+            applyChoice(ctx, choice2);
+            ctx.dropToDiscard({id: selected[0].id, fromZone: "Play Area"});
+            return true;
+          }
+        }
+        return false;
+      }
+    }],
+  },
+  64: {
+    1: [{ // Bandit d'Elite
+      description: "Bloque 3 cartes avec une production",
+      timing: "played",
+      execute: async function (ctx) {
+        let selectedCards: GameCard[] = [];
+        const filter = (card: GameCard) =>
+          (card.GetResources().some(
+            (res) => ((res.gold ?? 0) + (res.wood ?? 0) + (res.stone ?? 0) + (res.ingot ?? 0) + (res.military ?? 0) + (res.export ?? 0)) >= 1));
+        while (selectedCards.length == 0 && ctx.filterZone(ctx.zone, filter).length !== 0) {
+          selectedCards = await ctx.selectCardsFromZone(filter, "Play Area", this.description, 3);
+        }
+        if (selectedCards.length !== 0) {
+          for (const card of selectedCards) {
+            ctx.dropToBlocked({id: card.id, fromZone: ctx.zone});
+            ctx.updateBlocks(ctx.card.id, [card.id]);
+          }
+        }
+        return false;
+      }
+    },
+    {
+      description: "Dépensez 3 military pour vaincre et gagner 3 ressources",
+      timing: "onClick",
+      execute: async function (ctx) {
+        if (ctx.resources.military >= 3) {
+          const choice1 = await ctx.selectResourceChoice([
+            { gold: 1 },  
+            { wood: 1 },
+            { stone: 1 },
+            { military: 1 },
+            { ingot: 1 },
+            { export: 1 },
+          ]);
+          const choice2 = await ctx.selectResourceChoice([
+            { gold: 1 },  
+            { wood: 1 },
+            { stone: 1 },
+            { military: 1 },
+            { ingot: 1 },
+            { export: 1 },
+          ]);
+          const choice3 = await ctx.selectResourceChoice([
+            { gold: 1 },  
+            { wood: 1 },
+            { stone: 1 },
+            { military: 1 },
+            { ingot: 1 },
+            { export: 1 },
+          ]);
+          if(choice1 && choice2 && choice3) {
+            applyChoice(ctx, choice1);
+            applyChoice(ctx, choice2);
+            applyChoice(ctx, choice3);
+            ctx.setResources(prev => ({ ...prev, military: prev.military - 3}));
+            ctx.deleteCardInZone(ctx.zone, ctx.card.id);
+            return false;
+          }
+        }
+        return false;
+      }
+    },
+    ],
+    3: [{ // Exploitant
+      description: "Gagnez les ressources produitent par un Terrain",
+      timing: "onClick",
+      execute: async function (ctx) {
+        const selectedCards = await ctx.selectCardsFromZone(
+          (card) => (card.GetType().includes("Terrain")),
+          "Play Area",
+          this.description,
+          1
+        );
+        if (selectedCards.length > 0) {
+          const choice = await ctx.selectResourceChoice(selectedCards[0].GetResources());
+            if(choice) {
+              applyChoice(ctx, choice);
+              return true;
+            }
+          }
+          return false;
+      }
+    }],
+  },
+  65: {
+    1: [
+      { // Tornade
+        description: "Reste en jeu",
+        timing: "stayInPlay",
+        execute: async function (ctx) {
+          if(ctx) {
+            return false;
+          }
+          return true;
+        }
+      },
+      {
+        description: "Détruisez 3 cartes alliées",
+        timing: "endOfRound",
+        execute: async function (ctx) {
+          const selectedCards = await ctx.selectCardsFromZone(
+            (card) => (!(card.enemy[card.currentSide - 1])),
+            "Deck",
+            this.description,
+            3
+          );
+          const currCard = ctx.fetchCardsInZone((c) => c.id === ctx.card.id, "Deck")[0];
+          for (const card of selectedCards) {
+            ctx.deleteCardInZone("Deck", card.id);
+          }
+          currCard.currentSide = 3;
+          return false;
+        }
+      }
+    ],
+    3: [
+      { // Innodations
+        description: "Reste en jeu",
+        timing: "stayInPlay",
+        execute: async function (ctx) {
+          if(ctx) {
+            return false;
+          }
+          return true;
+        }
+      },
+      {
+        description: "Bloque 5 Bâtiments",
+        timing: "played",
+        execute: async function (ctx) {
+          let selectedCards: GameCard[] = [];
+          const filter = (card: GameCard) => (card.GetType().includes("Bâtiment"));
+          while (selectedCards.length === 0 && ctx.filterZone(ctx.zone, filter).length !== 0) {
+            selectedCards = await ctx.selectCardsFromZone(filter, "Play Area", this.description, 5);
+          }
+          if (selectedCards.length !== 0) {
+            for (const card of selectedCards) {
+              ctx.dropToBlocked({id: card.id, fromZone: ctx.zone});
+              ctx.updateBlocks(ctx.card.id, [card.id]);
+            }
+          }
+          return false;
+        }
+      },
+      {
+        description: "Détruisez une carte bloquée ou 2 cartes alliées, puis cette carte",
+        timing: "endOfRound",
+        execute: async function (ctx) {
+          const blockedCards = ctx.getBlockedBy(ctx.card.id);
+          let selected: GameCard[] = [];
+          if (!blockedCards || blockedCards.length === 0) {
+            selected = await ctx.selectCardsFromZone((card) => !card.enemy[card.currentSide - 1], "Deck", this.description, 2);
+          }
+          else {
+            selected = await ctx.selectCardsFromZone((card) => !card.enemy[card.currentSide - 1], "Deck", this.description, 0, 2);
+            if (selected.length !== 2) {
+              selected = await ctx.selectCardsFromArray(ctx.getBlockedBy(ctx.card.id), "Deck", this.description, 1);
+              ctx.deleteCardInZone("Deck", selected[0].id);
+              ctx.deleteCardInZone("Deck", ctx.card.id);
+              return false;
+            }
+          }
+          for (const card of selected) {
+            ctx.deleteCardInZone("Deck", card.id);
+          }
+          ctx.deleteCardInZone("Deck", ctx.card.id);
+          return false;
+        }
+      }
+    ]
   },
   71: {
     2: [{ // Zone Rocheuse
@@ -2841,11 +3389,18 @@ export const cardUpgradeAdditionalCostRegistry: Record<number, Record<number, Ca
     1: {
       description: "Défaussez 2 Personnes, 2 Terrains, 2 Bâtiments",
       execute: async function (ctx) {
-        const cards = [
-          ...await ctx.selectCardsFromZone((c) => c.GetType().includes("Personne"), "Play Area", this.description, 2),
-          ...await ctx.selectCardsFromZone((c) => c.GetType().includes("Terrain"), "Play Area", this.description, 2),
-          ...await ctx.selectCardsFromZone((c) => c.GetType().includes("Bâtiment"), "Play Area", this.description, 2)
-        ];
+        const people = await ctx.selectCardsFromZone((c) => c.GetType().includes("Personne") && c.id !== ctx.card.id, "Play Area", this.description, 2);
+        if (people.length !== 2) {
+          return false;
+        }
+        await new Promise(resolve => setTimeout(resolve, 1));
+        const lands = await ctx.selectCardsFromZone((c) => c.GetType().includes("Terrain"), "Play Area", this.description, 2);
+        if (lands.length !== 2) {
+          return false;
+        }
+        await new Promise(resolve => setTimeout(resolve, 1));
+        const buildings = await ctx.selectCardsFromZone((c) => c.GetType().includes("Bâtiment"), "Play Area", this.description, 2);
+        const cards = [...people, ...lands, ...buildings];
         if(cards.length === 6) {
           for(const card of cards) {
             ctx.dropToDiscard({fromZone: "Play Area", id: card.id});
@@ -2858,7 +3413,7 @@ export const cardUpgradeAdditionalCostRegistry: Record<number, Record<number, Ca
     2: {
       description: "Défaussez 2 Personnes",
       execute: async function (ctx) {
-        const cards = await ctx.selectCardsFromZone((c) => c.GetType().includes("Personne"), "Play Area", this.description, 2);
+        const cards = await ctx.selectCardsFromZone((c) => c.GetType().includes("Personne") && c.id !== ctx.card.id, "Play Area", this.description, 2);
         if(cards.length === 2) {
           for(const card of cards) {
             ctx.dropToDiscard({fromZone: "Play Area", id: card.id});
@@ -2916,7 +3471,7 @@ export const cardUpgradeAdditionalCostRegistry: Record<number, Record<number, Ca
     4: {
       description: "Défaussez 2 Maritimes",
       execute: async function (ctx) {
-        const cards = await ctx.selectCardsFromZone((c) => c.GetType().includes("Maritime"), "Play Area", this.description, 2);
+        const cards = await ctx.selectCardsFromZone((c) => c.GetType().includes("Maritime") && c.id !== ctx.card.id, "Play Area", this.description, 2);
         if(cards.length === 2) {
           for(const card of cards) {
             ctx.dropToDiscard({fromZone: "Play Area", id: card.id});

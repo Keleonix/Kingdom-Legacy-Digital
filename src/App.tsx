@@ -5,7 +5,7 @@ import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { emptyResource, GameCard, RESOURCE_KEYS, EFFECT_KEYWORDS, TYPE_COLORS, type ResourceMap, type PopupPayload, type DropPayload, type Checkbox, type Upgrade, type EffectTiming } from "./types";
 import { allCards } from "./cards";
-import { getCardEffects, type GameContext, type CardEffect, cardEffectsRegistry } from "./cardEffects";
+import { getCardEffects, type GameContext, type CardEffect, cardEffectsRegistry, getCardFameValue, getCardUpgradeAdditionalCost } from "./cardEffects";
 
 // deep-clone preserving prototype/methods
 function cloneGameCard(src: GameCard): GameCard {
@@ -1568,6 +1568,8 @@ export default function Game() {
   const [hasUpgradedCard, setHasUpgradedCard] = useState(false);
   const [hasEndedBaseGame, setHasEndedBaseGame] = useState(false);
 
+  const [blockMap, setBlockMap] = useState<Map<number, number[]>>(new Map());
+
   // Effects handling
   const [resourceChoicePopup, setResourceChoicePopup] = useState<{
     options: Array<Partial<ResourceMap>>;
@@ -1760,16 +1762,20 @@ export default function Game() {
     setPendingPlayedCards(newCards);
   };
 
-  // Trigger effects after cards are in Play Area
   useEffect(() => {
     if (pendingPlayedCards.length > 0) {
-      pendingPlayedCards.forEach(card => {
-        handleExecuteCardEffect(card, "Play Area", "played");
-        handleExecuteCardEffect(card, "Play Area", "otherCardPlayed", pendingPlayedCards);
-      });
-      setPendingPlayedCards([]);
+      (async () => {
+        for (const card of pendingPlayedCards) {
+          await handleExecuteCardEffect(card, "Play Area", "played");
+
+        }
+        for (const card of pendingPlayedCards) {
+          await handleExecuteCardEffect(card, "Play Area", "otherCardPlayed", pendingPlayedCards);
+        }
+        setPendingPlayedCards([]);
+      })();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pendingPlayedCards]);
 
   const drawNewTurn = async () => {
@@ -1786,44 +1792,46 @@ export default function Game() {
   }
 
   const gatherEffectsEndOfRound = async () => {
-    const cardIdList: Array<number> = [];
+    const cardsWithEffects: Array<{ card: GameCard, effectIndex: number }> = [];
     
     for (const card of playArea) {
       const effects = getCardEffects(card.id, card.currentSide);
-      const hasEndOfRoundEffect = effects.some(effect => effect.timing === "endOfRound");
-      
-      if (hasEndOfRoundEffect) {
-        cardIdList.push(card.id);
-      }
+      effects.forEach((effect, index) => {
+        if (effect.timing === "endOfRound") {
+          cardsWithEffects.push({ 
+            card: cloneGameCard(card), 
+            effectIndex: index 
+          });
+        }
+      });
     }
     
-    return cardIdList;
+    return cardsWithEffects;
   };
 
-  const handleEffectsEndOfRound = async (cardIdList: number[]) => {
-    for(const cardId of cardIdList) {
-      const card = fetchCardsInZone((c) => c.id === cardId, "Deck")[0];
-      await handleExecuteCardEffect(card, "Deck", "endOfRound");
-    }
+  const handleEffectsEndOfRound = async (cardsWithEffects: Array<{ card: GameCard, effectIndex: number }>) => {
+  for (const { card } of cardsWithEffects) {
+    await handleExecuteCardEffect(card, "Deck", "endOfRound");
   }
+};
 
   const effectEndTurn = async () => {
     await discardEndTurn(false);
   };
 
   const discardEndTurn = async (endRound?: boolean) => {
-    await handleEffectsEndOfTurn();
+  await handleEffectsEndOfTurn();
 
-    if (endRound) {
-      const endOfRoundCardList = await gatherEffectsEndOfRound();
+  if (endRound) {
+    const endOfRoundCardList = await gatherEffectsEndOfRound();
 
-      setDeck((d) => [...d, ...playArea, ...blockedZone, ...discard]);
-      setPlayArea([]);
-      setBlockedZone([]);
-      setDiscard([]);
-      setTemporaryCardList([]);
+    setDeck((d) => [...d, ...playArea, ...blockedZone, ...discard]);
+    setPlayArea([]);
+    setBlockedZone([]);
+    setDiscard([]);
+    setTemporaryCardList([]);
 
-      await handleEffectsEndOfRound(endOfRoundCardList);
+    await handleEffectsEndOfRound(endOfRoundCardList);
     }
     else {
       const cardsToDiscard: GameCard[] = [];
@@ -1857,10 +1865,70 @@ export default function Game() {
   };
 
   const handleEndBaseGame = async () => {
-    await discardEndTurn();
+    await discardEndTurn(true);
+    
+    // Calculate total fame from deck
+    let totalFame = 0;
+    
+    for (const card of deck) {
+      const currentSideIndex = card.currentSide - 1;
+      const resourceMaps = card.resources[currentSideIndex] || [];
+      
+      // Get max fame from resource maps for current side
+      const maxFameFromResources = resourceMaps.reduce(
+        (max, res) => Math.max(max, res.fame || 0),
+        0
+      );
+      
+      // Check if card has special fame calculation
+      const fameValueEffect = getCardFameValue(card.id, card.currentSide);
+        if (fameValueEffect.execute) {
+          const context: GameContext = {
+            card,
+            zone: "Deck",
+            resources,
+            filterZone,
+            setResources,
+            draw,
+            effectEndTurn,
+            dropToPlayArea,
+            dropToBlocked,
+            dropToDiscard,
+            setDeck,
+            setPlayArea,
+            setDiscard,
+            setPermanentZone,
+            setTemporaryCardList,
+            setTemporaryCardListImmediate,
+            setBlockedZone,
+            deleteCardInZone,
+            replaceCardInZone,
+            mill,
+            openCheckboxPopup,
+            selectResourceChoice,
+            selectCardsFromZone,
+            selectCardsFromArray,
+            discoverCard,
+            boostProductivity,
+            registerEndRoundEffect,
+            addCardEffect,
+            fetchCardsInZone,
+            selectCardSides,
+            updateBlocks,
+            getBlockedBy,
+          };
+          
+          const specialFameValue = await fameValueEffect.execute(context);
+          totalFame += specialFameValue;
+        }
+        totalFame += maxFameFromResources;
+    }
+    
+    // Update fame resource
+    setResources(prev => ({ ...prev, fame: totalFame }));
     setHasEndedBaseGame(true);
   };
-
+  
   const mill = (
     nbCards: number
   ): void => {
@@ -2175,6 +2243,27 @@ export default function Game() {
     setShowCardSidePopup(true);
   }
 
+  function updateBlocks(blocker: number, blockedCards: number[] | null) {
+    setBlockMap(prev => {
+      const next = new Map(prev);
+      if (blockedCards && blockedCards.length > 0) {
+        const arr = next.get(blocker) ?? [];
+        for(const blockedCard of blockedCards) {
+          if (!arr.includes(blockedCard)) arr.push(blockedCard);
+          next.set(blocker, arr);
+        }
+      } else {
+        next.delete(blocker);
+      }
+      return next;
+    });
+  }
+
+  function getBlockedBy(blocker: number): GameCard[] {
+    const ids = blockMap.get(blocker) ?? [];
+    return blockedZone.filter(c => ids.includes(c.id));
+  }
+
   const handleExecuteCardEffect = async (
     card: GameCard,
     zone: string,
@@ -2218,6 +2307,8 @@ export default function Game() {
       addCardEffect,
       fetchCardsInZone,
       selectCardSides,
+      updateBlocks,
+      getBlockedBy,
     };
 
     if (typeof effectIndex === "number" && effectIndex >= 0 && effectIndex < effects.length) {
@@ -2325,6 +2416,15 @@ export default function Game() {
         handleExecuteCardEffect(card, "Play Area", "otherCardPlayed", [toAdd]);
       }
     }
+
+    if ((toZone !== "Play Area" && toZone !== "Permanent") && (fromZone === "Play Area" || fromZone === "Permanent")) {
+      const blockedIds = blockMap.get(id);
+      if (blockedIds) {
+        setBlockedZone(prev => prev.filter(c => !blockedIds.includes(c.id)));
+        setPlayArea(prev => [...prev, ...blockedZone.filter(c => blockedIds.includes(c.id))]);
+        updateBlocks(id, null);
+      }
+    }
   };
 
   const dropToDeck = handleDropToZone("Deck");
@@ -2407,6 +2507,12 @@ export default function Game() {
     if (zone === "Deck") {
       setDeck((d) => d.filter((c) => c.id !== id));
     } else if (zone === "Play Area") {
+      const blockedIds = blockMap.get(id);
+      if (blockedIds) {
+        setBlockedZone(prev => prev.filter(c => !blockedIds.includes(c.id)));
+        setPlayArea(prev => [...prev, ...blockedZone.filter(c => blockedIds.includes(c.id))]);
+        updateBlocks(id, null);
+      }
       setPlayArea((p) => p.filter((c) => c.id !== id));
     } else if (zone === "Discard") {
       setDiscard((f) => f.filter((c) => c.id !== id));
@@ -2447,7 +2553,7 @@ export default function Game() {
     });
   };
 
-  const handleUpgrade = (card: GameCard, upg: Upgrade, zone: string) => {
+  const handleUpgrade = async (card: GameCard, upg: Upgrade, zone: string) => {
     if (checkUpgradeRestrictions()) {
       return;
     }
@@ -2460,6 +2566,50 @@ export default function Game() {
 
       if (!hasEnough) {
         return;
+      }
+
+      // Check for additional upgrade cost
+      const additionalCostEffect = getCardUpgradeAdditionalCost(card.id, card.currentSide);
+      if (additionalCostEffect.execute) {
+        const context: GameContext = {
+          card,
+          zone,
+          resources,
+          filterZone,
+          setResources,
+          draw,
+          effectEndTurn,
+          dropToPlayArea,
+          dropToBlocked,
+          dropToDiscard,
+          setDeck,
+          setPlayArea,
+          setDiscard,
+          setPermanentZone,
+          setTemporaryCardList,
+          setTemporaryCardListImmediate,
+          setBlockedZone,
+          deleteCardInZone,
+          replaceCardInZone,
+          mill,
+          openCheckboxPopup,
+          selectResourceChoice,
+          selectCardsFromZone,
+          selectCardsFromArray,
+          discoverCard,
+          boostProductivity,
+          registerEndRoundEffect,
+          addCardEffect,
+          fetchCardsInZone,
+          selectCardSides,
+          updateBlocks,
+          getBlockedBy,
+        };
+        
+        const additionalCostPaid = await additionalCostEffect.execute(context);
+        if (!additionalCostPaid) {
+          return; // Don't upgrade if additional cost not paid
+        }
       }
 
       setResources((prev) => {
@@ -2487,6 +2637,7 @@ export default function Game() {
     }
 
     setHasUpgradedCard(true);
+    discardEndTurn();
   };
 
   const handleGainResources = async (card: GameCard, resources: Partial<ResourceMap>, zone: string) => {
@@ -2526,6 +2677,8 @@ export default function Game() {
             addCardEffect,
             fetchCardsInZone,
             selectCardSides,
+            updateBlocks,
+            getBlockedBy,
           };
           
           await effect.execute(context);
@@ -2769,9 +2922,9 @@ export default function Game() {
 
         {/* Action Buttons (with Shuffle next to End Round) */}
         <div className="space-x-2">
-          <Button onClick={drawNewTurn}>{"New Turn"}</Button>
-          <Button onClick={() => discardEndTurn(false)}>{"Pass"}</Button>
-          <Button onClick={progress} disabled={hasUpgradedCard || isPlayBlocked}>{"Progress"}</Button>
+          <Button onClick={drawNewTurn} disabled={deck.length === 0}>{"New Turn"}</Button>
+          <Button onClick={() => discardEndTurn(false)} disabled={deck.length === 0}>{"Pass"}</Button>
+          <Button onClick={progress} disabled={hasUpgradedCard || isPlayBlocked || deck.length === 0}>{"Progress"}</Button>
           {/* Conditionnal controls */}
           <Button disabled={deck.length > 0} className="bg-red-600 hover:bg-red-500 text-white" onClick={handleEndRound}>End Round</Button>
           {/* Manual actions */}

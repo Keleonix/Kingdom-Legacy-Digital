@@ -689,7 +689,7 @@ export const allCards: GameCard[] = [
       [{ ...emptyResource }],
     ],
     effects: [
-      "effects/forced Carte Jouée : Bloque 1 carte avec production d' resources/gold . effects/activate Dépensez resources/military pour vaincre ( effects/destroy ) et gagner 2 ressources au choix. (Peut être retournée par un Missionaire)",
+      "Peut être -> par un Missionaire. effects/forced Carte Jouée : Bloque 1 carte avec production d' resources/gold . effects/activate Dépensez resources/military pour vaincre ( effects/destroy ) et gagner 2 ressources au choix.",
       "",
       "effects/activate Choisissez un Bâtiment en jeu. Gagnez les ressources qui correspondent à sa production.",
       "",
@@ -781,7 +781,7 @@ export const allCards: GameCard[] = [
       [{ ...emptyResource }],
     ],
     effects: [
-      "effects/forced Carte Jouée : Bloque 1 carte avec production d' resources/gold . effects/activate Dépensez resources/military pour vaincre ( effects/destroy ) et gagner 2 ressources au choix. (Peut être retournée par un Missionaire)",
+      "Peut être -> par un Missionaire. effects/forced Carte Jouée : Bloque 1 carte avec production d' resources/gold . effects/activate Dépensez resources/military pour vaincre ( effects/destroy ) et gagner 2 ressources au choix.",
       "",
       "effects/activate Choisissez un Terrain en jeu. Gagnez les ressources qui correspondent à sa production.",
       "",
@@ -2657,9 +2657,9 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "effects/forced Détruisez la prochaine Personne que vous jouez. Lorsque vous le faites, -> (Back Front). effects/activate Dépensez resources/military resources/military resources/military pour vaincre (-> Back Up).",
+      "effects/forced Détruisez la prochaine Personne que vous jouez. Lorsque vous le faites, ->. effects/activate Dépensez resources/military resources/military resources/military pour vaincre (->).",
       "",
-      "effects/forced Carte Jouée: Bloque 1 Bâtiment/Terrain en jeu. effects/passive: Reste en jeu. effects/forced Fin de Manche: Détruisez la carte bloquée. effects/activate Dépensez resources/military resources/military pour vaincre ( effects/destroy ).",
+      "effects/forced Carte Jouée: Bloque 1 Bâtiment/Terrain en jeu. effects/passive : Reste en jeu. effects/forced Fin de Manche: Détruisez la carte bloquée. effects/activate Dépensez resources/military resources/military pour vaincre ( effects/destroy ).",
       "",
     ],
     upgrades: [
@@ -2672,7 +2672,7 @@ export const allCards: GameCard[] = [
     type: ["Ennemi", "", "Ennemi", ""],
     choice: false,
     checkboxes: [],
-    enemy: [false, false, false, false],
+    enemy: [true, false, true, false],
     discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
@@ -2699,7 +2699,7 @@ export const allCards: GameCard[] = [
       [ { ...emptyResource }  ],
     ],
     effects: [
-      "effects/passive Reste en jeu. effects/forced Fin de Manche: Détruisez 1 Bâtiment de votre royaume. Puis -> (Back Up).",
+      "effects/passive Reste en jeu. effects/forced Fin de Manche: Détruisez 1 Bâtiment de votre royaume, puis -> (Back Up).",
       "",
       "",
       "effects/time Ajoutez 1 effects/check dans l'ordre. *: Ajoutez resources/wood à la production de cette carte.",
@@ -2724,7 +2724,7 @@ export const allCards: GameCard[] = [
         {content: "*", checked: false},
       ],
     ],
-    enemy: [false, false, false, false],
+    enemy: [true, false, false, false],
     discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
@@ -2747,7 +2747,7 @@ export const allCards: GameCard[] = [
     resources: [
       [],
       [ { fame: 2 } ],
-      [ { fame: 8 } ],
+      [ { gold: 2, fame: 8 } ],
       [ { fame: 5 } ],
     ],
     effects: [
@@ -2793,7 +2793,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "effects/forced Carte jouée: Bloque 3 cartes avec une production. effects/activate Dépensez resources/military resources/military resources/military pour vaincre ( effects/destroy ) et gagner 3 ressources au choix. (Peut être -> (Front Up) par un Missionaire)",
+      "Peut être -> par un Missionaire. effects/forced Carte jouée: Bloque 3 cartes avec une production. effects/activate Dépensez resources/military resources/military resources/military pour vaincre ( effects/destroy ) et gagner 3 ressources au choix.",
       "",
       "effects/activate Choisissez un Bâtiment en jeu. Gagnez les ressources qui correspondent à sa production. ",
       "",
@@ -2835,7 +2835,7 @@ export const allCards: GameCard[] = [
       [ { fame: 3 } ],
     ],
     effects: [
-      "effects/passive Vous ne pouvez ni jouer, ni améliorer de cartes, ni utiliser effects/time . effects/activate Dépensez resources/military resources/military resources/military resources/military resources/military pour vaincre (-> Back Up).",
+      "effects/passive Vous ne pouvez ni jouer, ni améliorer de cartes, ni utiliser effects/time . effects/activate Dépensez resources/military resources/military resources/military resources/military resources/military pour vaincre (->).",
       "",
       "effects/destroy Gagnez resources/military resources/military .",
       "effects/destroy Gagnez resources/military resources/military resources/military .",
@@ -2984,7 +2984,7 @@ export const allCards: GameCard[] = [
     type: ["Ennemi", "", "Personne", ""],
     choice: false,
     checkboxes: [],
-    enemy: [false, false, false, false],
+    enemy: [true, false, false, false],
     discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
@@ -3026,7 +3026,7 @@ export const allCards: GameCard[] = [
     type: ["Catastrophe", "", "Catastrophe", ""],
     choice: false,
     checkboxes: [],
-    enemy: [false, false, false, false],
+    enemy: [true, false, true, false],
     discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
@@ -3059,8 +3059,8 @@ export const allCards: GameCard[] = [
       "",
     ],
     upgrades: [
-      [{ cost: {}, nextSide: 2, otherCost: "2 Personnes, 2 Terrains, 2 Bâtiments" }],
-      [{ cost: {}, nextSide: 4, otherCost: "2 Personnes" }],
+      [{ cost: {}, nextSide: 3, otherCost: "2 Personnes, 2 Terrains, 2 Bâtiments" }],
+      [{ cost: {}, nextSide: 1, otherCost: "2 Personnes" }],
       [],
       [],
     ],
