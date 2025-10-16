@@ -2678,9 +2678,9 @@ export default function Game() {
     discard.pop();
   }
 
-  const getAllCardsInGame = (): GameCard[] => {
-    return [...deck, ...playArea, ...permanentZone, ...blockedZone, ...discard];
-  };
+  // const getAllCardsInGame = (): GameCard[] => {
+  //   return [...deck, ...playArea, ...permanentZone, ...blockedZone, ...discard];
+  // };
 
   // -------------------
   // Replace card in zone by id (used by popup apply)
