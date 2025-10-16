@@ -1725,6 +1725,7 @@ export default function Game() {
   const [showSettings, setShowSettings] = useState(false);
   const [showGuide, setShowGuide] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
+  const [selectedCampaignId, setSelectedCampaignId] = useState<number | null>(null);
 
   const [cityNameInput, setCityNameInput] = useState("");
   const [selectedKingdom, setSelectedKingdom] = useState("New Kingdom");
@@ -1981,28 +1982,33 @@ export default function Game() {
   };
 
   const handleEffectsEndOfRound = async (cardsWithEffects: Array<{ card: GameCard, effectIndex: number }>) => {
-  for (const { card } of cardsWithEffects) {
-    await handleExecuteCardEffect(card, "Deck", "endOfRound");
-  }
-};
+    for (const { card, effectIndex } of cardsWithEffects) {
+      const realCard = deck.find(c => c.id === card.id);
+      if (realCard) {
+        await handleExecuteCardEffect(realCard, "Deck", "endOfRound", undefined, effectIndex);
+      }
+    }
+  };
 
   const effectEndTurn = async () => {
     await discardEndTurn(false);
   };
 
   const discardEndTurn = async (endRound?: boolean) => {
-  await handleEffectsEndOfTurn();
+    await handleEffectsEndOfTurn();
 
-  if (endRound) {
-    const endOfRoundCardList = await gatherEffectsEndOfRound();
+    if (endRound) {
+      const endOfRoundCardList = await gatherEffectsEndOfRound();
 
-    setDeck((d) => [...d, ...playArea, ...blockedZone, ...discard]);
-    setPlayArea([]);
-    setBlockedZone([]);
-    setDiscard([]);
-    setTemporaryCardList([]);
+      setDeck((d) => [...d, ...playArea, ...blockedZone, ...discard]);
+      setPlayArea([]);
+      setBlockedZone([]);
+      setDiscard([]);
+      setTemporaryCardList([]);
 
-    await handleEffectsEndOfRound(endOfRoundCardList);
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      await handleEffectsEndOfRound(endOfRoundCardList);
     }
     else {
       const cardsToDiscard: GameCard[] = [];
@@ -2672,6 +2678,10 @@ export default function Game() {
     discard.pop();
   }
 
+  const getAllCardsInGame = (): GameCard[] => {
+    return [...deck, ...playArea, ...permanentZone, ...blockedZone, ...discard];
+  };
+
   // -------------------
   // Replace card in zone by id (used by popup apply)
   // -------------------
@@ -2829,7 +2839,7 @@ export default function Game() {
     discardEndTurn();
   };
 
-  const handleGainResources = async (card: GameCard, resources: Partial<ResourceMap>, zone: string) => {
+  const handleGainResources = async (card: GameCard, resources: Partial<ResourceMap>, zone: string, toZone?: string) => {
     for (const c of [...playArea]) {
       const effects = getCardEffects(c.id, c.currentSide, "onResourceGain");
       for (const effect of effects) {
@@ -2876,11 +2886,9 @@ export default function Game() {
       }
     }
 
-    // Vérifier si les ressources contiennent autre chose que fame AVANT setResources
     const onlyFame = !Object.entries(resources || {}).some(([key, value]) => 
       key !== "fame" && Number(value) !== 0
     );
-    
     if (resources) {
       setResources((prev) => {
         const next = { ...prev };
@@ -2898,8 +2906,14 @@ export default function Game() {
       return;
     }
 
-    deleteCardInZone(zone, card.id);
-    setDiscard((prev) => [...prev, card]);
+    if (toZone) {
+      const drop = handleDropToZone(toZone);
+      drop({fromZone: zone, id: card.id});
+    }
+    else {
+      deleteCardInZone(zone, card.id);
+      setDiscard((prev) => [...prev, card]);
+    }
   };
 
   const handleCardUpdate = (updatedCard: GameCard, zone: string) => {
@@ -3029,22 +3043,6 @@ export default function Game() {
               {discard.length > 0 && <Button onClick={() => setShowDiscard(true)}>See discard</Button>}
             </div>
 
-            {/* Campaign Deck */}
-            <div className="p-2 border rounded" style={{background: "linear-gradient(to bottom right, #ebebebff, #ecececff)"}}>
-              <h2 className="text-lg font-bold">Campaign Deck</h2>
-              <p>Click here and type ID to preview</p>
-              <div
-                onClick={() => {
-                  const id = prompt("Enter Card ID:");
-                  const card = campaignDeck.find((c) => c.id === Number(id));
-                  if (card) setCampaignPreview(card);
-                }}
-                className="cursor-pointer"
-              >
-                <div className="w-49 h-70 border bg-gray-300 flex items-center justify-center">Hidden</div>
-              </div>
-            </div>
-
             {/* Permanent zone */}
             <div className="flex flex-col lg:flex-row gap-4">
               <Zone
@@ -3054,7 +3052,7 @@ export default function Game() {
                 onRightClick={(c, zone) => setPopupCard({ originZone: zone, originalId: c.id, editable: cloneGameCard(c) })}
                 onTapAction={handleTapAction}
                 onCardUpdate={handleCardUpdate}
-                onExecuteCardEffect={(card, zone, timing, effectIndex) => handleExecuteCardEffect(card, zone, timing, undefined, effectIndex)}
+                onExecuteCardEffect={(card, zone, timing, effectId) => handleExecuteCardEffect(card, zone, timing, undefined, effectId)}
                 interactable={true}
               />
             </div>
@@ -3069,6 +3067,44 @@ export default function Game() {
                 onTapAction={undefined}
                 onCardUpdate={undefined}
               />
+            </div>
+
+            {/* Campaign Deck */}
+            <div className="w-[200px]">
+              <div className="p-2 border rounded" style={{background: "linear-gradient(to bottom right, #ebebebff, #ecececff)"}}>
+                <h2 className="text-s font-bold mb-2">Campaign</h2>
+                <div className="space-y-2">
+                  <select 
+                    className="w-full border rounded px-2 py-1 text-s"
+                    value={selectedCampaignId || ""}
+                    onChange={(e) => setSelectedCampaignId(e.target.value ? Number(e.target.value) : null)}
+                  >
+                    <option value="">Select...</option>
+                    {campaignDeck
+                      .filter((card) => !card.discoverable)
+                      .sort((a, b) => a.id - b.id)
+                      .map((card) => (
+                        <option key={card.id} value={card.id}>
+                          ID - {card.id}
+                        </option>
+                      ))
+                    }
+                  </select>
+                  <Button 
+                    onClick={() => {
+                      if (selectedCampaignId) {
+                        const card = campaignDeck.find((c) => c.id === selectedCampaignId);
+                        if (card) setCampaignPreview(card);
+                      }
+                    }}
+                    disabled={!selectedCampaignId}
+                    className="w-full text-xs py-1"
+                    size="sm"
+                  >
+                    Preview
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
 

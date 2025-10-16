@@ -3240,7 +3240,7 @@ export const allCards: GameCard[] = [
     choice: true,
     checkboxes: [],
     enemy: [false, false, false, false],
-    discoverable: false,
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -3644,7 +3644,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 79,
-    name: ["Villa", "Monument", "Colonne Dorée", "Obélisque"],
+    name: ["Villa", "Demeure", "Palais", "Manoir"],
     resources: [
       [],
       [ { fame: 3 } ],
@@ -3694,9 +3694,9 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "effects/activate Défaussez 2 Personnes pour gagner 3 ressources au choix puis -> Back Up.",
+      "effects/activate Défaussez 2 Personnes pour gagner 3 ressources au choix puis ->.",
       "",
-      "effects/passive Reste en jeu. effects/activate Gagnez une ressource au choix, puis -> Front Up.",
+      "effects/passive Reste en jeu. effects/activate Gagnez une ressource au choix, puis ->.",
       "",
     ],
     upgrades: [
@@ -3978,9 +3978,9 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "effects/passive Reste en jeu. effects/forced Fin de Manche: Ajoutez resources/gold resources/military et \"Chevalier\" à 1 Personne. Puis -> Back Up.",
+      "effects/passive Reste en jeu. effects/forced Fin de Manche: Ajoutez resources/gold resources/military et \"Chevalier\" à 1 Personne, puis ->.",
       "",
-      "effects/passive Reste en jeu. effects/forced Fin de Manche: Ajoutez resources/wood / resources/stone et resources/ingot / resources/export à 1 Bâtiment. Puis détruisez cette carte.",
+      "effects/passive Reste en jeu. effects/forced Fin de Manche: Ajoutez resources/wood / resources/stone et resources/ingot / resources/export à 1 Bâtiment, puis effects/destroy .",
       "",
     ],
     upgrades: [

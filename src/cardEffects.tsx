@@ -658,6 +658,9 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             { ingot: 1 },
             { export: 1 },
           ]);
+          if (!choice1) {
+            return false;
+          }
           const choice2 = await ctx.selectResourceChoice([
             { gold: 1 },  
             { wood: 1 },
@@ -666,7 +669,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             { ingot: 1 },
             { export: 1 },
           ]);
-          if(choice1 && choice2) {
+          if(choice2) {
             applyChoice(ctx, choice1);
             applyChoice(ctx, choice2);
             ctx.setResources(prev => ({ ...prev, military: prev.military - 1}));
@@ -755,6 +758,9 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             { ingot: 1 },
             { export: 1 },
           ]);
+          if (!choice1) {
+            return false;
+          }
           const choice2 = await ctx.selectResourceChoice([
             { gold: 1 },  
             { wood: 1 },
@@ -763,7 +769,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             { ingot: 1 },
             { export: 1 },
           ]);
-          if(choice1 && choice2) {
+          if(choice2) {
             applyChoice(ctx, choice1);
             applyChoice(ctx, choice2);
             ctx.setResources(prev => ({ ...prev, military: prev.military - 1}));
@@ -1676,7 +1682,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         alreadyUsed: false,
         execute: async function (ctx) {
           if(ctx.resources.ingot >= 3 && !this.alreadyUsed) {
-            addResourceMapToCard(ctx.card, { military: 1});
+            await addResourceMapToCard(ctx.card, { military: 1});
             ctx.setResources(prev => ({ ...prev, ingot: prev.ingot - 3 }));
             ctx.effectEndTurn();
             this.alreadyUsed = true;
@@ -1691,7 +1697,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         alreadyUsed: false,
         execute: async function (ctx) {
           if(ctx.resources.ingot >= 4 && !this.alreadyUsed) {
-            addResourceMapToCard(ctx.card, { military: 1});
+            await addResourceMapToCard(ctx.card, { military: 1});
             ctx.setResources(prev => ({ ...prev, ingot: prev.ingot - 4 }));
             ctx.effectEndTurn();
             this.alreadyUsed = true;
@@ -2147,6 +2153,9 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
               { ingot: 1 },
               { export: 1 },
             ]);
+            if (!choice1) {
+              return false;
+            }
             const choice2 = await ctx.selectResourceChoice([
               { gold: 1 },  
               { wood: 1 },
@@ -2155,7 +2164,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
               { ingot: 1 },
               { export: 1 },
             ]);
-            if(choice1 && choice2) {
+            if(choice2) {
               applyChoice(ctx, choice1);
               applyChoice(ctx, choice2);
               ctx.dropToDiscard({id: card.id, fromZone: "Play Area"});
@@ -2710,6 +2719,9 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             { ingot: 1 },
             { export: 1 },
           ]);
+          if (!choice1) {
+            return false;
+          }
           const choice2 = await ctx.selectResourceChoice([
             { gold: 1 },  
             { wood: 1 },
@@ -2718,6 +2730,9 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             { ingot: 1 },
             { export: 1 },
           ]);
+          if (!choice2) {
+            return false;
+          }
           const choice3 = await ctx.selectResourceChoice([
             { gold: 1 },  
             { wood: 1 },
@@ -2726,7 +2741,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             { ingot: 1 },
             { export: 1 },
           ]);
-          if(choice1 && choice2 && choice3) {
+          if(choice3) {
             applyChoice(ctx, choice1);
             applyChoice(ctx, choice2);
             applyChoice(ctx, choice3);
@@ -2839,6 +2854,9 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             { ingot: 1 },
             { export: 1 },
           ]);
+          if (!choice1) {
+            return false;
+          }
           const choice2 = await ctx.selectResourceChoice([
             { gold: 1 },  
             { wood: 1 },
@@ -2847,7 +2865,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             { ingot: 1 },
             { export: 1 },
           ]);
-          if(choice1 && choice2) {
+          if(choice2) {
             applyChoice(ctx, choice1);
             applyChoice(ctx, choice2);
             ctx.dropToDiscard({id: selected[0].id, fromZone: "Play Area"});
@@ -2892,6 +2910,9 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             { ingot: 1 },
             { export: 1 },
           ]);
+          if (!choice1) {
+            return false;
+          }
           const choice2 = await ctx.selectResourceChoice([
             { gold: 1 },  
             { wood: 1 },
@@ -2900,6 +2921,9 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             { ingot: 1 },
             { export: 1 },
           ]);
+          if (!choice2) {
+            return false;
+          }
           const choice3 = await ctx.selectResourceChoice([
             { gold: 1 },  
             { wood: 1 },
@@ -2908,7 +2932,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             { ingot: 1 },
             { export: 1 },
           ]);
-          if(choice1 && choice2 && choice3) {
+          if(choice3) {
             applyChoice(ctx, choice1);
             applyChoice(ctx, choice2);
             applyChoice(ctx, choice3);
@@ -3129,6 +3153,9 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             { ingot: 1 },
             { export: 1 },
           ]);
+          if (!choice1) {
+            return false;
+          }
           const choice2 = await ctx.selectResourceChoice([
             { gold: 1 },  
             { wood: 1 },
@@ -3137,6 +3164,9 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             { ingot: 1 },
             { export: 1 },
           ]);
+          if (!choice2) {
+            return false;
+          }
           const choice3 = await ctx.selectResourceChoice([
             { gold: 1 },  
             { wood: 1 },
@@ -3145,6 +3175,9 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             { ingot: 1 },
             { export: 1 },
           ]);
+          if (!choice3) {
+            return false;
+          }
           const choice4 = await ctx.selectResourceChoice([
             { gold: 1 },  
             { wood: 1 },
@@ -3153,7 +3186,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             { ingot: 1 },
             { export: 1 },
           ]);
-          if(choice1 && choice2 && choice3 && choice4) {
+          if(choice4) {
             applyChoice(ctx, choice1);
             applyChoice(ctx, choice2);
             applyChoice(ctx, choice3);
@@ -3358,6 +3391,325 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         return false;
       }
     }],
+  },
+  78: {
+
+  },
+  79: {
+    1: [{ // Villa
+      description: "Défaussez pour faire rester 1 Personne",
+      timing: "endOfTurn",
+      execute: async function (ctx) {
+        const selected = await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id && card.GetType().includes("Personne"), "Play Area", this.description, 0, 1);
+        ctx.setTemporaryCardListImmediate(selected);
+        if (selected.length > 0) {
+          return true;
+        }
+        return false;
+      }
+    }],
+    2: [{ // Demeure
+      description: "Défaussez pour faire rester 2 Personnes",
+      timing: "endOfTurn",
+      execute: async function (ctx) {
+        const selected = await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id && card.GetType().includes("Personne"), "Play Area", this.description, 0, 2);
+        ctx.setTemporaryCardListImmediate(selected);
+        if (selected.length > 0) {
+          return true;
+        }
+        return false;
+      }
+    }],
+    3: [{ // Palais
+      description: "Défaussez pour faire rester 2 cartes",
+      timing: "endOfTurn",
+      execute: async function (ctx) {
+        const selected = await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, "Play Area", this.description, 0, 2);
+        ctx.setTemporaryCardListImmediate(selected);
+        if (selected.length > 0) {
+          return true;
+        }
+        return false;
+      }
+    }],
+    4: [{ // Manoir
+      description: "Défaussez pour faire rester 1 carte",
+      timing: "endOfTurn",
+      execute: async function (ctx) {
+        const selected = await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, "Play Area", this.description, 0, 1);
+        ctx.setTemporaryCardListImmediate(selected);
+        if (selected.length > 0) {
+          return true;
+        }
+        return false;
+      }
+    }],
+  },
+  80: {
+    1: [{ // Coopération
+      description: "Défaussez 2 Personnes pour gagner 3 ressources",
+      timing: "onClick",
+      execute: async function (ctx) {
+        const selected = await ctx.selectCardsFromZone((card) => card.GetType().includes("Personne"), "Play Area", this.description, 2);
+        if (selected.length !== 2) {
+          return false
+        }
+        const choice1 = await ctx.selectResourceChoice([
+            { gold: 1 },  
+            { wood: 1 },
+            { stone: 1 },
+            { military: 1 },
+            { ingot: 1 },
+            { export: 1 },
+          ]);
+          if (!choice1) {
+            return false;
+          }
+          const choice2 = await ctx.selectResourceChoice([
+            { gold: 1 },  
+            { wood: 1 },
+            { stone: 1 },
+            { military: 1 },
+            { ingot: 1 },
+            { export: 1 },
+          ]);
+          if (!choice2) {
+            return false;
+          }
+          const choice3 = await ctx.selectResourceChoice([
+            { gold: 1 },  
+            { wood: 1 },
+            { stone: 1 },
+            { military: 1 },
+            { ingot: 1 },
+            { export: 1 },
+          ]);
+          if(choice3) {
+            applyChoice(ctx, choice1);
+            applyChoice(ctx, choice2);
+            applyChoice(ctx, choice3);
+            for (const card of selected) {
+              ctx.dropToDiscard({id: card.id, fromZone: "Play Area"});
+            }
+            ctx.card.currentSide = 3;
+            return true;
+          }
+        return false;
+      }
+    }],
+    3: [
+      { // Faveur
+        description: "Reste en jeu",
+        timing: "stayInPlay",
+        execute: async function (ctx) {
+          if(ctx) {
+            return false;
+          }
+          return true;
+        }
+      },
+      {
+        description: "Détruisez une carte négative en jeu",
+        timing: "onClick",
+        execute: async function (ctx) {
+          const choice = await ctx.selectResourceChoice([
+            { gold: 1 },  
+            { wood: 1 },
+            { stone: 1 },
+            { military: 1 },
+            { ingot: 1 },
+            { export: 1 },
+          ]);
+          if(choice) {
+            applyChoice(ctx, choice);
+            ctx.card.currentSide = 1;
+            return true;
+          }
+        return false;
+        }
+      }
+    ]
+  },
+  81: { // TODO : onPurge
+
+  },
+  82: {
+    1: [{ // Autel
+      description: "Défaussez pour faire rester 1 carte",
+      timing: "endOfTurn",
+      execute: async function (ctx) {
+        const selected = await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, "Play Area", this.description, 0, 1);
+        ctx.setTemporaryCardListImmediate(selected);
+        if (selected.length > 0) {
+          return true;
+        }
+        return false;
+      }
+    }],
+    2: [{ // Sanctuaire
+      description: "Défaussez pour faire rester 2 cartes",
+      timing: "endOfTurn",
+      execute: async function (ctx) {
+        const selected = await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, "Play Area", this.description, 0, 2);
+        ctx.setTemporaryCardListImmediate(selected);
+        if (selected.length > 0) {
+          return true;
+        }
+        return false;
+      }
+    }],
+    3: [{ // Temple
+      description: "Défaussez pour faire rester 4 cartes",
+      timing: "endOfTurn",
+      execute: async function (ctx) {
+        const selected = await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, "Play Area", this.description, 0, 4);
+        ctx.setTemporaryCardListImmediate(selected);
+        if (selected.length > 0) {
+          return true;
+        }
+        return false;
+      }
+    }],
+    4: [{ // Oratoir
+      description: "Défaussez pour faire rester 3 cartes",
+      timing: "endOfTurn",
+      execute: async function (ctx) {
+        const selected = await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, "Play Area", this.description, 0, 3);
+        ctx.setTemporaryCardListImmediate(selected);
+        if (selected.length > 0) {
+          return true;
+        }
+        return false;
+      }
+    }],
+  },
+  83: {
+    1: [{ // Autel
+      description: "Défaussez pour faire rester 1 carte",
+      timing: "endOfTurn",
+      execute: async function (ctx) {
+        const selected = await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, "Play Area", this.description, 0, 1);
+        ctx.setTemporaryCardListImmediate(selected);
+        if (selected.length > 0) {
+          return true;
+        }
+        return false;
+      }
+    }],
+    2: [{ // Sanctuaire
+      description: "Défaussez pour faire rester 2 cartes",
+      timing: "endOfTurn",
+      execute: async function (ctx) {
+        const selected = await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, "Play Area", this.description, 0, 2);
+        ctx.setTemporaryCardListImmediate(selected);
+        if (selected.length > 0) {
+          return true;
+        }
+        return false;
+      }
+    }],
+    3: [{ // Temple
+      description: "Défaussez pour faire rester 4 cartes",
+      timing: "endOfTurn",
+      execute: async function (ctx) {
+        const selected = await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, "Play Area", this.description, 0, 4);
+        ctx.setTemporaryCardListImmediate(selected);
+        if (selected.length > 0) {
+          return true;
+        }
+        return false;
+      }
+    }],
+    4: [{ // Oratoir
+      description: "Défaussez pour faire rester 3 cartes",
+      timing: "endOfTurn",
+      execute: async function (ctx) {
+        const selected = await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, "Play Area", this.description, 0, 3);
+        ctx.setTemporaryCardListImmediate(selected);
+        if (selected.length > 0) {
+          return true;
+        }
+        return false;
+      }
+    }],
+  },
+  84: {
+
+  },
+  85: {
+
+  },
+  86: {
+    1: [
+      { // Adoubement
+        description: "Reste en jeu",
+        timing: "stayInPlay",
+        execute: async function (ctx) {
+          if(ctx) {
+            return false;
+          }
+          return true;
+        }
+      },
+      {
+        description: "Ajoutez 1 gold, 1 military et Chevalier à 1 Personne",
+        timing: "endOfRound",
+        execute: async function (ctx) {
+          let selected: GameCard[] = [];
+          await new Promise(resolve => setTimeout(resolve, 0));
+          while (selected.length === 0) {
+            selected = await ctx.selectCardsFromZone((card) => card.GetType().includes("Personne"), "Deck", this.description, 1);
+          }
+          const card = selected[0];
+          await addResourceMapToCard(card, {gold: 1, military: 1});
+          card.type[card.currentSide - 1] += " - Chevalier";
+          ctx.card.currentSide = 3;
+          return false;
+        }
+      }
+    ],
+    3: [
+      { // Faveur
+        description: "Reste en jeu",
+        timing: "stayInPlay",
+        execute: async function (ctx) {
+          if(ctx) {
+            return false;
+          }
+          return true;
+        }
+      },
+      {
+        description: "Ajoutez resources/wood / resources/stone et resources/ingot / resources/export à 1 Bâtiment",
+        timing: "endOfRound",
+        execute: async function (ctx) {
+          let choice1;
+          let choice2;
+          let selected: GameCard[] = [];
+          await new Promise(resolve => setTimeout(resolve, 0));
+          while (selected.length === 0) {
+            selected = await ctx.selectCardsFromZone((card) => card.GetType().includes("Bâtiment"), "Deck", this.description, 1);
+          }
+          while (!choice1) {
+            choice1 = await ctx.selectResourceChoice([  
+              { wood: 1 },
+              { stone: 1 },
+            ]);
+          }
+          while (!choice2) {
+            choice2 = await ctx.selectResourceChoice([  
+              { ingot: 1 },
+              { export: 1 },
+            ]);
+          }
+          const card = selected[0];
+          await addResourceMapToCard(card, choice1);
+          await addResourceMapToCard(card, choice2);
+          ctx.deleteCardInZone("Deck", ctx.card.id);
+          return false;
+        }
+      }
+    ]
   },
   107: {
     1: [{ // Visite Royale
