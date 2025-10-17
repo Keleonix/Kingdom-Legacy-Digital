@@ -108,8 +108,7 @@ All rights to the original **Kingdom Legacy** game, rules, and artwork remain wi
 
 ## Known bugs
 
+- Some cards with optional selection are required.
 - When a card is blocked, if unblocked because of EoT and the card has "stay in play", it does not stay in play.
-- End of Round effects are bugged and do not trigger.
 - With the Scientist, if a Person doen't have a production, you cannot automatically produce 1 gold.
-- When selecting cards for upgrade additional costs, if you currently don't have enough of cards of the required type, you still can upgrade the card.
 - Card id 73 Front Bottom doesn't count as 2 people for card fetches/upgrade costs.

@@ -38,6 +38,7 @@ export type GameContext = {
   selectUpgradeCost: (card: GameCard, callback: (upgradeIndex: number, resourceKey: keyof ResourceMap) => void) => void;
   updateBlocks: (blocker: number, blocked: number[] | null) => void;
   getBlockedBy: (blocker: number) => GameCard[];
+  getCardZone: (id: number) => string;
 };
 
 export type CardEffect = {
@@ -2466,12 +2467,12 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         description: "Détruisez 2 Personnes",
         timing: "endOfRound",
         execute: async function (ctx) {
-          const selected = await ctx.selectCardsFromZone((card) => card.GetType().includes("Personne"), "Deck", this.description, 2);
+          let selected: GameCard[] = [];
+          selected = await ctx.selectCardsFromZone((card) => card.GetType().includes("Personne"), "Deck", this.description, 2);
           for (const card of selected) {
             ctx.deleteCardInZone("Deck", card.id);
           }
-          const currCard = ctx.fetchCardsInZone((c) => c.id === ctx.card.id, "Deck")[0];
-          currCard.currentSide = 3;
+          ctx.card.currentSide = 3;
           return false;
         }
       },
@@ -2627,12 +2628,12 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         description: "Détruisez 1 Bâtiment",
         timing: "endOfRound",
         execute: async function (ctx) {
-          const selected = await ctx.selectCardsFromZone((card) => card.GetType().includes("Bâtiment"), "Deck", this.description, 1);
+          let selected: GameCard[] = [];
+          selected = await ctx.selectCardsFromZone((card) => card.GetType().includes("Bâtiment"), "Deck", this.description, 1);
           for (const card of selected) {
             ctx.deleteCardInZone("Deck", card.id);
           }
-          const currCard = ctx.fetchCardsInZone((c) => c.id === ctx.card.id, "Deck")[0];
-          currCard.currentSide = 3;
+          ctx.card.currentSide = 3;
           return false;
         }
       },
@@ -2982,17 +2983,17 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         description: "Détruisez 3 cartes alliées",
         timing: "endOfRound",
         execute: async function (ctx) {
-          const selectedCards = await ctx.selectCardsFromZone(
+          let selected: GameCard[] = [];
+          selected = await ctx.selectCardsFromZone(
             (card) => (!(card.enemy[card.currentSide - 1])),
             "Deck",
             this.description,
             3
           );
-          const currCard = ctx.fetchCardsInZone((c) => c.id === ctx.card.id, "Deck")[0];
-          for (const card of selectedCards) {
+          for (const card of selected) {
             ctx.deleteCardInZone("Deck", card.id);
           }
-          currCard.currentSide = 3;
+          ctx.card.currentSide = 3;
           return false;
         }
       }
@@ -3036,9 +3037,12 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             selected = await ctx.selectCardsFromZone((card) => !card.enemy[card.currentSide - 1], "Deck", this.description, 2);
           }
           else {
-            selected = await ctx.selectCardsFromZone((card) => !card.enemy[card.currentSide - 1], "Deck", this.description, 0, 2);
+            const blockedIds = blockedCards.map((card) => card.id);
+            selected = await ctx.selectCardsFromZone((card) => !card.enemy[card.currentSide - 1] && !blockedIds.includes(card.id), "Deck", this.description, 0, 2);
             if (selected.length !== 2) {
-              selected = await ctx.selectCardsFromArray(ctx.getBlockedBy(ctx.card.id), "Deck", this.description, 1);
+              while (selected.length !== 1) {
+                selected = await ctx.selectCardsFromArray(ctx.getBlockedBy(ctx.card.id), "Deck", this.description, 1);
+              }
               ctx.deleteCardInZone("Deck", selected[0].id);
               ctx.deleteCardInZone("Deck", ctx.card.id);
               return false;
@@ -3656,10 +3660,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         timing: "endOfRound",
         execute: async function (ctx) {
           let selected: GameCard[] = [];
-          await new Promise(resolve => setTimeout(resolve, 0));
-          while (selected.length === 0) {
-            selected = await ctx.selectCardsFromZone((card) => card.GetType().includes("Personne"), "Deck", this.description, 1);
-          }
+          selected = await ctx.selectCardsFromZone((card) => card.GetType().includes("Personne"), "Deck", this.description, 1);
           const card = selected[0];
           await addResourceMapToCard(card, {gold: 1, military: 1});
           card.type[card.currentSide - 1] += " - Chevalier";
@@ -3686,10 +3687,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           let choice1;
           let choice2;
           let selected: GameCard[] = [];
-          await new Promise(resolve => setTimeout(resolve, 0));
-          while (selected.length === 0) {
-            selected = await ctx.selectCardsFromZone((card) => card.GetType().includes("Bâtiment"), "Deck", this.description, 1);
-          }
+          selected = await ctx.selectCardsFromZone((card) => card.GetType().includes("Bâtiment"), "Deck", this.description, 1);
           while (!choice1) {
             choice1 = await ctx.selectResourceChoice([  
               { wood: 1 },

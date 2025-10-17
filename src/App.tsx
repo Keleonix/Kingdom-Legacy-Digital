@@ -1325,7 +1325,7 @@ function CardSelectionPopup({
             Valeur: {selectedValue} / {optionalCount ? `${requiredCount}-${maxCount}` : requiredCount}
           </span>
           <div className="flex gap-2">
-            <Button onClick={onCancel} variant="secondary" hidden={zone === "Campaign"}>
+            <Button onClick={onCancel} variant="secondary" hidden={zone === "Campaign" || requiredCount !== 0}>
               Cancel
             </Button>
             <Button 
@@ -1712,10 +1712,43 @@ const UpgradeCostSelectionPopup: React.FC<{
 // The Game
 // -------------------
 export default function Game() {
+  // -------------------
+  // Init
+  // -------------------
+  function shuffle<T>(array: T[]): T[] {
+    const arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  const [deck, setDeck] = useState<GameCard[]>(() =>
+    shuffle(
+      allCards
+        .filter((c) => c.id >= 1 && c.id <= 10)
+        .map((c) => cloneGameCard(c))
+    )
+  );
+
+  const [campaignDeck, setCampaignDeck] = useState<GameCard[]>(() =>
+    allCards
+      .filter((c) => c.id > 10)
+      .map((c) => cloneGameCard(c))
+  );
+
+  const [blockedZone, setBlockedZone] = useState<GameCard[]>(() =>
+    allCards
+      .filter((c) => c.id === 0)
+      .map((c) => cloneGameCard(c))
+  );
+
   const [discard, setDiscard] = useState<GameCard[]>([]);
   const [playArea, setPlayArea] = useState<GameCard[]>([]);
   const [permanentZone, setPermanentZone] = useState<GameCard[]>([]);
   const [temporaryCardList, setTemporaryCardList] = useState<GameCard[]>([]);
+  temporaryCardList;
   const [popupCard, setPopupCard] = useState<PopupPayload | null>(null);
   const [showDiscard, setShowDiscard] = useState(false);
   const [showDeck, setShowDeck] = useState(false);
@@ -1794,14 +1827,17 @@ export default function Game() {
   >(null);
 
   // ----------- immediate refs & setters (à ajouter près des useState) -----------
+  const deckRef = useRef<GameCard[]>([]);
   const playAreaRef = useRef<GameCard[]>([]);
   const discardRef = useRef<GameCard[]>([]);
+  const blockedZoneRef = useRef<GameCard[]>([]);
   const temporaryCardListRef = useRef<GameCard[]>([]);
 
   // Keep refs in sync if other code uses setPlayArea / setDiscard directly
+  useEffect(() => { deckRef.current = deck; }, [deck]);
   useEffect(() => { playAreaRef.current = playArea; }, [playArea]);
   useEffect(() => { discardRef.current = discard; }, [discard]);
-  useEffect(() => { temporaryCardListRef.current = temporaryCardList; }, [temporaryCardList]);
+  useEffect(() => { blockedZoneRef.current = blockedZone; }, [blockedZone]);
 
   function setPlayAreaImmediate(next: React.SetStateAction<GameCard[]>) {
     if (typeof next === "function") {
@@ -1825,6 +1861,28 @@ export default function Game() {
     }
   }
 
+  function setDeckImmediate(next: React.SetStateAction<GameCard[]>) {
+    if (typeof next === "function") {
+      const v = (next as (prev: GameCard[]) => GameCard[])(deckRef.current);
+      deckRef.current = v;
+      setDeck(v);
+    } else {
+      deckRef.current = next as GameCard[];
+      setDeck(next as GameCard[]);
+    }
+  }
+
+  function setBlockedZoneImmediate(next: React.SetStateAction<GameCard[]>) {
+    if (typeof next === "function") {
+      const v = (next as (prev: GameCard[]) => GameCard[])(blockedZoneRef.current);
+      blockedZoneRef.current = v;
+      setBlockedZone(v);
+    } else {
+      blockedZoneRef.current = next as GameCard[];
+      setBlockedZone(next as GameCard[]);
+    }
+  }
+
   function setTemporaryCardListImmediate(next: React.SetStateAction<GameCard[]>) {
     if (typeof next === "function") {
       const v = (next as (prev: GameCard[]) => GameCard[])(temporaryCardListRef.current);
@@ -1835,38 +1893,6 @@ export default function Game() {
       setTemporaryCardList(next as GameCard[]);
     }
   }
-
-  // -------------------
-  // Init
-  // -------------------
-  function shuffle<T>(array: T[]): T[] {
-    const arr = [...array];
-    for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-    return arr;
-  }
-
-  const [deck, setDeck] = useState<GameCard[]>(() =>
-    shuffle(
-      allCards
-        .filter((c) => c.id >= 1 && c.id <= 10)
-        .map((c) => cloneGameCard(c))
-    )
-  );
-
-  const [campaignDeck, setCampaignDeck] = useState<GameCard[]>(() =>
-    allCards
-      .filter((c) => c.id > 10)
-      .map((c) => cloneGameCard(c))
-  );
-
-  const [blockedZone, setBlockedZone] = useState<GameCard[]>(() =>
-    allCards
-      .filter((c) => c.id === 0)
-      .map((c) => cloneGameCard(c))
-  );
 
   // -------------------
   // Game Phases
@@ -1982,13 +2008,13 @@ export default function Game() {
   };
 
   const handleEffectsEndOfRound = async (cardsWithEffects: Array<{ card: GameCard, effectIndex: number }>) => {
-    for (const { card, effectIndex } of cardsWithEffects) {
-      const realCard = deck.find(c => c.id === card.id);
-      if (realCard) {
-        await handleExecuteCardEffect(realCard, "Deck", "endOfRound", undefined, effectIndex);
-      }
+  for (const { card, effectIndex } of cardsWithEffects) {
+    const realCard = deckRef.current.find(c => c.id === card.id);
+    if (realCard) {
+      await handleExecuteCardEffect(realCard, "Deck", "endOfRound", undefined, effectIndex);
     }
-  };
+  }
+};
 
   const effectEndTurn = async () => {
     await discardEndTurn(false);
@@ -1999,14 +2025,12 @@ export default function Game() {
 
     if (endRound) {
       const endOfRoundCardList = await gatherEffectsEndOfRound();
-
-      setDeck((d) => [...d, ...playArea, ...blockedZone, ...discard]);
-      setPlayArea([]);
-      setBlockedZone([]);
-      setDiscard([]);
-      setTemporaryCardList([]);
-
-      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      setDeckImmediate((d) => [...d, ...playAreaRef.current, ...blockedZoneRef.current, ...discardRef.current]);
+      setPlayAreaImmediate([]);
+      setBlockedZoneImmediate([]);
+      setDiscardImmediate([]);
+      setTemporaryCardListImmediate([]);
       
       await handleEffectsEndOfRound(endOfRoundCardList);
     }
@@ -2024,9 +2048,26 @@ export default function Game() {
         else cardsToDiscard.push(card);
       });
 
-      setDiscard((d) => [...d, ...cardsToDiscard, ...blockedZone]);
+      const blockersStayingInPlay = cardsToKeep.map(c => c.id);
+      
+      const blockedToKeep: GameCard[] = [];
+      const blockedToDiscard: GameCard[] = [];
+      
+      blockedZoneRef.current.forEach(blockedCard => {
+        const isStillBlocked = Array.from(blockMap.entries()).some(([blockerId, blockedIds]) => 
+          blockersStayingInPlay.includes(blockerId) && blockedIds.includes(blockedCard.id)
+        );
+        
+        if (isStillBlocked) {
+          blockedToKeep.push(blockedCard);
+        } else {
+          blockedToDiscard.push(blockedCard);
+        }
+      });
+
+      setDiscard((d) => [...d, ...cardsToDiscard, ...blockedToDiscard]);
       setPlayArea(cardsToKeep);
-      setBlockedZone([]);
+      setBlockedZone(blockedToKeep);
       setTemporaryCardList([]);
     }
 
@@ -2037,8 +2078,6 @@ export default function Game() {
     });
 
     setHasUpgradedCard(false);
-
-    await new Promise(resolve => setTimeout(resolve, 100));
   };
 
   const handleEndBaseGame = async () => {
@@ -2071,9 +2110,9 @@ export default function Game() {
             dropToPlayArea,
             dropToBlocked,
             dropToDiscard,
-            setDeck,
-            setPlayArea,
-            setDiscard,
+            setDeck: setDeckImmediate,
+            setPlayArea: setPlayAreaImmediate,
+            setDiscard: setDiscardImmediate,
             setPermanentZone,
             setTemporaryCardList,
             setTemporaryCardListImmediate,
@@ -2094,6 +2133,7 @@ export default function Game() {
             selectUpgradeCost,
             updateBlocks,
             getBlockedBy,
+            getCardZone,
           };
           
           const specialFameValue = await fameValueEffect.execute(context);
@@ -2122,16 +2162,16 @@ export default function Game() {
     let filteredCards: GameCard[] = [];
     switch(zone) {
       case "Play Area":
-        filteredCards = playArea.filter(filter);
+        filteredCards = playAreaRef.current.filter(filter); // Utilise les refs
         break;
       case "Discard":
-        filteredCards = discard.filter(filter);
+        filteredCards = discardRef.current.filter(filter);
         break;
       case "Deck":
-        filteredCards = deck.filter(filter);
+        filteredCards = deckRef.current.filter(filter);
         break;
       case "Permanent":
-        filteredCards = permanentZone.filter(filter);
+        filteredCards = permanentZone.filter(filter); // Celui-ci n'a pas de ref encore
         break;
       case "Campaign":
         filteredCards = campaignDeck.filter(filter);
@@ -2480,9 +2520,9 @@ export default function Game() {
       dropToPlayArea,
       dropToBlocked,
       dropToDiscard,
-      setDeck,
-      setPlayArea,
-      setDiscard,
+      setDeck: setDeckImmediate,
+      setPlayArea: setPlayAreaImmediate,
+      setDiscard: setDiscardImmediate,
       setPermanentZone,
       setTemporaryCardList,
       setTemporaryCardListImmediate,
@@ -2503,6 +2543,7 @@ export default function Game() {
       selectUpgradeCost,
       updateBlocks,
       getBlockedBy,
+      getCardZone,
     };
 
     if (typeof effectIndex === "number" && effectIndex >= 0 && effectIndex < effects.length) {
@@ -2678,9 +2719,15 @@ export default function Game() {
     discard.pop();
   }
 
-  // const getAllCardsInGame = (): GameCard[] => {
-  //   return [...deck, ...playArea, ...permanentZone, ...blockedZone, ...discard];
-  // };
+  const getCardZone = (id: number): string => {
+    if (deck.some(c => c.id === id)) return "Deck";
+    if (playArea.some(c => c.id === id)) return "Play Area";
+    if (discard.some(c => c.id === id)) return "Discard";
+    if (campaignDeck.some(c => c.id === id)) return "Campaign";
+    if (blockedZone.some(c => c.id === id)) return "Blocked";
+    if (permanentZone.some(c => c.id === id)) return "Permanent";
+    return "Deleted";
+  };
 
   // -------------------
   // Replace card in zone by id (used by popup apply)
@@ -2780,9 +2827,9 @@ export default function Game() {
           dropToPlayArea,
           dropToBlocked,
           dropToDiscard,
-          setDeck,
-          setPlayArea,
-          setDiscard,
+          setDeck: setDeckImmediate,
+          setPlayArea: setPlayAreaImmediate,
+          setDiscard: setDiscardImmediate,
           setPermanentZone,
           setTemporaryCardList,
           setTemporaryCardListImmediate,
@@ -2803,6 +2850,7 @@ export default function Game() {
           selectUpgradeCost,
           updateBlocks,
           getBlockedBy,
+          getCardZone,
         };
         
         const additionalCostPaid = await additionalCostEffect.execute(context);
@@ -2856,9 +2904,9 @@ export default function Game() {
             dropToPlayArea,
             dropToBlocked,
             dropToDiscard,
-            setDeck,
-            setPlayArea,
-            setDiscard,
+            setDeck: setDeckImmediate,
+            setPlayArea: setPlayAreaImmediate,
+            setDiscard: setDiscardImmediate,
             setPermanentZone,
             setTemporaryCardList,
             setTemporaryCardListImmediate,
@@ -2879,6 +2927,7 @@ export default function Game() {
             selectUpgradeCost,
             updateBlocks,
             getBlockedBy,
+            getCardZone,
           };
           
           await effect.execute(context);
