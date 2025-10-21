@@ -4135,7 +4135,7 @@ export const allCards: GameCard[] = [
     effects: [
       "",
       "effects/passive La production des Bâtiments gagne +1 resources/gold .",
-      "effects/activate Marquer 1 effects/check . Une fois complet, Back Down.",
+      "effects/activate Marquer 1 effects/check , une fois complet ->.",
       "effects/passive Reste en jeu. effects/activate Marquez 1 effects/check une des cases au choix pour défausser 1 Ennemi. (Vaut 2 resources/fame par effects/check .)",
     ],
     upgrades: [

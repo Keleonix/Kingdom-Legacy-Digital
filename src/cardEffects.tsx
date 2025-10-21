@@ -194,7 +194,7 @@ function getResourcesCount(
   return resTot;
 }
 
-function checkNextBox(
+async function checkNextBox(
   card: GameCard
 ) {
   for (const checkbox of card.checkboxes[card.currentSide - 1]) {
@@ -3708,6 +3708,156 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       }
     ]
+  },
+  87: {
+    1: [{ // Quêtes
+      description: "End pour défausser des Personnes",
+      timing: "onClick",
+      execute: async function (ctx) {
+        let checkedBoxes = 0;
+        const peopleToDiscard = [1, 2, 2, 3, 3, 4, 5, 6, 7];
+        for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
+          checkedBoxes += checkbox.checked ? 1 : 0;
+        }
+        if (ctx.fetchCardsInZone((card) => card.GetType().includes("Personne"), "Play Area").length < peopleToDiscard[checkedBoxes] ||
+            checkedBoxes >= peopleToDiscard.length) {
+          return false;
+        }
+        const selected = await ctx.selectCardsFromZone((card) => card.GetType().includes("Personne"), "Play Area", this.description, 0, peopleToDiscard[checkedBoxes]);
+        // Checkbox
+        if (selected.length === peopleToDiscard[checkedBoxes]) {
+          for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
+            if (!checkbox.checked) {
+              checkbox.checked = true;
+              for (const card of selected) {
+                ctx.dropToDiscard({id: card.id, fromZone: "Play Area"});
+              }
+              ctx.effectEndTurn();
+              break;
+            }
+          }
+        }
+        // Apply resource effect
+        let lastCheckbox;
+        for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
+          if (!checkbox.checked) {
+            const checkboxResources = getCheckboxResources(lastCheckbox?.content);
+            if (checkboxResources) {
+              await setResourceMapToCard(ctx.card, {fame: checkboxResources.fame?? 0});
+            }
+            break;
+          }
+          lastCheckbox = checkbox;
+        }
+        const allChecked = ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked);
+        if (allChecked) {
+          await setResourceMapToCard(ctx.card, {fame: 45});
+        }
+        return false;
+      }
+    }],
+  },
+  88: {
+    1: [{ // Armée
+      description: "End pour payer des stone",
+      timing: "onClick",
+      execute: async function (ctx) {
+        let stoneToPay = 1;
+        for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
+          stoneToPay += checkbox.checked ? 1 : 0;
+        }
+        // Checkbox
+        if (ctx.resources.stone >= stoneToPay) {
+          for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
+            if (!checkbox.checked) {
+              checkbox.checked = true;
+              ctx.setResources(prev => ({ ...prev, stone: prev.stone - stoneToPay }));
+              ctx.effectEndTurn();
+              break;
+            }
+          }
+        }
+        // Apply resource effect
+        let lastCheckbox;
+        for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
+          if (!checkbox.checked) {
+            const checkboxResources = getCheckboxResources(lastCheckbox?.content);
+            if (checkboxResources) {
+              await setResourceMapToCard(ctx.card, checkboxResources);
+            }
+            break;
+          }
+          lastCheckbox = checkbox;
+        }
+        const allChecked = ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked);
+        if (allChecked) {
+          await setResourceMapToCard(ctx.card, {fame: 75});
+        }
+        return false;
+      }
+    }]
+  },
+  89: {
+    2: [{ // TODO: Puits du Village
+      description: "Les Bâtiments produisent 1 gold de plus",
+      timing: "onResourceGain",
+      execute: async function (ctx) {
+        for(const card of ctx.cardsForTrigger?? []) {
+          if (card.GetType().includes("Bâtiment")) {
+            ctx.setResources(prev => ({ ...prev, gold: prev.gold + 1 }));
+          }
+        }
+        return false;
+      }
+    }],
+    3: [{ // Colonie de la Fosse
+      description: "Checkez la prochaine boîte",
+      timing: "onClick",
+      execute: async function (ctx) {
+        await checkNextBox(ctx.card);
+        if (ctx.card.checkboxes[ctx.card.currentSide - 1][ctx.card.checkboxes[ctx.card.currentSide - 1].length - 1].checked) {
+          ctx.card.currentSide = 4
+        }
+        return true;
+      }
+    }],
+    4: [
+      { // Prison
+        description: "Reste en jeu",
+        timing: "stayInPlay",
+        execute: async function (ctx: GameContext) {
+          if(ctx) {
+            return false;
+          }
+          return true;
+        }
+      },
+      {
+        description: "Ajoutez 1 check pour défausser un ennemi",
+        timing: "onClick",
+        execute: async function (ctx) {
+          if (ctx.fetchCardsInZone((card) => card.enemy[card.currentSide - 1], "Play Area").length !== 0) {
+            const result = new Promise<boolean>((resolve) => {
+              ctx.openCheckboxPopup(ctx.card, 1, 0, async (boxes) => {
+                if(boxes.length !== 0) {
+                  for(const box of boxes) {
+                    applyResourceMapDelta(ctx.setResources, getCheckboxResources(box.content));
+                  }
+                  checkBoxes(ctx.card, boxes);
+                  const selected = await ctx.selectCardsFromZone((card) => card.enemy[card.currentSide - 1], "Play Area", this.description, 1);
+                  ctx.dropToDiscard({id: selected[0].id, fromZone: "Play Area"});
+                  resolve(true);
+                } else {
+                  resolve(false);
+                }
+              });
+            });
+            return result;
+          }
+          return false;
+        }
+      }
+    ],
   },
   107: {
     1: [{ // Visite Royale

@@ -1979,6 +1979,7 @@ export default function Game() {
   const drawNewTurn = async () => {
     await discardEndTurn();
     draw(4);
+    setHasUpgradedCard(false);
   }
   
   const progress = () => draw(2);
@@ -2033,6 +2034,8 @@ export default function Game() {
       setTemporaryCardListImmediate([]);
       
       await handleEffectsEndOfRound(endOfRoundCardList);
+
+      setHasUpgradedCard(false);
     }
     else {
       const cardsToDiscard: GameCard[] = [];
@@ -2069,6 +2072,8 @@ export default function Game() {
       setPlayArea(cardsToKeep);
       setBlockedZone(blockedToKeep);
       setTemporaryCardList([]);
+
+      setHasUpgradedCard(true);
     }
 
     setResources((prev) => {
@@ -2076,8 +2081,6 @@ export default function Game() {
       if ("fame" in prev) (reset as Partial<ResourceMap>).fame = (prev as Partial<ResourceMap>).fame;
       return reset;
     });
-
-    setHasUpgradedCard(false);
   };
 
   const handleEndBaseGame = async () => {
