@@ -101,6 +101,7 @@ export type EffectTiming =
   "onClick" |
   "stayInPlay" |
   "onResourceGain" |
+  "onProgress" |
   "doesNothing" |
   "restrictPlay" |
   "restrictAll" |

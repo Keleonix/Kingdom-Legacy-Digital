@@ -4254,7 +4254,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "effects/time dépensez les resources/wood (2 à 10, incrément de 2) pour cocher la case de gauche à droite. Une fois complétée, -> Back Up",
+      "effects/time dépensez les resources/wood (2 à 10, incrément de 2) pour cocher la case de gauche à droite, une fois complétée, ->",
       "",
       "effects/activate Inscrivez 1 effects/check pour chaque paire de Personnes que vous avez en jeu. (Vaut +1 resources/fame pour chaque effects/check )",
       "",
@@ -4269,6 +4269,14 @@ export const allCards: GameCard[] = [
     type: ["Parchemin - Permanente", "", "Maritime", ""],
     choice: false,
     checkboxes: [
+      [
+        {content: "", checked: false},
+        {content: "", checked: false},
+        {content: "", checked: false},
+        {content: "", checked: false},
+        {content: "", checked: false}
+      ],
+      [],
       [ {content: "", checked: false},
         {content: "", checked: false},
         {content: "", checked: false},
@@ -4280,14 +4288,6 @@ export const allCards: GameCard[] = [
         {content: "", checked: false}, 
         {content: "", checked: false},
         {content: "", checked: false},
-        {content: "", checked: false},
-        {content: "", checked: false},
-        {content: "", checked: false},
-        {content: "", checked: false},
-        {content: "", checked: false}
-      ],
-      [],
-      [
         {content: "", checked: false},
         {content: "", checked: false},
         {content: "", checked: false},
@@ -4317,9 +4317,9 @@ export const allCards: GameCard[] = [
   { id: 92,
     name: ["__", "", "__", ""],
     resources: [
-      [ { gold: 0 } ],
+      [ { } ],
       [],
-      [],
+      [ { } ],
       [],
     ],
     effects: [
@@ -4407,7 +4407,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "(Choisissez le côté) effects/forced Carte Jouée: Défaussez 2 Personnes. effects/activate Dépensez resources/military resources/miltary resources/military resources/military pour vaincre ( effects/destroy ).",
+      "effects/forced Carte Jouée: Défaussez 2 Personnes. effects/activate Dépensez resources/military resources/military resources/military resources/military pour vaincre ( effects/destroy ).",
       "",
       "effects/passive Lorsque vous Progressez, jouez 2 cartes supplémentaires.",
       "",
@@ -4445,8 +4445,8 @@ export const allCards: GameCard[] = [
     resources: [
       [],
       [],
-      [ { gold: 1, export: 1, fame: 5 } ],
-      [ { gold: 1, export: 2, fame: 10 } ],
+      [ { military: 1 } ],
+      [],
     ],
     effects: [
       "effects/activate Dépensez resources/gold resources/gold pour inscrire 1 effects/check . (Vaut 2 resources/fame par effects/check )",

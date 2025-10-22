@@ -36,6 +36,8 @@ export type GameContext = {
   fetchCardsInZone: (filter: (card: GameCard) => boolean, zone: string) => GameCard[];
   selectCardSides: (card: GameCard, requiredCount: number, optionalCount: number, callback: (selectedSides: number[]) => void) => void;
   selectUpgradeCost: (card: GameCard, callback: (upgradeIndex: number, resourceKey: keyof ResourceMap) => void) => void;
+  selectTextInput: (description: string, required: boolean) => Promise<string | null>;
+  selectStringChoice: (description: string, choices: string[]) => Promise<string>;
   updateBlocks: (blocker: number, blocked: number[] | null) => void;
   getBlockedBy: (blocker: number) => GameCard[];
   getCardZone: (id: number) => string;
@@ -44,10 +46,10 @@ export type GameContext = {
 export type CardEffect = {
   description: string;
   timing: EffectTiming;
-  execute: (context: GameContext) => boolean | Promise<boolean>;
+  execute: (context: GameContext) => boolean | number | Promise<boolean | number>;
   requiresChoice?: boolean;
   choices?: string[];
-  alreadyUsed?: boolean;
+  uses?: number;
 };
 
 export type CardFameValue = {
@@ -156,13 +158,14 @@ async function setResourceMapToCard(
   card: GameCard,
   added: Partial<ResourceMap> | undefined
 ) {
-  if (!added) {
-    return;
-  }
+  if (!added) return;
+  
   for (const key in added) {
     const resourceKey = key as keyof ResourceMap;
     const amount = added[resourceKey] ?? 0;
-    card.resources[card.currentSide - 1] = [ emptyResource ];
+    
+    card.resources[card.currentSide - 1] = [{ ...emptyResource }];
+    
     for (const resourceMap of card.GetResources()) {
       resourceMap[resourceKey] = amount;
     }
@@ -1680,13 +1683,13 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         { // Sir ___
         description: "Dépensez 3 ingot pour gagner 1 military",
         timing: "onClick",
-        alreadyUsed: false,
+        uses: 0,
         execute: async function (ctx) {
-          if(ctx.resources.ingot >= 3 && !this.alreadyUsed) {
+          if(ctx.resources.ingot >= 3 && this.uses === 0) {
             await addResourceMapToCard(ctx.card, { military: 1});
             ctx.setResources(prev => ({ ...prev, ingot: prev.ingot - 3 }));
             ctx.effectEndTurn();
-            this.alreadyUsed = true;
+            this.uses = 1;
             return false;
           }
           return false;
@@ -1695,13 +1698,13 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       { // Sir ___
         description: "Dépensez 4 ingot pour gagner 1 military",
         timing: "onClick",
-        alreadyUsed: false,
+        uses: 0,
         execute: async function (ctx) {
-          if(ctx.resources.ingot >= 4 && !this.alreadyUsed) {
+          if(ctx.resources.ingot >= 4 && this.uses === 0) {
             await addResourceMapToCard(ctx.card, { military: 1});
             ctx.setResources(prev => ({ ...prev, ingot: prev.ingot - 4 }));
             ctx.effectEndTurn();
-            this.alreadyUsed = true;
+            this.uses = 1;
             return false;
           }
           return false;
@@ -3758,7 +3761,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     }],
   },
   88: {
-    1: [{ // Armée
+    1: [{ // Une Tour Idéale
       description: "End pour payer des stone",
       timing: "onClick",
       execute: async function (ctx) {
@@ -3858,6 +3861,270 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       }
     ],
+  },
+  90: {
+    1: [{ // Bijoux
+      description: "End pour payer des ingot",
+      timing: "onClick",
+      execute: async function (ctx) {
+        let ingotToPay = 1;
+        for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
+          ingotToPay += checkbox.checked ? 1 : 0;
+        }
+        // Checkbox
+        if (ctx.resources.ingot >= ingotToPay) {
+          for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
+            if (!checkbox.checked) {
+              checkbox.checked = true;
+              ctx.setResources(prev => ({ ...prev, ingot: prev.ingot - ingotToPay, export: prev.export + 5 }));
+              ctx.effectEndTurn();
+              break;
+            }
+          }
+        }
+        // Apply resource effect
+        let lastCheckbox;
+        for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
+          if (!checkbox.checked) {
+            const checkboxResources = getCheckboxResources(lastCheckbox?.content);
+            if (checkboxResources) {
+              await setResourceMapToCard(ctx.card, checkboxResources);
+            }
+            break;
+          }
+          lastCheckbox = checkbox;
+        }
+        if (ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked)) {
+          await setResourceMapToCard(ctx.card, {fame: 40});
+        }
+        return false;
+      }
+    }]
+  },
+  91: {
+    1: [{ // Construire une Arche
+      description: "End pour payer des wood",
+      timing: "onClick",
+      execute: async function (ctx) {
+        let woodToPay = 2;
+        for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
+          woodToPay += checkbox.checked ? 2 : 0;
+        }
+        // Checkbox
+        if (ctx.resources.wood >= woodToPay) {
+          for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
+            if (!checkbox.checked) {
+              checkbox.checked = true;
+              ctx.setResources(prev => ({ ...prev, wood: prev.wood - woodToPay }));
+              ctx.effectEndTurn();
+              break;
+            }
+          }
+        }
+        if (ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked)) {
+          ctx.card.currentSide = 3;
+          ctx.dropToDiscard({id: ctx.card.id, fromZone: "Permanent"})
+        }
+        return false;
+      }
+    }],
+    3: [{ // L'Arche
+      description: "1 check par paire de Personnes",
+      timing: "onClick",
+      execute: async function (ctx) {
+        const people = ctx.fetchCardsInZone((card) => card.GetType().includes("Personne"), "Play Area");
+        if (people.length < 2) {
+          return false;
+        }
+        for (let i = 0; i < (people.length - 1)/2; i++) {
+          checkNextBox(ctx.card);
+        }
+        return true;
+      }
+    }],
+  },
+  92: {
+    1: [{ // __
+      description: "1: Donnes un nom. 2: Rajoutes military/fame x5. 3: Rajoutes export/fame x5.",
+      timing: "played",
+      uses: 0,
+      execute: async function (ctx) {
+        switch(this.uses) {
+          case 0:
+            const newName = await ctx.selectTextInput(this.description, true);
+            if (newName) {
+              ctx.card.name[ctx.card.currentSide - 1] = newName;
+              ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+              this.uses++;
+            }
+            break;
+          case 1:
+            let resource1: Partial<ResourceMap> | null = null;
+            while (resource1 === null) {
+              resource1 = await ctx.selectResourceChoice([
+                { military: 1 },
+                { fame: 5 }
+              ]);
+            }
+            await addResourceMapToCard(ctx.card, resource1);
+            this.uses++;
+            break;
+          case 2:
+            let resource2: Partial<ResourceMap> | null = null;
+            while (resource2 === null) {
+              resource2 = await ctx.selectResourceChoice([
+                { export: 1 },
+                { fame: 5 }
+              ]);
+            }
+            await addResourceMapToCard(ctx.card, resource2);
+            this.uses++;
+            break;
+          default:
+        }
+        return false;
+      }
+    }],
+    3: [
+      { // __
+        description: "Reste en jeu",
+        timing: "stayInPlay",
+        execute: async function (ctx: GameContext) {
+          if(ctx) {
+            return false;
+          }
+          return true;
+        }
+      },
+      {
+        description: "1: Donnes un nom. 2: Rajoutes une ressource. 3: Rajoutes une ressource.",
+        timing: "played",
+        uses: 0,
+        execute: async function (ctx) {
+          switch(this.uses) {
+            case 0:
+              const newName = await ctx.selectTextInput(this.description, true);
+              if (newName) {
+                ctx.card.name[ctx.card.currentSide - 1] = newName;
+                ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+              }
+              this.uses++;
+              break;
+            case 1:
+              let resource1: Partial<ResourceMap> | null = null;
+              while (resource1 === null) {
+                resource1 = await ctx.selectResourceChoice([
+                  { gold: 1 },
+                  { wood: 1 },
+                  { stone: 1 },
+                  { military: 1 },
+                  { ingot: 1 },
+                  { export: 1 }
+                ]);
+              }
+              await addResourceMapToCard(ctx.card, resource1);
+              this.uses++;
+              break;
+            case 2:
+              let resource2: Partial<ResourceMap> | null = null;
+              while (resource2 === null) {
+                resource2 = await ctx.selectResourceChoice([
+                  { gold: 1 },
+                  { wood: 1 },
+                  { stone: 1 },
+                  { military: 1 },
+                  { ingot: 1 },
+                  { export: 1 }
+                ]);
+              }
+              await addResourceMapToCard(ctx.card, resource2);
+              this.uses++;
+              break;
+            default:
+          }
+          return false;
+        }
+      }
+    ],
+  },
+  93: {
+    2: [{ // Baie des Pirates
+        description: "Découvrez un Traître (94)",
+        timing: "endOfTurn",
+        execute: async function (ctx) {
+          await ctx.discoverCard((card) => [94].includes(card.id), this.description, 1)
+          return false;
+        }
+    }]
+  },
+  94: {
+    1: [
+      { // Traître
+        description: "Défaussez 2 Personnes",
+        timing: "played",
+        execute: async function (ctx) {
+          const selected = await ctx.selectCardsFromZone((card) => card.GetType().includes("Personne"), "Play Area", this.description, 2);
+          for (const card of selected) {
+            ctx.dropToDiscard({id: card.id, fromZone: "Play Area"});
+          }
+          return false;
+        }
+      },
+      {
+        description: "Dépensez military x4 pour destroy",
+        timing: "onClick",
+        execute: async function (ctx) {
+          if (ctx.resources.military >= 4) {
+            ctx.setResources(prev => ({ ...prev, military: prev.military - 4 }));
+            ctx.deleteCardInZone(ctx.zone, ctx.card.id);
+          }
+          return false;
+        }
+      }
+    ],
+    3: [{ // Malédiction
+      description: "Progressez avec 2 cartes supplémentaires",
+      timing: "onProgress",
+      execute: async function () {
+        return 2;
+      }
+    }]
+  },
+  95: {
+    1: [{ // Astronome
+      description: "Dépensez gold x2 pour check 1",
+      timing: "onClick",
+      execute: async function (ctx) {
+        if (ctx.resources.gold >= 2) {
+          ctx.setResources(prev => ({ ...prev, gold: prev.gold - 2 }));
+          checkNextBox(ctx.card);
+          return true;
+        }
+        return false;
+      }
+    }],
+    3: [{ // Astrologue
+      description: "Remettez 3 cartes en jeu au dessous ou en dessous de la pioche",
+      timing: "onClick",
+      execute: async function (ctx) {
+        const selected = await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, "Play Area", this.description, 0, 3);
+        if (selected.length !== 0) {
+          const position = await ctx.selectStringChoice(
+            "Top or Bottom ?",
+            ["Top", "Bottom"]
+          );
+          
+          if (position === "Bottom") {
+            ctx.setDeck(prev => [...prev, ...selected]);
+          } else {
+            ctx.setDeck(prev => [...selected, ...prev]);
+          }
+          ctx.setPlayArea(prev => prev.filter((card) => !selected.includes(card)));
+          return true;
+        }
+        return false;
+      }
+    }]
   },
   107: {
     1: [{ // Visite Royale

@@ -1709,6 +1709,115 @@ const UpgradeCostSelectionPopup: React.FC<{
 };
 
 // -------------------
+// Text Input Popup
+// -------------------
+const TextInputPopup: React.FC<{
+  description: string;
+  required: boolean;
+  onConfirm: (text: string) => void;
+  onCancel: () => void;
+}> = ({ description, required, onConfirm, onCancel }) => {
+  const [inputText, setInputText] = useState("");
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex justify-center items-center">
+      <div className="bg-white p-4 rounded shadow-lg max-w-md w-full">
+        <h2 className="text-lg font-bold mb-2">
+          {description}
+        </h2>
+        
+        <input
+          type="text"
+          className="w-full border rounded px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          value={inputText}
+          onChange={(e) => setInputText(e.target.value)}
+          placeholder="Entrez votre texte..."
+          autoFocus
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && (inputText.trim() || !required)) {
+              onConfirm(inputText);
+            }
+          }}
+        />
+
+        <div className="flex justify-end gap-2">
+          {!required && (
+            <button
+              onClick={onCancel}
+              className="px-3 py-1 bg-gray-300 hover:bg-gray-400 rounded"
+            >
+              Annuler
+            </button>
+          )}
+          <button
+            onClick={() => onConfirm(inputText)}
+            disabled={required && !inputText.trim()}
+            className={`px-3 py-1 rounded ${
+              (!required || inputText.trim())
+                ? "bg-blue-500 hover:bg-blue-600 text-white"
+                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+            }`}
+          >
+            Confirmer
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// -------------------
+// String Choice Popup
+// -------------------
+const StringChoicePopup: React.FC<{
+  description: string;
+  choices: string[];
+  onConfirm: (choice: string) => void;
+}> = ({ description, choices, onConfirm }) => {
+  const [selectedChoice, setSelectedChoice] = useState<string | null>(null);
+
+  return (
+    <div className="fixed inset-0 z-[90] bg-black bg-opacity-50 flex justify-center items-center">
+      <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full">
+        <h2 className="text-lg font-bold mb-4">
+          {description}
+        </h2>
+        
+        <div className="space-y-2 mb-4">
+          {choices.map((choice, index) => (
+            <button
+              key={index}
+              onClick={() => setSelectedChoice(choice)}
+              className={`w-full p-3 border-2 rounded-lg transition text-left font-medium ${
+                selectedChoice === choice
+                  ? "bg-blue-100 border-blue-500 text-blue-700"
+                  : "bg-white border-gray-300 hover:border-gray-400 hover:bg-gray-50"
+              }`}
+            >
+              {choice}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex justify-end">
+          <button
+            onClick={() => selectedChoice && onConfirm(selectedChoice)}
+            disabled={!selectedChoice}
+            className={`px-4 py-2 rounded ${
+              selectedChoice
+                ? "bg-blue-500 hover:bg-blue-600 text-white"
+                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+            }`}
+          >
+            Confirmer
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// -------------------
 // The Game
 // -------------------
 export default function Game() {
@@ -1763,7 +1872,7 @@ export default function Game() {
   const [cityNameInput, setCityNameInput] = useState("");
   const [selectedKingdom, setSelectedKingdom] = useState("New Kingdom");
 
-  const [hasUpgradedCard, setHasUpgradedCard] = useState(false);
+  const [turnEndFlag, setTurnEndFlag] = useState(false);
   const [hasEndedBaseGame, setHasEndedBaseGame] = useState(false);
 
   const [blockMap, setBlockMap] = useState<Map<number, number[]>>(new Map());
@@ -1791,6 +1900,18 @@ export default function Game() {
   const [onCheckboxConfirm, setOnCheckboxConfirm] = useState<
     ((selected: Checkbox[]) => void) | null
   >(null);
+
+  const [textInputPopup, setTextInputPopup] = useState<{
+    description: string;
+    required: boolean;
+    resolve: (input: string | null) => void;
+  } | null>(null);
+
+  const [stringChoicePopup, setStringChoicePopup] = useState<{
+  description: string;
+  choices: string[];
+  resolve: (choice: string) => void;
+} | null>(null);
 
   const [pendingPlayedCards, setPendingPlayedCards] = useState<GameCard[]>([]);
 
@@ -1978,11 +2099,73 @@ export default function Game() {
 
   const drawNewTurn = async () => {
     await discardEndTurn();
+    setResources((prev) => {
+      const reset: ResourceMap = { ...emptyResource };
+      if ("fame" in prev) (reset as Partial<ResourceMap>).fame = (prev as Partial<ResourceMap>).fame;
+      return reset;
+    });
     draw(4);
-    setHasUpgradedCard(false);
+
+    setTurnEndFlag(false);
   }
   
-  const progress = () => draw(2);
+ const progress = async () => {
+    let bonusCards = 0;
+    
+    for (const card of playArea) {
+      const effects = getCardEffects(card.id, card.currentSide);
+      for (const effect of effects) {
+        if (effect.timing === "onProgress") {
+          const context: GameContext = {
+            card,
+            zone: "Play Area",
+            resources,
+            filterZone,
+            setResources,
+            draw,
+            effectEndTurn,
+            dropToPlayArea,
+            dropToBlocked,
+            dropToDiscard,
+            setDeck: setDeckImmediate,
+            setPlayArea: setPlayAreaImmediate,
+            setDiscard: setDiscardImmediate,
+            setPermanentZone,
+            setTemporaryCardList,
+            setTemporaryCardListImmediate,
+            setBlockedZone,
+            deleteCardInZone,
+            replaceCardInZone,
+            mill,
+            openCheckboxPopup,
+            selectResourceChoice,
+            selectCardsFromZone,
+            selectCardsFromArray,
+            discoverCard,
+            boostProductivity,
+            registerEndRoundEffect,
+            addCardEffect,
+            fetchCardsInZone,
+            selectCardSides,
+            selectUpgradeCost,
+            selectTextInput,
+            selectStringChoice,
+            updateBlocks,
+            getBlockedBy,
+            getCardZone,
+          };
+          
+          const result = await effect.execute(context);
+          if (typeof result === 'number') {
+            bonusCards += result;
+          }
+        }
+      }
+    }
+    
+    // Piocher 2 cartes + bonus
+    draw(2 + bonusCards);
+  };
 
   const handleEffectsEndOfTurn = async () => {
     for(const card of playArea) {
@@ -2022,6 +2205,7 @@ export default function Game() {
   };
 
   const discardEndTurn = async (endRound?: boolean) => {
+    setTurnEndFlag(true);
     await handleEffectsEndOfTurn();
 
     if (endRound) {
@@ -2035,7 +2219,7 @@ export default function Game() {
       
       await handleEffectsEndOfRound(endOfRoundCardList);
 
-      setHasUpgradedCard(false);
+      setTurnEndFlag(false);
     }
     else {
       const cardsToDiscard: GameCard[] = [];
@@ -2072,15 +2256,7 @@ export default function Game() {
       setPlayArea(cardsToKeep);
       setBlockedZone(blockedToKeep);
       setTemporaryCardList([]);
-
-      setHasUpgradedCard(true);
     }
-
-    setResources((prev) => {
-      const reset: ResourceMap = { ...emptyResource };
-      if ("fame" in prev) (reset as Partial<ResourceMap>).fame = (prev as Partial<ResourceMap>).fame;
-      return reset;
-    });
   };
 
   const handleEndBaseGame = async () => {
@@ -2134,6 +2310,8 @@ export default function Game() {
             fetchCardsInZone,
             selectCardSides,
             selectUpgradeCost,
+            selectTextInput,
+            selectStringChoice,
             updateBlocks,
             getBlockedBy,
             getCardZone,
@@ -2479,6 +2657,18 @@ export default function Game() {
     setShowUpgradeCostPopup(true);
   }
 
+  const selectTextInput = (description: string, required: boolean): Promise<string | null> => {
+    return new Promise((resolve) => {
+      setTextInputPopup({ description, required, resolve });
+    });
+  };
+
+  const selectStringChoice = (description: string, choices: string[]): Promise<string> => {
+    return new Promise((resolve) => {
+      setStringChoicePopup({ description, choices, resolve });
+    });
+  };
+
   function updateBlocks(blocker: number, blockedCards: number[] | null) {
     setBlockMap(prev => {
       const next = new Map(prev);
@@ -2507,6 +2697,7 @@ export default function Game() {
     cardsForTrigger?: GameCard[],
     effectIndex?: number
   ) => {
+
     const effects = getCardEffects(card.id, card.currentSide);
 
     if (effects.length === 0) return;
@@ -2544,6 +2735,8 @@ export default function Game() {
       fetchCardsInZone,
       selectCardSides,
       selectUpgradeCost,
+      selectTextInput,
+      selectStringChoice,
       updateBlocks,
       getBlockedBy,
       getCardZone,
@@ -2558,11 +2751,12 @@ export default function Game() {
       if (effectIndex < parsedEffects.length) {
         const currentEffectText = parsedEffects[effectIndex].text;
         
-        if (isTimeEffect(currentEffectText) && checkTimeEffectRestrictions()) {
+        if ((isTimeEffect(currentEffectText) && checkTimeEffectRestrictions()) ||
+            (currentEffectText.startsWith("effects/time") && turnEndFlag)) {
           return;
         }
       }
-      
+
       if (await eff.execute(context)) {
         dropToDiscard({ id: card.id, fromZone: zone });
       }
@@ -2851,6 +3045,8 @@ export default function Game() {
           fetchCardsInZone,
           selectCardSides,
           selectUpgradeCost,
+          selectTextInput,
+          selectStringChoice,
           updateBlocks,
           getBlockedBy,
           getCardZone,
@@ -2858,7 +3054,7 @@ export default function Game() {
         
         const additionalCostPaid = await additionalCostEffect.execute(context);
         if (!additionalCostPaid) {
-          return; // Don't upgrade if additional cost not paid
+          return;
         }
       }
 
@@ -2886,7 +3082,7 @@ export default function Game() {
       replaceCardInZone(zone, card.id, upgraded);
     }
 
-    setHasUpgradedCard(true);
+    setTurnEndFlag(true);
     discardEndTurn();
   };
 
@@ -2928,6 +3124,8 @@ export default function Game() {
             fetchCardsInZone,
             selectCardSides,
             selectUpgradeCost,
+            selectTextInput,
+            selectStringChoice,
             updateBlocks,
             getBlockedBy,
             getCardZone,
@@ -3202,7 +3400,7 @@ export default function Game() {
         <div className="space-x-2">
           <Button onClick={drawNewTurn} disabled={deck.length === 0}>{"New Turn"}</Button>
           <Button onClick={() => discardEndTurn(false)} disabled={deck.length === 0}>{"Pass"}</Button>
-          <Button onClick={progress} disabled={hasUpgradedCard || isPlayBlocked || deck.length === 0}>{"Progress"}</Button>
+          <Button onClick={progress} disabled={turnEndFlag || isPlayBlocked || deck.length === 0}>{"Progress"}</Button>
           {/* Conditionnal controls */}
           <Button disabled={deck.length > 0} className="bg-red-600 hover:bg-red-500 text-white" onClick={handleEndRound}>End Round</Button>
           {/* Manual actions */}
@@ -3631,6 +3829,32 @@ export default function Game() {
           onCancel={() => {
             setShowUpgradeCostPopup(false);
             setUpgradeCostPopupCard(null);
+          }}
+        />
+      )}
+
+      {textInputPopup && (
+        <TextInputPopup
+          description={textInputPopup.description}
+          required={textInputPopup.required}
+          onConfirm={(text) => {
+            textInputPopup.resolve(text);
+            setTextInputPopup(null);
+          }}
+          onCancel={() => {
+            textInputPopup.resolve(null);
+            setTextInputPopup(null);
+          }}
+        />
+      )}
+
+      {stringChoicePopup && (
+        <StringChoicePopup
+          description={stringChoicePopup.description}
+          choices={stringChoicePopup.choices}
+          onConfirm={(choice) => {
+            stringChoicePopup.resolve(choice);
+            setStringChoicePopup(null);
           }}
         />
       )}
