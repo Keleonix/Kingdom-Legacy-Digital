@@ -72,7 +72,7 @@ function getBackgroundStyle(card: GameCard, sideIdx: number) {
   }
   types = types.filter((t) => t !== "Permanente");
 
-  const colors = types.map((t) => TYPE_COLORS[t] || "#ffffff");
+  const colors = types.map((t) => TYPE_COLORS[t] || "#f4c2d7");
 
   if (card.enemy[card.currentSide - 1]) {
     colors.push(TYPE_COLORS["Ennemi"]);
@@ -2252,10 +2252,16 @@ export default function Game() {
         }
       });
 
-      setDiscard((d) => [...d, ...cardsToDiscard, ...blockedToDiscard]);
-      setPlayArea(cardsToKeep);
-      setBlockedZone(blockedToKeep);
-      setTemporaryCardList([]);
+      setPlayAreaImmediate(cardsToKeep);
+      setBlockedZoneImmediate(blockedToKeep);
+      setDiscardImmediate((d) => [...d, ...cardsToDiscard, ...blockedToDiscard]);
+      
+      const allDiscarded = [...cardsToDiscard, ...blockedToDiscard];
+      if (allDiscarded.length > 0) {
+        await triggerOnOtherCardDiscarded(allDiscarded);
+      }
+      
+      setTemporaryCardListImmediate([]);
     }
   };
 
@@ -2776,7 +2782,7 @@ export default function Game() {
   // -------------------
   // Drag & Drop Handlers
   // -------------------
-  const handleDropToZone = (toZone: string) => (payload: DropPayload) => {
+  const handleDropToZone = (toZone: string) => async (payload: DropPayload) => {
     const { id, fromZone } = payload;
     if (fromZone === toZone) return;
 
@@ -2847,6 +2853,10 @@ export default function Game() {
       for (const card of playArea) {
         handleExecuteCardEffect(card, "Play Area", "otherCardPlayed", [toAdd]);
       }
+    }
+
+    if (toZone === "Discard" && (fromZone === "Play Area" || fromZone === "Blocked")) {
+      await triggerOnOtherCardDiscarded(fetchCardsInZone((card) => card.id === id, fromZone));
     }
 
     if ((toZone !== "Play Area" && toZone !== "Permanent") && (fromZone === "Play Area" || fromZone === "Permanent")) {
@@ -3139,6 +3149,7 @@ export default function Game() {
     const onlyFame = !Object.entries(resources || {}).some(([key, value]) => 
       key !== "fame" && Number(value) !== 0
     );
+    
     if (resources) {
       setResources((prev) => {
         const next = { ...prev };
@@ -3156,13 +3167,64 @@ export default function Game() {
       return;
     }
 
-    if (toZone) {
-      const drop = handleDropToZone(toZone);
-      drop({fromZone: zone, id: card.id});
-    }
-    else {
-      deleteCardInZone(zone, card.id);
-      setDiscard((prev) => [...prev, card]);
+    const targetZone = toZone || "Discard";
+    const drop = handleDropToZone(targetZone);
+    await drop({fromZone: zone, id: card.id});
+  };
+
+  const triggerOnOtherCardDiscarded = async (discardedCards: GameCard[]) => {
+    const allActiveCards = [...playAreaRef.current, ...permanentZone];
+    
+    for (const card of allActiveCards) {
+      const effects = getCardEffects(card.id, card.currentSide);
+      
+      for (const effect of effects) {
+        if (effect.timing === "onOtherCardDiscarded") {
+          const context: GameContext = {
+            card,
+            zone: playAreaRef.current.includes(card) ? "Play Area" : "Blocked",
+            cardsForTrigger: discardedCards,
+            resources,
+            filterZone,
+            setResources,
+            draw,
+            effectEndTurn,
+            dropToPlayArea,
+            dropToBlocked,
+            dropToDiscard,
+            setDeck: setDeckImmediate,
+            setPlayArea: setPlayAreaImmediate,
+            setDiscard: setDiscardImmediate,
+            setPermanentZone,
+            setTemporaryCardList,
+            setTemporaryCardListImmediate,
+            setBlockedZone,
+            deleteCardInZone,
+            replaceCardInZone,
+            mill,
+            openCheckboxPopup,
+            selectResourceChoice,
+            selectCardsFromZone,
+            selectCardsFromArray,
+            discoverCard,
+            boostProductivity,
+            registerEndRoundEffect,
+            addCardEffect,
+            fetchCardsInZone,
+            selectCardSides,
+            selectUpgradeCost,
+            selectTextInput,
+            selectStringChoice,
+            updateBlocks,
+            getBlockedBy,
+            getCardZone,
+          };
+          
+          if (await effect.execute(context)) {
+            dropToDiscard({id: card.id, fromZone: "Play Area"});
+          }
+        }
+      }
     }
   };
 

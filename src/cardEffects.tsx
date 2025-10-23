@@ -172,7 +172,7 @@ async function setResourceMapToCard(
   }
 }
 
-function checkBoxes(
+async function checkBoxes(
   card: GameCard,
   checkboxes: Checkbox[]
 ) {
@@ -3846,7 +3846,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                   for(const box of boxes) {
                     applyResourceMapDelta(ctx.setResources, getCheckboxResources(box.content));
                   }
-                  checkBoxes(ctx.card, boxes);
+                  await checkBoxes(ctx.card, boxes);
                   const selected = await ctx.selectCardsFromZone((card) => card.enemy[card.currentSide - 1], "Play Area", this.description, 1);
                   ctx.dropToDiscard({id: selected[0].id, fromZone: "Play Area"});
                   resolve(true);
@@ -4125,6 +4125,220 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         return false;
       }
     }]
+  },
+  96: {
+    1: [{ // Alchimiste
+      description: "Dépensez gold x2 pour choisir le côté de cette carte",
+      timing: "onClick",
+      execute: async function (ctx) {
+        if (ctx.resources.gold >= 2) {
+          const selectedSides = await new Promise<number[]>((resolve) => {
+            ctx.selectCardSides(ctx.card, 1, 0, resolve);
+          });
+          
+          const side = selectedSides[0];
+          if (side !== 1) {
+            ctx.setResources(prev => ({ ...prev, gold: prev.gold - 2 }));
+            ctx.card.currentSide = side;
+            return true;
+          }
+        }
+        return false;
+      }
+    }],
+    2: [{ // Potion de Force
+      description: "Réinitialisez pour gagnez military x3",
+      timing: "onClick",
+      execute: async function (ctx) {
+        ctx.setResources(prev => ({ ...prev, military: prev.military + 3 }));
+        ctx.card.currentSide = 1;
+        return true;
+      }
+    }],
+    3: [{ // Potion d'Amour
+      description: "Réinitialisez pour gagnez export x5",
+      timing: "onClick",
+      execute: async function (ctx) {
+        ctx.setResources(prev => ({ ...prev, export: prev.export + 5 }));
+        ctx.card.currentSide = 1;
+        return true;
+      }
+    }],
+    4: [{ // Potion de Soin
+      description: "Réinitialisez pour sauver une personne",
+      timing: "onOtherCardDiscarded",
+      execute: async function (ctx) {
+        if (!ctx.cardsForTrigger) return false;
+        
+        const people = ctx.cardsForTrigger.filter((card) => 
+          card.GetType().includes("Personne")
+        );
+        
+        if (people.length === 0) return false;
+        
+        const choice = await ctx.selectStringChoice(
+          "Défausser la Potion de Soin pour garder une Personne en jeu ?",
+          ["Oui", "Non"]
+        );
+        
+        if (choice === "Non") return false;
+        
+        let selected: GameCard[];
+        if (people.length > 1) {
+          selected = await ctx.selectCardsFromArray(
+            people, 
+            "Discard", 
+            "Choisissez une Personne à sauver", 
+            1
+          );
+        } else {
+          selected = [people[0]];
+        }
+        
+        if (selected && selected.length > 0) {
+          ctx.dropToPlayArea({id: selected[0].id, fromZone: "Discard"});
+          ctx.card.currentSide = 1;
+          return true;
+        }
+        
+        return false;
+      }
+    }],
+  },
+  97: {
+
+  },
+  98: {
+    1: [{ // Boussole
+      description: "1 check par Maritime",
+      timing: "onClick",
+      execute: async function (ctx) {
+        const cards = ctx.fetchCardsInZone((card) => card.GetType().includes("Maritime"), "Play Area");
+        if (cards.length < 1) {
+          return false;
+        }
+        const result = await new Promise<boolean>((resolve) => {
+          ctx.openCheckboxPopup(ctx.card, 0, cards.length, async (boxes) => {
+            if(boxes.length !== 0) {
+              for(const box of boxes) {
+                applyResourceMapDelta(ctx.setResources, getCheckboxResources(box.content));
+              }
+              await checkBoxes(ctx.card, boxes);
+              resolve(true);
+            } else {
+              resolve(false);
+            }
+          });
+        });
+        if (result) {
+          const allChecked = ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked);
+          if (allChecked) {
+            ctx.card.currentSide = 2;
+          }
+          return true;
+        }
+        return false;
+      }
+    }],
+    2: [{ // Navigation
+      description: "1 check par Maritime",
+      timing: "onClick",
+      execute: async function (ctx) {
+        const cards = ctx.fetchCardsInZone((card) => card.GetType().includes("Maritime"), "Play Area");
+        if (cards.length < 1) {
+          return false;
+        }
+        const result = await new Promise<boolean>((resolve) => {
+          ctx.openCheckboxPopup(ctx.card, 0, cards.length, async (boxes) => {
+            if(boxes.length !== 0) {
+              for(const box of boxes) {
+                applyResourceMapDelta(ctx.setResources, getCheckboxResources(box.content));
+              }
+              await checkBoxes(ctx.card, boxes);
+              resolve(true);
+            } else {
+              resolve(false);
+            }
+          });
+        });
+        if (result) {
+          const allChecked = ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked);
+          if (allChecked) {
+            ctx.card.currentSide = 4;
+          }
+          return true;
+        }
+        return false;
+      }
+    }],
+    3: [{ // Calendrier
+      description: "Checkez 1 pour mélanger 15 cartes au hasard de la défausse vers le dessous de la pioche",
+      timing: "onClick",
+      execute: async function (ctx) {
+        if (ctx.card.checkboxes[ctx.card.currentSide - 1][ctx.card.checkboxes.length - 1].checked) {
+          return false;
+        }
+        const discardPile = ctx.filterZone("Discard", () => true);
+        
+        if (discardPile.length === 0) {
+          return false;
+        }
+        
+        const numCardsToTake = Math.min(15, discardPile.length);
+        const randomCards: GameCard[] = [];
+        const availableCards = [...discardPile];
+        
+        for (let i = 0; i < numCardsToTake; i++) {
+          const randomIndex = Math.floor(Math.random() * availableCards.length);
+          randomCards.push(availableCards[randomIndex]);
+          availableCards.splice(randomIndex, 1);
+        }
+        
+        ctx.setDeck(prev => [...prev, ...randomCards]);
+        
+        ctx.setDiscard(prev => 
+          prev.filter(card => !randomCards.some(rc => rc.id === card.id))
+        );
+        
+        checkNextBox(ctx.card)
+        
+        return true;
+      }
+    }],
+    4: [{ // Astrolabe
+      description: "1 check par Maritime",
+      timing: "onClick",
+      execute: async function (ctx) {
+        const cards = ctx.fetchCardsInZone((card) => card.GetType().includes("Maritime"), "Play Area");
+        if (cards.length < 1) {
+          return false;
+        }
+        const result = await new Promise<boolean>((resolve) => {
+          ctx.openCheckboxPopup(ctx.card, 0, cards.length, async (boxes) => {
+            if(boxes.length !== 0) {
+              for(const box of boxes) {
+                applyResourceMapDelta(ctx.setResources, getCheckboxResources(box.content));
+              }
+              await checkBoxes(ctx.card, boxes);
+              resolve(true);
+            } else {
+              resolve(false);
+            }
+          });
+        });
+        if (result) {
+          const allChecked = ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked);
+          if (allChecked) {
+            ctx.card.currentSide = 3;
+          }
+          return true;
+        }
+        return false;
+      }
+    }],
+  },
+  99: {
+
   },
   107: {
     1: [{ // Visite Royale
