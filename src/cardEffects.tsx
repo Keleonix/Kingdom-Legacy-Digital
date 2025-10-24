@@ -222,6 +222,12 @@ async function checkNextBoxApplyEffect(
   }
 }
 
+function setReverseSide(
+  card: GameCard
+) {
+  card.currentSide = ((card.currentSide + 1) % 4) + 1;
+}
+
 // -------------------
 // Get Effects
 // -------------------
@@ -2363,8 +2369,11 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: "Défaussez pour faire rester 1 ou 2 cartes",
       timing: "endOfTurn",
       execute: async function (ctx) {
-        const selected = await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, "Play Area", this.description, 1, 1);
-        ctx.setTemporaryCardListImmediate(selected);
+        const selected = await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, "Play Area", this.description, 0, 2);
+        if (selected.length > 0) {
+          ctx.setTemporaryCardListImmediate(selected);
+          return true;
+        }
         return false;
       }
     }],
@@ -4340,6 +4349,210 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   99: {
 
   },
+  100: {
+    2: [{ // Industrie du Bois
+      description: "Découvrez l'Arche (91)",
+      timing: "onClick",
+      execute: async function (ctx) {
+        if (await ctx.discoverCard(
+          (card) => ([91].includes(card.id)),
+          this.description,
+          1
+        )) {
+          return true;
+        }
+        return false;
+      }
+    }],
+    4: [{ // TODO : Cargaison de Bois
+      description: "Dépensez les wood / export de manière interchangeable",
+      timing: "onResourceGain",
+      execute: async function (ctx) {
+        if (ctx) {
+          return false;
+        }
+        return true;
+      }
+    }],
+  },
+  101: {
+    2: [{ // Machines Agricoles
+        description: "Reste en jeu",
+        timing: "stayInPlay",
+        execute: async function (ctx) {
+          if(ctx) {
+            return false;
+          }
+          return true;
+        }
+    }],
+    3: [{ // Grange Agrandie
+      description: "Faites rester cette carte ou une autre",
+      timing: "endOfTurn",
+      execute: async function (ctx) {
+        const selected = await ctx.selectCardsFromZone(() => true, "Play Area", this.description, 0, 1);
+        if (selected.length > 0) {
+          ctx.setTemporaryCardListImmediate(selected);
+        }
+        return false;
+      }
+    }],
+    4: [{ // Entrepôt Royal
+      description: "Faites rester 2 cartes",
+      timing: "endOfTurn",
+      execute: async function (ctx) {
+        const selected = await ctx.selectCardsFromZone(() => true, "Play Area", this.description, 0, 2);
+        if (selected.length > 0) {
+          ctx.setTemporaryCardListImmediate(selected);
+        }
+        return false;
+      }
+    }],
+  },
+  102: {
+    3: [{ // Exportation de Bois
+      description: "1 check par Maritime",
+      timing: "onClick",
+      execute: async function (ctx) {
+        await checkNextBox(ctx.card);
+        const allChecked = ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked);
+        if (allChecked) {
+          ctx.card.currentSide = 4;
+        }
+        return true;
+      }
+    }],
+    4: [{ // TODO: Cargaison de Bois
+      description: "Les Maritimes produisent 1 gold de plus",
+      timing: "onResourceGain",
+      execute: async function (ctx) {
+        for(const card of ctx.cardsForTrigger?? []) {
+          if (card.GetType().includes("Maritime")) {
+            ctx.setResources(prev => ({ ...prev, gold: prev.gold + 1 }));
+          }
+        }
+        return false;
+      }
+    }],
+  },
+  103: {
+    1: [{ // Missionaire
+      description: "Payez gold x3 pour convertir un Bandit",
+      timing: "onClick",
+      execute: async function (ctx) {
+        const bandits = ctx.fetchCardsInZone((card) => card.GetName().includes("Bandit"), "Play Area");
+        if (ctx.resources.gold >= 3 && bandits.length !== 0) {
+          const card = (await ctx.selectCardsFromArray(bandits, "Play Area", this.description, 1))[0];
+          setReverseSide(card);
+          ctx.dropToDiscard({id: card.id, fromZone: "Play Area"});
+          ctx.setResources(prev => ({ ...prev, gold: prev.gold - 3 }));
+          return true;
+        }
+        return false;
+      }
+    }],
+    3: [{ // Apiculteur
+      description: "Ajoutez 1 check, gagne 1 gold quand plein",
+      timing: "onClick",
+      execute: async function (ctx) {
+        let allChecked = ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked);
+        if (allChecked) {
+          return false;
+        }
+        await checkNextBox(ctx.card);
+        allChecked = ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked);
+        if (allChecked) {
+          addResourceMapToCard(ctx.card, {gold: 1});
+        }
+        return true;
+      }
+    }],
+  },
+  104: {
+    1: [{ // Prêtre
+      description: "Payez gold x2 pour upgrade une carte sans mettre fin au tour",
+      timing: "onClick",
+      execute: async function (ctx) {
+        const cards = ctx.fetchCardsInZone((card) => card.GetUpgrades().length !== 0 && card.id !== ctx.card.id, "Play Area");
+        if (ctx.resources.gold >= 2 && cards.length !== 0) {
+          const card = (await ctx.selectCardsFromArray(cards, "Play Area", this.description, 1))[0];
+          const upgradeCosts = card.GetUpgrades().map((up) => up.cost?? {});
+          
+          const selectedUpgrade = (await ctx.selectResourceChoice(upgradeCosts));
+
+          if (selectedUpgrade === null) {
+            return false;
+          }
+
+          for (const key in selectedUpgrade) {
+            const resourceKey = key as keyof ResourceMap;
+            const amount = selectedUpgrade[resourceKey] ?? 0;
+            if (ctx.resources[resourceKey] < amount) {
+              return false;
+            }
+          }
+
+          for (const key in selectedUpgrade) {
+            const resourceKey = key as keyof ResourceMap;
+            const amount = selectedUpgrade[resourceKey] ?? 0;
+            ctx.resources[resourceKey] -= amount;
+          }
+
+          for (const upg of card.GetUpgrades()) { // TODO : WILL ONLY GET THE FIRST SIMILAR COST
+            if (upg.cost === selectedUpgrade) {
+              card.currentSide = upg.nextSide;
+              break;
+            }
+          }
+          ctx.dropToDiscard({id: card.id, fromZone: "Play Area"});
+          ctx.setResources(prev => ({ ...prev, gold: prev.gold - 2 }));
+          return true;
+        }
+        return false;
+      }
+    }],
+    3: [{ // Cardinal
+      description: "Upgradez une carte sans mettre fin au tour",
+      timing: "onClick",
+      execute: async function (ctx) {
+        const cards = ctx.fetchCardsInZone((card) => card.GetUpgrades().length !== 0 && card.id !== ctx.card.id, "Play Area");
+        if (ctx.resources.gold >= 2 && cards.length !== 0) {
+          const card = (await ctx.selectCardsFromArray(cards, "Play Area", this.description, 1))[0];
+          const upgradeCosts = card.GetUpgrades().map((up) => up.cost?? {});
+          
+          const selectedUpgrade = (await ctx.selectResourceChoice(upgradeCosts));
+
+          if (selectedUpgrade === null) {
+            return false;
+          }
+
+          for (const key in selectedUpgrade) {
+            const resourceKey = key as keyof ResourceMap;
+            const amount = selectedUpgrade[resourceKey] ?? 0;
+            if (ctx.resources[resourceKey] < amount) {
+              return false;
+            }
+          }
+
+          for (const key in selectedUpgrade) {
+            const resourceKey = key as keyof ResourceMap;
+            const amount = selectedUpgrade[resourceKey] ?? 0;
+            ctx.resources[resourceKey] -= amount;
+          }
+          
+          for (const upg of card.GetUpgrades()) { // TODO : WILL ONLY GET THE FIRST SIMILAR COST
+            if (upg.cost === selectedUpgrade) {
+              card.currentSide = upg.nextSide;
+              break;
+            }
+          }
+          ctx.dropToDiscard({id: card.id, fromZone: "Play Area"});
+          return true;
+        }
+        return false;
+      }
+    }],
+  },
   107: {
     1: [{ // Visite Royale
       description: "Retirez 1 au coût d'amélioration d'une carte",
@@ -4390,6 +4603,15 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }]
   },
+  113: {
+
+  },
+  114: {
+
+  },
+  115: {
+
+  },
   119: {
     1: [{ // Commerçante
       description: "Dépensez 1 gold pour obtenir 1 wood",
@@ -4439,6 +4661,15 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         return false;
       }
     }],
+  },
+  122: {
+
+  },
+  124: {
+
+  },
+  126: {
+
   },
 };
 

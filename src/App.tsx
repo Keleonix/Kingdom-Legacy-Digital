@@ -3097,7 +3097,7 @@ export default function Game() {
   };
 
   const handleGainResources = async (card: GameCard, resources: Partial<ResourceMap>, zone: string, toZone?: string) => {
-    for (const c of [...playArea]) {
+    for (const c of [...playArea, ...permanentZone]) {
       const effects = getCardEffects(c.id, c.currentSide, "onResourceGain");
       for (const effect of effects) {
         if (effect.timing === "onResourceGain") {

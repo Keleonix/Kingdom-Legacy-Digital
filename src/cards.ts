@@ -4733,7 +4733,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 101,
-    name: ["Scierie Publique", "Industrie du Bois", "Exportation de Bois", "Cargaison de Bois"],
+    name: ["Labours", "Machines Agricoles", "Grange Agrandie", "Entrepôt Royal"],
     resources: [
       [ { gold: 3, fame: 4 } ],
       [ { gold: 4, fame: 8 } ],
@@ -4743,8 +4743,8 @@ export const allCards: GameCard[] = [
     effects: [
       "",
       "effects/passive Reste en jeu.",
-      "effects/optional Fin du Tour: 2 cartes au choix restent en jeu.",
       "effects/optional Fin du Tour: cette carte ou une autre au choix reste en jeu.",
+      "effects/optional Fin du Tour: 2 cartes au choix restent en jeu.",
     ],
     upgrades: [
       [ { cost: { wood: 4 }, nextSide: 2 } ],
@@ -4779,19 +4779,19 @@ export const allCards: GameCard[] = [
     resources: [
       [ { gold: 3, fame: 2 } ],
       [ { gold: 2, export: 2, fame: 4 } ],
-      [ { fame: 13 } ],
       [ { gold: 2, fame: 4 } ],
+      [ { fame: 13 } ],
     ],
     effects: [
       "",
       "",
-      "effects/activate Inscrivez 1 effects/check . Une fois complété, Back Down.",
+      "effects/activate Inscrivez 1 effects/check , une fois complété, ->.",
       "effects/passive La production de chaque carte maritime augmente de +1 resources/gold .",
     ],
     upgrades: [
       [ { cost: { wood: 2, gold: 1, ingot: 1 }, nextSide: 2 } ],
       [],
-      [ { cost: { wood: 2, stone: 2, ingot: 2 }, nextSide: 4 } ],
+      [],
       [],
     ],
     currentSide: 1,
@@ -4883,9 +4883,9 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "effects/activate Dépensez resources/gold resources/gold pour améliorer 1 carte en jeu, en payant son coût. Cela ne met pas FIN au tour.",
+      "effects/activate Dépensez resources/gold resources/gold pour améliorer 1 carte en jeu, en payant son coût. (Cela ne met pas FIN au tour.)",
       "",
-      "effects/activate Améliorez 1 carte en jeu, en payant son coût. Cela ne met pas FIN au tour.",
+      "effects/activate Améliorez 1 carte en jeu, en payant son coût. (Cela ne met pas FIN au tour.)",
       "",
     ],
     upgrades: [
