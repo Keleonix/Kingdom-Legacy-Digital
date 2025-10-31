@@ -2156,6 +2156,7 @@ export default function Game() {
             updateBlocks,
             getBlockedBy,
             getCardZone,
+            upgradeCard,
           };
           
           const result = await effect.execute(context);
@@ -2195,13 +2196,65 @@ export default function Game() {
   };
 
   const handleEffectsEndOfRound = async (cardsWithEffects: Array<{ card: GameCard, effectIndex: number }>) => {
-  for (const { card, effectIndex } of cardsWithEffects) {
-    const realCard = deckRef.current.find(c => c.id === card.id);
-    if (realCard) {
-      await handleExecuteCardEffect(realCard, "Deck", "endOfRound", undefined, effectIndex);
+    for (const { card, effectIndex } of cardsWithEffects) {
+      const realCard = deckRef.current.find(c => c.id === card.id);
+      if (realCard) {
+        await handleExecuteCardEffect(realCard, "Deck", "endOfRound", undefined, effectIndex);
+      }
     }
-  }
-};
+  };
+
+  const handleEffectsUpgrade = async (card: GameCard) => {
+    const effects = getCardEffects(card.id, card.currentSide, "onUpgrade");
+    for (const effect of effects) {
+      if (effect.timing === "onUpgrade") {
+        const context: GameContext = {
+          card: card,
+          zone: playArea.includes(card) ? "Play Area" : "Permanent",
+          resources,
+          filterZone,
+          setResources,
+          draw,
+          effectEndTurn,
+          dropToPlayArea,
+          dropToBlocked,
+          dropToDiscard,
+          dropToCampaign,
+          dropToPermanent,
+          setDeck: setDeckImmediate,
+          setPlayArea: setPlayAreaImmediate,
+          setDiscard: setDiscardImmediate,
+          setPermanentZone,
+          setCampaignDeck,
+          setTemporaryCardList,
+          setTemporaryCardListImmediate,
+          setBlockedZone,
+          deleteCardInZone,
+          replaceCardInZone,
+          mill,
+          openCheckboxPopup,
+          selectResourceChoice,
+          selectCardsFromZone,
+          selectCardsFromArray,
+          discoverCard,
+          boostProductivity,
+          registerEndRoundEffect,
+          addCardEffect,
+          fetchCardsInZone,
+          selectCardSides,
+          selectUpgradeCost,
+          selectTextInput,
+          selectStringChoice,
+          updateBlocks,
+          getBlockedBy,
+          getCardZone,
+          upgradeCard,
+        };
+        
+        await effect.execute(context);
+      }
+    }
+  };
 
   const effectEndTurn = async () => {
     await discardEndTurn(false);
@@ -2327,6 +2380,7 @@ export default function Game() {
             updateBlocks,
             getBlockedBy,
             getCardZone,
+            upgradeCard,
           };
           
           const specialFameValue = await fameValueEffect.execute(context);
@@ -2702,6 +2756,17 @@ export default function Game() {
     return blockedZone.filter(c => ids.includes(c.id));
   }
 
+  async function upgradeCard(card: GameCard, nextSide: number): Promise<boolean> {
+    if (card.name[nextSide - 1] === "") {
+      return false;
+    }
+
+    handleEffectsUpgrade(card);
+
+    card.currentSide = nextSide;
+    return true;
+  }
+
   const handleExecuteCardEffect = async (
     card: GameCard,
     zone: string,
@@ -2755,6 +2820,7 @@ export default function Game() {
       updateBlocks,
       getBlockedBy,
       getCardZone,
+      upgradeCard,
     };
 
     if (typeof effectIndex === "number" && effectIndex >= 0 && effectIndex < effects.length) {
@@ -3072,6 +3138,7 @@ export default function Game() {
           updateBlocks,
           getBlockedBy,
           getCardZone,
+          upgradeCard,
         };
         
         const additionalCostPaid = await additionalCostEffect.execute(context);
@@ -3092,7 +3159,7 @@ export default function Game() {
 
     // Switch side
     const upgraded = cloneGameCard(card);
-    upgraded.currentSide = upg.nextSide;
+    await upgradeCard(upgraded, upg.nextSide);
 
     if (zone === "Play Area") {
       // Remove from play area
@@ -3154,6 +3221,7 @@ export default function Game() {
             updateBlocks,
             getBlockedBy,
             getCardZone,
+            upgradeCard,
           };
           
           await effect.execute(context);
@@ -3236,6 +3304,7 @@ export default function Game() {
             updateBlocks,
             getBlockedBy,
             getCardZone,
+            upgradeCard,
           };
           
           if (await effect.execute(context)) {

@@ -44,6 +44,7 @@ export type GameContext = {
   updateBlocks: (blocker: number, blocked: number[] | null) => void;
   getBlockedBy: (blocker: number) => GameCard[];
   getCardZone: (id: number) => string;
+  upgradeCard: (card: GameCard, nextSide: number) => Promise<boolean>;
 };
 
 export type CardEffect = {
@@ -225,10 +226,11 @@ async function checkNextBoxApplyEffect(
   }
 }
 
-function setReverseSide(
+async function setReverseSide(
+  ctx: GameContext,
   card: GameCard
 ) {
-  card.currentSide = ((card.currentSide + 1) % 4) + 1;
+  await ctx.upgradeCard(card, ((card.currentSide + 1) % 4) + 1);
 }
 
 // -------------------
@@ -415,7 +417,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       timing: "onClick",
       execute: async function (ctx) {
         ctx.setResources(prev => ({ ...prev, wood: prev.wood + 3 }));
-        ctx.card.currentSide = 2;
+        await ctx.upgradeCard(ctx.card, 2);
         return true;
       }
     }],
@@ -440,7 +442,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       timing: "onClick",
       execute: async function (ctx) {
         ctx.setResources(prev => ({ ...prev, wood: prev.wood + 3 }));
-        ctx.card.currentSide = 2;
+        await ctx.upgradeCard(ctx.card, 2);
         return true;
       }
     }],
@@ -596,7 +598,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           this.description,
           1
         )) {
-          ctx.card.currentSide = 4;
+          await ctx.upgradeCard(ctx.card, 4);
           return true;
         }
         return false;
@@ -868,7 +870,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           this.description,
           1
           )) {
-          ctx.card.currentSide = 1;
+          await ctx.upgradeCard(ctx.card, 1);
           return true;
         }
         return false;
@@ -899,7 +901,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       timing: "onClick",
       execute: async function (ctx) {
         ctx.setResources(prev => ({ ...prev, wood: prev.wood + 3 }));
-        ctx.card.currentSide = 2;
+        await ctx.upgradeCard(ctx.card, 2);
         return true;
       }
     }],
@@ -1018,7 +1020,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           }
           const allChecked = ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked);
           if (allChecked) {
-            ctx.card.currentSide = 3;
+            await ctx.upgradeCard(ctx.card, 3);
             await ctx.discoverCard(
               (card) => ([135].includes(card.id)),
               this.description,
@@ -1102,7 +1104,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           }
           const allChecked = ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked);
           if (allChecked) {
-            ctx.card.currentSide = 3;
+            await ctx.upgradeCard(ctx.card, 3);
           }
           return false;
         }
@@ -1250,7 +1252,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                   ctx.registerEndRoundEffect(
                     "Récompense export (seuil 100): Retournez la carte",
                     async () => {
-                      ctx.card.currentSide = 3;
+                      await ctx.upgradeCard(ctx.card, 3);
                     },
                     false
                   );
@@ -1387,7 +1389,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
         if(selectableCards.length !== 0) {
           ctx.deleteCardInZone("Play Area", (await ctx.selectCardsFromArray(selectableCards, "Play Area", this.description, 1))[0].id);
-          ctx.card.currentSide = 3;
+          await ctx.upgradeCard(ctx.card, 3);
           return true;
         }
         return false;
@@ -1436,7 +1438,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
               });
             }
             
-            ctx.card.currentSide = 1;
+            await ctx.upgradeCard(ctx.card, 1);
             ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
             return true;
           }
@@ -1622,7 +1624,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             }
             return next;
           });
-          ctx.card.currentSide = 1;
+          await ctx.upgradeCard(ctx.card, 1);
           await checkNextBox(ctx.card);
           return true;
         }
@@ -1632,7 +1634,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             this.description, 
             1
           )).valueOf()) {
-            ctx.card.currentSide = 1;
+            await ctx.upgradeCard(ctx.card, 1);
             await checkNextBox(ctx.card);
             return true;
           }
@@ -1915,7 +1917,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       timing: "played",
       execute: async function (ctx) {
         ctx.mill(3);
-        ctx.card.currentSide = 3;
+        await ctx.upgradeCard(ctx.card, 3);
         return true;
       }
     }],
@@ -1942,7 +1944,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         description: "Retournez à la fin du tour",
         timing: "endOfTurn",
         execute: async function (ctx) {
-          ctx.card.currentSide = 1;
+          await ctx.upgradeCard(ctx.card, 1);
           return false;
         }
       }
@@ -1963,7 +1965,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       execute: async function (ctx) {
         if (ctx.resources.military >= 3) {
           ctx.setResources(prev => ({ ...prev, military: prev.military - 3}));
-          ctx.card.currentSide = 3;
+          await ctx.upgradeCard(ctx.card, 3);
           return true;
         }
         return false;
@@ -2275,7 +2277,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           this.description,
           1
         )) {
-          ctx.card.currentSide = 1;
+          await ctx.upgradeCard(ctx.card, 1);
           return true;
         }
         return false;
@@ -2306,7 +2308,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
               for (const card of selected) {
                 ctx.dropToDiscard({id: card.id, fromZone: "Play Area"})
               }
-              ctx.card.currentSide = 3;
+              await ctx.upgradeCard(ctx.card, 3);
               return true;
             }
           }
@@ -2322,7 +2324,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             .slice(0, 2)
             .map(item => item.id);
           await ctx.discoverCard((card) => result.includes(card.id), this.description, 2);
-          ctx.card.currentSide = 3;
+          await ctx.upgradeCard(ctx.card, 3);
           return false;
         }
       }
@@ -2389,7 +2391,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           this.description,
           1
         )) {
-          ctx.card.currentSide = 1;
+          await ctx.upgradeCard(ctx.card, 1);
           ctx.effectEndTurn();
         }
         return false;
@@ -2487,7 +2489,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           for (const card of selected) {
             ctx.deleteCardInZone("Deck", card.id);
           }
-          ctx.card.currentSide = 3;
+          await ctx.upgradeCard(ctx.card, 3);
           return false;
         }
       },
@@ -2556,7 +2558,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           }
           if(selectableCards.length !== 0) {
             ctx.deleteCardInZone("Play Area", (await ctx.selectCardsFromArray(selectableCards, "Play Area", this.description, 1))[0].id);
-            ctx.card.currentSide = 3;
+            await ctx.upgradeCard(ctx.card, 3);
             return true;
           }
           return false;
@@ -2568,7 +2570,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         execute: async function (ctx) {
           if (ctx.resources.military >= 3) {
             ctx.setResources(prev => ({ ...prev, military: prev.military - 3 }));
-            ctx.card.currentSide = 3;
+            await ctx.upgradeCard(ctx.card, 3);
             return true;
           }
           return false;
@@ -2648,7 +2650,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           for (const card of selected) {
             ctx.deleteCardInZone("Deck", card.id);
           }
-          ctx.card.currentSide = 3;
+          await ctx.upgradeCard(ctx.card, 3);
           return false;
         }
       },
@@ -2806,7 +2808,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         execute: async function (ctx) {
           if (ctx.resources.military >= 5) {
             ctx.setResources(prev => ({ ...prev, military: prev.military - 5}));
-            ctx.card.currentSide = 3;
+            await ctx.upgradeCard(ctx.card, 3);
             return true;
           }
           return false;
@@ -3008,7 +3010,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           for (const card of selected) {
             ctx.deleteCardInZone("Deck", card.id);
           }
-          ctx.card.currentSide = 3;
+          await ctx.upgradeCard(ctx.card, 3);
           return false;
         }
       }
@@ -3079,7 +3081,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         execute: async function (ctx) {
           const selected = await ctx.selectCardsFromZone((card) => card.GetType().includes("Personne") && card.id !== ctx.card.id, "Play Area", this.description, 0, 2);
           if (selected.length !== 2) {
-            ctx.card.currentSide = 2;
+            await ctx.upgradeCard(ctx.card, 2);
           }
           return false;
         }
@@ -3299,7 +3301,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       timing: "onClick",
       execute: async function (ctx) {
         ctx.setResources(prev => ({ ...prev, wood: prev.wood + 3 }));
-        ctx.card.currentSide = 2;
+        await ctx.upgradeCard(ctx.card, 2);
         return true;
       }
     }],
@@ -3510,7 +3512,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             for (const card of selected) {
               ctx.dropToDiscard({id: card.id, fromZone: "Play Area"});
             }
-            ctx.card.currentSide = 3;
+            await ctx.upgradeCard(ctx.card, 3);
             return true;
           }
         return false;
@@ -3541,7 +3543,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           ]);
           if(choice) {
             applyChoice(ctx, choice);
-            ctx.card.currentSide = 1;
+            await ctx.upgradeCard(ctx.card, 1);
             return true;
           }
         return false;
@@ -3679,7 +3681,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           const card = selected[0];
           await addResourceMapToCard(card, {gold: 1, military: 1});
           card.type[card.currentSide - 1] += " - Chevalier";
-          ctx.card.currentSide = 3;
+          await ctx.upgradeCard(ctx.card, 3);
           return false;
         }
       }
@@ -3831,7 +3833,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       execute: async function (ctx) {
         await checkNextBox(ctx.card);
         if (ctx.card.checkboxes[ctx.card.currentSide - 1][ctx.card.checkboxes[ctx.card.currentSide - 1].length - 1].checked) {
-          ctx.card.currentSide = 4
+          await ctx.upgradeCard(ctx.card, 4)
         }
         return true;
       }
@@ -3934,7 +3936,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           }
         }
         if (ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked)) {
-          ctx.card.currentSide = 3;
+          await ctx.upgradeCard(ctx.card, 3);
           ctx.dropToDiscard({id: ctx.card.id, fromZone: "Permanent"})
         }
         return false;
@@ -4151,7 +4153,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           const side = selectedSides[0];
           if (side !== 1) {
             ctx.setResources(prev => ({ ...prev, gold: prev.gold - 2 }));
-            ctx.card.currentSide = side;
+            await ctx.upgradeCard(ctx.card, side);
             return true;
           }
         }
@@ -4163,7 +4165,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       timing: "onClick",
       execute: async function (ctx) {
         ctx.setResources(prev => ({ ...prev, military: prev.military + 3 }));
-        ctx.card.currentSide = 1;
+        await ctx.upgradeCard(ctx.card, 1);
         return true;
       }
     }],
@@ -4172,7 +4174,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       timing: "onClick",
       execute: async function (ctx) {
         ctx.setResources(prev => ({ ...prev, export: prev.export + 5 }));
-        ctx.card.currentSide = 1;
+        await ctx.upgradeCard(ctx.card, 1);
         return true;
       }
     }],
@@ -4209,7 +4211,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         
         if (selected && selected.length > 0) {
           ctx.dropToPlayArea({id: selected[0].id, fromZone: "Discard"});
-          ctx.card.currentSide = 1;
+          await ctx.upgradeCard(ctx.card, 1);
           return true;
         }
         
@@ -4245,7 +4247,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         if (result) {
           const allChecked = ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked);
           if (allChecked) {
-            ctx.card.currentSide = 2;
+            await ctx.upgradeCard(ctx.card, 2);
           }
           return true;
         }
@@ -4276,7 +4278,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         if (result) {
           const allChecked = ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked);
           if (allChecked) {
-            ctx.card.currentSide = 4;
+            await ctx.upgradeCard(ctx.card, 4);
           }
           return true;
         }
@@ -4341,7 +4343,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         if (result) {
           const allChecked = ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked);
           if (allChecked) {
-            ctx.card.currentSide = 3;
+            await ctx.upgradeCard(ctx.card, 3);
           }
           return true;
         }
@@ -4420,7 +4422,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         await checkNextBox(ctx.card);
         const allChecked = ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked);
         if (allChecked) {
-          ctx.card.currentSide = 4;
+          await ctx.upgradeCard(ctx.card, 4);
           ctx.dropToPermanent({id: ctx.card.id, fromZone: ctx.zone});
           return false;
         }
@@ -4448,7 +4450,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         const bandits = ctx.fetchCardsInZone((card) => card.GetName().includes("Bandit"), "Play Area");
         if (ctx.resources.gold >= 3 && bandits.length !== 0) {
           const card = (await ctx.selectCardsFromArray(bandits, "Play Area", this.description, 1))[0];
-          setReverseSide(card);
+          setReverseSide(ctx, card);
           ctx.dropToDiscard({id: card.id, fromZone: "Play Area"});
           ctx.setResources(prev => ({ ...prev, gold: prev.gold - 3 }));
           return true;
@@ -4505,7 +4507,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
 
           for (const upg of card.GetUpgrades()) { // TODO : WILL ONLY GET THE FIRST SIMILAR COST
             if (upg.cost === selectedUpgrade) {
-              card.currentSide = upg.nextSide;
+              await ctx.upgradeCard(card, upg.nextSide);
               break;
             }
           }
@@ -4547,7 +4549,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           
           for (const upg of card.GetUpgrades()) { // TODO : WILL ONLY GET THE FIRST SIMILAR COST
             if (upg.cost === selectedUpgrade) {
-              card.currentSide = upg.nextSide;
+              await ctx.upgradeCard(card, upg.nextSide);
               break;
             }
           }
@@ -4610,7 +4612,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         const cardId = ctx.card.id;
         const success = await ctx.discoverCard((card) => [106].includes(card.id), this.description, 1);
 
-        if (success) {ctx.card.currentSide = 1;
+        if (success) {
+          await ctx.upgradeCard(ctx.card, 1);
           ctx.dropToCampaign({ id: cardId, fromZone: ctx.zone });
           const forgottenCard = ctx.fetchCardsInZone((card) => card.id === cardId, "Campaign Deck");
           if (forgottenCard.length === 0) {
@@ -5014,11 +5017,11 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
 
           for (const upg of card.GetUpgrades()) { // TODO : WILL ONLY GET THE FIRST SIMILAR COST
             if (upg.cost === selectedUpgrade) {
-              card.currentSide = upg.nextSide;
+              await ctx.upgradeCard(card, upg.nextSide);
               break;
             }
           }
-          ctx.card.currentSide = 2;
+          await ctx.upgradeCard(ctx.card, 2);
           ctx.effectEndTurn();
         }
         return false;
@@ -5041,11 +5044,11 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
 
           for (const upg of card.GetUpgrades()) { // TODO : WILL ONLY GET THE FIRST SIMILAR COST
             if (upg.cost === selectedUpgrade) {
-              card.currentSide = upg.nextSide;
+              await ctx.upgradeCard(card, upg.nextSide);
               break;
             }
           }
-          ctx.card.currentSide = 4;
+          await ctx.upgradeCard(ctx.card, 4);
           ctx.effectEndTurn();
         }
         return false;
@@ -5073,7 +5076,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             ]);
             if (choice) {
               addResourceMapToCard(card, choice);
-              ctx.card.currentSide = 3;
+              await ctx.upgradeCard(ctx.card, 3);
               ctx.effectEndTurn();
               this.uses += 1;
             }
@@ -5100,7 +5103,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             ]);
             if (choice) {
               addResourceMapToCard(card, choice);
-              ctx.card.currentSide = 3;
+              await ctx.upgradeCard(ctx.card, 3);
               ctx.effectEndTurn();
             }
           }
@@ -5198,7 +5201,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           applyResourceMapDelta(ctx.setResources, choice1);
           applyResourceMapDelta(ctx.setResources, choice2);
           applyResourceMapDelta(ctx.setResources, choice3);
-          ctx.card.currentSide = 2;
+          await ctx.upgradeCard(ctx.card, 2);
           return true;
         }
         return false;
@@ -5242,7 +5245,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           applyResourceMapDelta(ctx.setResources, choice1);
           applyResourceMapDelta(ctx.setResources, choice2);
           applyResourceMapDelta(ctx.setResources, choice3);
-          ctx.card.currentSide = 4;
+          await ctx.upgradeCard(ctx.card, 4);
           return true;
         }
         return false;
@@ -5305,7 +5308,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           applyResourceMapDelta(ctx.setResources, choice1);
           applyResourceMapDelta(ctx.setResources, choice2);
           applyResourceMapDelta(ctx.setResources, choice3);
-          ctx.card.currentSide = 3;
+          await ctx.upgradeCard(ctx.card, 3);
           return true;
         }
         return false;
@@ -5507,6 +5510,104 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   126: {
 
+  },
+  127: {
+    4: [{ // Champignons
+      description: "Défaussez 1 Personne pour gagner export x2",
+      timing: "onClick",
+      execute: async function (ctx) {
+        const card = (await ctx.selectCardsFromZone((card) => card.GetType().includes("Personne"), "Play Area", this.description, 1))[0];
+        if (card) {
+          ctx.dropToDiscard({id: card.id, fromZone: "Play Area"});
+          ctx.setResources(prev => ({ ...prev, export: prev.export + 2 }));
+        }
+        return false;
+      }
+    }]
+  },
+  128: {
+    3: [{ // Site de Fouilles
+      description: "Défaussez 1 Personne et dépensez stone x2 pour check",
+      timing: "onClick",
+      execute: async function (ctx) {
+        if (ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked) || ctx.resources.stone < 2) {
+          return false;
+        }
+        const card = (await ctx.selectCardsFromZone((card) => card.GetType().includes("Personne"), "Play Area", this.description, 1))[0];
+        if (card) {
+          ctx.dropToDiscard({id: card.id, fromZone: "Play Area"});
+          ctx.setResources(prev => ({ ...prev, stone: prev.stone - 2 }));
+          await checkNextBox(ctx.card);
+          ctx.effectEndTurn();
+        }
+        return false;
+      }
+    }]
+  },
+  129: {
+    1: [{ // Sources Chaudes
+      description: "Ajoutez gold x1 à un Terrain.",
+      timing: "onUpgrade",
+      execute: async function (ctx) {
+        const card = (await ctx.selectCardsFromZone((card) => card.GetType().includes("Terrain") && card.id !== ctx.card.id, "Play Area", this.description, 1))[0];
+        if (card) {
+          addResourceMapToCard(card, {gold: 1});
+        }
+        return false;
+      }
+    }],
+    2: [{ // Fontaine
+      description: "Boostez une carte en jeu.",
+      timing: "onUpgrade",
+      execute: async function (ctx) {
+        ctx.boostProductivity((card) => card.id !== ctx.card.id, "Play Area", this.description, null);
+        return false;
+      }
+    }],
+    4: [{ // Canaux
+      description: "Un Terrain gagne \"Reste en jeu.\"",
+      timing: "onUpgrade",
+      execute: async function (ctx) {
+        const card = (await ctx.selectCardsFromZone((card) => card.GetType().includes("Terrain") && card.id !== ctx.card.id, "Play Area", this.description, 1))[0];
+        if (card) {
+          ctx.addCardEffect(card.id, card.currentSide, "Play Area", stayInPlayEffect, stayInPlayText);
+        }
+        return false;
+      }
+    }],
+  },
+  130: {
+    2: [{ // Mur Intérieur
+      description: "Regardez les 2 cartes du dessus du deck",
+      timing: "onClick",
+      execute: async function (ctx: GameContext) {
+        ctx.setDeck((d) => {
+          ctx.selectCardsFromArray([d[0], d[1]], "Deck", this.description, 0);
+          return d;
+        })
+        return false;
+      }
+    }],
+    3: [{ // Mur Intérieur
+      description: "Reste en jeu",
+      timing: "stayInPlay",
+      execute: async function (ctx: GameContext) {
+        if(ctx) {
+          return false;
+        }
+        return true;
+      }
+    }],
+    4: [{ // Double Muraille
+      description: "Reste en jeu",
+      timing: "stayInPlay",
+      execute: async function (ctx: GameContext) {
+        if(ctx) {
+          return false;
+        }
+        return true;
+      }
+    }],
   },
 };
 

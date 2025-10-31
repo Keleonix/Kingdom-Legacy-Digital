@@ -6047,7 +6047,7 @@ export const allCards: GameCard[] = [
       "",
       "effects/passive Vous pouvez regardez les 2 cartes du dessus de votre pioche.",
       "effects/passive Reste en jeu.",
-      "Vaut 4 resources/fame pour chaque Murailles, celle-ci incluse effects/passive Reste en jeu.",
+      "Vaut 4 resources/fame pour chaque Murailles, celle-ci incluse. effects/passive Reste en jeu.",
     ],
     upgrades: [
       [

@@ -105,7 +105,8 @@ export type EffectTiming =
   "restrictPlay" |
   "restrictAll" |
   "onEndOfGame" |
-  "onCardsDiscarded"
+  "onCardsDiscarded" |
+  "onUpgrade"
 ;
 
 export class GameCard {
