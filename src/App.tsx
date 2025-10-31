@@ -2127,10 +2127,13 @@ export default function Game() {
             dropToPlayArea,
             dropToBlocked,
             dropToDiscard,
+            dropToCampaign,
+            dropToPermanent,
             setDeck: setDeckImmediate,
             setPlayArea: setPlayAreaImmediate,
             setDiscard: setDiscardImmediate,
             setPermanentZone,
+            setCampaignDeck,
             setTemporaryCardList,
             setTemporaryCardListImmediate,
             setBlockedZone,
@@ -2258,7 +2261,7 @@ export default function Game() {
       
       const allDiscarded = [...cardsToDiscard, ...blockedToDiscard];
       if (allDiscarded.length > 0) {
-        await triggerOnOtherCardDiscarded(allDiscarded);
+        await triggerOnCardDiscarded(allDiscarded);
       }
       
       setTemporaryCardListImmediate([]);
@@ -2295,10 +2298,13 @@ export default function Game() {
             dropToPlayArea,
             dropToBlocked,
             dropToDiscard,
+            dropToCampaign,
+            dropToPermanent,
             setDeck: setDeckImmediate,
             setPlayArea: setPlayAreaImmediate,
             setDiscard: setDiscardImmediate,
             setPermanentZone,
+            setCampaignDeck,
             setTemporaryCardList,
             setTemporaryCardListImmediate,
             setBlockedZone,
@@ -2720,10 +2726,13 @@ export default function Game() {
       dropToPlayArea,
       dropToBlocked,
       dropToDiscard,
+      dropToCampaign,
+      dropToPermanent,
       setDeck: setDeckImmediate,
       setPlayArea: setPlayAreaImmediate,
       setDiscard: setDiscardImmediate,
       setPermanentZone,
+      setCampaignDeck,
       setTemporaryCardList,
       setTemporaryCardListImmediate,
       setBlockedZone,
@@ -2856,7 +2865,7 @@ export default function Game() {
     }
 
     if (toZone === "Discard" && (fromZone === "Play Area" || fromZone === "Blocked")) {
-      await triggerOnOtherCardDiscarded(fetchCardsInZone((card) => card.id === id, fromZone));
+      await triggerOnCardDiscarded(fetchCardsInZone((card) => card.id === id, fromZone));
     }
 
     if ((toZone !== "Play Area" && toZone !== "Permanent") && (fromZone === "Play Area" || fromZone === "Permanent")) {
@@ -3034,10 +3043,13 @@ export default function Game() {
           dropToPlayArea,
           dropToBlocked,
           dropToDiscard,
+          dropToCampaign,
+          dropToPermanent,
           setDeck: setDeckImmediate,
           setPlayArea: setPlayAreaImmediate,
           setDiscard: setDiscardImmediate,
           setPermanentZone,
+          setCampaignDeck,
           setTemporaryCardList,
           setTemporaryCardListImmediate,
           setBlockedZone,
@@ -3113,10 +3125,13 @@ export default function Game() {
             dropToPlayArea,
             dropToBlocked,
             dropToDiscard,
+            dropToCampaign,
+            dropToPermanent,
             setDeck: setDeckImmediate,
             setPlayArea: setPlayAreaImmediate,
             setDiscard: setDiscardImmediate,
             setPermanentZone,
+            setCampaignDeck,
             setTemporaryCardList,
             setTemporaryCardListImmediate,
             setBlockedZone,
@@ -3172,14 +3187,14 @@ export default function Game() {
     await drop({fromZone: zone, id: card.id});
   };
 
-  const triggerOnOtherCardDiscarded = async (discardedCards: GameCard[]) => {
-    const allActiveCards = [...playAreaRef.current, ...permanentZone];
+  const triggerOnCardDiscarded = async (discardedCards: GameCard[]) => {
+    const allActiveCards = [...playAreaRef.current, ...permanentZone, ...discardedCards];
     
     for (const card of allActiveCards) {
       const effects = getCardEffects(card.id, card.currentSide);
       
       for (const effect of effects) {
-        if (effect.timing === "onOtherCardDiscarded") {
+        if (effect.timing === "onCardsDiscarded") {
           const context: GameContext = {
             card,
             zone: playAreaRef.current.includes(card) ? "Play Area" : "Blocked",
@@ -3192,10 +3207,13 @@ export default function Game() {
             dropToPlayArea,
             dropToBlocked,
             dropToDiscard,
+            dropToCampaign,
+            dropToPermanent,
             setDeck: setDeckImmediate,
             setPlayArea: setPlayAreaImmediate,
             setDiscard: setDiscardImmediate,
             setPermanentZone,
+            setCampaignDeck,
             setTemporaryCardList,
             setTemporaryCardListImmediate,
             setBlockedZone,

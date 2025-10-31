@@ -68,6 +68,7 @@ export const TYPE_COLORS: Record<string, string> = {
   Elevage: "#f8ad70ff",
   Cheval: "#f8ad70ff",
   Cargaison: "#c59f90ff",
+  default: "#f7a0c4ff",  // pastel redish pink
 };
 
 export const emptyResource: ResourceMap = {
@@ -104,7 +105,7 @@ export type EffectTiming =
   "restrictPlay" |
   "restrictAll" |
   "onEndOfGame" |
-  "onOtherCardDiscarded"
+  "onCardsDiscarded"
 ;
 
 export class GameCard {

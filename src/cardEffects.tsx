@@ -15,10 +15,13 @@ export type GameContext = {
   dropToPlayArea: (payload: DropPayload) => void;
   dropToBlocked: (payload: DropPayload) => void;
   dropToDiscard: (payload: DropPayload) => void;
+  dropToCampaign: (payload: DropPayload) => void;
+  dropToPermanent: (payload: DropPayload) => void;
   setDeck: React.Dispatch<React.SetStateAction<GameCard[]>>;
   setPlayArea: React.Dispatch<React.SetStateAction<GameCard[]>>;
   setDiscard: React.Dispatch<React.SetStateAction<GameCard[]>>;
   setPermanentZone: React.Dispatch<React.SetStateAction<GameCard[]>>;
+  setCampaignDeck: React.Dispatch<React.SetStateAction<GameCard[]>>;
   setTemporaryCardList: React.Dispatch<React.SetStateAction<GameCard[]>>;
   setTemporaryCardListImmediate: (cards: GameCard[]) => void;
   setBlockedZone: React.Dispatch<React.SetStateAction<GameCard[]>>;
@@ -1620,7 +1623,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             return next;
           });
           ctx.card.currentSide = 1;
-          checkNextBox(ctx.card);
+          await checkNextBox(ctx.card);
           return true;
         }
         else {
@@ -1630,7 +1633,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             1
           )).valueOf()) {
             ctx.card.currentSide = 1;
-            checkNextBox(ctx.card);
+            await checkNextBox(ctx.card);
             return true;
           }
         }
@@ -3946,7 +3949,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           return false;
         }
         for (let i = 0; i < (people.length - 1)/2; i++) {
-          checkNextBox(ctx.card);
+          await checkNextBox(ctx.card);
         }
         return true;
       }
@@ -4106,7 +4109,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       execute: async function (ctx) {
         if (ctx.resources.gold >= 2) {
           ctx.setResources(prev => ({ ...prev, gold: prev.gold - 2 }));
-          checkNextBox(ctx.card);
+          await checkNextBox(ctx.card);
           return true;
         }
         return false;
@@ -4175,7 +4178,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     }],
     4: [{ // Potion de Soin
       description: "Réinitialisez pour sauver une personne",
-      timing: "onOtherCardDiscarded",
+      timing: "onCardsDiscarded",
       execute: async function (ctx) {
         if (!ctx.cardsForTrigger) return false;
         
@@ -4418,6 +4421,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         const allChecked = ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked);
         if (allChecked) {
           ctx.card.currentSide = 4;
+          ctx.dropToPermanent({id: ctx.card.id, fromZone: ctx.zone});
+          return false;
         }
         return true;
       }
@@ -4553,6 +4558,126 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
   },
+  105: {
+    1: [{ // Petit Village sur la Colline
+      description: "Dépensez 2 gold pour obtenir 1 ressource au choix",
+      timing: "onClick",
+      execute: async function (ctx) {
+        if (ctx.resources.gold >= 2) {
+          const choice = await ctx.selectResourceChoice([
+            { gold: 1 },
+            { wood: 1 },
+            { stone: 1 },
+            { military: 1 },
+            { ingot: 1 },
+            { export: 1 }
+          ]);
+          if(choice) {
+            ctx.setResources(prev => ({ ...prev, gold: prev.gold - 2 }));
+            applyChoice(ctx, choice);
+            return true;
+          }
+        }
+        return false;
+      }
+    }],
+    2: [{ // Village sur la Colline
+      description: "Dépensez 1 gold pour obtenir 1 ressource au choix",
+      timing: "onClick",
+      execute: async function (ctx) {
+        if (ctx.resources.gold >= 1) {
+          const choice = await ctx.selectResourceChoice([
+            { gold: 1 },
+            { wood: 1 },
+            { stone: 1 },
+            { military: 1 },
+            { ingot: 1 },
+            { export: 1 }
+          ]);
+          if(choice) {
+            ctx.setResources(prev => ({ ...prev, gold: prev.gold - 1 }));
+            applyChoice(ctx, choice);
+            return true;
+          }
+        }
+        return false;
+      }
+    }],
+    3: [{ // Ville sur la Colline
+      description: "Oubliez cette carte et découvrez Camelot (106)",
+      timing: "onClick",
+      execute: async function (ctx) {
+        const cardId = ctx.card.id;
+        const success = await ctx.discoverCard((card) => [106].includes(card.id), this.description, 1);
+
+        if (success) {ctx.card.currentSide = 1;
+          ctx.dropToCampaign({ id: cardId, fromZone: ctx.zone });
+          const forgottenCard = ctx.fetchCardsInZone((card) => card.id === cardId, "Campaign Deck");
+          if (forgottenCard.length === 0) {
+            ctx.setCampaignDeck((prev) => [...prev, ctx.card]);
+          }
+        }
+
+        return false;
+      }
+    }],
+    4: [{ // Grande Ville
+      description: "Dépensez 1 ressource pour obtenir 1 ressource au choix",
+      timing: "onClick",
+      execute: async function (ctx) {
+        // Créer un objet avec seulement les ressources disponibles (> 0)
+        const availableResources: Partial<ResourceMap> = {};
+        (Object.keys(ctx.resources) as (keyof ResourceMap)[]).forEach(key => {
+          if (ctx.resources[key] > 0 && key != "fame") {
+            availableResources[key] = ctx.resources[key];
+          }
+        });
+        
+        if (Object.keys(availableResources).length === 0) {
+          return false;
+        }
+        
+        const resToPay = await ctx.selectResourceChoice([availableResources]);
+        if (!resToPay) {
+          return false;
+        }
+        
+        const choice = await ctx.selectResourceChoice([
+          { gold: 1 },
+          { wood: 1 },
+          { stone: 1 },
+          { military: 1 },
+          { ingot: 1 },
+          { export: 1 }
+        ]);
+        
+        if (choice) {
+          const paidResourceKey = Object.keys(resToPay)[0] as keyof ResourceMap;
+          ctx.setResources(prev => ({ 
+            ...prev, 
+            [paidResourceKey]: prev[paidResourceKey] - 1 
+          }));
+          
+          applyChoice(ctx, choice);
+          return true;
+        }
+        
+        return false;
+      }
+    }],
+  },
+  106: {
+    3: [{ // Camelot
+      description: "Ajoutez 1 check si la pioche est vide",
+      timing: "endOfTurn",
+      execute: async function (ctx) {
+        if (ctx.fetchCardsInZone(() => (true), "Deck").length === 0) {
+          await checkNextBox(ctx.card);
+        }
+        return false;
+      }
+    }],
+  },
   107: {
     1: [{ // Visite Royale
       description: "Retirez 1 au coût d'amélioration d'une carte",
@@ -4603,6 +4728,190 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }]
   },
+  108: { // TODO: onRemove (destroy/purge) => not removable
+
+  },
+  109: {
+    3: [{ // Manoir de la Guilde
+      description: "Sélectionnez autant de personnes que vous voulez pour gagner autant de fame",
+      timing: "onClick",
+      execute: async function (ctx) {
+        if (ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked)) {
+          return false;
+        }
+        const maxPeopleCount = ctx.fetchCardsInZone((card) => card.GetType().includes("Personne"), "Play Area").length;
+        if (maxPeopleCount === 0) {
+          return false;
+        }
+        const people = await ctx.selectCardsFromZone((card) => card.GetType().includes("Personne"), "Play Area", this.description, 0, maxPeopleCount);
+        if (people.length !== 0) {
+          for (const card of people) {
+            ctx.dropToDiscard({id: card.id, fromZone: "Play Area"});
+          }
+          addResourceMapToCard(ctx.card, {fame: people.length});
+          await checkNextBox(ctx.card);
+          return true;
+        }
+        return false;
+      }
+    }],
+  },
+  110: {
+    3: [{ // Campagne
+      description: "Sélectionnez une carte en jeu ou dans la défausse pour la mettre sous la pioche",
+      timing: "onClick",
+      execute: async function (ctx) {
+        const zone = await ctx.selectStringChoice(
+          "Play Area or Discard ?",
+          ["Play Area", "Discard"]
+        );
+        const card = (await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, zone, this.description, 1))[0];
+        if (card) {
+          ctx.setDeck((prev) => [...prev, card]);
+          if (zone === "Play Area") {
+            ctx.setPlayArea((prev) => prev.filter((c) => c.id !== card.id));
+          }
+          else {
+            ctx.setDiscard((prev) => prev.filter((c) => c.id !== card.id));
+          }
+          return true;
+        }
+        return false;
+      }
+    }],
+    4: [{ // Campagne Prospère
+      description: "Sélectionnez une carte en jeu pour la mettre sous la pioche",
+      timing: "onClick",
+      execute: async function (ctx) {
+        const card = (await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, "Play Area", this.description, 1))[0];
+        if (card) {
+          ctx.setDeck((prev) => [...prev, card]);
+          ctx.setPlayArea((prev) => prev.filter((c) => c.id !== card.id));
+          return true;
+        }
+        return false;
+      }
+    }],
+  },
+  111: {
+    1: [{ // Manoir
+      description: "Réduit la production de gold x1 après production",
+      timing: "onResourceGain",
+      execute: async function (ctx) {
+        if (ctx.cardsForTrigger && ctx.cardsForTrigger[0].id === ctx.card.id) {
+          addResourceMapToCard(ctx.card, {gold: -1});
+          ctx.setResources(prev => ({ ...prev, gold: prev.gold + 1 }));
+        }
+        return true;
+      }
+    }],
+    2: [{ // Grand Manoir
+      description: "Réduit la production de gold x1 après production",
+      timing: "onResourceGain",
+      execute: async function (ctx) {
+        if (ctx.cardsForTrigger && ctx.cardsForTrigger[0].id === ctx.card.id) {
+          addResourceMapToCard(ctx.card, {gold: -1});
+          ctx.setResources(prev => ({ ...prev, gold: prev.gold + 1 }));
+        }
+        return true;
+      }
+    }],
+    3: [{ // Imposante Demeur
+      description: "Découvrez un Noble (116)",
+      timing: "onClick",
+      execute: async function (ctx) {
+        if (await ctx.discoverCard((card) => [116].includes(card.id), this.description, 1)) {
+          ctx.effectEndTurn();
+        }
+        return false;
+      }
+    }],
+    4: [{ // Noble Demeur
+      description: "Réduit la production de gold x1 après production",
+      timing: "onResourceGain",
+      execute: async function (ctx) {
+        if (ctx.cardsForTrigger && ctx.cardsForTrigger[0].id === ctx.card.id) {
+          addResourceMapToCard(ctx.card, {gold: -1});
+          ctx.setResources(prev => ({ ...prev, gold: prev.gold + 1 }));
+        }
+        return true;
+      }
+    }],
+  },
+  112: {
+    1: [{ // Etable
+      description: "Dépensez gold x2 pour découvrir un cheval (113)",
+      timing: "onClick",
+      execute: async function (ctx) {
+        if (ctx.resources.gold >= 2) {
+          if (await ctx.discoverCard((card) => [113].includes(card.id), this.description, 1)) {
+            ctx.effectEndTurn();
+          }
+        }
+        return false;
+      }
+    }],
+    2: [{ // Etable
+      description: "Dépensez gold x2 pour découvrir un cheval (114)",
+      timing: "onClick",
+      execute: async function (ctx) {
+        if (ctx.resources.gold >= 2) {
+          if (await ctx.discoverCard((card) => [114].includes(card.id), this.description, 1)) {
+            ctx.effectEndTurn();
+          }
+        }
+        return false;
+      }
+    }],
+    3: [
+      { // Palfrenier
+        description: "Choisissez un cheval en jeu avec 1 ou 2 ressources et ajoutez-lui une ressource au choix",
+        timing: "onClick",
+        execute: async function (ctx) {
+          const card = (await ctx.selectCardsFromZone((card) => (card.GetType().includes("Cheval")) && (getResourcesCount(card.GetResources()[0]) <= 2), "Play Area", this.description, 1))[0];
+          if (card) {
+            const choice = await ctx.selectResourceChoice([
+              { gold: 1 },
+              { wood: 1 },
+              { stone: 1 },
+              { military: 1 },
+              { ingot: 1 },
+              { export: 1 }
+            ]);
+            if (choice) {
+              addResourceMapToCard(card, choice);
+              return true;
+            }
+          }
+          return false;
+        }
+      },
+      {
+        description: "Jouez un Cheval depuis la défausse",
+        timing: "onClick",
+        execute: async function (ctx) {
+          const card = (await ctx.selectCardsFromZone((card) => card.GetType().includes("Cheval"), "Discard", this.description, 1))[0];
+          if (card) {
+            ctx.dropToPlayArea({id: card.id, fromZone: "Discard"});
+            return true;
+          }
+          return false;
+        }
+      }
+    ],
+    4: [{ // Grande Etable
+      description: "Dépensez gold x2 pour découvrir un cheval (115)",
+      timing: "onClick",
+      execute: async function (ctx) {
+        if (ctx.resources.gold >= 2) {
+          if (await ctx.discoverCard((card) => [115].includes(card.id), this.description, 1)) {
+            ctx.effectEndTurn();
+          }
+        }
+        return false;
+      }
+    }],
+  },
   113: {
 
   },
@@ -4611,6 +4920,194 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   115: {
 
+  },
+  116: {
+    1: [
+      { // Aric Blackwood
+        description: "Reste en jeu",
+        timing: "stayInPlay",
+        execute: async function (ctx: GameContext) {
+          if(ctx) {
+            return false;
+          }
+          return true;
+        }
+      },
+      {
+        description: "Défaussez une autre carte",
+        timing: "played",
+        execute: async function (ctx) {
+          const card = (await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, "Play Area", this.description, 1))[0];
+          if (card) {
+            ctx.dropToDiscard({id: card.id, fromZone: "Play Area"});
+          }
+          return false;
+        }
+      }
+    ],
+    3: [
+      { // Eadric Shadowstrike
+        description: "Reste en jeu",
+        timing: "stayInPlay",
+        execute: async function (ctx: GameContext) {
+          if(ctx) {
+            return false;
+          }
+          return true;
+        }
+      },
+      {
+        description: "Défaussez 2 Personnes pour gagner military x3",
+        timing: "onClick",
+        execute: async function (ctx) {
+          const cards = (await ctx.selectCardsFromZone((card) => card.GetType().includes("Personne") && card.id !== ctx.card.id, "Play Area", this.description, 2));
+          if (cards.length === 2) {
+            for (const card of cards) {
+              ctx.dropToDiscard({id: card.id, fromZone: "Play Area"});
+            }
+            ctx.setResources(prev => ({ ...prev, military: prev.military + 3 }));
+            return true;
+          }
+          return false;
+        }
+      }
+    ],
+  },
+  117: {
+    1: [{
+      description: "Dépensez export x3 pour gagner une ressource au choix",
+      timing: "onClick",
+      execute: async function (ctx) {
+        if (ctx.resources.export >= 3) {
+          const choice = await ctx.selectResourceChoice([
+            { gold: 1 },
+            { wood: 1 },
+            { stone: 1 },
+            { military: 1 },
+            { ingot: 1 },
+            { export: 1 }
+          ]);
+          if (choice) {
+            ctx.setResources(prev => ({ ...prev, export: prev.export - 3 }));
+            applyResourceMapDelta(ctx.setResources, choice);
+          }
+        }
+        return false;
+      }
+    }],
+  },
+  118: {
+    1: [{ // Petite Ecole
+      description: "Améliorez une Personne gratuitement",
+      timing: "onClick",
+      execute: async function (ctx) {
+        const cards = ctx.fetchCardsInZone((card) => card.GetUpgrades().length !== 0 && card.id !== ctx.card.id && card.GetType().includes("Personne"), "Play Area");
+        if (cards.length !== 0) {
+          const card = (await ctx.selectCardsFromArray(cards, "Play Area", this.description, 1))[0];
+          const upgradeCosts = card.GetUpgrades().map((up) => up.cost?? {});
+          
+          const selectedUpgrade = (await ctx.selectResourceChoice(upgradeCosts));
+
+          if (selectedUpgrade === null) {
+            return false;
+          }
+
+          for (const upg of card.GetUpgrades()) { // TODO : WILL ONLY GET THE FIRST SIMILAR COST
+            if (upg.cost === selectedUpgrade) {
+              card.currentSide = upg.nextSide;
+              break;
+            }
+          }
+          ctx.card.currentSide = 2;
+          ctx.effectEndTurn();
+        }
+        return false;
+      }
+    }],
+    2: [{ // Ecole
+      description: "Améliorez une Personne gratuitement",
+      timing: "onClick",
+      execute: async function (ctx) {
+        const cards = ctx.fetchCardsInZone((card) => card.GetUpgrades().length !== 0 && card.id !== ctx.card.id && card.GetType().includes("Personne"), "Play Area");
+        if (cards.length !== 0) {
+          const card = (await ctx.selectCardsFromArray(cards, "Play Area", this.description, 1))[0];
+          const upgradeCosts = card.GetUpgrades().map((up) => up.cost?? {});
+          
+          const selectedUpgrade = (await ctx.selectResourceChoice(upgradeCosts));
+
+          if (selectedUpgrade === null) {
+            return false;
+          }
+
+          for (const upg of card.GetUpgrades()) { // TODO : WILL ONLY GET THE FIRST SIMILAR COST
+            if (upg.cost === selectedUpgrade) {
+              card.currentSide = upg.nextSide;
+              break;
+            }
+          }
+          ctx.card.currentSide = 4;
+          ctx.effectEndTurn();
+        }
+        return false;
+      }
+    }],
+    3: [{ // Ecole Reconnue
+      description: "Ajoutez une ressource à une Personne",
+      timing: "onClick",
+      uses: 0,
+      execute: async function (ctx) {
+        if (this.uses !== 0) {
+          return false;
+        }
+        const cards = ctx.fetchCardsInZone((card) => card.id !== ctx.card.id && card.GetType().includes("Personne"), "Play Area");
+        if (cards.length !== 0) {
+          const card = (await ctx.selectCardsFromArray(cards, "Play Area", this.description, 1))[0];
+          if (card) {
+            const choice = await ctx.selectResourceChoice([
+              { gold: 1 },
+              { wood: 1 },
+              { stone: 1 },
+              { military: 1 },
+              { ingot: 1 },
+              { export: 1 }
+            ]);
+            if (choice) {
+              addResourceMapToCard(card, choice);
+              ctx.card.currentSide = 3;
+              ctx.effectEndTurn();
+              this.uses += 1;
+            }
+          }
+        }
+        return false;
+      }
+    }],
+    4: [{ // Ecole Reconnue
+      description: "Ajoutez une ressource à une Personne",
+      timing: "onClick",
+      execute: async function (ctx) {
+        const cards = ctx.fetchCardsInZone((card) => card.id !== ctx.card.id && card.GetType().includes("Personne"), "Play Area");
+        if (cards.length !== 0) {
+          const card = (await ctx.selectCardsFromArray(cards, "Play Area", this.description, 1))[0];
+          if (card) {
+            const choice = await ctx.selectResourceChoice([
+              { gold: 1 },
+              { wood: 1 },
+              { stone: 1 },
+              { military: 1 },
+              { ingot: 1 },
+              { export: 1 }
+            ]);
+            if (choice) {
+              addResourceMapToCard(card, choice);
+              ctx.card.currentSide = 3;
+              ctx.effectEndTurn();
+            }
+          }
+        }
+        return false;
+      }
+    }],
   },
   119: {
     1: [{ // Commerçante
@@ -4662,11 +5159,351 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
   },
+  120: {
+    1: [{ // Investisseur
+      description: "Gagnez 3 ressources au choix",
+      timing: "onClick",
+      execute: async function (ctx) {
+        const choice1 = await ctx.selectResourceChoice([
+          { gold: 1 },
+          { wood: 1 },
+          { stone: 1 },
+          { military: 1 },
+          { ingot: 1 },
+          { export: 1 }
+        ]);
+        if (!choice1) {
+          return false;
+        }
+        const choice2 = await ctx.selectResourceChoice([
+          { gold: 1 },
+          { wood: 1 },
+          { stone: 1 },
+          { military: 1 },
+          { ingot: 1 },
+          { export: 1 }
+        ]);
+        if (!choice2) {
+          return false;
+        }
+        const choice3 = await ctx.selectResourceChoice([
+          { gold: 1 },
+          { wood: 1 },
+          { stone: 1 },
+          { military: 1 },
+          { ingot: 1 },
+          { export: 1 }
+        ]);
+        if (choice3) {
+          applyResourceMapDelta(ctx.setResources, choice1);
+          applyResourceMapDelta(ctx.setResources, choice2);
+          applyResourceMapDelta(ctx.setResources, choice3);
+          ctx.card.currentSide = 2;
+          return true;
+        }
+        return false;
+      }
+    }],
+    2: [{ // Investisseur
+      description: "Gagnez 3 ressources au choix",
+      timing: "onClick",
+      execute: async function (ctx) {
+        const choice1 = await ctx.selectResourceChoice([
+          { gold: 1 },
+          { wood: 1 },
+          { stone: 1 },
+          { military: 1 },
+          { ingot: 1 },
+          { export: 1 }
+        ]);
+        if (!choice1) {
+          return false;
+        }
+        const choice2 = await ctx.selectResourceChoice([
+          { gold: 1 },
+          { wood: 1 },
+          { stone: 1 },
+          { military: 1 },
+          { ingot: 1 },
+          { export: 1 }
+        ]);
+        if (!choice2) {
+          return false;
+        }
+        const choice3 = await ctx.selectResourceChoice([
+          { gold: 1 },
+          { wood: 1 },
+          { stone: 1 },
+          { military: 1 },
+          { ingot: 1 },
+          { export: 1 }
+        ]);
+        if (choice3) {
+          applyResourceMapDelta(ctx.setResources, choice1);
+          applyResourceMapDelta(ctx.setResources, choice2);
+          applyResourceMapDelta(ctx.setResources, choice3);
+          ctx.card.currentSide = 4;
+          return true;
+        }
+        return false;
+      }
+    }],
+    3: [{ // Investisseur
+      description: "Gagnez 3 ressources au choix",
+      timing: "onClick",
+      execute: async function (ctx) {
+        const choice = await ctx.selectResourceChoice([
+          { gold: 1 },
+          { wood: 1 },
+          { stone: 1 },
+          { military: 1 },
+          { ingot: 1 },
+          { export: 1 }
+        ]);
+        if (choice) {
+          applyResourceMapDelta(ctx.setResources, choice);
+          return true;
+        }
+        return false;
+      }
+    }],
+    4: [{ // Investisseur
+      description: "Gagnez 3 ressources au choix",
+      timing: "onClick",
+      execute: async function (ctx) {
+        const choice1 = await ctx.selectResourceChoice([
+          { gold: 1 },
+          { wood: 1 },
+          { stone: 1 },
+          { military: 1 },
+          { ingot: 1 },
+          { export: 1 }
+        ]);
+        if (!choice1) {
+          return false;
+        }
+        const choice2 = await ctx.selectResourceChoice([
+          { gold: 1 },
+          { wood: 1 },
+          { stone: 1 },
+          { military: 1 },
+          { ingot: 1 },
+          { export: 1 }
+        ]);
+        if (!choice2) {
+          return false;
+        }
+        const choice3 = await ctx.selectResourceChoice([
+          { gold: 1 },
+          { wood: 1 },
+          { stone: 1 },
+          { military: 1 },
+          { ingot: 1 },
+          { export: 1 }
+        ]);
+        if (choice3) {
+          applyResourceMapDelta(ctx.setResources, choice1);
+          applyResourceMapDelta(ctx.setResources, choice2);
+          applyResourceMapDelta(ctx.setResources, choice3);
+          ctx.card.currentSide = 3;
+          return true;
+        }
+        return false;
+      }
+    }],
+  },
+  121: {
+    1: [{ // Roi Alahar
+      description: "Reste en jeu",
+      timing: "stayInPlay",
+      execute: async function (ctx: GameContext) {
+        if(ctx) {
+          return false;
+        }
+        return true;
+      }
+    }],
+    3: [{ // Reine Jemimah
+      description: "Défaussez une personne avec fame x5 ou plus pour check",
+      timing: "onClick",
+      execute: async function (ctx) {
+        if (ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked)) {
+          return false;
+        }
+        const people = ctx.fetchCardsInZone((card) => card.id !== ctx.card.id && card.GetType().includes("Personne") && (card.GetResources()[card.GetResources().length - 1].fame?? 0) >= 5, "Play Area");
+        if (people.length === 0) {
+          return false;
+        }
+        const card = (await ctx.selectCardsFromArray(people, "Play Area", this.description, 1))[0];
+        if (card) {
+          ctx.dropToDiscard({id: card.id, fromZone: "Play Area"});
+          await checkNextBox(ctx.card);
+          return true;
+        }
+        return false;
+      }
+    }],
+  },
   122: {
 
   },
+  123: {
+    1: [{ // Château Majestueux
+      description: "Jouez une carte depuis votre Défausse",
+      timing: "onClick",
+      execute: async function(ctx) {
+        const selectedCards = await ctx.selectCardsFromZone(
+          () => (true),
+          "Discard",
+          this.description,
+          1
+        );
+        if (selectedCards.length > 0) {
+          selectedCards.map(card => (ctx.dropToPlayArea({id: card.id, fromZone: "Discard"})));
+          return true;
+        }
+        return false;
+      }
+    }],
+    2: [{ // Château Monumental
+      description: "Jouez une carte depuis votre Défausse",
+      timing: "onClick",
+      execute: async function(ctx) {
+        const selectedCards = await ctx.selectCardsFromZone(
+          () => (true),
+          "Discard",
+          this.description,
+          1
+        );
+        if (selectedCards.length > 0) {
+          selectedCards.map(card => (ctx.dropToPlayArea({id: card.id, fromZone: "Discard"})));
+          return true;
+        }
+        return false;
+      }
+    }],
+    3: [
+      { // Forteresse Imprenable
+        description: "Jouez une carte depuis votre Défausse",
+        timing: "onClick",
+        execute: async function(ctx) {
+          const selectedCards = await ctx.selectCardsFromZone(
+            () => (true),
+            "Discard",
+            this.description,
+            1
+          );
+          if (selectedCards.length > 0) {
+            selectedCards.map(card => (ctx.dropToPlayArea({id: card.id, fromZone: "Discard"})));
+            return true;
+          }
+          return false;
+        }
+      },
+      {
+        description: "Vous pouvez défaussez 2 Murailles à la place de cette carte",
+        timing: "onCardsDiscarded",
+        execute: async function(ctx) {
+          if (!ctx.cardsForTrigger) return false;
+          
+          const isThisCardDiscarded = ctx.cardsForTrigger.some((c) => c.id === ctx.card.id);
+    
+          if (isThisCardDiscarded) {
+            const cards = await ctx.selectCardsFromZone((card) => card.GetName().includes("Muraille"), "Play Area", this.description, 0, 2);
+            if (cards.length === 2) {
+              for (const card of cards) {
+                ctx.dropToDiscard({id: card.id, fromZone: "Play Area"});
+              }
+              ctx.dropToPlayArea({id: ctx.card.id, fromZone: "Discard"});
+            }
+          }
+          return false;
+        }
+      }
+    ],
+    4: [{ // Forteresse
+      description: "Jouez une carte depuis votre Défausse",
+      timing: "onClick",
+      execute: async function(ctx) {
+        const selectedCards = await ctx.selectCardsFromZone(
+          () => (true),
+          "Discard",
+          this.description,
+          1
+        );
+        if (selectedCards.length > 0) {
+          selectedCards.map(card => (ctx.dropToPlayArea({id: card.id, fromZone: "Discard"})));
+          return true;
+        }
+        return false;
+      }
+    }],
+  },
   124: {
 
+  },
+  125: {
+    1: [{ // Grand Temple
+      description: "Défaussez pour faire rester 5 cartes",
+      timing: "endOfTurn",
+      execute: async function (ctx) {
+        const selected = await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, "Play Area", this.description, 0, 5);
+        ctx.setTemporaryCardListImmediate(selected);
+        if (selected.length > 0) {
+          return true;
+        }
+        return false;
+      }
+    }],
+    2: [{ // Temple Sculpté
+      description: "Défaussez pour faire rester 5 cartes",
+      timing: "endOfTurn",
+      execute: async function (ctx) {
+        const selected = await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, "Play Area", this.description, 0, 5);
+        ctx.setTemporaryCardListImmediate(selected);
+        if (selected.length > 0) {
+          return true;
+        }
+        return false;
+      }
+    }],
+    3: [
+      { // Temple de la Lumière
+        description: "Défaussez pour faire rester 5 cartes",
+        timing: "endOfTurn",
+        execute: async function (ctx) {
+          const selected = await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, "Play Area", this.description, 0, 5);
+          ctx.setTemporaryCardListImmediate(selected);
+          if (selected.length > 0) {
+            return true;
+          }
+          return false;
+        }
+      },
+      {
+        description: "Dépensez export x4 pour check",
+        timing: "onClick",
+        execute: async function (ctx) {
+          if (ctx.resources.export >= 4 && !ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked)) {
+            await checkNextBox(ctx.card);
+            ctx.effectEndTurn();
+          }
+          return false;
+        }
+      }
+    ],
+    4: [{ // Temple Légendaire
+      description: "Défaussez pour faire rester 5 cartes",
+      timing: "endOfTurn",
+      execute: async function (ctx) {
+        const selected = await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, "Play Area", this.description, 0, 5);
+        ctx.setTemporaryCardListImmediate(selected);
+        if (selected.length > 0) {
+          return true;
+        }
+        return false;
+      }
+    }],
   },
   126: {
 

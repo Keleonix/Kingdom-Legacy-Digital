@@ -4927,7 +4927,7 @@ export const allCards: GameCard[] = [
     effects: [
       "effects/activate Dépensez resources/gold resources/gold pour gagner 1 ressource au choix.",
       "effects/activate Dépensez resources/gold pour gagner 1 ressource au choix.",
-      "effects/activate Oubliez cette carte pour découvrir Camelot (106). (Mettez-la de côté hors deck)",
+      "effects/activate Oubliez cette carte pour découvrir Camelot (106).",
       "effects/activate Dépensez 1 ressource au choix pour gagner 1 ressource au choix.",
     ],
     upgrades: [
@@ -5166,7 +5166,7 @@ export const allCards: GameCard[] = [
     effects: [
       "",
       "",
-      "effects/activate Choisissez une carte en jeu ou dans la défausse. Placez-la sous la pioche.",
+      "effects/activate Choisissez une carte en jeu ou dans la défausse, placez-la sous la pioche.",
       "effects/activate Remettez une carte en jeu sous la pioche.",
     ],
     upgrades: [
@@ -5503,10 +5503,10 @@ export const allCards: GameCard[] = [
       [ { fame: 4 } ],
     ],
     effects: [
-      "effects/time Améliorez gratuitement 1 Personne en jeux, puis Front Down.",
-      "effects/time Améliorez gratuitement 1 Personne en jeux, puis Back Down.",
-      "effects/time Ajoutez 1 ressource à une Personne en jeux, puis effects/oneTime.",
-      "effects/time Ajoutez 1 ressource à une Personne en jeux, puis Back Up.",
+      "effects/time Améliorez gratuitement 1 Personne en jeux, puis ->.",
+      "effects/time Améliorez gratuitement 1 Personne en jeux, puis ->.",
+      "effects/time Ajoutez 1 ressource à une Personne en jeux, puis effects/oneTime .",
+      "effects/time Ajoutez 1 ressource à une Personne en jeux, puis ->.",
     ],
     upgrades: [
       [],
@@ -5724,7 +5724,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 123,
-    name: ["Château Majestueux", "Château Monumental", "Forteresse", "Forteresse Imprenable"],
+    name: ["Château Majestueux", "Château Monumental", "Forteresse Imprenable", "Forteresse"],
     resources: [
       [ { military: 1, fame: 15 } ],
       [ { military: 2, fame: 20 } ],
@@ -5818,7 +5818,7 @@ export const allCards: GameCard[] = [
     effects: [
       "effects/optional Fin du Tour: Défaussez pour que 5 autre cartes restent en jeu.",
       "effects/optional Fin du Tour: Défaussez pour que 5 autre cartes restent en jeu.",
-      "effects/optional Fin du Tour: Défaussez pour que 5 autre cartes restent en jeu. effects/time dépensez resources/export resources/export resources/export resources/export resources/export pour inscrire 1 effects/check .(Quand vous la purgez, cette carte vaut +10 resources/fame par effects/check .",
+      "effects/optional Fin du Tour: Défaussez pour que 5 autre cartes restent en jeu. effects/time dépensez resources/export resources/export resources/export resources/export pour inscrire 1 effects/check .(Quand vous la purgez, cette carte vaut +10 resources/fame par effects/check .",
       "effects/optional Fin du Tour: Défaussez pour que 5 autre cartes restent en jeu.",
     ],
     upgrades: [
