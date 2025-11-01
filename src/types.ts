@@ -93,20 +93,23 @@ export type DropPayload = {
 };
 
 export type EffectTiming =
-  "played" |
-  "endOfTurn" |
-  "endOfRound" |
-  "otherCardPlayed" |
-  "onClick" |
-  "stayInPlay" |
-  "onResourceGain" |
-  "onProgress" |
-  "doesNothing" |
-  "restrictPlay" |
-  "restrictAll" |
-  "onEndOfGame" |
-  "onCardsDiscarded" |
-  "onUpgrade"
+  | "played"
+  | "endOfTurn"
+  | "endOfRound"
+  | "otherCardPlayed"
+  | "onClick"
+  | "stayInPlay"
+  | "onResourceGain"
+  | "onProgress"
+  | "doesNothing"
+  | "restrictPlay"
+  | "restrictAll"
+  | "onEndOfGame"
+  | "onCardsDiscarded"
+  | "onUpgrade"
+  | "destroyed"
+  | "removed"
+  | "purged"
 ;
 
 export class GameCard {
@@ -119,7 +122,7 @@ export class GameCard {
   effects: string[] = [];
   upgrades: Upgrade[][] = [];
   checkboxes: Checkbox[][] = [];
-  enemy: boolean[] = [false, false, false];
+  negative: boolean[] = [false, false, false];
   discoverable: boolean = false;
   constructor({
     id = -1,
@@ -135,7 +138,7 @@ export class GameCard {
     ],
     effects = ["", "", "", ""],
     upgrades = [[], [], [], []],
-    enemy = [false, false, false],
+    negative = [false, false, false],
   }: Partial<{
     id: number;
     name: string[];
@@ -146,7 +149,7 @@ export class GameCard {
     resources?: ResourceMap[][];
     effects?: string[];
     upgrades?: Upgrade[][];
-    enemy?: boolean[];
+    negative?: boolean[];
     discoverable?: boolean;
   }> = {}) {
     this.id = id;
@@ -160,7 +163,7 @@ export class GameCard {
     while (this.resources.length < 4) this.resources.push([{ ...emptyResource }]);
     this.effects = effects;
     this.upgrades = upgrades;
-    this.enemy = enemy;
+    this.negative = negative;
     this.discoverable = this.discoverable;
   }
 

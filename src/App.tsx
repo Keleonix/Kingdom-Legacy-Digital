@@ -16,7 +16,7 @@ function cloneGameCard(src: GameCard): GameCard {
   out.currentSide = src.currentSide || 1;
   out.type = [...src.type];
   out.choice = src.choice;
-  out.enemy = [...src.enemy];
+  out.negative = [...src.negative];
 
   // deep-copy resources (sides -> options -> resource keys)
   out.resources = src.resources.map((side) =>
@@ -74,7 +74,7 @@ function getBackgroundStyle(card: GameCard, sideIdx: number) {
 
   const colors = types.map((t) => TYPE_COLORS[t] || "#f4c2d7");
 
-  if (card.enemy[card.currentSide - 1]) {
+  if (card.negative[card.currentSide - 1]) {
     colors.push(TYPE_COLORS["Ennemi"]);
   }
 
@@ -1874,6 +1874,7 @@ export default function Game() {
 
   const [turnEndFlag, setTurnEndFlag] = useState(false);
   const [hasEndedBaseGame, setHasEndedBaseGame] = useState(false);
+  const [shouldComputeFame, setShouldComputeFame] = useState(false);
 
   const [blockMap, setBlockMap] = useState<Map<number, number[]>>(new Map());
 
@@ -2157,6 +2158,7 @@ export default function Game() {
             getBlockedBy,
             getCardZone,
             upgradeCard,
+            handleCardUpdate,
           };
           
           const result = await effect.execute(context);
@@ -2249,6 +2251,7 @@ export default function Game() {
           getBlockedBy,
           getCardZone,
           upgradeCard,
+          handleCardUpdate,
         };
         
         await effect.execute(context);
@@ -2323,76 +2326,84 @@ export default function Game() {
 
   const handleEndBaseGame = async () => {
     await discardEndTurn(true);
-    
-    // Calculate total fame from deck
-    let totalFame = 0;
-    
-    for (const card of deck) {
-      const currentSideIndex = card.currentSide - 1;
-      const resourceMaps = card.resources[currentSideIndex] || [];
-      
-      // Get max fame from resource maps for current side
-      const maxFameFromResources = resourceMaps.reduce(
-        (max, res) => Math.max(max, res.fame || 0),
-        0
-      );
-      
-      // Check if card has special fame calculation
-      const fameValueEffect = getCardFameValue(card.id, card.currentSide);
-        if (fameValueEffect.execute) {
-          const context: GameContext = {
-            card,
-            zone: "Deck",
-            resources,
-            filterZone,
-            setResources,
-            draw,
-            effectEndTurn,
-            dropToPlayArea,
-            dropToBlocked,
-            dropToDiscard,
-            dropToCampaign,
-            dropToPermanent,
-            setDeck: setDeckImmediate,
-            setPlayArea: setPlayAreaImmediate,
-            setDiscard: setDiscardImmediate,
-            setPermanentZone,
-            setCampaignDeck,
-            setTemporaryCardList,
-            setTemporaryCardListImmediate,
-            setBlockedZone,
-            deleteCardInZone,
-            replaceCardInZone,
-            mill,
-            openCheckboxPopup,
-            selectResourceChoice,
-            selectCardsFromZone,
-            selectCardsFromArray,
-            discoverCard,
-            boostProductivity,
-            registerEndRoundEffect,
-            addCardEffect,
-            fetchCardsInZone,
-            selectCardSides,
-            selectUpgradeCost,
-            selectTextInput,
-            selectStringChoice,
-            updateBlocks,
-            getBlockedBy,
-            getCardZone,
-            upgradeCard,
-          };
-          
-          const specialFameValue = await fameValueEffect.execute(context);
-          totalFame += specialFameValue;
-        }
-        totalFame += maxFameFromResources;
-    }
-    
-    // Update fame resource
-    setResources(prev => ({ ...prev, fame: totalFame }));
-    setHasEndedBaseGame(true);
+    setShouldComputeFame(true);
   };
+
+  useEffect(() => {
+    if (shouldComputeFame && deck.length > 0) {
+      // Compute total fame from deck
+      let totalFame = 0;
+
+      const cardList = [...deck, ...permanentZone];
+      
+      for (const card of cardList) {
+        const currentSideIndex = card.currentSide - 1;
+        const resourceMaps = card.resources[currentSideIndex] || [];
+        
+        // Get max fame from resource maps for current side
+        const maxFameFromResources = resourceMaps.reduce(
+          (max, res) => Math.max(max, res.fame || 0),
+          0
+        );
+        
+        // Check if card has special fame calculation
+        const fameValueEffect = getCardFameValue(card.id, card.currentSide);
+          if (fameValueEffect.execute) {
+            const context: GameContext = {
+              card,
+              zone: "Deck",
+              resources,
+              filterZone,
+              setResources,
+              draw,
+              effectEndTurn,
+              dropToPlayArea,
+              dropToBlocked,
+              dropToDiscard,
+              dropToCampaign,
+              dropToPermanent,
+              setDeck: setDeckImmediate,
+              setPlayArea: setPlayAreaImmediate,
+              setDiscard: setDiscardImmediate,
+              setPermanentZone,
+              setCampaignDeck,
+              setTemporaryCardList,
+              setTemporaryCardListImmediate,
+              setBlockedZone,
+              deleteCardInZone,
+              replaceCardInZone,
+              mill,
+              openCheckboxPopup,
+              selectResourceChoice,
+              selectCardsFromZone,
+              selectCardsFromArray,
+              discoverCard,
+              boostProductivity,
+              registerEndRoundEffect,
+              addCardEffect,
+              fetchCardsInZone,
+              selectCardSides,
+              selectUpgradeCost,
+              selectTextInput,
+              selectStringChoice,
+              updateBlocks,
+              getBlockedBy,
+              getCardZone,
+              upgradeCard,
+              handleCardUpdate,
+            };
+            
+            const specialFameValue = fameValueEffect.execute(context);
+            totalFame += specialFameValue;
+          }
+          totalFame += maxFameFromResources;
+      }
+      
+      // Update fame resource
+      setResources(prev => ({ ...prev, fame: totalFame }));
+      setHasEndedBaseGame(true);
+    }
+  }, [deck, shouldComputeFame]);
   
   const mill = (
     nbCards: number
@@ -2767,6 +2778,68 @@ export default function Game() {
     return true;
   }
 
+  const triggerOnCardDestroy = async (destroyedCards: GameCard[]) => {
+    for (const card of destroyedCards) {
+      const effects = getCardEffects(card.id, card.currentSide);
+      
+      for (const effect of effects) {
+        if (effect.timing === "destroyed" || effect.timing === "removed") {
+          const context: GameContext = {
+            card,
+            zone: getCardZone(card.id),
+            cardsForTrigger: destroyedCards,
+            resources,
+            filterZone,
+            setResources,
+            draw,
+            effectEndTurn,
+            dropToPlayArea,
+            dropToBlocked,
+            dropToDiscard,
+            dropToCampaign,
+            dropToPermanent,
+            setDeck: setDeckImmediate,
+            setPlayArea: setPlayAreaImmediate,
+            setDiscard: setDiscardImmediate,
+            setPermanentZone,
+            setCampaignDeck,
+            setTemporaryCardList,
+            setTemporaryCardListImmediate,
+            setBlockedZone,
+            deleteCardInZone,
+            replaceCardInZone,
+            mill,
+            openCheckboxPopup,
+            selectResourceChoice,
+            selectCardsFromZone,
+            selectCardsFromArray,
+            discoverCard,
+            boostProductivity,
+            registerEndRoundEffect,
+            addCardEffect,
+            fetchCardsInZone,
+            selectCardSides,
+            selectUpgradeCost,
+            selectTextInput,
+            selectStringChoice,
+            updateBlocks,
+            getBlockedBy,
+            getCardZone,
+            upgradeCard,
+            handleCardUpdate,
+          };
+          
+          const canDestroy = await effect.execute(context);
+          if (!canDestroy) {
+            return false;
+          }
+        }
+      }
+    }
+    
+    return true;
+  };
+
   const handleExecuteCardEffect = async (
     card: GameCard,
     zone: string,
@@ -2821,6 +2894,7 @@ export default function Game() {
       getBlockedBy,
       getCardZone,
       upgradeCard,
+      handleCardUpdate,
     };
 
     if (typeof effectIndex === "number" && effectIndex >= 0 && effectIndex < effects.length) {
@@ -2857,6 +2931,38 @@ export default function Game() {
   // -------------------
   // Drag & Drop Handlers
   // -------------------
+  const findCardInAllZones = (
+    id: number,
+    snap?: {
+      deck?: GameCard[];
+      playArea?: GameCard[];
+      discard?: GameCard[];
+      campaignDeck?: GameCard[];
+      blockedZone?: GameCard[];
+      permanentZone?: GameCard[];
+    }
+  ) => {
+    const sources = snap ?? {
+      deck,
+      playArea,
+      discard,
+      campaignDeck,
+      blockedZone,
+      permanentZone,
+    };
+    const find = (arr?: GameCard[]) =>
+      arr ? arr.find((c) => c.id === id) ?? null : null;
+    return (
+      find(sources.deck) ||
+      find(sources.playArea) ||
+      find(sources.discard) ||
+      find(sources.campaignDeck) ||
+      find(sources.blockedZone) ||
+      find(sources.permanentZone) ||
+      null
+    );
+  };
+
   const handleDropToZone = (toZone: string) => async (payload: DropPayload) => {
     const { id, fromZone } = payload;
     if (fromZone === toZone) return;
@@ -2868,36 +2974,7 @@ export default function Game() {
     const removeById = (arr: GameCard[], removeId: number) =>
       arr.filter((c) => c.id !== removeId);
 
-    const findCardInAllZones = (snap?: {
-      deck?: GameCard[];
-      playArea?: GameCard[];
-      discard?: GameCard[];
-      campaignDeck?: GameCard[];
-      blockedZone?: GameCard[];
-      permanentZone?: GameCard[];
-    }) => {
-      const sources = snap ?? {
-        deck,
-        playArea,
-        discard,
-        campaignDeck,
-        blockedZone,
-        permanentZone,
-      };
-      const find = (arr?: GameCard[]) =>
-        arr ? arr.find((c) => c.id === id) ?? null : null;
-      return (
-        find(sources.deck) ||
-        find(sources.playArea) ||
-        find(sources.discard) ||
-        find(sources.campaignDeck) ||
-        find(sources.blockedZone) ||
-        find(sources.permanentZone) ||
-        null
-      );
-    };
-
-    const sourceCard = findCardInAllZones();
+    const sourceCard = findCardInAllZones(id);
     if (!sourceCard) return;
 
     const toAdd: GameCard = sourceCard;
@@ -3030,25 +3107,30 @@ export default function Game() {
     }
   }
 
-  function deleteCardInZone(zone: string, id: number): void {
-    if (zone === "Deck") {
-      setDeck((d) => d.filter((c) => c.id !== id));
-    } else if (zone === "Play Area") {
-      const blockedIds = blockMap.get(id);
-      if (blockedIds) {
-        setBlockedZone(prev => prev.filter(c => !blockedIds.includes(c.id)));
-        setPlayArea(prev => [...prev, ...blockedZone.filter(c => blockedIds.includes(c.id))]);
-        updateBlocks(id, null);
-      }
-      setPlayArea((p) => p.filter((c) => c.id !== id));
-    } else if (zone === "Discard") {
-      setDiscard((f) => f.filter((c) => c.id !== id));
-    } else if (zone === "Campaign") {
-      setCampaignDeck((c) => c.filter((card) => card.id !== id));
-    } else if (zone === "Blocked") {
-      setBlockedZone((b) => b.filter((card) => card.id !== id));
-    } else if (zone === "Permanent") {
-      setPermanentZone((pe) => pe.filter((card) => card.id !== id));
+  async function deleteCardInZone(zone: string, id: number): Promise<void> {
+  
+    const sourceCard = findCardInAllZones(id);
+    if (!sourceCard) return;
+    
+    const canDestroy = await triggerOnCardDestroy([sourceCard]);
+    
+    if (!canDestroy) {
+      return;
+    }
+    
+    // Procède à la destruction
+    if (zone === "Deck") setDeck((d) => d.filter(c => c.id !== id));
+    if (zone === "Play Area") setPlayAreaImmediate((p) => p.filter(c => c.id !== id));
+    if (zone === "Discard") setDiscardImmediate((f) => f.filter(c => c.id !== id));
+    if (zone === "Campaign") setCampaignDeck((g) => g.filter(c => c.id !== id));
+    if (zone === "Blocked") setBlockedZone((b) => b.filter(c => c.id !== id));
+    if (zone === "Permanent") setPermanentZone((pe) => pe.filter(c => c.id !== id));
+    
+    const blockedIds = blockMap.get(id);
+    if (blockedIds) {
+      setBlockedZone(prev => prev.filter(c => !blockedIds.includes(c.id)));
+      setPlayArea(prev => [...prev, ...blockedZone.filter(c => blockedIds.includes(c.id))]);
+      updateBlocks(id, null);
     }
   }
 
@@ -3139,6 +3221,7 @@ export default function Game() {
           getBlockedBy,
           getCardZone,
           upgradeCard,
+          handleCardUpdate,
         };
         
         const additionalCostPaid = await additionalCostEffect.execute(context);
@@ -3222,6 +3305,7 @@ export default function Game() {
             getBlockedBy,
             getCardZone,
             upgradeCard,
+            handleCardUpdate,
           };
           
           await effect.execute(context);
@@ -3305,6 +3389,7 @@ export default function Game() {
             getBlockedBy,
             getCardZone,
             upgradeCard,
+            handleCardUpdate,
           };
           
           if (await effect.execute(context)) {
@@ -3567,14 +3652,15 @@ export default function Game() {
               <div key={key} className="flex flex-col items-center gap-2 p-2 bg-white rounded-lg min-w-0">
                 <img src={resourceIconPath(key)} alt={key} title={key} className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" />
                 <div className="flex items-center gap-1 w-full justify-center">
-                  <Button size="sm" gap-1 onClick={() => updateResource(key, -1)}>-</Button>
+                  <Button size="sm" gap-1 onClick={() => updateResource(key, -1)} hidden={key === "fame"}>-</Button>
                   <input
                     type="number"
                     className="w-12 sm:w-16 text-center border rounded text-xs sm:text-sm py-1"
                     value={resources[key]}
                     onChange={(e) => setResources((r) => ({ ...r, [key]: parseInt(e.target.value || "0", 10) || 0 }))}
+                    disabled={key === "fame"}
                   />
-                  <Button size="sm" gap-1 onClick={() => updateResource(key, 1)}>+</Button>
+                  <Button size="sm" gap-1 onClick={() => updateResource(key, 1)} hidden={key === "fame"}>+</Button>
                 </div>
               </div>
             ))}

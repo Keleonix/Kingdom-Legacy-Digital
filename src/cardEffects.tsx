@@ -45,6 +45,7 @@ export type GameContext = {
   getBlockedBy: (blocker: number) => GameCard[];
   getCardZone: (id: number) => string;
   upgradeCard: (card: GameCard, nextSide: number) => Promise<boolean>;
+  handleCardUpdate: (updatedCard: GameCard, zone: string) => void;
 };
 
 export type CardEffect = {
@@ -58,7 +59,7 @@ export type CardEffect = {
 
 export type CardFameValue = {
   description: string;
-  execute: (context: GameContext) => number | Promise<number>;
+  execute: (context: GameContext) => number;
 };
 
 export type CardUpgradeCost = {
@@ -124,9 +125,21 @@ function getCheckboxResources(content: string | undefined): Partial<ResourceMap>
   return resourceMap;
 }
 
+function hasEnoughResources(
+  available: Partial<ResourceMap>, 
+  required: Partial<ResourceMap>
+): boolean {
+  return Object.entries(required).every(([key, value]) => {
+    const resourceKey = key as keyof ResourceMap;
+    const availableAmount = available[resourceKey] || 0;
+    return availableAmount >= (value || 0);
+  });
+}
+
 function applyResourceMapDelta(
   setResources: (fn: (prev: ResourceMap) => ResourceMap) => void,
-  delta: Partial<ResourceMap> | undefined
+  delta: Partial<ResourceMap> | undefined,
+  deduct?: boolean
 ) {
   setResources(prev => {
     if(!delta) {
@@ -136,7 +149,12 @@ function applyResourceMapDelta(
     for (const key in delta) {
       const resourceKey = key as keyof ResourceMap;
       const amount = delta[resourceKey] ?? 0;
-      updated[resourceKey] = (updated[resourceKey] ?? 0) + amount;
+      if (deduct) {
+        updated[resourceKey] = (updated[resourceKey] ?? 0) - amount;
+      }
+      else {
+        updated[resourceKey] = (updated[resourceKey] ?? 0) + amount;
+      }
     }
     return updated;
   });
@@ -243,7 +261,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       timing: "onClick",
       execute: async function(ctx)  {
         const selectedCards = await ctx.selectCardsFromZone(
-          (card) => (!(card.enemy[card.currentSide - 1]) && card.id != ctx.card.id),
+          (card) => (!(card.negative[card.currentSide - 1]) && card.id != ctx.card.id),
           "Play Area",
           this.description,
           1
@@ -273,7 +291,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       timing: "onClick",
       execute: async function(ctx)  {
         const selectedCards = await ctx.selectCardsFromZone(
-          (card) => (!(card.enemy[card.currentSide - 1]) && card.id != ctx.card.id),
+          (card) => (!(card.negative[card.currentSide - 1]) && card.id != ctx.card.id),
           "Play Area",
           this.description,
           1
@@ -303,7 +321,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       timing: "onClick",
       execute: async function(ctx)  {
         const selectedCards = await ctx.selectCardsFromZone(
-          (card) => (!(card.enemy[card.currentSide - 1]) && card.id != ctx.card.id),
+          (card) => (!(card.negative[card.currentSide - 1]) && card.id != ctx.card.id),
           "Play Area",
           this.description,
           1
@@ -333,7 +351,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       timing: "onClick",
       execute: async function(ctx)  {
         const selectedCards = await ctx.selectCardsFromZone(
-          (card) => (!(card.enemy[card.currentSide - 1]) && card.id != ctx.card.id),
+          (card) => (!(card.negative[card.currentSide - 1]) && card.id != ctx.card.id),
           "Play Area",
           this.description,
           1
@@ -2690,7 +2708,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: "Défaussez 6 cartes alliées pour découvrir un Artefact (108)",
       timing: "onClick",
       execute: async function (ctx) {
-        const cards = await ctx.selectCardsFromZone((card) => !card.enemy[card.currentSide - 1], "Play Area", this.description, 6);
+        const cards = await ctx.selectCardsFromZone((card) => !card.negative[card.currentSide - 1], "Play Area", this.description, 6);
         if (cards.length === 6) {
           if (await ctx.discoverCard((card) => [108].includes(card.id), this.description, 1)) {
             for(const card of cards) {
@@ -3002,7 +3020,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         execute: async function (ctx) {
           let selected: GameCard[] = [];
           selected = await ctx.selectCardsFromZone(
-            (card) => (!(card.enemy[card.currentSide - 1])),
+            (card) => (!(card.negative[card.currentSide - 1])),
             "Deck",
             this.description,
             3
@@ -3051,11 +3069,11 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           const blockedCards = ctx.getBlockedBy(ctx.card.id);
           let selected: GameCard[] = [];
           if (!blockedCards || blockedCards.length === 0) {
-            selected = await ctx.selectCardsFromZone((card) => !card.enemy[card.currentSide - 1], "Deck", this.description, 2);
+            selected = await ctx.selectCardsFromZone((card) => !card.negative[card.currentSide - 1], "Deck", this.description, 2);
           }
           else {
             const blockedIds = blockedCards.map((card) => card.id);
-            selected = await ctx.selectCardsFromZone((card) => !card.enemy[card.currentSide - 1] && !blockedIds.includes(card.id), "Deck", this.description, 0, 2);
+            selected = await ctx.selectCardsFromZone((card) => !card.negative[card.currentSide - 1] && !blockedIds.includes(card.id), "Deck", this.description, 0, 2);
             if (selected.length !== 2) {
               while (selected.length !== 1) {
                 selected = await ctx.selectCardsFromArray(ctx.getBlockedBy(ctx.card.id), "Deck", this.description, 1);
@@ -3090,7 +3108,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         description: "Défaussez 2 cartes alliées",
         timing: "played",
         execute: async function (ctx) {
-          const selected = await ctx.selectCardsFromZone((card) => !card.enemy[card.currentSide - 1], "Play Area", this.description, 2);
+          const selected = await ctx.selectCardsFromZone((card) => !card.negative[card.currentSide - 1], "Play Area", this.description, 2);
           for (const card of selected) {
             ctx.dropToDiscard({id: card.id, fromZone: "Play Area"});
           }
@@ -3258,7 +3276,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: "Détruisez une carte négative en jeu",
       timing: "onClick",
       execute: async function (ctx) {
-        const selected = await ctx.selectCardsFromZone((card) => card.enemy[card.currentSide - 1], "Play Area", this.description, 0, 1);
+        const selected = await ctx.selectCardsFromZone((card) => card.negative[card.currentSide - 1], "Play Area", this.description, 0, 1);
         if (selected.length === 1) {
           ctx.deleteCardInZone("Play Area", selected[0].id);
           ctx.deleteCardInZone(ctx.zone, ctx.card.id);
@@ -3853,7 +3871,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         description: "Ajoutez 1 check pour défausser un ennemi",
         timing: "onClick",
         execute: async function (ctx) {
-          if (ctx.fetchCardsInZone((card) => card.enemy[card.currentSide - 1], "Play Area").length !== 0) {
+          if (ctx.fetchCardsInZone((card) => card.negative[card.currentSide - 1], "Play Area").length !== 0) {
             const result = new Promise<boolean>((resolve) => {
               ctx.openCheckboxPopup(ctx.card, 1, 0, async (boxes) => {
                 if(boxes.length !== 0) {
@@ -3861,7 +3879,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                     applyResourceMapDelta(ctx.setResources, getCheckboxResources(box.content));
                   }
                   await checkBoxes(ctx.card, boxes);
-                  const selected = await ctx.selectCardsFromZone((card) => card.enemy[card.currentSide - 1], "Play Area", this.description, 1);
+                  const selected = await ctx.selectCardsFromZone((card) => card.negative[card.currentSide - 1], "Play Area", this.description, 1);
                   ctx.dropToDiscard({id: selected[0].id, fromZone: "Play Area"});
                   resolve(true);
                 } else {
@@ -4429,7 +4447,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         return true;
       }
     }],
-    4: [{ // TODO: Cargaison de Bois
+    4: [{ // TODO: Maritime
       description: "Les Maritimes produisent 1 gold de plus",
       timing: "onResourceGain",
       execute: async function (ctx) {
@@ -4721,7 +4739,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: "Détruisez une carte négative en jeu",
       timing: "onClick",
       execute: async function (ctx) {
-        const selected = await ctx.selectCardsFromZone((card) => card.enemy[card.currentSide - 1], "Play Area", this.description, 0, 1);
+        const selected = await ctx.selectCardsFromZone((card) => card.negative[card.currentSide - 1], "Play Area", this.description, 0, 1);
         if (selected.length === 1) {
           ctx.deleteCardInZone("Play Area", selected[0].id);
           ctx.deleteCardInZone(ctx.zone, ctx.card.id);
@@ -4731,8 +4749,14 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }]
   },
-  108: { // TODO: onRemove (destroy/purge) => not removable
-
+  108: {
+    1: [{ // Cristal Ethéré Royale
+      description: "Ne peut pas être détruit",
+      timing: "removed",
+      execute: async function () {
+        return false;
+      }
+    }]
   },
   109: {
     3: [{ // Manoir de la Guilde
@@ -5609,33 +5633,367 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
   },
+  131: {
+    2: [{ // Douves
+      description: "Défaussez une carte pour gagner military x2",
+      timing: "onClick",
+      execute: async function (ctx: GameContext) {
+        const card = (await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, "Play Area", this.description, 1))[0];
+        if (card) {
+          ctx.dropToDiscard({id: card.id, fromZone: "Play Area"});
+          ctx.setResources(prev => ({ ...prev, military: prev.military + 2 }));
+          return true;
+        }
+        return false;
+      }
+    }],
+    3: [{ // Muraille
+      description: "Reste en jeu",
+      timing: "stayInPlay",
+      execute: async function (ctx: GameContext) {
+        if(ctx) {
+          return false;
+        }
+        return true;
+      }
+    }],
+    4: [{ // Pont de Douves
+      description: "Dépensez gold x1 pour jouer une Personne de la défausse",
+      timing: "onClick",
+      execute: async function (ctx: GameContext) {
+        if (ctx.resources.gold < 1) {
+          return false;
+        }
+        const card = (await ctx.selectCardsFromZone((card) => card.GetType().includes("Personne"), "Discard", this.description, 1))[0];
+        if (card) {
+          ctx.setResources(prev => ({ ...prev, gold: prev.gold - 1 }));
+          ctx.dropToPlayArea({id: card.id, fromZone: "Discard"});
+          return true;
+        }
+        return false;
+      }
+    }],
+  },
+  132: {
+    4: [{ // Muraille
+      description: "Reste en jeu",
+      timing: "stayInPlay",
+      execute: async function (ctx: GameContext) {
+        if(ctx) {
+          return false;
+        }
+        return true;
+      }
+    }],
+  },
+  133: {
+    1: [{ // Pillage
+      description: "Gagnez 1 ressource",
+      timing: "onClick",
+      execute: async function (ctx) {
+        const choice = await ctx.selectResourceChoice([
+          { gold: 1 },  
+          { wood: 1 },
+          { stone: 1 },
+          { military: 1 },
+          { ingot: 1 },
+          { export: 1 },
+        ]);
+        if(choice) {
+          applyChoice(ctx, choice);
+          return true;
+        }
+        return false;
+      }
+    }],
+    2: [{ // Razzia
+      description: "Gagnez 2 ressources",
+      timing: "onClick",
+      execute: async function (ctx) {
+        const choice1 = await ctx.selectResourceChoice([
+          { gold: 1 },  
+          { wood: 1 },
+          { stone: 1 },
+          { military: 1 },
+          { ingot: 1 },
+          { export: 1 },
+        ]);
+        if (!choice1) {
+          return false;
+        }
+        const choice2 = await ctx.selectResourceChoice([
+          { gold: 1 },  
+          { wood: 1 },
+          { stone: 1 },
+          { military: 1 },
+          { ingot: 1 },
+          { export: 1 },
+        ]);
+        if(choice2) {
+          applyChoice(ctx, choice1);
+          applyChoice(ctx, choice2);
+          return true;
+        }
+        return false;
+      }
+    }],
+    3: [{ // Saccage
+      description: "Gagnez 3 ressources",
+      timing: "onClick",
+      execute: async function (ctx) {
+        const choice1 = await ctx.selectResourceChoice([
+          { gold: 1 },  
+          { wood: 1 },
+          { stone: 1 },
+          { military: 1 },
+          { ingot: 1 },
+          { export: 1 },
+        ]);
+        if (!choice1) {
+          return false;
+        }
+        const choice2 = await ctx.selectResourceChoice([
+          { gold: 1 },  
+          { wood: 1 },
+          { stone: 1 },
+          { military: 1 },
+          { ingot: 1 },
+          { export: 1 },
+        ]);
+        if (!choice2) {
+          return false;
+        }
+        const choice3 = await ctx.selectResourceChoice([
+          { gold: 1 },  
+          { wood: 1 },
+          { stone: 1 },
+          { military: 1 },
+          { ingot: 1 },
+          { export: 1 },
+        ]);
+        if(choice3) {
+          applyChoice(ctx, choice1);
+          applyChoice(ctx, choice2);
+          applyChoice(ctx, choice3);
+          return true;
+        }
+        return false;
+      }
+    }],
+    4: [{ // Pillage
+      description: "Gagnez 2 ressources",
+      timing: "onClick",
+      execute: async function (ctx) {
+        const choice1 = await ctx.selectResourceChoice([
+          { gold: 1 },  
+          { wood: 1 },
+          { stone: 1 },
+          { military: 1 },
+          { ingot: 1 },
+          { export: 1 },
+        ]);
+        if (!choice1) {
+          return false;
+        }
+        const choice2 = await ctx.selectResourceChoice([
+          { gold: 1 },  
+          { wood: 1 },
+          { stone: 1 },
+          { military: 1 },
+          { ingot: 1 },
+          { export: 1 },
+        ]);
+        if(choice2) {
+          applyChoice(ctx, choice1);
+          applyChoice(ctx, choice2);
+          return true;
+        }
+        return false;
+      }
+    }],
+  },
+  134: {
+    1: [
+      { // Rival Beau-Gosse
+        description: "Ne peut pas être détruit avant Lord Nimrod (55)",
+        timing: "destroyed",
+        execute: async function (ctx) {
+          return (ctx.cardsForTrigger?.some((card) => card.GetName() !== "Lord Nimrod")?? true);
+        }
+      },
+      {
+        description: "Défaussez Lord Nimrod et dépensez les ressources d'une case pour la check",
+        timing: "onClick",
+        execute: async function (ctx) {
+          const lord = ctx.fetchCardsInZone((card) => card.GetName() === "Lord Nimrod", "Play Area")[0];
+          if (!lord) {
+            return false;
+          }
+          const result = await new Promise<boolean>((resolve) => {
+            ctx.openCheckboxPopup(ctx.card, 1, 0, async (boxes) => {
+            if(boxes.length !== 0) {
+              for(const box of boxes) {
+                const cbResources = getCheckboxResources(box.content)?? {};
+                if (hasEnoughResources(ctx.resources, cbResources)) {
+                  applyResourceMapDelta(ctx.setResources, cbResources, true);
+                  await checkBoxes(ctx.card, boxes);
+                  ctx.dropToDiscard({ id: lord.id, fromZone: "Play Area" });
+                  if (ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked)) {
+                    ctx.upgradeCard(ctx.card, 3);
+                  }
+                  resolve(true);
+                }
+              }
+            }
+            resolve(false);
+            })
+          });
+          return result;
+        }
+      }
+    ],
+    3: [{ // Rival Beau-Gosse
+      description: "Gagnez la production d'une Personne en jeu",
+      timing: "onClick",
+      execute: async function (ctx) {
+        const cards = ctx.fetchCardsInZone((card) => card.GetType().includes("Personne") && card.id !==  ctx.card.id, "Play Area");
+        if (cards.length > 0) {
+          const card = (await ctx.selectCardsFromArray(cards, "Play Area", this.description, 1))[0];
+          if (card) {
+            let resources;
+            if (card.GetResources().length > 1) {
+              resources = await ctx.selectResourceChoice(card.GetResources());
+            }
+            else {
+              resources = card.GetResources()[0];
+            }
+            if (resources && resources !== null) {
+              applyResourceMapDelta(ctx.setResources, resources);
+              return true;
+            }
+          }
+        }
+        return false;
+      }
+    }],
+  },
+  135: {
+    1: [{ // Terres Frontalières
+      description: "Dépensez military x5 pour enlever military x1 au coût d'upgrade",
+      timing: "onClick",
+      execute: async function (ctx: GameContext) {
+        const upgrade = ctx.card.GetUpgrades()[0];
+        if (upgrade.cost && ctx.resources.military >= 5) {
+          if (!upgrade.cost.military) {
+            return false;
+          }
+          upgrade.cost.military = Math.max(0, (upgrade.cost.military?? 0) - 1);
+          
+          if (upgrade.cost.military === 0) {
+            delete upgrade.cost.military;
+          }
+          applyResourceMapDelta(ctx.setResources, {military: 5}, true);
+          ctx.handleCardUpdate(ctx.card, ctx.zone);
+        }
+        return false;
+      }
+    }],
+    2: [{ // Occupation
+      description: "Dépensez military x5 pour enlever military x1 au coût d'upgrade",
+      timing: "onClick",
+      execute: async function (ctx: GameContext) {
+        const upgrade = ctx.card.GetUpgrades()[0];
+        if (upgrade.cost && ctx.resources.military >= 5) {
+          if (!upgrade.cost.military) {
+            return false;
+          }
+          upgrade.cost.military = Math.max(0, (upgrade.cost.military?? 0) - 1);
+          
+          if (upgrade.cost.military === 0) {
+            delete upgrade.cost.military;
+          }
+          applyResourceMapDelta(ctx.setResources, {military: 5}, true);
+          ctx.handleCardUpdate(ctx.card, ctx.zone);
+        }
+        return false;
+      }
+    }],
+    3: [{ // Etats Vassaux
+      description: "Réinitialisez cette carte",
+      timing: "onClick",
+      execute: async function (ctx: GameContext) {
+        await ctx.upgradeCard(ctx.card, 1);
+        return true;
+      }
+    }],
+    4: [
+      { // Villages Alliés
+        description: "Dépensez military x5 pour enlever military x1 au coût d'upgrade",
+        timing: "onClick",
+        execute: async function (ctx) {
+          const upgrade = ctx.card.GetUpgrades()[0];
+          if (upgrade.cost && ctx.resources.military >= 5) {
+            if (!upgrade.cost.military) {
+              return false;
+            }
+            upgrade.cost.military = Math.max(0, (upgrade.cost.military?? 0) - 1);
+            
+            if (upgrade.cost.military === 0) {
+              delete upgrade.cost.military;
+            }
+            applyResourceMapDelta(ctx.setResources, {military: 5}, true);
+            ctx.handleCardUpdate(ctx.card, ctx.zone);
+          }
+          return false;
+        }
+      },
+      {
+        description: "Ajoutez fame x20 à l'étape finale",
+        timing: "onUpgrade",
+        uses: 0,
+        execute: async function (ctx) {
+          if ((this.uses?? 9) >= 9) {
+            return false;
+          }
+          if (!this.uses) {
+            this.uses = 0;
+          }
+          ctx.card.currentSide = 3;
+          addResourceMapToCard(ctx.card, {fame: 20});
+          ctx.card.currentSide = 4;
+          this.uses += 1;
+          return false;
+        }
+      }
+    ],
+  },
 };
 
 export const cardFameValueRegistry: Record<number, Record<number, CardFameValue>> = {
   34: {
     1: { // Inventrice
       description: "Vaut 5 par check",
-      execute: async function(ctx)  {
-        return 5 * (ctx.card.checkboxes[1].filter(cb => cb.checked).length);
+      execute: function(ctx)  {
+        return 5 * (ctx.card.checkboxes[0].filter(cb => cb.checked).length);
       }
     },
     3: { // Inventrice Inspirée
       description: "Vaut 5 par check",
-      execute: async function(ctx)  {
-        return 5 * (ctx.card.checkboxes[1].filter(cb => cb.checked).length);
+      execute: function(ctx)  {
+        return 5 * (ctx.card.checkboxes[0].filter(cb => cb.checked).length);
       }
     }
   },
   38: {
     1: { // L'Union fait la Force
       description: "Vaut 2 par Personne",
-      execute: async function(ctx)  {
+      execute: function(ctx)  {
         return 2 * (ctx.fetchCardsInZone((c) => c.GetType().includes("Personne"), "Deck").length);
       }
     },
     3: { // Domination Militaire
       description: "Vaut 2 par production de military",
-      execute: async function(ctx)  {
+      execute: function(ctx)  {
         const cards = ctx.fetchCardsInZone(() => true, "Deck");
 
         const totalMilitary = cards.reduce((sum, card) => {
@@ -5656,13 +6014,13 @@ export const cardFameValueRegistry: Record<number, Record<number, CardFameValue>
   39: {
     1: { // Elargir les frontières
       description: "Vaut -2 par carte manquante jusqu'à la taille de 70",
-      execute: async function(ctx)  {
+      execute: function(ctx)  {
         return Math.min(-2 * (70 - (ctx.fetchCardsInZone(() => (true), "Deck").length)), 0);
       }
     },
     3: { // Optimisation
       description: "Vaut -1 par carte sans fame",
-      execute: async function(ctx)  {
+      execute: function(ctx)  {
         const cards = ctx.fetchCardsInZone(() => true, "Deck");
 
         const noFameCount = cards.filter(card => {
@@ -5677,13 +6035,13 @@ export const cardFameValueRegistry: Record<number, Record<number, CardFameValue>
   40: {
     1: { // Loyauté
       description: "Vaut 35 s'il n'y a plus d'Ennemi",
-      execute: async function(ctx)  {
+      execute: function(ctx)  {
         return (ctx.fetchCardsInZone((c) => c.GetType().includes("Ennemi"), "Deck").length === 0) ? 35 : 0;
       }
     },
     3: { // Commerce
       description: "Vaut 25 si vous produisez 8+ export",
-      execute: async function(ctx)  {
+      execute: function(ctx)  {
         const cards = ctx.fetchCardsInZone(() => true, "Deck");
 
         const totalExport = cards.reduce((sum, card) => {
@@ -5704,7 +6062,7 @@ export const cardFameValueRegistry: Record<number, Record<number, CardFameValue>
   89: {
     4: { // Prison
       description: "Vaut 2 par check",
-      execute: async function(ctx)  {
+      execute: function(ctx)  {
         return 2 * (ctx.card.checkboxes[ctx.card.currentSide - 1].filter(cb => cb.checked).length);
       }
     }
@@ -5712,7 +6070,7 @@ export const cardFameValueRegistry: Record<number, Record<number, CardFameValue>
   91: {
     3: { // L'Arche
       description: "Vaut 1 par check",
-      execute: async function(ctx)  {
+      execute: function(ctx)  {
         return (ctx.card.checkboxes[ctx.card.currentSide - 1].filter(cb => cb.checked).length);
       }
     }
@@ -5720,7 +6078,7 @@ export const cardFameValueRegistry: Record<number, Record<number, CardFameValue>
   95: {
     1: { // Astronome
       description: "Vaut 2 par check",
-      execute: async function(ctx)  {
+      execute: function(ctx)  {
         return 2 * (ctx.card.checkboxes[ctx.card.currentSide - 1].filter(cb => cb.checked).length);
       }
     }
@@ -5728,7 +6086,7 @@ export const cardFameValueRegistry: Record<number, Record<number, CardFameValue>
   106: {
     3: { // Camelot
       description: "Vaut 5 par check",
-      execute: async function(ctx)  {
+      execute: function(ctx)  {
         return 5 * (ctx.card.checkboxes[ctx.card.currentSide - 1].filter(cb => cb.checked).length);
       }
     }
@@ -5736,7 +6094,7 @@ export const cardFameValueRegistry: Record<number, Record<number, CardFameValue>
   121: {
     3: { // Reine Jemimah
       description: "Vaut 3 par check",
-      execute: async function(ctx)  {
+      execute: function(ctx)  {
         return 3 * (ctx.card.checkboxes[ctx.card.currentSide - 1].filter(cb => cb.checked).length);
       }
     }
@@ -5744,31 +6102,31 @@ export const cardFameValueRegistry: Record<number, Record<number, CardFameValue>
   125: {
     3: { // Temple de la Lumière
       description: "Vaut 10 par check",
-      execute: async function(ctx)  {
-        return 3 * (ctx.card.checkboxes[ctx.card.currentSide - 1].filter(cb => cb.checked).length);
+      execute: function(ctx)  {
+        return 10 * (ctx.card.checkboxes[ctx.card.currentSide - 1].filter(cb => cb.checked).length);
       }
     }
   },
   128: {
     3: { // Site de Fouilles
       description: "Vaut 7 par check",
-      execute: async function(ctx)  {
+      execute: function(ctx)  {
         return 7 * (ctx.card.checkboxes[ctx.card.currentSide - 1].filter(cb => cb.checked).length);
       }
     }
   },
   130: {
-    3: { // Double Muraille
+    4: { // Double Muraille
       description: "Vaut 4 par Muraille",
-      execute: async function(ctx)  {
+      execute: function(ctx)  {
         return 4 * (ctx.fetchCardsInZone((c) => c.GetName().includes("Muraille"), "Deck").length);
       }
     }
   },
   134: {
-    3: { // Rival Beau-Gosse
+    1: { // Rival Beau-Gosse
       description: "Vaut -5 par non-check",
-      execute: async function(ctx)  {
+      execute: function(ctx)  {
         return -5 * (ctx.card.checkboxes[ctx.card.currentSide - 1].filter(cb => !cb.checked).length);
       }
     }
@@ -5776,9 +6134,9 @@ export const cardFameValueRegistry: Record<number, Record<number, CardFameValue>
   135: {
    1: { // Terres Frontalières
       description: "Vaut side 3",
-      execute: async function(ctx)  {
+      execute: function(ctx)  {
         return [ctx.card].reduce((sum, card) => {
-          const resourceMaps = card.resources[3] || [];
+          const resourceMaps = card.resources[2];
 
           const fameCount = resourceMaps.reduce(
             (max, res) => Math.max(max, res.fame || 0),
@@ -5791,9 +6149,9 @@ export const cardFameValueRegistry: Record<number, Record<number, CardFameValue>
     },
     2: { // Occupation
       description: "Vaut side 3",
-      execute: async function(ctx)  {
+      execute: function(ctx)  {
         return [ctx.card].reduce((sum, card) => {
-          const resourceMaps = card.resources[3] || [];
+          const resourceMaps = card.resources[2] || [];
 
           const fameCount = resourceMaps.reduce(
             (max, res) => Math.max(max, res.fame || 0),
@@ -5806,9 +6164,9 @@ export const cardFameValueRegistry: Record<number, Record<number, CardFameValue>
     },
     4: { // Villages Alliés
       description: "Vaut side 3",
-      execute: async function(ctx)  {
+      execute: function(ctx)  {
         return [ctx.card].reduce((sum, card) => {
-          const resourceMaps = card.resources[3] || [];
+          const resourceMaps = card.resources[2] || [];
 
           const fameCount = resourceMaps.reduce(
             (max, res) => Math.max(max, res.fame || 0),
