@@ -55,6 +55,11 @@ export type CardEffect = {
   requiresChoice?: boolean;
   choices?: string[];
   uses?: number;
+  productionModifier?: {
+    filter: (card: GameCard) => boolean;
+    zones: string[];
+    bonus: Partial<ResourceMap>;
+  };
 };
 
 export type CardFameValue = {
@@ -1528,16 +1533,19 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     }],
   },
   32: {
-    1: [{ // TODO: Scientifique
+    1: [{ // Scientifique
       description: "Les Personnes produisent 1 gold de plus",
-      timing: "onResourceGain",
+      timing: "modifyProduction",
+      productionModifier: {
+        filter: (card: GameCard) => card.GetType().includes("Personne"),
+        zones: ["Play Area"],
+        bonus: { gold: 1 }
+      },
       execute: async function (ctx) {
-        for(const card of ctx.cardsForTrigger?? []) {
-          if (card.GetType().includes("Personne")) {
-            ctx.setResources(prev => ({ ...prev, gold: prev.gold + 1 }));
-          }
+        if (ctx) {
+          return false;
         }
-        return false;
+        return true;
       }
     }],
     3: [{ // Observatoire
@@ -3569,8 +3577,37 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     ]
   },
-  81: { // TODO : onPurge
-
+  81: { // TODO : Test purge
+    2: [{ // Domaine Aethien
+      description: "Annulez la purge d'1 autre carte",
+      timing: "purged",
+      execute: async function (ctx) {
+         if (ctx) {
+          return false;
+        }
+        return true;
+      }
+    }],
+    3: [{ // Domaine Aethien
+      description: "Annulez la purge de 3 autres cartes",
+      timing: "purged",
+      execute: async function (ctx) {
+         if (ctx) {
+          return false;
+        }
+        return true;
+      }
+    }],
+    4: [{ // Domaine Aethien
+      description: "Annulez la purge de 2 autres cartes",
+      timing: "purged",
+      execute: async function (ctx) {
+         if (ctx) {
+          return false;
+        }
+        return true;
+      }
+    }],
   },
   82: {
     1: [{ // Autel
@@ -3833,16 +3870,19 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     }]
   },
   89: {
-    2: [{ // TODO: Puits du Village
+    2: [{ // Puits du Village
       description: "Les Bâtiments produisent 1 gold de plus",
-      timing: "onResourceGain",
+      timing: "modifyProduction",
+      productionModifier: {
+        filter: (card: GameCard) => card.GetType().includes("Bâtiment"),
+        zones: ["Play Area"],
+        bonus: { gold: 1 }
+      },
       execute: async function (ctx) {
-        for(const card of ctx.cardsForTrigger?? []) {
-          if (card.GetType().includes("Bâtiment")) {
-            ctx.setResources(prev => ({ ...prev, gold: prev.gold + 1 }));
-          }
+        if (ctx) {
+          return false;
         }
-        return false;
+        return true;
       }
     }],
     3: [{ // Colonie de la Fosse
@@ -4116,7 +4156,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     ],
     3: [{ // Malédiction
       description: "Progressez avec 2 cartes supplémentaires",
-      timing: "onProgress",
+      timing: "onAdvance",
       execute: async function () {
         return 2;
       }
@@ -4387,14 +4427,17 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         return false;
       }
     }],
-    4: [{ // TODO : Cargaison de Bois
+    4: [{ // Cargaison de Bois
       description: "Dépensez les wood / export de manière interchangeable",
-      timing: "onResourceGain",
+      timing: "onClick",
       execute: async function (ctx) {
-        if (ctx) {
-          return false;
+        if (ctx.resources.export > 0) {
+          ctx.setResources(prev => ({ ...prev, wood: prev.wood + prev.export, export: 0 }));
         }
-        return true;
+        else if (ctx.resources.wood > 0) {
+          ctx.setResources(prev => ({ ...prev, wood: 0, export: prev.wood + prev.export }));
+        }
+        return false;
       }
     }],
   },
@@ -4447,16 +4490,19 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         return true;
       }
     }],
-    4: [{ // TODO: Maritime
+    4: [{ // Cargaison de Bois
       description: "Les Maritimes produisent 1 gold de plus",
-      timing: "onResourceGain",
+      timing: "modifyProduction",
+      productionModifier: {
+        filter: (card: GameCard) => card.GetType().includes("Maritime"),
+        zones: ["Play Area"],
+        bonus: { gold: 1 }
+      },
       execute: async function (ctx) {
-        for(const card of ctx.cardsForTrigger?? []) {
-          if (card.GetType().includes("Maritime")) {
-            ctx.setResources(prev => ({ ...prev, gold: prev.gold + 1 }));
-          }
+        if (ctx) {
+          return false;
         }
-        return false;
+        return true;
       }
     }],
   },
@@ -4523,11 +4569,16 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             ctx.resources[resourceKey] -= amount;
           }
 
-          for (const upg of card.GetUpgrades()) { // TODO : WILL ONLY GET THE FIRST SIMILAR COST
-            if (upg.cost === selectedUpgrade) {
-              await ctx.upgradeCard(card, upg.nextSide);
-              break;
-            }
+          const upgrades = card.GetUpgrades();
+          const upgradeIndex = upgradeCosts.findIndex(cost => {
+            if (cost === null && selectedUpgrade === null) return true;
+            if (cost === null || selectedUpgrade === null) return false;
+            return Object.keys(cost).length === Object.keys(selectedUpgrade).length &&
+                  Object.keys(cost).every(key => cost[key as keyof ResourceMap] === selectedUpgrade[key as keyof ResourceMap]);
+          });
+
+          if (upgradeIndex !== -1) {
+            await ctx.upgradeCard(card, upgrades[upgradeIndex].nextSide);
           }
           ctx.dropToDiscard({id: card.id, fromZone: "Play Area"});
           ctx.setResources(prev => ({ ...prev, gold: prev.gold - 2 }));
@@ -4541,7 +4592,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       timing: "onClick",
       execute: async function (ctx) {
         const cards = ctx.fetchCardsInZone((card) => card.GetUpgrades().length !== 0 && card.id !== ctx.card.id, "Play Area");
-        if (ctx.resources.gold >= 2 && cards.length !== 0) {
+        if (cards.length !== 0) {
           const card = (await ctx.selectCardsFromArray(cards, "Play Area", this.description, 1))[0];
           const upgradeCosts = card.GetUpgrades().map((up) => up.cost?? {});
           
@@ -4565,11 +4616,16 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             ctx.resources[resourceKey] -= amount;
           }
           
-          for (const upg of card.GetUpgrades()) { // TODO : WILL ONLY GET THE FIRST SIMILAR COST
-            if (upg.cost === selectedUpgrade) {
-              await ctx.upgradeCard(card, upg.nextSide);
-              break;
-            }
+          const upgrades = card.GetUpgrades();
+          const upgradeIndex = upgradeCosts.findIndex(cost => {
+            if (cost === null && selectedUpgrade === null) return true;
+            if (cost === null || selectedUpgrade === null) return false;
+            return Object.keys(cost).length === Object.keys(selectedUpgrade).length &&
+                  Object.keys(cost).every(key => cost[key as keyof ResourceMap] === selectedUpgrade[key as keyof ResourceMap]);
+          });
+
+          if (upgradeIndex !== -1) {
+            await ctx.upgradeCard(card, upgrades[upgradeIndex].nextSide);
           }
           ctx.dropToDiscard({id: card.id, fromZone: "Play Area"});
           return true;
@@ -5039,11 +5095,16 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             return false;
           }
 
-          for (const upg of card.GetUpgrades()) { // TODO : WILL ONLY GET THE FIRST SIMILAR COST
-            if (upg.cost === selectedUpgrade) {
-              await ctx.upgradeCard(card, upg.nextSide);
-              break;
-            }
+          const upgrades = card.GetUpgrades();
+          const upgradeIndex = upgradeCosts.findIndex(cost => {
+            if (cost === null && selectedUpgrade === null) return true;
+            if (cost === null || selectedUpgrade === null) return false;
+            return Object.keys(cost).length === Object.keys(selectedUpgrade).length &&
+                  Object.keys(cost).every(key => cost[key as keyof ResourceMap] === selectedUpgrade[key as keyof ResourceMap]);
+          });
+
+          if (upgradeIndex !== -1) {
+            await ctx.upgradeCard(card, upgrades[upgradeIndex].nextSide);
           }
           await ctx.upgradeCard(ctx.card, 2);
           ctx.effectEndTurn();
@@ -5066,11 +5127,16 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             return false;
           }
 
-          for (const upg of card.GetUpgrades()) { // TODO : WILL ONLY GET THE FIRST SIMILAR COST
-            if (upg.cost === selectedUpgrade) {
-              await ctx.upgradeCard(card, upg.nextSide);
-              break;
-            }
+          const upgrades = card.GetUpgrades();
+          const upgradeIndex = upgradeCosts.findIndex(cost => {
+            if (cost === null && selectedUpgrade === null) return true;
+            if (cost === null || selectedUpgrade === null) return false;
+            return Object.keys(cost).length === Object.keys(selectedUpgrade).length &&
+                  Object.keys(cost).every(key => cost[key as keyof ResourceMap] === selectedUpgrade[key as keyof ResourceMap]);
+          });
+
+          if (upgradeIndex !== -1) {
+            await ctx.upgradeCard(card, upgrades[upgradeIndex].nextSide);
           }
           await ctx.upgradeCard(ctx.card, 4);
           ctx.effectEndTurn();
@@ -6414,14 +6480,14 @@ export function getCardUpgradeAdditionalCost(cardId: number, side: number) {
 }
 
 export function getCardSelectionValue(card: GameCard, searchType: string): number {
-  const cardValues = cardSelectionValues[card.id]?.[card.currentSide];
+  const cardValues = cardSelectionValues[card.id];
   if (!cardValues) return 1;
   
-  for (const [registeredType, value] of Object.entries(cardValues)) {
-    if (searchType.includes(registeredType)) {
-      return value;
-    }
-  }
+  const sideValues = cardValues[card.currentSide];
+  if (!sideValues) return 1;
+  
+  const typeValue = sideValues[searchType];
+  if (typeValue !== undefined) return typeValue;
   
   return 1;
 }

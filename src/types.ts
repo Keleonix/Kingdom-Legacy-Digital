@@ -100,7 +100,7 @@ export type EffectTiming =
   | "onClick"
   | "stayInPlay"
   | "onResourceGain"
-  | "onProgress"
+  | "onAdvance"
   | "doesNothing"
   | "restrictPlay"
   | "restrictAll"
@@ -110,6 +110,7 @@ export type EffectTiming =
   | "destroyed"
   | "removed"
   | "purged"
+  | "modifyProduction"
 ;
 
 export class GameCard {

@@ -109,8 +109,5 @@ All rights to the original **Kingdom Legacy** game, rules, and artwork remain wi
 ## Known bugs
 
 - Some cards with optional selection are mandatories instead.
-- When a card is blocked, if unblocked because of EoT and the card has "stay in play", it does not stay in play.
-- With cards that adds gold production to specific cardst, if a target card doen't have a production, you cannot automatically produce 1 gold.
 - Card id 73 Front Bottom doesn't count as 2 people for card fetches/upgrade costs.
-- After an end the turn effect, you can still upgrade cards.
-- The resources are not discarded when a new card is played.
+- Card id 81 is not implemented as purge doesn't exist yet

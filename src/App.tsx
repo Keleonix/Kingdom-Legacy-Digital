@@ -243,6 +243,7 @@ function CardView({
   onGainResources,
   onCardUpdate,
   onExecuteCardEffect,
+  gatherProductionBonus,
   interactable = true,
 }: {
   card: GameCard;
@@ -253,6 +254,7 @@ function CardView({
   onGainResources?: (card: GameCard, resources: Partial<ResourceMap>, zone: string) => void;
   onCardUpdate?: (updatedCard: GameCard, zone: string) => void;
   onExecuteCardEffect?: (card: GameCard, zone: string, timing: EffectTiming, effectId: number) => Promise<void>;
+  gatherProductionBonus?: (card: GameCard, zone: string) => Partial<ResourceMap>;
   interactable?: boolean;
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -460,21 +462,41 @@ function CardView({
           {/* Normal (in-play) resources */}
           <div className="mt-2 flex flex-wrap justify-center gap-2 items-center">
             {resOptions.map((opt, idx) => {
+              const productionBonus = gatherProductionBonus ? gatherProductionBonus(card, fromZone) : {};
+              
+              const displayOpt = { ...opt };
+              Object.entries(productionBonus).forEach(([key, value]) => {
+                const resourceKey = key as keyof ResourceMap;
+                displayOpt[resourceKey] = (displayOpt[resourceKey] || 0) + (value || 0);
+              });
+              
               const icons = RESOURCE_KEYS.flatMap((k) => {
-                const count = opt[k] ?? 0;
-                if (!count) return [];
+                const baseCount = opt[k] ?? 0;
+                const bonusCount = productionBonus[k] ?? 0;
+                const totalCount = baseCount + bonusCount;
+                
+                if (totalCount === 0) return [];
+                
                 return [
-                    <div key={`${idx}-${k}`} className="flex items-center gap-1">
-                      <img src={resourceIconPath(k)} alt={k} title={`${k} x${count}`} className="w-4 h-4" />
-                      {count !== 1 && <span className="text-xs">x{count}</span>}
-                    </div>
+                  <div key={`${idx}-${k}`} className="flex items-center gap-1">
+                    <img src={resourceIconPath(k)} alt={k} title={`${k} x${totalCount}`} className="w-4 h-4" />
+                    {totalCount !== 1 && (
+                      <span className="text-xs">
+                        {baseCount > 0 && bonusCount > 0 ? (
+                          <>
+                            {baseCount}
+                            <span className="text-green-600 font-bold">+{bonusCount}</span>
+                          </>
+                        ) : (
+                          `x${totalCount}`
+                        )}
+                      </span>
+                    )}
+                  </div>
                 ];
               });
 
-              // Ne pas afficher le bouton s'il n'y a pas de ressources
-              if (icons.length === 0) {
-                return null;
-              }
+              if (icons.length === 0) return null;
 
               return (
                 <div key={idx} className="flex items-center gap-1">
@@ -482,8 +504,8 @@ function CardView({
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      if (!interactable || ! onGainResources) return;
-                      onGainResources(card, opt, fromZone);
+                      if (!interactable || !onGainResources) return;
+                      onGainResources(card, displayOpt, fromZone);
                     }}
                     className="text-[10px] px-2 py-1 border rounded bg-white flex items-center gap-1 hover:bg-gray-100 transition"
                   >
@@ -630,6 +652,7 @@ function Zone({
   onGainResources,
   onCardUpdate,
   onExecuteCardEffect,
+  gatherProductionBonus,
   showAll = true,
   interactable = true,
   onTapAction,
@@ -642,6 +665,7 @@ function Zone({
   onGainResources?: (card: GameCard, resources: Partial<ResourceMap>, zone: string) => void;
   onCardUpdate?: (updatedCard: GameCard, zone: string) => void;
   onExecuteCardEffect?: (card: GameCard, zone: string, timing: EffectTiming, effectId: number) => Promise<void>;
+  gatherProductionBonus?: (card: GameCard, zone: string) => Partial<ResourceMap>;
   showAll?: boolean;
   interactable?: boolean;
   onTapAction?: (card: GameCard, zone: string) => void;
@@ -701,6 +725,7 @@ if (name === "Play Area" || name === "Blocked") {
               onGainResources={onGainResources}
               onCardUpdate={onCardUpdate}
               onExecuteCardEffect={onExecuteCardEffect}
+              gatherProductionBonus={gatherProductionBonus}
             />
           ))
         ) : (
@@ -2039,6 +2064,10 @@ export default function Game() {
   };
 
   const checkUpgradeRestrictions = (): boolean => {
+    if (turnEndFlag) {
+      return true;
+    }
+
     const allActiveCards = [...playArea];
     
     for (const card of allActiveCards) {
@@ -2078,8 +2107,9 @@ export default function Game() {
     const drawn = deck.slice(0, nbCards);
     const newCards = drawn.map(cloneGameCard);
     
-    setPlayArea((p) => [...p, ...newCards]);
-    setDeck((d) => d.slice(nbCards));
+    for (const card of drawn) {
+      dropToPlayArea({id: card.id, fromZone: "Deck"});
+    }
     setPendingPlayedCards(newCards);
   };
 
@@ -2111,13 +2141,13 @@ export default function Game() {
     setTurnEndFlag(false);
   }
   
- const progress = async () => {
+ const advance = async () => {
     let bonusCards = 0;
     
     for (const card of playArea) {
       const effects = getCardEffects(card.id, card.currentSide);
       for (const effect of effects) {
-        if (effect.timing === "onProgress") {
+        if (effect.timing === "onAdvance") {
           const context: GameContext = {
             card,
             zone: "Play Area",
@@ -2614,6 +2644,58 @@ export default function Game() {
     });
   };
 
+  const gatherProductionBonus = (card: GameCard, zone: string): Partial<ResourceMap> => {
+    const bonus: Partial<ResourceMap> = {};
+    
+    if (zone !== "Play Area" && zone !== "Permanent") {
+      return bonus;
+    }
+    
+    const modifiers: Array<{
+      filter: (card: GameCard) => boolean;
+      zones: string[];
+      bonus: Partial<ResourceMap>;
+      source: GameCard;
+    }> = [];
+    
+    for (const activeCard of playArea) {
+      const effects = getCardEffects(activeCard.id, activeCard.currentSide);
+      for (const effect of effects) {
+        if (effect.timing === "modifyProduction" && effect.productionModifier) {
+          modifiers.push({
+            ...effect.productionModifier,
+            source: activeCard
+          });
+        }
+      }
+    }
+    
+    for (const activeCard of permanentZone) {
+      if (activeCard.GetType().includes("Permanente")) {
+        const effects = getCardEffects(activeCard.id, activeCard.currentSide);
+        for (const effect of effects) {
+          if (effect.timing === "modifyProduction" && effect.productionModifier) {
+            modifiers.push({
+              ...effect.productionModifier,
+              source: activeCard
+            });
+          }
+        }
+      }
+    }
+    
+    for (const modifier of modifiers) {
+      if (modifier.zones.includes(zone) && modifier.filter(card)) {
+        Object.entries(modifier.bonus).forEach(([key, value]) => {
+          const resourceKey = key as keyof ResourceMap;
+          bonus[resourceKey] = (bonus[resourceKey] || 0) + (value as number);
+        });
+      }
+    }
+    
+    return bonus;
+  };
+
   function openCheckboxPopup(card: GameCard, requiredCount: number, optionalCount: number, callback: (selected: Checkbox[]) => void) {
     setCheckboxPopupCard(card);
     setCheckboxRequiredCount(requiredCount);
@@ -2769,7 +2851,7 @@ export default function Game() {
   }
 
   async function upgradeCard(card: GameCard, nextSide: number): Promise<boolean> {
-    if (card.name[nextSide - 1] === "") {
+    if (card.name[nextSide - 1] === "" || turnEndFlag) {
       return false;
     }
 
@@ -3001,6 +3083,8 @@ export default function Game() {
     }
     if (toZone === "Play Area") {
       setPlayArea((p) => [...p, toAdd]);
+
+      setResources(() => emptyResource);
 
       handleExecuteCardEffect(toAdd, "Play Area", "played");
       for (const card of playArea) {
@@ -3612,6 +3696,7 @@ export default function Game() {
               onUpgrade={handleUpgrade}
               onGainResources={handleGainResources}
               onExecuteCardEffect={(card, zone, timing, effectIndex) => handleExecuteCardEffect(card, zone, timing, undefined, effectIndex)}
+              gatherProductionBonus={gatherProductionBonus}
             />
           </div>
 
@@ -3635,7 +3720,7 @@ export default function Game() {
         <div className="space-x-2">
           <Button onClick={drawNewTurn} disabled={deck.length === 0}>{"New Turn"}</Button>
           <Button onClick={() => discardEndTurn(false)} disabled={deck.length === 0}>{"Pass"}</Button>
-          <Button onClick={progress} disabled={turnEndFlag || isPlayBlocked || deck.length === 0}>{"Progress"}</Button>
+          <Button onClick={advance} disabled={turnEndFlag || isPlayBlocked || deck.length === 0}>{"Advance"}</Button>
           {/* Conditionnal controls */}
           <Button disabled={deck.length > 0} className="bg-red-600 hover:bg-red-500 text-white" onClick={handleEndRound}>End Round</Button>
           {/* Manual actions */}

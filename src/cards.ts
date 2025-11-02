@@ -1162,9 +1162,9 @@ export const allCards: GameCard[] = [
     name: ["Armée", "", "Grande Armée", ""],
     resources: [
       [ emptyResource ],
-      [],
+      [ emptyResource ],
       [ { fame: 50 } ],
-      [],
+      [ emptyResource ],
     ],
     effects: [
       "effects/time Dépensez les resources/military (1 à 10, incrément de 1) pour cocher la case de gauche à droite, à la dernière carte, Back Up et découvrez l'Etat Vassal (135).",
@@ -1225,9 +1225,9 @@ export const allCards: GameCard[] = [
     name: ["Trésor", "", "Immense Trésor", ""],
     resources: [
       [ emptyResource ],
-      [],
+      [ emptyResource ],
       [ { fame: 50 } ],
-      [],
+      [ emptyResource ],
     ],
     effects: [
       "effects/time dépensez les resources/gold (1 à 12, incrément de 1) pour cocher la case de gauche à droite. A la dernière carte, Back Up.",
@@ -1289,10 +1289,10 @@ export const allCards: GameCard[] = [
   { id: 27,
     name: ["Exportations", "", "Exportations de Masse", ""],
     resources: [
-      [ {...emptyResource}],
-      [],
+      [ emptyResource ],
+      [ emptyResource ],
       [ { fame: 25 } ],
-      [],
+      [ emptyResource ],
     ],
     effects: [
       "10: Ajoutez resources/gold / resources/wood / resources/stone sur un Terrain, 20: Un Personnage gagne \" effects/passive Reste en jeu.\", 30: Découvrez Adoubement (80), 40: Ajoutez resources/ingot / resources/military / resources/export sur 1 Bâtiment, 55: Ajoutez resources/wood / resources/stone / resources/ingot / resources/military sur une carte, 75: Ajoutez resources/fame x5 sur une carte, 100: -> Back Up. effects/passive Dépensez des resources/export .",
@@ -1331,10 +1331,10 @@ export const allCards: GameCard[] = [
   { id: 28,
     name: ["Eruption Volcanique", "", "Terres Brulées", "Jeune Forêt"],
     resources: [
-      [],
-      [],
+      [ emptyResource ],
+      [ emptyResource ],
       [ { fame: -2 } ],
-      [ { ...emptyResource }  ],
+      [ emptyResource ],
     ],
     effects: [
       "effects/forced Tant qu'elle est en jeu, détruisez le prochain Terrain que vous jouez. Lorsque vous le faite, Back Up.",
@@ -1509,8 +1509,8 @@ export const allCards: GameCard[] = [
   { id: 32,
     name: ["Scientifique", "", "Observatoire", "Laboratoire"],
     resources: [
-      [],
-      [],
+      [ emptyResource ],
+      [ emptyResource ],
       [ { gold: 1, export: 1, fame: 5 } ],
       [ { gold: 1, export: 2, fame: 10 } ],
     ],
@@ -1551,10 +1551,10 @@ export const allCards: GameCard[] = [
   { id: 33,
     name: ["Ingénieur", "", "Trébuchet", ""],
     resources: [
-      [],
-      [],
+      [ emptyResource ],
+      [ emptyResource ],
       [ { military: 1, fame: 1 } ],
-      [],
+      [ emptyResource ],
     ],
     effects: [
       "effects/activate Détruisez l'une des cartes suivantes: Cabane de Bûcheron - découvrez (100). Grange - découvrez (101). Bâteau de pêche - découvrez (102).",
@@ -1593,10 +1593,10 @@ export const allCards: GameCard[] = [
   { id: 34,
     name: ["Inventrice", "", "Inventrice Inspirée", ""],
     resources: [
-      [],
-      [],
-      [],
-      [],
+      [ emptyResource ],
+      [ emptyResource ],
+      [ emptyResource ],
+      [ emptyResource ],
     ],
     effects: [
       "Vaut 5 resources/fame par effects/check .",
@@ -1693,10 +1693,10 @@ export const allCards: GameCard[] = [
   { id: 36,
     name: ["Mercenaire", "", "Sir __", ""],
     resources: [
-      [],
-      [],
+      [ emptyResource ],
+      [ emptyResource ],
       [ { military: 1, fame: 3 } ],
-      [],
+      [ emptyResource ],
     ],
     effects: [
       "effects/activate Dépensez resources/gold resources/gold pour ajouter 1 ou deux effects/check .",
@@ -1917,10 +1917,10 @@ export const allCards: GameCard[] = [
   { id: 41,
     name: ["Bouffon", "", "Marchande", ""],
     resources: [
-      [],
-      [],
+      [ emptyResource ],
+      [ emptyResource ],
       [ { fame: 15 } ],
-      [],
+      [ emptyResource ],
     ],
     effects: [
       "effects/passive Reste en jeu. effects/activate Défaussez la carte au sommet de votre pioche. effects/activate Ajoutez 1 effects/check .",
@@ -1998,9 +1998,9 @@ export const allCards: GameCard[] = [
   { id: 42,
     name: ["Exploitant", "", "Grenier", ""],
     resources: [
+      [ emptyResource ],
       [],
-      [],
-      [],
+      [ emptyResource ],
       [],
     ],
     effects: [
@@ -2082,9 +2082,9 @@ export const allCards: GameCard[] = [
   { id: 44,
     name: ["Orage", "", "Pluie", ""],
     resources: [
+      [ emptyResource ],
       [],
-      [],
-      [],
+      [ emptyResource ],
       [],
     ],
     effects: [
@@ -2250,7 +2250,7 @@ export const allCards: GameCard[] = [
   { id: 48,
     name: ["Envoyé", "Emissaire", "Ambassadeur", "Diplomate"],
     resources: [
-      [],
+      [ emptyResource ],
       [ { fame: 1 } ],
       [ { fame: 5 } ],
       [ { fame: 2 } ],
@@ -2334,10 +2334,10 @@ export const allCards: GameCard[] = [
   { id: 50,
     name: ["Voyageur", "Voyageur", "Voyageur", "Voyageur"],
     resources: [
-      [],
-      [],
-      [],
-      [],
+      [ emptyResource ],
+      [ emptyResource ],
+      [ emptyResource ],
+      [ emptyResource ],
     ],
     effects: [
       "effects/time Découvrez un Terrain (126).",
@@ -2376,8 +2376,8 @@ export const allCards: GameCard[] = [
   { id: 51,
     name: ["Magistrat", "Magistrat", "Stratège", "Magistrat"],
     resources: [
-      [],
-      [],
+      [ emptyResource ],
+      [ emptyResource ],
       [ { fame: 5 } ],
       [ { fame: 2 } ],
     ],
@@ -2418,7 +2418,7 @@ export const allCards: GameCard[] = [
   { id: 52,
     name: ["Grosse Butte", "Hameau sur la Colline", "Village Culminant", "Village"],
     resources: [
-      [],
+      [ emptyResource ],
       [ { gold: 1, fame: 1 } ],
       [ { gold: 2, export: 1, fame: 6 } ],
       [ { gold: 1, fame: 2 } ],
@@ -2502,7 +2502,7 @@ export const allCards: GameCard[] = [
   { id: 54,
     name: ["Scribe", "", "Architecte", ""],
     resources: [
-      [],
+      [ emptyResource ],
       [],
       [ { stone: 1 } ],
       [],
@@ -2693,7 +2693,7 @@ export const allCards: GameCard[] = [
   { id: 58,
     name: ["Ville en Flamme", "", "Terre Brûlée", "Jeune Forêt"],
     resources: [
-      [],
+      [ emptyResource ],
       [],
       [ { fame: -2 } ],
       [ { ...emptyResource }  ],
@@ -2745,7 +2745,7 @@ export const allCards: GameCard[] = [
   { id: 59,
     name: ["Grotte Mystérieuse", "Souterrains", "Trésor", "Civilisation Oubliée"],
     resources: [
-      [],
+      [ emptyResource ],
       [ { fame: 2 } ],
       [ { gold: 2, fame: 8 } ],
       [ { fame: 5 } ],
@@ -2789,7 +2789,7 @@ export const allCards: GameCard[] = [
     resources: [
       [ { fame: -5 } ],
       [],
-      [],
+      [ emptyResource ],
       [],
     ],
     effects: [
@@ -2831,7 +2831,7 @@ export const allCards: GameCard[] = [
     resources: [
       [ { fame: -7 } ],
       [],
-      [],
+      [ emptyResource ],
       [ { fame: 3 } ],
     ],
     effects: [
@@ -2869,7 +2869,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 62,
-    name: ["Camp", "Camp d'entrainement", "Sir __", ""],
+    name: ["Camp", "Camp d'entrainement", "", "Sir __"],
     resources: [
       [ { gold: 1 } ],
       [ { fame: 1 } ],
@@ -2965,7 +2965,7 @@ export const allCards: GameCard[] = [
     resources: [
       [ { fame: -5 } ],
       [],
-      [],
+      [ emptyResource ],
       [],
     ],
     effects: [
@@ -3005,9 +3005,9 @@ export const allCards: GameCard[] = [
   { id: 65,
     name: ["Tornade", "", "Innodations", ""],
     resources: [
+      [ emptyResource ],
       [],
-      [],
-      [],
+      [ emptyResource ],
       [],
     ],
     effects: [
@@ -3048,7 +3048,7 @@ export const allCards: GameCard[] = [
     name: ["Jeune Princesse", "Princesse Pourrie Gâtée", "Princesse Bien Elevée", ""],
     resources: [
       [ { fame: 2 } ],
-      [],
+      [ emptyResource ],
       [ { fame: 8 } ],
       [],
     ],
@@ -3091,7 +3091,7 @@ export const allCards: GameCard[] = [
     resources: [
       [ { fame: -8 } ],
       [ { fame: -2 } ],
-      [],
+      [ emptyResource ],
       [],
     ],
     effects: [
@@ -3176,9 +3176,9 @@ export const allCards: GameCard[] = [
   { id: 69,
     name: ["Touche Finale", "", "Banquet", ""],
     resources: [
+      [ emptyResource ],
       [],
-      [],
-      [],
+      [ emptyResource ],
       [],
     ],
     effects: [
@@ -3218,7 +3218,7 @@ export const allCards: GameCard[] = [
   { id: 70,
     name: ["Visite Royale", "", "Inquisitrice", ""],
     resources: [
-      [],
+      [ emptyResource ],
       [],
       [ { gold: 1 } ],
       [],
@@ -3520,7 +3520,7 @@ export const allCards: GameCard[] = [
         { military: 1 },
         { ingot: 1, fame: 3 }
       ],
-      [{ ...emptyResource } ],
+      [ emptyResource ],
     ],
     effects: [
       "effects/passive Reste en jeux. effects/passive Lorsque vous gagnez des resources/gold , gagnez 1 resources/gold de moins. effects/activate Dépensez resources/military resources/military pour vaincre ( effects/destroy ) puis découvrez le Lagon (77).",
@@ -3560,7 +3560,7 @@ export const allCards: GameCard[] = [
     name: ["Lagon", "Canoë", "Île Luxuriante", "Porte Maritime Fortifiée"],
     resources: [
       [ { gold: 1 } ],
-      [],
+      [ emptyResource ],
       [ { military: 1, fame: 3 } ],
       [ { gold: 2, export: 1 } ],
     ],
@@ -3646,7 +3646,7 @@ export const allCards: GameCard[] = [
   { id: 79,
     name: ["Villa", "Demeure", "Palais", "Manoir"],
     resources: [
-      [],
+      [ emptyResource ],
       [ { fame: 3 } ],
       [ { fame: 12 } ],
       [ { fame: 7 } ],
@@ -3688,9 +3688,9 @@ export const allCards: GameCard[] = [
   { id: 80,
     name: ["Coopération", "", "Faveur", ""],
     resources: [
+      [ emptyResource ],
       [],
-      [],
-      [],
+      [ emptyResource ],
       [],
     ],
     effects: [
@@ -3730,7 +3730,7 @@ export const allCards: GameCard[] = [
   { id: 81,
     name: ["Domaine Aethien", "Domaine Aethien", "Domaine Aethien", "Domaine Aethien"],
     resources: [
-      [],
+      [ emptyResource ],
       [ { fame: 3 } ],
       [ { fame: 10 } ],
       [ { fame: 6 } ],
@@ -3972,9 +3972,9 @@ export const allCards: GameCard[] = [
   { id: 86,
     name: ["Adoubement", "", "Rénovation", ""],
     resources: [
+      [ emptyResource ],
       [],
-      [],
-      [],
+      [ emptyResource ],
       [],
     ],
     effects: [
@@ -4014,7 +4014,7 @@ export const allCards: GameCard[] = [
   { id: 87,
     name: ["Quêtes", "", "", ""],
     resources: [
-      [],
+      [ emptyResource ],
       [],
       [],
       [],
@@ -4070,7 +4070,7 @@ export const allCards: GameCard[] = [
   { id: 88,
     name: ["Une Tour Idéale", "", "", ""],
     resources: [
-      [],
+      [ emptyResource ],
       [],
       [],
       [],
@@ -4191,7 +4191,7 @@ export const allCards: GameCard[] = [
   { id: 90,
     name: ["Bijoux", "", "", ""],
     resources: [
-      [],
+      [ emptyResource ],
       [],
       [],
       [],
@@ -4248,7 +4248,7 @@ export const allCards: GameCard[] = [
   { id: 91,
     name: ["Construire une Arche", "", "L'Arche", ""],
     resources: [
-      [],
+      [ emptyResource ],
       [],
       [ { fame: 24 } ],
       [],
@@ -4317,9 +4317,9 @@ export const allCards: GameCard[] = [
   { id: 92,
     name: ["__", "", "__", ""],
     resources: [
-      [ { } ],
+      [ emptyResource ],
       [],
-      [ { } ],
+      [ emptyResource ],
       [],
     ],
     effects: [
@@ -4359,8 +4359,8 @@ export const allCards: GameCard[] = [
   { id: 93,
     name: ["Chasse au Trésor", "Baie des Pirates", "Trésor Pirate", "Carte au Trésor"],
     resources: [
-      [],
-      [],
+      [ emptyResource ],
+      [ emptyResource ],
       [ { gold: 2, fame: 15 } ],
       [ { gold: 1, fame: 5 } ],
     ],
@@ -4403,7 +4403,7 @@ export const allCards: GameCard[] = [
     resources: [
       [ { fame: -2 } ],
       [],
-      [],
+      [ emptyResource ],
       [],
     ],
     effects: [
@@ -4443,7 +4443,7 @@ export const allCards: GameCard[] = [
   { id: 95,
     name: ["Astronome", "", "Astrologue", ""],
     resources: [
-      [],
+      [ emptyResource ],
       [],
       [ { military: 1 } ],
       [],
@@ -4499,10 +4499,10 @@ export const allCards: GameCard[] = [
   { id: 96,
     name: ["Alchimiste", "Potion de Force", "Potion d'Amour", "Potion de Soin"],
     resources: [
-      [],
-      [],
-      [],
-      [],
+      [ emptyResource ],
+      [ emptyResource ],
+      [ emptyResource ],
+      [ emptyResource ],
     ],
     effects: [
       "effects/activate Dépensez resources/gold resources/gold pour orienter cette carte selon votre choix.",
@@ -4827,7 +4827,7 @@ export const allCards: GameCard[] = [
   { id: 103,
     name: ["Missionaire", "", "Apiculteur", ""],
     resources: [
-      [],
+      [ emptyResource ],
       [],
       [ { gold: 1, fame: 2 } ],
       [],
@@ -4877,7 +4877,7 @@ export const allCards: GameCard[] = [
   { id: 104,
     name: ["Prêtre", "", "Cardinal", ""],
     resources: [
-      [],
+      [ emptyResource ],
       [],
       [ { fame: 5 } ],
       [],
@@ -5013,7 +5013,7 @@ export const allCards: GameCard[] = [
   { id: 107,
     name: ["Visite Royale", "", "Inquisitrice", ""],
     resources: [
-      [],
+      [ emptyResource ],
       [],
       [ { gold: 1 } ],
       [],
@@ -5242,10 +5242,10 @@ export const allCards: GameCard[] = [
   { id: 112,
     name: ["Etable", "Etable", "Palfrenier", "Grande Etable"],
     resources: [
-      [ { ...emptyResource} ],
-      [ { ...emptyResource} ],
-      [ { ...emptyResource} ],
-      [ { ...emptyResource} ],
+      [ emptyResource ],
+      [ emptyResource ],
+      [ emptyResource ],
+      [ emptyResource ],
     ],
     effects: [
       "effects/time Dépensez resources/gold resources/gold pour découvrir un cheval (113).",
@@ -5285,9 +5285,9 @@ export const allCards: GameCard[] = [
     name: ["Cheval", "", "", ""],
     resources: [
       [ { gold: 1 } ],
-      [ { ...emptyResource} ],
-      [ { ...emptyResource} ],
-      [ { ...emptyResource} ],
+      [ emptyResource ],
+      [ emptyResource ],
+      [ emptyResource ],
     ],
     effects: [
       "",
@@ -5327,9 +5327,9 @@ export const allCards: GameCard[] = [
     name: ["Cheval", "", "", ""],
     resources: [
       [ { military: 1 } ],
-      [ { ...emptyResource} ],
-      [ { ...emptyResource} ],
-      [ { ...emptyResource} ],
+      [ emptyResource ],
+      [ emptyResource ],
+      [ emptyResource ],
     ],
     effects: [
       "",
@@ -5372,9 +5372,9 @@ export const allCards: GameCard[] = [
         { wood: 1 },
         { stone: 1 }
       ],
-      [ { ...emptyResource} ],
-      [ { ...emptyResource} ],
-      [ { ...emptyResource} ],
+      [ emptyResource ],
+      [ emptyResource ],
+      [ emptyResource ],
     ],
     effects: [
       "",
@@ -5944,10 +5944,10 @@ export const allCards: GameCard[] = [
   { id: 128,
     name: ["Ravin", "Gouffre", "Site de Fouilles", "Ruines Antiques"],
     resources: [
-      [],
-      [],
+      [ emptyResource ],
+      [ emptyResource ],
       [ { gold: 1, export: 1 } ],
-      [],
+      [ emptyResource ],
     ],
     effects: [
       "",
@@ -5996,7 +5996,7 @@ export const allCards: GameCard[] = [
   { id: 129,
     name: ["Sources Chaudes", "Fontaine", "Rivière d'Eau Pure", "Canaux"],
     resources: [
-      [],
+      [ emptyResource ],
       [ { fame: 2 } ],
       [ { fame: 9 } ],
       [ { fame: 5 } ],
@@ -6173,8 +6173,8 @@ export const allCards: GameCard[] = [
   { id: 133,
     name: ["Raid", "Razzia", "Saccage", "Pillage"],
     resources: [
-      [],
-      [],
+      [ emptyResource ],
+      [ emptyResource ],
       [ { fame: 5 } ],
       [ { fame: 3 } ],
     ],
@@ -6215,7 +6215,7 @@ export const allCards: GameCard[] = [
   { id: 134,
     name: ["Rival Beau-Gosse", "", "Allié Noble", ""],
     resources: [
-      [],
+      [ emptyResource ],
       [],
       [ { fame: 6 } ],
       [],
@@ -6267,10 +6267,10 @@ export const allCards: GameCard[] = [
   { id: 135,
     name: ["Terres Frontalières", "Occupation", "Etats Vassaux", "Villages Alliés"],
     resources: [
-      [{}],
-      [{}],
-      [{}],
-      [{}],
+      [ emptyResource ],
+      [ emptyResource ],
+      [ emptyResource ],
+      [ emptyResource ],
     ],
     effects: [
       "Vaut la fame de l'étape Etats Vassaux. effects/passive Dépensez resources/military resources/military resources/military resources/military resources/military pour enlever 1 resources/military du coup d'amélioration. Toutes les étapes ont la même valeur que l'étape finale.",
