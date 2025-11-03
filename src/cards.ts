@@ -653,10 +653,10 @@ export const allCards: GameCard[] = [
       "",
     ],
     upgrades: [
-      [{ cost: { gold: 3 }, nextSide: 2 }],
-      [{ cost: { gold: 3 }, nextSide: 4 }],
       [],
-      [{ cost: { wood: 4 }, nextSide: 3 }],
+      [],
+      [],
+      [],
     ],
     currentSide: 1,
     type: ["Personne", "", "Personne", ""],
@@ -1083,7 +1083,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "Découvrez les cartes 24 à 27.",
+      "effects/activate Découvrez également les cartes 24 à 27 pour cette manche.",
       "",
       "",
       "",
@@ -1179,7 +1179,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Parchemin - Permanente", "", "Parchemin - Permanente", ""],
+    type: ["Permanente", "", "Permanente", ""],
     choice: false,
     checkboxes: [
       [ {content: "fame x1", checked: false},
@@ -1242,7 +1242,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Parchemin - Permanente", "", "Parchemin - Permanente", ""],
+    type: ["Permanente", "", "Permanente", ""],
     choice: false,
     checkboxes: [
       [ {content: "fame x1", checked: false},
@@ -1295,9 +1295,9 @@ export const allCards: GameCard[] = [
       [ emptyResource ],
     ],
     effects: [
-      "10: Ajoutez resources/gold / resources/wood / resources/stone sur un Terrain, 20: Un Personnage gagne \" effects/passive Reste en jeu.\", 30: Découvrez Adoubement (80), 40: Ajoutez resources/ingot / resources/military / resources/export sur 1 Bâtiment, 55: Ajoutez resources/wood / resources/stone / resources/ingot / resources/military sur une carte, 75: Ajoutez resources/fame x5 sur une carte, 100: -> Back Up. effects/passive Dépensez des resources/export .",
+      "Dépensez des resources/export pour atteindre des paliers, 10: Ajoutez resources/gold / resources/wood / resources/stone sur un Terrain, 20: Un Personnage gagne \" effects/passive Reste en jeu.\", 30: Découvrez Adoubement (80), 40: Ajoutez resources/ingot / resources/military / resources/export sur 1 Bâtiment, 55: Ajoutez resources/wood / resources/stone / resources/ingot / resources/military sur une carte, 75: Ajoutez resources/fame x5 sur une carte, 100: -> Back Up. effects/passive Dépensez des resources/export .",
       "",
-      "25: Ajoutez resources/fame sur deux Terrains, 50: Ajoutez resources/fame x5 sur une Personne, 75: Découvrez Visite Royale (107), 100: Ajoutez resources/fame x5 sur un Bâtiment, 150: effects/check une autre carte Permanente, 200: effects/check toutes les autres cartes Permanentes au choix, 250: Découvrez Relations Commerciales (117). effects/passive Dépensez des resources/export .",
+      "Dépensez des resources/export pour atteindre des paliers, 25: Ajoutez resources/fame sur deux Terrains, 50: Ajoutez resources/fame x5 sur une Personne, 75: Découvrez Visite Royale (107), 100: Ajoutez resources/fame x5 sur un Bâtiment, 150: effects/check une autre carte Permanente, 200: effects/check toutes les autres cartes Permanentes au choix, 250: Découvrez Relations Commerciales (117). effects/passive Dépensez des resources/export .",
       "",
     ],
     upgrades: [
@@ -1307,7 +1307,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Parchemin - Permanente", "", "Parchemin - Permanente", ""],
+    type: ["Permanente", "", "Permanente", ""],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -1755,7 +1755,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "Découvrez les cartes 38 à 42. Choisissez le côté des cartes Objectif.",
+      "effects/activate Découvrez les cartes 38 à 42. Choisissez le côté des cartes Objectif.",
       "",
       "",
       "",
@@ -3140,7 +3140,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "Découvrez les cartes 69 et 70. A la fin de la manche comptez votre resources/fame (Fin du jeu).",
+      "effects/activate Découvrez les cartes 69 et 70. A la fin de la manche comptez votre resources/fame (Fin du jeu).",
       "",
       "",
       "",

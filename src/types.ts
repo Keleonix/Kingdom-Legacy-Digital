@@ -56,6 +56,7 @@ export const TYPE_COLORS: Record<string, string> = {
   Maritime: "#a7bed3",   // muted blue
   Navire: "#a7bed3",   // muted blue
   Bâtiment: "#cfd4d9",   // light grey
+  Permanente: "#dbdbdbff",   // light grey
   Personne: "#f6e5a5",   // soft pastel yellow
   Chevalier: "#f6e5a5",   // soft pastel yellow
   Dame: "#f6e5a5",   // soft pastel yellow

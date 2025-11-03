@@ -17,6 +17,7 @@ function cloneGameCard(src: GameCard): GameCard {
   out.type = [...src.type];
   out.choice = src.choice;
   out.negative = [...src.negative];
+  out.discoverable = src.discoverable;
 
   // deep-copy resources (sides -> options -> resource keys)
   out.resources = src.resources.map((side) =>
@@ -70,7 +71,6 @@ function getBackgroundStyle(card: GameCard, sideIdx: number) {
   } else if (typeof rawType === "string") {
     types = rawType.split(" - ").map((s: string) => s.trim());
   }
-  types = types.filter((t) => t !== "Permanente");
 
   const colors = types.map((t) => TYPE_COLORS[t] || "#f4c2d7");
 
@@ -232,6 +232,177 @@ function parseEffects(raw: string) {
 }
 
 // -------------------
+// Card Preview Popup Component
+// -------------------
+function CardPreviewPopup({
+  card,
+  position,
+  previewRef
+}: {
+  card: GameCard;
+  position: { top: number; left: number };
+  previewRef: React.RefObject<HTMLDivElement | null>;
+}) {
+  // Helper to render icons for a single resource option object
+  function renderOptionIcons(opt: Record<string, number>, keyPrefix = "") {
+    const optMap = (opt || {}) as Record<string, number>;
+    const icons = RESOURCE_KEYS.flatMap((k) => {
+      const count = optMap[k as string] ?? 0;
+      if (!count) return [];
+      return (
+        <span key={`${keyPrefix}-${k}`} className="inline-flex items-center gap-1 mr-1">
+          <img src={resourceIconPath(k)} alt={k} className="w-3 h-3" />
+          <span className="text-xs">x{count}</span>
+        </span>
+      );
+    });
+    return icons.length > 0 ? <>{icons}</> : <span className="text-xs text-gray-400"></span>;
+  }
+
+  // Helper to render a side's options
+  function renderSideOptions(sideOpts: Record<string, number>[] | undefined, sideIdx: number) {
+    if (!Array.isArray(sideOpts) || sideOpts.length === 0) {
+      return <span className="text-xs text-gray-400"></span>;
+    }
+    return (
+      <>
+        {sideOpts.map((opt, optIdx) => (
+          <span key={`side-${sideIdx}-opt-${optIdx}`} className="inline-flex items-center">
+            {renderOptionIcons(opt, `s${sideIdx}o${optIdx}`)}
+            {optIdx < sideOpts.length - 1 && <span className="mx-1">/</span>}
+          </span>
+        ))}
+      </>
+    );
+  }
+
+  function renderEffectText(effect: string) {
+    return effect.split(/(\s+)/).map((part, idx) => {
+      if (/^\s+$/.test(part)) {
+        return <span key={idx}>{part}</span>;
+      }
+      if (part.startsWith("resources/") || part.startsWith("effects/")) {
+        return (
+          <img
+            key={idx}
+            src={part.concat(".png")}
+            alt={part}
+            className="inline w-4 h-4 mx-0.5"
+          />
+        );
+      }
+      return (
+        <span key={idx} className="inline">
+          {part}
+        </span>
+      );
+    });
+  }
+
+  return (
+    <div 
+      ref={previewRef}
+      className="fixed z-50 p-3 border-2 rounded-lg bg-white shadow-2xl pointer-events-none"
+      style={{
+        top: `${position.top}px`,
+        left: `${position.left}px`,
+        minWidth: '450px',
+        maxWidth: '450px'
+      }}
+    >
+      <div className="font-bold text-lg mb-3 text-center">Card #{card.id}</div>
+
+      {/* 2x2 Grid Layout */}
+      <div className="grid grid-cols-2 gap-3 max-w-[450px]">
+        {/* Front Up (Side 1) */}
+        <div className="border rounded p-2 max-w-[200px]" style={getBackgroundStyle(card, 0)}>
+          <div className="font-semibold text-sm mb-1">Front Up</div>
+          {card.name[0] ? (
+            <>
+              <div className="text-xs font-bold mb-1 border-t">{card.name[0]}</div>
+              <div className="text-[10px] text-gray-700 mb-1">{card.type[0]}</div>
+              <div className="text-[10px] mb-1">
+                {renderSideOptions(card.resources[0], 0)}
+              </div>
+              {card.effects[0] && (
+                <div className="text-[9px] mt-1 border-t pt-2">
+                  {renderEffectText(card.effects[0])}
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="text-xs text-gray-400 italic">None</div>
+          )}
+        </div>
+
+        {/* Back Up (Side 3) */}
+        <div className="border rounded p-2 max-w-[200px]" style={getBackgroundStyle(card, 2)}>
+          <div className="font-semibold text-sm mb-1">Back Up</div>
+          {card.name[2] ? (
+            <>
+              <div className="text-xs font-bold mb-1 border-t">{card.name[2]}</div>
+              <div className="text-[10px] text-gray-700 mb-1">{card.type[2]}</div>
+              <div className="text-[10px] mb-1">
+                {renderSideOptions(card.resources[2], 2)}
+              </div>
+              {card.effects[2] && (
+                <div className="text-[9px] mt-1 border-t pt-2">
+                  {renderEffectText(card.effects[2])}
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="text-xs text-gray-400 italic">None</div>
+          )}
+        </div>
+
+        {/* Front Down (Side 2) */}
+        <div className="border rounded p-2 max-w-[200px]" style={getBackgroundStyle(card, 1)}>
+          <div className="font-semibold text-sm mb-1">Front Down</div>
+          {card.name[1] ? (
+            <>
+              <div className="text-xs font-bold mb-1 border-t">{card.name[1]}</div>
+              <div className="text-[10px] text-gray-700 mb-1">{card.type[1]}</div>
+              <div className="text-[10px] mb-1">
+                {renderSideOptions(card.resources[1], 1)}
+              </div>
+              {card.effects[1] && (
+                <div className="text-[9px] mt-1 border-t pt-2">
+                  {renderEffectText(card.effects[1])}
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="text-xs text-gray-400 italic">None</div>
+          )}
+        </div>
+
+        {/* Back Down (Side 4) */}
+        <div className="border rounded p-2 max-w-[200px]" style={getBackgroundStyle(card, 3)}>
+          <div className="font-semibold text-sm mb-1">Back Down</div>
+          {card.name[3] ? (
+            <>
+              <div className="text-xs font-bold mb-1 border-t">{card.name[3]}</div>
+              <div className="text-[10px] text-gray-700 mb-1">{card.type[3]}</div>
+              <div className="text-[10px] mb-1">
+                {renderSideOptions(card.resources[3], 3)}
+              </div>
+              {card.effects[3] && (
+                <div className="text-[9px] mt-1 border-t pt-2">
+                  {renderEffectText(card.effects[3])}
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="text-xs text-gray-400 italic">None</div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// -------------------
 // Card View Component
 // -------------------
 function CardView({
@@ -262,6 +433,10 @@ function CardView({
   const [showPreview, setShowPreview] = useState(false);
   const [previewPosition, setPreviewPosition] = useState({ top: 0, left: 0 });
   const touchTimeout = useRef<string | number | NodeJS.Timeout | undefined>(undefined);
+  const upgradePreviewRef = useRef<HTMLDivElement | null>(null);
+  const [showUpgradePreview, setShowUpgradePreview] = useState(false);
+  const [upgradePreviewSide, setUpgradePreviewSide] = useState<number | null>(null);
+  const [upgradePreviewPosition, setUpgradePreviewPosition] = useState({ top: 0, left: 0 });
 
   const [, drag] = useDrag(
   () => ({
@@ -302,6 +477,35 @@ function CardView({
       setPreviewPosition({ top, left });
     }
   }, [showPreview]);
+
+  useEffect(() => {
+    if (showUpgradePreview && upgradePreviewRef.current) {
+      const previewRect = upgradePreviewRef.current.getBoundingClientRect();
+      const viewport = {
+        width: window.innerWidth,
+        height: window.innerHeight
+      };
+
+      // Get mouse position from the last mouse event
+      const mouseX = (window as any).lastMouseX || viewport.width / 2;
+      const mouseY = (window as any).lastMouseY || viewport.height / 2;
+
+      let top = mouseY - previewRect.height / 2;
+      let left = mouseX + 20;
+
+      // Keep inside viewport
+      if (left + previewRect.width > viewport.width - 8) {
+        left = mouseX - previewRect.width - 20;
+      }
+      if (top < 8) {
+        top = 8;
+      } else if (top + previewRect.height > viewport.height - 8) {
+        top = viewport.height - previewRect.height - 8;
+      }
+
+      setUpgradePreviewPosition({ top, left });
+    }
+  }, [showUpgradePreview, upgradePreviewSide]);
 
   const resOptions = card.GetResources();
   const effect = card.GetEffect();
@@ -532,6 +736,16 @@ function CardView({
                     if (!interactable || !onUpgrade) return;
                     onUpgrade(card, upg, fromZone);
                   }}
+                  onMouseEnter={(e) => {
+                    (window as any).lastMouseX = e.clientX;
+                    (window as any).lastMouseY = e.clientY;
+                    setUpgradePreviewSide(upg.nextSide);
+                    setShowUpgradePreview(true);
+                  }}
+                  onMouseLeave={() => {
+                    setShowUpgradePreview(false);
+                    setUpgradePreviewSide(null);
+                  }}
                   className="text-[10px] px-2 py-1 border rounded bg-white flex items-center gap-1 hover:bg-gray-100 transition"
                 >
                   <div className="flex items-center gap-1">
@@ -583,57 +797,50 @@ function CardView({
 
       {/* --- PREVIEW POPUP --- */}
       {showPreview && (
+        <CardPreviewPopup 
+          card={card} 
+          position={previewPosition} 
+          previewRef={previewRef} 
+        />
+      )}
+      {/* --- UPGRADE PREVIEW POPUP --- */}
+      {showUpgradePreview && upgradePreviewSide !== null && (
         <div 
-          ref={previewRef}
-          className="fixed z-50 w-64 p-2 border rounded bg-white shadow-lg pointer-events-none"
+          ref={upgradePreviewRef}
+          className="fixed z-[60] p-3 border-2 rounded-lg bg-white shadow-2xl pointer-events-none"
           style={{
-            top: `${previewPosition.top}px`,
-            left: `${previewPosition.left}px`
+            top: `${upgradePreviewPosition.top}px`,
+            left: `${upgradePreviewPosition.left}px`,
+            minWidth: '225px',
+            maxWidth: '225px'
           }}
         >
-          <div className="font-bold">{card.id}</div>
-
-          {/* Names/Types */}
-          <div>
-            <div className="text-sm">{`${card.name[0]}: ${card.type[0]} | ${card.name[1]}: ${card.type[1]}`}</div>
-            <div className="text-sm">{`${card.name[2]}: ${card.type[2]} | ${card.name[3]}: ${card.type[3]}`}</div>
+          <div className="font-bold text-center mb-2">
+            {sideLabel(upgradePreviewSide)}
           </div>
-          <div className="my-1">-----</div>
-
-          {/* Resources per side */}
-          <div className="mt-2 text-xs flex flex-wrap justify-center items-center">
-            {Array.isArray(card.resources) && card.resources.length > 0 ? (
-              card.resources.map((sideOpts: Record<string, number>[], sideIdx: number) => (
-                <span key={`preview-side-${sideIdx}`} className="inline-flex items-center mr-2">
-                  {renderSideOptions(sideOpts, sideIdx)}
-                  {sideIdx < card.resources.length - 1 && <span className="mx-1">|</span>}
-                </span>
-              ))
+          
+          <div className="border rounded p-2" style={getBackgroundStyle(card, upgradePreviewSide - 1)}>
+            {card.name[upgradePreviewSide - 1] ? (
+              <>
+                <div className="text-sm font-bold mb-1">{card.name[upgradePreviewSide - 1]}</div>
+                <div className="text-xs text-gray-700 mb-2">{card.type[upgradePreviewSide - 1]}</div>
+                
+                {/* Resources */}
+                <div className="text-xs mb-2">
+                  {renderSideOptions(card.resources[upgradePreviewSide - 1], upgradePreviewSide - 1)}
+                </div>
+                
+                {/* Effects */}
+                {card.effects[upgradePreviewSide - 1] && (
+                  <div className="text-[10px] mt-2 border-t pt-2">
+                    {renderEffectText(card.effects[upgradePreviewSide - 1])}
+                  </div>
+                )}
+              </>
             ) : (
-              <span className="text-xs text-gray-400"></span>
+              <div className="text-sm text-gray-400 italic text-center py-4">Empty Side</div>
             )}
           </div>
-
-          {/* Effects per side - WITHOUT line-clamp */}
-          <div className="my-1">-----</div>
-          {card.effects?.map((eff, idx) => {
-            const { before, effects } = parseEffects(eff);
-            return (
-              <div key={idx}>
-                {idx > 0 && <div className="my-1">-----</div>}
-                <div className="text-xs mt-1">
-                  {/* Display full before text without truncation */}
-                  {before && <div className="text-xs mb-1">{renderEffectText(before)}</div>}
-                  {/* Display effect buttons/blocks */}
-                  {effects.map((effObj, effIdx) => (
-                    <div key={effIdx} className="text-[9px] px-1 py-0.5 border rounded bg-white mb-1">
-                      {renderEffectText(effObj.text)}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
         </div>
       )}
     </div>
@@ -1188,100 +1395,6 @@ function CardSelectionPopup({
 
   const canConfirm = selectedValue >= requiredCount && selectedValue <= maxCount;
 
-  // Helper functions from CardView for preview
-  function resourceIconPath(key: keyof ResourceMap) {
-    return `/resources/${String(key).toLowerCase()}.png`;
-  }
-
-  function renderSideOptions(sideOpts: Record<string, number>[] | undefined, sideIdx: number) {
-    if (!Array.isArray(sideOpts) || sideOpts.length === 0) {
-      return <span className="text-xs text-gray-400"></span>;
-    }
-    return (
-      <>
-        {sideOpts.map((opt, optIdx) => (
-          <span key={`side-${sideIdx}-opt-${optIdx}`} className="inline-flex items-center">
-            {RESOURCE_KEYS.flatMap((k) => {
-              const count = opt[k] ?? 0;
-              if (!count) return [];
-              return (
-                <span key={`${sideIdx}-${optIdx}-${k}`} className="inline-flex items-center gap-1 mr-1">
-                  <img src={resourceIconPath(k)} alt={k} className="w-3 h-3" />
-                  <span className="text-xs">x{count}</span>
-                </span>
-              );
-            })}
-            {optIdx < sideOpts.length - 1 && <span className="mx-1">/</span>}
-          </span>
-        ))}
-      </>
-    );
-  }
-
-  function renderEffectText(effect: string) {
-    return effect.split(/(\s+)/).map((part, idx) => {
-      if (/^\s+$/.test(part)) {
-        return <span key={idx}>{part}</span>;
-      }
-      if (part.startsWith("resources/") || part.startsWith("effects/")) {
-        return (
-          <img
-            key={idx}
-            src={part.concat(".png")}
-            alt={part}
-            className="inline w-4 h-4 mx-0.5"
-          />
-        );
-      }
-      return (
-        <span key={idx} className="inline">
-          {part}
-        </span>
-      );
-    });
-  }
-
-  function parseEffects(raw: string) {
-    if (!raw) return { before: "", effects: [] as string[] };
-    const pattern = new RegExp(`(${EFFECT_KEYWORDS.join("|")})`, "g");
-    let match: RegExpExecArray | null;
-    const indices: number[] = [];
-    while ((match = pattern.exec(raw)) !== null) {
-      indices.push(match.index);
-    }
-    if (indices.length === 0) {
-      return { before: raw.trim(), effects: [] };
-    }
-    const before = raw.slice(0, indices[0]).trim();
-    const effects: string[] = [];
-    for (let i = 0; i < indices.length; i++) {
-      const start = indices[i];
-      const end = i < indices.length - 1 ? indices[i + 1] : raw.length;
-      const chunk = raw.slice(start, end).trim();
-      const stop = chunk.search(/[.)](?!.*[.)])/);
-      if (stop !== -1) {
-        effects.push(chunk.slice(0, stop + 1).trim());
-      } else {
-        effects.push(chunk);
-      }
-    }
-    return { before, effects };
-  }
-
-  function renderEffect(raw: string) {
-    const { before, effects } = parseEffects(raw);
-    return (
-      <div className="flex flex-col gap-1">
-        {before && <div className="text-sm">{renderEffectText(before)}</div>}
-        {effects.map((eff, idx) => (
-          <div key={idx} className="text-[10px] px-2 py-1 border rounded bg-white">
-            {renderEffectText(eff)}
-          </div>
-        ))}
-      </div>
-    );
-  }
-
   const displayMessage = (() => {
   const allCardsValue = cards.reduce((sum, c) => sum + getCardSelectionValue(c, searchType || ""), 0);
   const autoSelected = allCardsValue <= maxCount;
@@ -1365,43 +1478,11 @@ function CardSelectionPopup({
 
       {/* Preview popup */}
       {hoveredCard && (
-        <div 
-          ref={previewRef}
-          className="fixed z-[90] w-64 p-2 border rounded bg-white shadow-lg pointer-events-none"
-          style={{
-            top: `${previewPosition.top}px`,
-            left: `${previewPosition.left}px`
-          }}
-        >
-          <div className="font-bold">{hoveredCard.id}</div>
-
-          <div>
-            <div className="text-sm">{`${hoveredCard.name[0]}: ${hoveredCard.type[0]} | ${hoveredCard.name[1]}: ${hoveredCard.type[1]}`}</div>
-            <div className="text-sm">{`${hoveredCard.name[2]}: ${hoveredCard.type[2]} | ${hoveredCard.name[3]}: ${hoveredCard.type[3]}`}</div>
-          </div>
-          <div className="my-1">-----</div>
-
-          <div className="mt-2 text-xs flex flex-wrap justify-center items-center">
-            {Array.isArray(hoveredCard.resources) && hoveredCard.resources.length > 0 ? (
-              hoveredCard.resources.map((sideOpts: Record<string, number>[], sideIdx: number) => (
-                <span key={`preview-side-${sideIdx}`} className="inline-flex items-center mr-2">
-                  {renderSideOptions(sideOpts, sideIdx)}
-                  {sideIdx < hoveredCard.resources.length - 1 && <span className="mx-1">|</span>}
-                </span>
-              ))
-            ) : (
-              <span className="text-xs text-gray-400"></span>
-            )}
-          </div>
-
-          <div className="my-1">-----</div>
-          {hoveredCard.effects?.map((eff, idx) => (
-            <div key={idx}>
-              {idx > 0 && <div className="my-1">-----</div>}
-              <div className="text-xs mt-1">{renderEffect(eff)}</div>
-            </div>
-          ))}
-        </div>
+        <CardPreviewPopup 
+          card={hoveredCard} 
+          position={previewPosition} 
+          previewRef={previewRef} 
+        />
       )}
     </div>
   );
@@ -1894,6 +1975,7 @@ export default function Game() {
   const [showGuide, setShowGuide] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
   const [selectedCampaignId, setSelectedCampaignId] = useState<number | null>(null);
+  const [availableDiscoverableCards, setAvailableDiscoverableCards] = useState<number[]>([]);
 
   const [cityNameInput, setCityNameInput] = useState("");
   const [selectedKingdom, setSelectedKingdom] = useState("New Kingdom");
@@ -1919,6 +2001,18 @@ export default function Game() {
     searchType?: string;
     resolve: (selectedCards: GameCard[]) => void;
   } | null>(null);
+
+  useEffect(() => {
+    if (availableDiscoverableCards.length > 0) return;
+    
+    const discoverableCards = campaignDeck
+      .filter(card => card.discoverable === true)
+      .sort((a, b) => a.id - b.id)
+      .slice(0, 2)
+      .map(card => card.id);
+    
+    setAvailableDiscoverableCards(discoverableCards);
+  }, []);
 
   const [showCheckboxPopup, setShowCheckboxPopup] = useState(false);
   const [checkboxPopupCard, setCheckboxPopupCard] = useState<GameCard | null>(null);
@@ -2130,7 +2224,9 @@ export default function Game() {
   }, [pendingPlayedCards]);
 
   const drawNewTurn = async () => {
-    await discardEndTurn();
+    if (!turnEndFlag) {
+      await discardEndTurn();
+    }
     setResources((prev) => {
       const reset: ResourceMap = { ...emptyResource };
       if ("fame" in prev) (reset as Partial<ResourceMap>).fame = (prev as Partial<ResourceMap>).fame;
@@ -2190,6 +2286,7 @@ export default function Game() {
             getCardZone,
             upgradeCard,
             handleCardUpdate,
+            addDiscoverableCard,
           };
           
           const result = await effect.execute(context);
@@ -2283,6 +2380,7 @@ export default function Game() {
           getCardZone,
           upgradeCard,
           handleCardUpdate,
+          addDiscoverableCard,
         };
         
         await effect.execute(context);
@@ -2422,6 +2520,7 @@ export default function Game() {
               getCardZone,
               upgradeCard,
               handleCardUpdate,
+              addDiscoverableCard,
             };
             
             const specialFameValue = fameValueEffect.execute(context);
@@ -2910,6 +3009,7 @@ export default function Game() {
             getCardZone,
             upgradeCard,
             handleCardUpdate,
+            addDiscoverableCard,
           };
           
           const canDestroy = await effect.execute(context);
@@ -2921,6 +3021,52 @@ export default function Game() {
     }
     
     return true;
+  };
+
+  const addDiscoverableCard = (cardId: number, force?: boolean) => {
+    if (!force) {
+      force = false;
+    }
+    
+    setAvailableDiscoverableCards(prev => {
+      if (prev.includes(cardId)) return prev;
+      
+      const card = campaignDeck.find(c => c.id === cardId);
+      if (!card) return prev;
+      
+      if (!force && prev.length >= 2) return prev;
+      
+      if (prev.length === 0) {
+        const firstCard = campaignDeck.find(c => c.id === prev[0]);
+        if (firstCard && firstCard.name.some(n => n === "STOP !")) {
+          return prev;
+        }
+      }
+      
+      return [...prev, cardId].sort((a, b) => a - b);
+    });
+  };
+
+  const refreshDiscoverableCards = () => {
+    const allDiscoverable = campaignDeck
+      .filter(card => card.discoverable === true)
+      .sort((a, b) => a.id - b.id);
+    
+    if (allDiscoverable.length === 0) {
+      setAvailableDiscoverableCards([]);
+      return;
+    }
+    
+    const firstCard = allDiscoverable[0];
+    if (firstCard.name.some(n => n === "STOP !")) {
+      setAvailableDiscoverableCards([firstCard.id]);
+      return;
+    }
+    const discoverableCards = allDiscoverable
+      .slice(0, 2)
+      .map(card => card.id);
+    
+    setAvailableDiscoverableCards(discoverableCards);
   };
 
   const handleExecuteCardEffect = async (
@@ -2978,6 +3124,7 @@ export default function Game() {
       getCardZone,
       upgradeCard,
       handleCardUpdate,
+      addDiscoverableCard,
     };
 
     if (typeof effectIndex === "number" && effectIndex >= 0 && effectIndex < effects.length) {
@@ -3053,6 +3200,9 @@ export default function Game() {
     if (toZone === "Play Area" && checkPlayRestrictions()) {
       return;
     }
+    if (fetchCardsInZone((c) => c.id === id, fromZone)[0].GetType().includes("Parchemin") && toZone !== "Destroy") {
+      return;
+    }
 
     const removeById = (arr: GameCard[], removeId: number) =>
       arr.filter((c) => c.id !== removeId);
@@ -3065,9 +3215,17 @@ export default function Game() {
     if (fromZone === "Deck") setDeck((d) => removeById(d, id));
     if (fromZone === "Play Area") setPlayAreaImmediate((p) => removeById(p, id));
     if (fromZone === "Discard") setDiscardImmediate((f) => removeById(f, id));
-    if (fromZone === "Campaign") setCampaignDeck((g) => removeById(g, id));
+    if (fromZone === "Campaign") {
+      setCampaignDeck((g) => removeById(g, id));
+      setAvailableDiscoverableCards(prev => prev.filter(cardId => cardId !== id));
+    }
     if (fromZone === "Blocked") setBlockedZone((b) => removeById(b, id));
     if (fromZone === "Permanent") setPermanentZone((pe) => removeById(pe, id));
+
+    if (fetchCardsInZone((c) => c.id === id, fromZone)[0].GetType().includes("Permanente")) {
+      setPermanentZone((pe) => [...pe, toAdd]);
+      return;
+    }
 
     if (toZone === "Deck") {
       setDeck((d) => [cloneGameCard(toAdd), ...d]);
@@ -3307,6 +3465,7 @@ export default function Game() {
           getCardZone,
           upgradeCard,
           handleCardUpdate,
+          addDiscoverableCard,
         };
         
         const additionalCostPaid = await additionalCostEffect.execute(context);
@@ -3339,8 +3498,7 @@ export default function Game() {
       replaceCardInZone(zone, card.id, upgraded);
     }
 
-    setTurnEndFlag(true);
-    discardEndTurn();
+    await discardEndTurn();
   };
 
   const handleGainResources = async (card: GameCard, resources: Partial<ResourceMap>, zone: string, toZone?: string) => {
@@ -3391,6 +3549,7 @@ export default function Game() {
             getCardZone,
             upgradeCard,
             handleCardUpdate,
+            addDiscoverableCard,
           };
           
           await effect.execute(context);
@@ -3475,6 +3634,7 @@ export default function Game() {
             getCardZone,
             upgradeCard,
             handleCardUpdate,
+            addDiscoverableCard,
           };
           
           if (await effect.execute(context)) {
@@ -3650,7 +3810,7 @@ export default function Game() {
                   >
                     <option value="">Select...</option>
                     {campaignDeck
-                      .filter((card) => !card.discoverable)
+                      .filter(() => true)
                       .sort((a, b) => a.id - b.id)
                       .map((card) => (
                         <option key={card.id} value={card.id}>
@@ -3719,12 +3879,12 @@ export default function Game() {
         {/* Action Buttons (with Shuffle next to End Round) */}
         <div className="space-x-2">
           <Button onClick={drawNewTurn} disabled={deck.length === 0}>{"New Turn"}</Button>
-          <Button onClick={() => discardEndTurn(false)} disabled={deck.length === 0}>{"Pass"}</Button>
+          <Button onClick={() => discardEndTurn(false)} disabled={deck.length === 0 || turnEndFlag}>{"Pass"}</Button>
           <Button onClick={advance} disabled={turnEndFlag || isPlayBlocked || deck.length === 0}>{"Advance"}</Button>
           {/* Conditionnal controls */}
           <Button disabled={deck.length > 0} className="bg-red-600 hover:bg-red-500 text-white" onClick={handleEndRound}>End Round</Button>
           {/* Manual actions */}
-          <Button onClick={shuffleDeck} className="bg-blue-600 hover:bg-blue-500 text-white">{"Shuffle Deck"}</Button>
+          <Button onClick={shuffleDeck} className="bg-blue-600 hover:bg-blue-500 text-white" hidden={true}>{"Shuffle Deck"}</Button>
           {/* Hidden controls */}
           <Button hidden={campaignDeck.some(card => card.id === 95) && campaignDeck.some(card => card.id === 110)} className="bg-green-600 hover:bg-green-500 text-white" onClick={handleTopDiscardToBottom}>Top Discard to Bottom Deck</Button>
           <Button hidden={campaignDeck.some(card => card.id === 98)} className="bg-green-600 hover:bg-green-500 text-white" onClick={handleShuffle15Rand}>Shuffle 15 Rand</Button>
@@ -3951,7 +4111,7 @@ export default function Game() {
         {/* End Round Modal */}
         {showEndRound && (
           <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-            <div className="bg-white p-4 rounded-xl space-y-4 w-full h-full max-w-[300vw] max-h-[300vh] overflow-hidden flex flex-col">
+            <div className="bg-white p-4 rounded-xl space-y-4">
               <h2 className="font-bold">End Round</h2>
 
               <div className="flex gap-4">
@@ -3959,7 +4119,7 @@ export default function Game() {
                   <p className="font-bold">Campaign Deck</p>
                   <Zone
                     name="Campaign"
-                    cards={campaignDeck.slice(0, 1)}
+                    cards={campaignDeck.filter(card => availableDiscoverableCards.includes(card.id)).sort((a, b) => a.id -b.id)}
                     onDrop={() => {}}
                     onTapAction={handleTapAction}
                     onRightClick={handleTapAction}
@@ -3972,29 +4132,22 @@ export default function Game() {
                   />
                 </div>
 
-                <div className="flex-1">
+                <div className="flex-1 flex-col lg:flex-row gap-4 max-w-[230px]">
                   <p className="font-bold">Deck</p>
                   <Zone name="Deck" cards={deck.slice(0, 1)} onDrop={(p) => dropToDeck(p)} onTapAction={handleTapAction} onRightClick={handleTapAction} />
                   {<Button onClick={() => setShowDeck(true)}>See deck</Button>}
                 </div>
-
-                <div className="flex-1">
-                  <p className="font-bold">Temporary (Blocked)</p>
-                  <Zone name="Blocked" cards={blockedZone.slice(-1)} onDrop={(p) => dropToBlocked(p)} onTapAction={handleTapAction} onRightClick={handleTapAction} />
-                </div>
-
-                <div className="flex-1">
-                  <p className="font-bold">Destroy</p>
-                  <Zone name="Destroy" cards={[]} onDrop={(p) => dropToDestroy(p)} onRightClick={() => {}} />
-                </div>
               </div>
 
               <div className="flex justify-end gap-2 pt-2 border-t">
-                <Button onClick={() => {
+                <Button
+                  onClick={() => {
                     setShowEndRound(false);
                     shuffleDeck();
-                  }
-                }>
+                    refreshDiscoverableCards();
+                  }}
+                  disabled={campaignDeck.filter(card => availableDiscoverableCards.includes(card.id)).length !== 0}
+                >
                 Close</Button>
               </div>
             </div>

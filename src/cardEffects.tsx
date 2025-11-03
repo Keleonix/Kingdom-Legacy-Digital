@@ -46,6 +46,7 @@ export type GameContext = {
   getCardZone: (id: number) => string;
   upgradeCard: (card: GameCard, nextSide: number) => Promise<boolean>;
   handleCardUpdate: (updatedCard: GameCard, zone: string) => void;
+  addDiscoverableCard: (cardId: number, force?: boolean) => void;
 };
 
 export type CardEffect = {
@@ -841,16 +842,16 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   17: {
     2: [{ // Chappelle
-      description: "Dépensez 3 gold pour découvrir 103",
+      description: "Dépensez 2 gold pour découvrir 103",
       timing: "onClick",
       execute: async function (ctx) {
-        if (ctx.resources.gold >= 3) {
+        if (ctx.resources.gold >= 2) {
           if (await ctx.discoverCard(
             (card) => ([103].includes(card.id)),
             this.description,
             1
           )) {
-            ctx.setResources(prev => ({ ...prev, gold: prev.gold - 3 }));
+            ctx.setResources(prev => ({ ...prev, gold: prev.gold - 2 }));
             return true;
           }
         }
@@ -987,13 +988,15 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   23: {
     1: [{ // STOP
-        description: "Rien",
-        timing: "doesNothing",
+        description: "Découvrez également les cartes 24, 25, 26 et 27",
+        timing: "onClick",
         execute: async function (ctx) {
-          if(ctx) {
-            return false;
+          const cardsIds = [24, 25, 26, 27];
+          for (const id of cardsIds) {
+            ctx.addDiscoverableCard(id, true);
           }
-          return true;
+          ctx.deleteCardInZone(ctx.zone, ctx.card.id);
+          return false;
         }
     }],
   },
@@ -1750,7 +1753,18 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     ],
   },
   37: {
-
+    1: [{ // STOP
+        description: "Découvrez également les cartes 39, 40, 41 et 42",
+        timing: "onClick",
+        execute: async function (ctx) {
+          const cardsIds = [38, 39, 40, 41, 42];
+          for (const id of cardsIds) {
+            ctx.addDiscoverableCard(id, true);
+          }
+          ctx.deleteCardInZone(ctx.zone, ctx.card.id);
+          return false;
+        }
+    }],
   },
   38: {
 
@@ -3173,7 +3187,18 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }]
   },
   68: {
-
+    1: [{ // STOP
+        description: "Découvrez également les cartes 69 et 70",
+        timing: "onClick",
+        execute: async function (ctx) {
+          const cardsIds = [69, 70];
+          for (const id of cardsIds) {
+            ctx.addDiscoverableCard(id, true);
+          }
+          ctx.deleteCardInZone(ctx.zone, ctx.card.id);
+          return false;
+        }
+    }],
   },
   69: {
     1: [{ // Touche Finale
