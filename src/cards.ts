@@ -824,9 +824,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "",
-      "effects/activate Dépensez  resources/gold resources/gold pour découvrir un Missionaire (103).",
+      "effects/activate Dépensez  resources/gold resources/gold resources/gold pour découvrir un Missionaire (103).",
       "effects/passive Cette carte produit+1 resources/gold pour chaque Personne en jeu.",
-      "effects/activate Dépensez  resources/gold resources/gold pour découvrir un Prêtre (104).",
+      "effects/activate Dépensez resources/gold resources/gold resources/gold resources/gold pour découvrir un Prêtre (104).",
     ],
     upgrades: [
       [{ cost: { gold: 1, wood: 1, stone: 1 }, nextSide: 2 }],

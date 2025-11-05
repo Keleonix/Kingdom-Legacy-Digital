@@ -243,7 +243,6 @@ function CardPreviewPopup({
   position: { top: number; left: number };
   previewRef: React.RefObject<HTMLDivElement | null>;
 }) {
-  // Refs for each card element
   const cardRefs = {
     frontUp: useRef<HTMLDivElement>(null),
     backUp: useRef<HTMLDivElement>(null),
@@ -251,7 +250,6 @@ function CardPreviewPopup({
     backDown: useRef<HTMLDivElement>(null),
   };
 
-  // State to store calculated arrow coordinates
   const [arrowCoordinates, setArrowCoordinates] = useState({
     leftColumn: {
       topCardBottom: 0,
@@ -265,37 +263,23 @@ function CardPreviewPopup({
     },
   });
 
-  // Measure card heights and calculate arrow coordinates
   useEffect(() => {
     const measureHeights = () => {
       const frontUpHeight = cardRefs.frontUp.current?.offsetHeight ?? 0;
       const backUpHeight = cardRefs.backUp.current?.offsetHeight ?? 0;
-      // const frontDownHeight = cardRefs.frontDown.current?.offsetHeight ?? 0;
-      // const backDownHeight = cardRefs.backDown.current?.offsetHeight ?? 0;
 
-      const gap = 12; // gap-3 = 0.75rem ≈ 12px
-
-      // Calculate coordinates for left column (Front Up/Down)
-      // Arrow starts at BOTTOM of top card and ends at TOP of bottom card
-      const frontUpBottom = frontUpHeight;
-      const frontDownTop = frontUpHeight + gap;
-      const leftArrowHeight = gap; // Distance between cards
-
-      // Calculate coordinates for right column (Back Up/Down)
-      const backUpBottom = backUpHeight;
-      const backDownTop = backUpHeight + gap;
-      const rightArrowHeight = gap;
+      const gap = 12;
 
       setArrowCoordinates({
         leftColumn: {
-          topCardBottom: frontUpBottom,      // Where arrow STARTS (bottom of top card)
-          bottomCardTop: frontDownTop,       // Where arrow ENDS (top of bottom card)
-          arrowHeight: leftArrowHeight,      // Arrow span
+          topCardBottom: frontUpHeight,
+          bottomCardTop: frontUpHeight,
+          arrowHeight: gap,
         },
         rightColumn: {
-          topCardBottom: backUpBottom,
-          bottomCardTop: backDownTop,
-          arrowHeight: rightArrowHeight,
+          topCardBottom: backUpHeight,
+          bottomCardTop: backUpHeight,
+          arrowHeight: gap,
         },
       });
     };
@@ -305,7 +289,6 @@ function CardPreviewPopup({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [card]);
 
-  // Helper functions remain the same...
   function renderOptionIcons(opt: Record<string, number>, keyPrefix = "") {
     const optMap = (opt || {}) as Record<string, number>;
     const icons = RESOURCE_KEYS.flatMap((k) => {
@@ -411,7 +394,7 @@ function CardPreviewPopup({
         {/* 2x2 Grid Layout */}
         <div className="grid grid-cols-2 gap-3 max-w-[450px]">
           {/* Front Up (Side 1) */}
-          <div className="border rounded p-2 max-w-[200px]" style={getBackgroundStyle(card, 0)}>
+          <div ref={cardRefs.frontUp} className="border rounded p-2 max-w-[200px]" style={getBackgroundStyle(card, 0)}>
             <div className="font-semibold text-sm mb-1">Front Up</div>
             {card.name[0] ? (
               <>
@@ -446,7 +429,7 @@ function CardPreviewPopup({
           </div>
 
           {/* Back Up (Side 3) */}
-          <div className="border rounded p-2 max-w-[200px]" style={getBackgroundStyle(card, 2)}>
+          <div ref={cardRefs.backUp} className="border rounded p-2 max-w-[200px]" style={getBackgroundStyle(card, 2)}>
             <div className="font-semibold text-sm mb-1">Back Up</div>
             {card.name[2] ? (
               <>
@@ -481,7 +464,7 @@ function CardPreviewPopup({
           </div>
 
           {/* Front Down (Side 2) */}
-          <div className="border rounded p-2 max-w-[200px]" style={getBackgroundStyle(card, 1)}>
+          <div ref={cardRefs.frontDown} className="border rounded p-2 max-w-[200px]" style={getBackgroundStyle(card, 1)}>
             <div className="font-semibold text-sm mb-1">Front Down</div>
             {card.name[1] ? (
               <>
@@ -516,7 +499,7 @@ function CardPreviewPopup({
           </div>
 
           {/* Back Down (Side 4) */}
-          <div className="border rounded p-2 max-w-[200px]" style={getBackgroundStyle(card, 3)}>
+          <div ref={cardRefs.backDown} className="border rounded p-2 max-w-[200px]" style={getBackgroundStyle(card, 3)}>
             <div className="font-semibold text-sm mb-1">Back Down</div>
             {card.name[3] ? (
               <>
@@ -551,7 +534,6 @@ function CardPreviewPopup({
           </div>
         </div>
 
-        {/* Flèches de connexion basées sur les upgrades */}
         {/* [1] Front Up → [2] Front Down (vertical down, left column) */}
         {card.upgrades[0]?.some(u => u.nextSide === 2) && (
           <div 
@@ -610,7 +592,7 @@ function CardPreviewPopup({
 
         {/* [1] Front Up → [3] Back Up (horizontal right, top row, offset up) */}
         {card.upgrades[0]?.some(u => u.nextSide === 3) && (
-          <div className="absolute top-[14%] left-[47%] w-[4%] h-0.5 bg-purple-500">
+          <div className="absolute top-[14%] left-[47%] w-[5%] h-0.5 bg-purple-500">
             <div className="absolute -left-1 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-purple-500 rounded-full"></div>
             <div className="absolute -right-1 top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-[4px] border-t-transparent border-b-[4px] border-b-transparent border-l-[6px] border-l-purple-500"></div>
           </div>
@@ -618,7 +600,7 @@ function CardPreviewPopup({
 
         {/* [3] Back Up → [1] Front Up (horizontal left, top row, offset up) */}
         {card.upgrades[2]?.some(u => u.nextSide === 1) && (
-          <div className="absolute top-[16%] right-[48%] w-[4%] h-0.5 bg-orange-500">
+          <div className="absolute top-[16%] right-[48%] w-[5%] h-0.5 bg-orange-500">
             <div className="absolute -right-1 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-orange-500 rounded-full"></div>
             <div className="absolute -left-1 top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-[4px] border-t-transparent border-b-[4px] border-b-transparent border-r-[6px] border-r-orange-500"></div>
           </div>
@@ -626,7 +608,7 @@ function CardPreviewPopup({
 
         {/* [2] Front Down → [4] Back Down (horizontal right, bottom row, offset down) */}
         {card.upgrades[1]?.some(u => u.nextSide === 4) && (
-          <div className="absolute bottom-[14%] left-[47%] w-[4%] h-0.5 bg-purple-500">
+          <div className="absolute bottom-[14%] left-[47%] w-[5%] h-0.5 bg-purple-500">
             <div className="absolute -left-1 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-purple-500 rounded-full"></div>
             <div className="absolute -right-1 top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-[4px] border-t-transparent border-b-[4px] border-b-transparent border-l-[6px] border-l-purple-500"></div>
           </div>
@@ -634,7 +616,7 @@ function CardPreviewPopup({
 
         {/* [4] Back Down → [2] Front Down (horizontal left, bottom row, offset down) */}
         {card.upgrades[3]?.some(u => u.nextSide === 2) && (
-          <div className="absolute bottom-[16%] right-[48%] w-[4%] h-0.5 bg-orange-500">
+          <div className="absolute bottom-[16%] right-[48%] w-[5%] h-0.5 bg-orange-500">
             <div className="absolute -right-1 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-orange-500 rounded-full"></div>
             <div className="absolute -left-1 top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-[4px] border-t-transparent border-b-[4px] border-b-transparent border-r-[6px] border-r-orange-500"></div>
           </div>
@@ -3204,9 +3186,19 @@ export default function Game() {
       return false;
     }
 
-    handleEffectsUpgrade(card);
+    await handleEffectsUpgrade(card);
+
+    const blockedIds = blockMap.get(card.id);
+    const cardsToUnblock = blockedIds ? blockedZoneRef.current.filter(c => blockedIds.includes(c.id)) : [];
 
     card.currentSide = nextSide;
+
+    if (blockedIds && cardsToUnblock.length > 0) {
+      setBlockedZone(prev => prev.filter(c => !blockedIds.includes(c.id)));
+      setPlayAreaImmediate(prev => [...prev, ...cardsToUnblock]);
+      updateBlocks(card.id, null);
+    }
+
     return true;
   }
 
@@ -3734,6 +3726,9 @@ export default function Game() {
       });
     }
 
+    const blockedIds = blockMap.get(card.id);
+    const cardsToUnblock = blockedIds ? blockedZone.filter(c => blockedIds.includes(c.id)) : [];
+
     // Switch side
     const upgraded = cloneGameCard(card);
     await upgradeCard(upgraded, upg.nextSide);
@@ -3746,6 +3741,12 @@ export default function Game() {
     } else {
       // Default behavior: just replace in the same zone
       replaceCardInZone(zone, card.id, upgraded);
+    }
+
+    if (blockedIds && cardsToUnblock.length > 0) {
+      setBlockedZone(prev => prev.filter(c => !blockedIds.includes(c.id)));
+      setPlayArea(prev => [...prev, ...cardsToUnblock]);
+      updateBlocks(card.id, null);
     }
 
     await discardEndTurn();

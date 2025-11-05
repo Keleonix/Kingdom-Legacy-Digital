@@ -250,13 +250,6 @@ async function checkNextBoxApplyEffect(
   }
 }
 
-async function setReverseSide(
-  ctx: GameContext,
-  card: GameCard
-) {
-  await ctx.upgradeCard(card, ((card.currentSide + 1) % 4) + 1);
-}
-
 // -------------------
 // Get Effects
 // -------------------
@@ -842,10 +835,10 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   17: {
     2: [{ // Chappelle
-      description: "Dépensez 2 gold pour découvrir 103",
+      description: "Dépensez 3 gold pour découvrir 103",
       timing: "onClick",
       execute: async function (ctx) {
-        if (ctx.resources.gold >= 2) {
+        if (ctx.resources.gold >= 3) {
           if (await ctx.discoverCard(
             (card) => ([103].includes(card.id)),
             this.description,
@@ -4546,7 +4539,10 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         const bandits = ctx.fetchCardsInZone((card) => card.GetName().includes("Bandit"), "Play Area");
         if (ctx.resources.gold >= 3 && bandits.length !== 0) {
           const card = (await ctx.selectCardsFromArray(bandits, "Play Area", this.description, 1))[0];
-          setReverseSide(ctx, card);
+          if (!card) {
+            return false;
+          }
+          await ctx.upgradeCard(card, 3);
           ctx.dropToDiscard({id: card.id, fromZone: "Play Area"});
           ctx.setResources(prev => ({ ...prev, gold: prev.gold - 3 }));
           return true;
@@ -5937,7 +5933,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                   await checkBoxes(ctx.card, boxes);
                   ctx.dropToDiscard({ id: lord.id, fromZone: "Play Area" });
                   if (ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked)) {
-                    ctx.upgradeCard(ctx.card, 3);
+                    await ctx.upgradeCard(ctx.card, 3);
                   }
                   resolve(true);
                 }
