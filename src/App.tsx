@@ -243,7 +243,69 @@ function CardPreviewPopup({
   position: { top: number; left: number };
   previewRef: React.RefObject<HTMLDivElement | null>;
 }) {
-  // Helper to render icons for a single resource option object
+  // Refs for each card element
+  const cardRefs = {
+    frontUp: useRef<HTMLDivElement>(null),
+    backUp: useRef<HTMLDivElement>(null),
+    frontDown: useRef<HTMLDivElement>(null),
+    backDown: useRef<HTMLDivElement>(null),
+  };
+
+  // State to store calculated arrow coordinates
+  const [arrowCoordinates, setArrowCoordinates] = useState({
+    leftColumn: {
+      topCardBottom: 0,
+      bottomCardTop: 0,
+      arrowHeight: 0,
+    },
+    rightColumn: {
+      topCardBottom: 0,
+      bottomCardTop: 0,
+      arrowHeight: 0,
+    },
+  });
+
+  // Measure card heights and calculate arrow coordinates
+  useEffect(() => {
+    const measureHeights = () => {
+      const frontUpHeight = cardRefs.frontUp.current?.offsetHeight ?? 0;
+      const backUpHeight = cardRefs.backUp.current?.offsetHeight ?? 0;
+      // const frontDownHeight = cardRefs.frontDown.current?.offsetHeight ?? 0;
+      // const backDownHeight = cardRefs.backDown.current?.offsetHeight ?? 0;
+
+      const gap = 12; // gap-3 = 0.75rem ≈ 12px
+
+      // Calculate coordinates for left column (Front Up/Down)
+      // Arrow starts at BOTTOM of top card and ends at TOP of bottom card
+      const frontUpBottom = frontUpHeight;
+      const frontDownTop = frontUpHeight + gap;
+      const leftArrowHeight = gap; // Distance between cards
+
+      // Calculate coordinates for right column (Back Up/Down)
+      const backUpBottom = backUpHeight;
+      const backDownTop = backUpHeight + gap;
+      const rightArrowHeight = gap;
+
+      setArrowCoordinates({
+        leftColumn: {
+          topCardBottom: frontUpBottom,      // Where arrow STARTS (bottom of top card)
+          bottomCardTop: frontDownTop,       // Where arrow ENDS (top of bottom card)
+          arrowHeight: leftArrowHeight,      // Arrow span
+        },
+        rightColumn: {
+          topCardBottom: backUpBottom,
+          bottomCardTop: backDownTop,
+          arrowHeight: rightArrowHeight,
+        },
+      });
+    };
+
+    const timer = setTimeout(measureHeights, 100);
+    return () => clearTimeout(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [card]);
+
+  // Helper functions remain the same...
   function renderOptionIcons(opt: Record<string, number>, keyPrefix = "") {
     const optMap = (opt || {}) as Record<string, number>;
     const icons = RESOURCE_KEYS.flatMap((k) => {
@@ -259,7 +321,6 @@ function CardPreviewPopup({
     return icons.length > 0 ? <>{icons}</> : <span className="text-xs text-gray-400"></span>;
   }
 
-  // Helper to render a side's options
   function renderSideOptions(sideOpts: Record<string, number>[] | undefined, sideIdx: number) {
     if (!Array.isArray(sideOpts) || sideOpts.length === 0) {
       return <span className="text-xs text-gray-400"></span>;
@@ -299,6 +360,40 @@ function CardPreviewPopup({
     });
   }
 
+  function renderUpgradeCost(upg: Upgrade) {
+    const elements = [];
+    
+    if (upg.cost && Object.keys(upg.cost).length > 0) {
+      Object.entries(upg.cost).forEach(([key, value]) => {
+        if (value > 0) {
+          elements.push(
+            <span key={key} className="inline-flex items-center gap-0.5">
+              <img 
+                src={resourceIconPath(key as keyof ResourceMap)} 
+                alt={key} 
+                className="w-3 h-3" 
+              />
+              <span className="text-[8px]">x{value}</span>
+            </span>
+          );
+        }
+      });
+    }
+    
+    if (upg.otherCost) {
+      if (elements.length > 0) {
+        elements.push(<span key="separator" className="text-[8px]">, </span>);
+      }
+      elements.push(<span key="other" className="text-[8px] italic">{upg.otherCost}</span>);
+    }
+    
+    if (elements.length === 0) {
+      return <span className="text-[8px] text-gray-500">Free</span>;
+    }
+    
+    return <>{elements}</>;
+  }
+
   return (
     <div 
       ref={previewRef}
@@ -312,91 +407,238 @@ function CardPreviewPopup({
     >
       <div className="font-bold text-lg mb-3 text-center">Card #{card.id}</div>
 
-      {/* 2x2 Grid Layout */}
-      <div className="grid grid-cols-2 gap-3 max-w-[450px]">
-        {/* Front Up (Side 1) */}
-        <div className="border rounded p-2 max-w-[200px]" style={getBackgroundStyle(card, 0)}>
-          <div className="font-semibold text-sm mb-1">Front Up</div>
-          {card.name[0] ? (
-            <>
-              <div className="text-xs font-bold mb-1 border-t">{card.name[0]}</div>
-              <div className="text-[10px] text-gray-700 mb-1">{card.type[0]}</div>
-              <div className="text-[10px] mb-1">
-                {renderSideOptions(card.resources[0], 0)}
-              </div>
-              {card.effects[0] && (
-                <div className="text-[9px] mt-1 border-t pt-2">
-                  {renderEffectText(card.effects[0])}
+      <div className="relative">
+        {/* 2x2 Grid Layout */}
+        <div className="grid grid-cols-2 gap-3 max-w-[450px]">
+          {/* Front Up (Side 1) */}
+          <div className="border rounded p-2 max-w-[200px]" style={getBackgroundStyle(card, 0)}>
+            <div className="font-semibold text-sm mb-1">Front Up</div>
+            {card.name[0] ? (
+              <>
+                <div className="text-xs font-bold mb-1 border-t">{card.name[0]}</div>
+                <div className="text-[10px] text-gray-700 mb-1">{card.type[0]}</div>
+                <div className="text-[10px] mb-1">
+                  {renderSideOptions(card.resources[0], 0)}
                 </div>
-              )}
-            </>
-          ) : (
-            <div className="text-xs text-gray-400 italic">None</div>
-          )}
+                {card.effects[0] && (
+                  <div className="text-[9px] mt-1 border-t pt-2">
+                    {renderEffectText(card.effects[0])}
+                  </div>
+                )}
+                {/* Upgrades for Side 1 */}
+                {card.upgrades[0] && card.upgrades[0].length > 0 && (
+                  <div className="mt-2 border-t pt-2">
+                    <div className="text-[9px] font-semibold mb-1">Upgrades:</div>
+                    {card.upgrades[0].map((upg, idx) => (
+                      <div key={idx} className="text-[8px] mb-1 flex items-center gap-1 flex-wrap">
+                        <span className="text-blue-600">→ {sideLabel(upg.nextSide)}</span>
+                        <span className="text-gray-600 flex items-center gap-1">
+                          ({renderUpgradeCost(upg)})
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="text-xs text-gray-400 italic">None</div>
+            )}
+          </div>
+
+          {/* Back Up (Side 3) */}
+          <div className="border rounded p-2 max-w-[200px]" style={getBackgroundStyle(card, 2)}>
+            <div className="font-semibold text-sm mb-1">Back Up</div>
+            {card.name[2] ? (
+              <>
+                <div className="text-xs font-bold mb-1 border-t">{card.name[2]}</div>
+                <div className="text-[10px] text-gray-700 mb-1">{card.type[2]}</div>
+                <div className="text-[10px] mb-1">
+                  {renderSideOptions(card.resources[2], 2)}
+                </div>
+                {card.effects[2] && (
+                  <div className="text-[9px] mt-1 border-t pt-2">
+                    {renderEffectText(card.effects[2])}
+                  </div>
+                )}
+                {/* Upgrades for Side 3 */}
+                {card.upgrades[2] && card.upgrades[2].length > 0 && (
+                  <div className="mt-2 border-t pt-2">
+                    <div className="text-[9px] font-semibold mb-1">Upgrades:</div>
+                    {card.upgrades[2].map((upg, idx) => (
+                      <div key={idx} className="text-[8px] mb-1 flex items-center gap-1 flex-wrap">
+                        <span className="text-blue-600">→ {sideLabel(upg.nextSide)}</span>
+                        <span className="text-gray-600 flex items-center gap-1">
+                          ({renderUpgradeCost(upg)})
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="text-xs text-gray-400 italic">None</div>
+            )}
+          </div>
+
+          {/* Front Down (Side 2) */}
+          <div className="border rounded p-2 max-w-[200px]" style={getBackgroundStyle(card, 1)}>
+            <div className="font-semibold text-sm mb-1">Front Down</div>
+            {card.name[1] ? (
+              <>
+                <div className="text-xs font-bold mb-1 border-t">{card.name[1]}</div>
+                <div className="text-[10px] text-gray-700 mb-1">{card.type[1]}</div>
+                <div className="text-[10px] mb-1">
+                  {renderSideOptions(card.resources[1], 1)}
+                </div>
+                {card.effects[1] && (
+                  <div className="text-[9px] mt-1 border-t pt-2">
+                    {renderEffectText(card.effects[1])}
+                  </div>
+                )}
+                {/* Upgrades for Side 2 */}
+                {card.upgrades[1] && card.upgrades[1].length > 0 && (
+                  <div className="mt-2 border-t pt-2">
+                    <div className="text-[9px] font-semibold mb-1">Upgrades:</div>
+                    {card.upgrades[1].map((upg, idx) => (
+                      <div key={idx} className="text-[8px] mb-1 flex items-center gap-1 flex-wrap">
+                        <span className="text-blue-600">→ {sideLabel(upg.nextSide)}</span>
+                        <span className="text-gray-600 flex items-center gap-1">
+                          ({renderUpgradeCost(upg)})
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="text-xs text-gray-400 italic">None</div>
+            )}
+          </div>
+
+          {/* Back Down (Side 4) */}
+          <div className="border rounded p-2 max-w-[200px]" style={getBackgroundStyle(card, 3)}>
+            <div className="font-semibold text-sm mb-1">Back Down</div>
+            {card.name[3] ? (
+              <>
+                <div className="text-xs font-bold mb-1 border-t">{card.name[3]}</div>
+                <div className="text-[10px] text-gray-700 mb-1">{card.type[3]}</div>
+                <div className="text-[10px] mb-1">
+                  {renderSideOptions(card.resources[3], 3)}
+                </div>
+                {card.effects[3] && (
+                  <div className="text-[9px] mt-1 border-t pt-2">
+                    {renderEffectText(card.effects[3])}
+                  </div>
+                )}
+                {/* Upgrades for Side 3 */}
+                {card.upgrades[3] && card.upgrades[3].length > 0 && (
+                  <div className="mt-2 border-t pt-2">
+                    <div className="text-[9px] font-semibold mb-1">Upgrades:</div>
+                    {card.upgrades[3].map((upg, idx) => (
+                      <div key={idx} className="text-[8px] mb-1 flex items-center gap-1 flex-wrap">
+                        <span className="text-blue-600">→ {sideLabel(upg.nextSide)}</span>
+                        <span className="text-gray-600 flex items-center gap-1">
+                          ({renderUpgradeCost(upg)})
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="text-xs text-gray-400 italic">None</div>
+            )}
+          </div>
         </div>
 
-        {/* Back Up (Side 3) */}
-        <div className="border rounded p-2 max-w-[200px]" style={getBackgroundStyle(card, 2)}>
-          <div className="font-semibold text-sm mb-1">Back Up</div>
-          {card.name[2] ? (
-            <>
-              <div className="text-xs font-bold mb-1 border-t">{card.name[2]}</div>
-              <div className="text-[10px] text-gray-700 mb-1">{card.type[2]}</div>
-              <div className="text-[10px] mb-1">
-                {renderSideOptions(card.resources[2], 2)}
-              </div>
-              {card.effects[2] && (
-                <div className="text-[9px] mt-1 border-t pt-2">
-                  {renderEffectText(card.effects[2])}
-                </div>
-              )}
-            </>
-          ) : (
-            <div className="text-xs text-gray-400 italic">None</div>
-          )}
-        </div>
+        {/* Flèches de connexion basées sur les upgrades */}
+        {/* [1] Front Up → [2] Front Down (vertical down, left column) */}
+        {card.upgrades[0]?.some(u => u.nextSide === 2) && (
+          <div 
+            className="absolute left-[20%] w-0.5 bg-blue-500"
+            style={{
+              top: `${arrowCoordinates.leftColumn.topCardBottom}px`,
+              height: `${arrowCoordinates.leftColumn.arrowHeight}px`,
+            }}
+          >
+            <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-blue-500 rounded-full"></div>
+            <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[6px] border-t-blue-500"></div>
+          </div>
+        )}
 
-        {/* Front Down (Side 2) */}
-        <div className="border rounded p-2 max-w-[200px]" style={getBackgroundStyle(card, 1)}>
-          <div className="font-semibold text-sm mb-1">Front Down</div>
-          {card.name[1] ? (
-            <>
-              <div className="text-xs font-bold mb-1 border-t">{card.name[1]}</div>
-              <div className="text-[10px] text-gray-700 mb-1">{card.type[1]}</div>
-              <div className="text-[10px] mb-1">
-                {renderSideOptions(card.resources[1], 1)}
-              </div>
-              {card.effects[1] && (
-                <div className="text-[9px] mt-1 border-t pt-2">
-                  {renderEffectText(card.effects[1])}
-                </div>
-              )}
-            </>
-          ) : (
-            <div className="text-xs text-gray-400 italic">None</div>
-          )}
-        </div>
+        {/* [2] Front Down → [1] Front Up (vertical up, left column) */}
+        {card.upgrades[1]?.some(u => u.nextSide === 1) && (
+          <div 
+            className="absolute left-[22%] w-0.5 bg-green-500"
+            style={{
+              top: `${arrowCoordinates.leftColumn.bottomCardTop}px`,
+              height: `${arrowCoordinates.leftColumn.arrowHeight}px`,
+            }}
+          >
+            <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-b-[6px] border-b-green-500"></div>
+            <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-green-500 rounded-full"></div>
+          </div>
+        )}
 
-        {/* Back Down (Side 4) */}
-        <div className="border rounded p-2 max-w-[200px]" style={getBackgroundStyle(card, 3)}>
-          <div className="font-semibold text-sm mb-1">Back Down</div>
-          {card.name[3] ? (
-            <>
-              <div className="text-xs font-bold mb-1 border-t">{card.name[3]}</div>
-              <div className="text-[10px] text-gray-700 mb-1">{card.type[3]}</div>
-              <div className="text-[10px] mb-1">
-                {renderSideOptions(card.resources[3], 3)}
-              </div>
-              {card.effects[3] && (
-                <div className="text-[9px] mt-1 border-t pt-2">
-                  {renderEffectText(card.effects[3])}
-                </div>
-              )}
-            </>
-          ) : (
-            <div className="text-xs text-gray-400 italic">None</div>
-          )}
-        </div>
+        {/* [3] Back Up → [4] Back Down (vertical down, right column) */}
+        {card.upgrades[2]?.some(u => u.nextSide === 4) && (
+          <div 
+            className="absolute right-[20%] w-0.5 bg-blue-500"
+            style={{
+              top: `${arrowCoordinates.rightColumn.topCardBottom}px`,
+              height: `${arrowCoordinates.rightColumn.arrowHeight}px`,
+            }}
+          >
+            <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-blue-500 rounded-full"></div>
+            <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[6px] border-t-blue-500"></div>
+          </div>
+        )}
+
+        {/* [4] Back Down → [3] Back Up (vertical up, right column) */}
+        {card.upgrades[3]?.some(u => u.nextSide === 3) && (
+          <div 
+            className="absolute right-[22%] w-0.5 bg-green-500"
+            style={{
+              top: `${arrowCoordinates.rightColumn.bottomCardTop}px`,
+              height: `${arrowCoordinates.rightColumn.arrowHeight}px`,
+            }}
+          >
+            <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-b-[6px] border-b-green-500"></div>
+            <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-green-500 rounded-full"></div>
+          </div>
+        )}
+
+        {/* [1] Front Up → [3] Back Up (horizontal right, top row, offset up) */}
+        {card.upgrades[0]?.some(u => u.nextSide === 3) && (
+          <div className="absolute top-[14%] left-[47%] w-[4%] h-0.5 bg-purple-500">
+            <div className="absolute -left-1 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-purple-500 rounded-full"></div>
+            <div className="absolute -right-1 top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-[4px] border-t-transparent border-b-[4px] border-b-transparent border-l-[6px] border-l-purple-500"></div>
+          </div>
+        )}
+
+        {/* [3] Back Up → [1] Front Up (horizontal left, top row, offset up) */}
+        {card.upgrades[2]?.some(u => u.nextSide === 1) && (
+          <div className="absolute top-[16%] right-[48%] w-[4%] h-0.5 bg-orange-500">
+            <div className="absolute -right-1 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-orange-500 rounded-full"></div>
+            <div className="absolute -left-1 top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-[4px] border-t-transparent border-b-[4px] border-b-transparent border-r-[6px] border-r-orange-500"></div>
+          </div>
+        )}
+
+        {/* [2] Front Down → [4] Back Down (horizontal right, bottom row, offset down) */}
+        {card.upgrades[1]?.some(u => u.nextSide === 4) && (
+          <div className="absolute bottom-[14%] left-[47%] w-[4%] h-0.5 bg-purple-500">
+            <div className="absolute -left-1 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-purple-500 rounded-full"></div>
+            <div className="absolute -right-1 top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-[4px] border-t-transparent border-b-[4px] border-b-transparent border-l-[6px] border-l-purple-500"></div>
+          </div>
+        )}
+
+        {/* [4] Back Down → [2] Front Down (horizontal left, bottom row, offset down) */}
+        {card.upgrades[3]?.some(u => u.nextSide === 2) && (
+          <div className="absolute bottom-[16%] right-[48%] w-[4%] h-0.5 bg-orange-500">
+            <div className="absolute -right-1 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-orange-500 rounded-full"></div>
+            <div className="absolute -left-1 top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-[4px] border-t-transparent border-b-[4px] border-b-transparent border-r-[6px] border-r-orange-500"></div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -487,7 +729,9 @@ function CardView({
       };
 
       // Get mouse position from the last mouse event
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const mouseX = (window as any).lastMouseX || viewport.width / 2;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const mouseY = (window as any).lastMouseY || viewport.height / 2;
 
       let top = mouseY - previewRect.height / 2;
@@ -737,7 +981,9 @@ function CardView({
                     onUpgrade(card, upg, fromZone);
                   }}
                   onMouseEnter={(e) => {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     (window as any).lastMouseX = e.clientX;
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     (window as any).lastMouseY = e.clientY;
                     setUpgradePreviewSide(upg.nextSide);
                     setShowUpgradePreview(true);
@@ -1759,6 +2005,7 @@ const UpgradeCostSelectionPopup: React.FC<{
                 <h3 className="text-sm font-medium">2. Choisissez une ressource à retirer :</h3>
                 <div className="grid grid-cols-3 gap-2">
                   {Object.entries(currentUpgrades[selectedUpgradeIndex].cost || {})
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     .filter(([_, value]) => value > 0)
                     .map(([key, value]) => (
                       <button
@@ -1964,6 +2211,7 @@ export default function Game() {
   const [playArea, setPlayArea] = useState<GameCard[]>([]);
   const [permanentZone, setPermanentZone] = useState<GameCard[]>([]);
   const [temporaryCardList, setTemporaryCardList] = useState<GameCard[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
   temporaryCardList;
   const [popupCard, setPopupCard] = useState<PopupPayload | null>(null);
   const [showDiscard, setShowDiscard] = useState(false);
@@ -2012,6 +2260,7 @@ export default function Game() {
       .map(card => card.id);
     
     setAvailableDiscoverableCards(discoverableCards);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const [showCheckboxPopup, setShowCheckboxPopup] = useState(false);
@@ -2533,6 +2782,7 @@ export default function Game() {
       setResources(prev => ({ ...prev, fame: totalFame }));
       setHasEndedBaseGame(true);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deck, shouldComputeFame]);
   
   const mill = (

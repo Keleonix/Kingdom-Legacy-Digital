@@ -141,6 +141,7 @@ export class GameCard {
     effects = ["", "", "", ""],
     upgrades = [[], [], [], []],
     negative = [false, false, false],
+    discoverable = false
   }: Partial<{
     id: number;
     name: string[];
@@ -166,7 +167,7 @@ export class GameCard {
     this.effects = effects;
     this.upgrades = upgrades;
     this.negative = negative;
-    this.discoverable = this.discoverable;
+    this.discoverable = discoverable;
   }
 
   // returns array of options for the current side

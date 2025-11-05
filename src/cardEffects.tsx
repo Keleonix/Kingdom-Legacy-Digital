@@ -1415,7 +1415,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
         if(selectableCards.length !== 0) {
           ctx.deleteCardInZone("Play Area", (await ctx.selectCardsFromArray(selectableCards, "Play Area", this.description, 1))[0].id);
-          await ctx.upgradeCard(ctx.card, 3);
+          const currCard = ctx.fetchCardsInZone((c) => c.id === ctx.card.id, "Play Area")[0];
+          await ctx.upgradeCard(currCard, 3);
           return true;
         }
         return false;
@@ -4047,7 +4048,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       uses: 0,
       execute: async function (ctx) {
         switch(this.uses) {
-          case 0:
+          case 0: {
             const newName = await ctx.selectTextInput(this.description, true);
             if (newName) {
               ctx.card.name[ctx.card.currentSide - 1] = newName;
@@ -4055,7 +4056,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
               this.uses++;
             }
             break;
-          case 1:
+          }
+          case 1: {
             let resource1: Partial<ResourceMap> | null = null;
             while (resource1 === null) {
               resource1 = await ctx.selectResourceChoice([
@@ -4066,7 +4068,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             await addResourceMapToCard(ctx.card, resource1);
             this.uses++;
             break;
-          case 2:
+          }
+          case 2: {
             let resource2: Partial<ResourceMap> | null = null;
             while (resource2 === null) {
               resource2 = await ctx.selectResourceChoice([
@@ -4077,6 +4080,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             await addResourceMapToCard(ctx.card, resource2);
             this.uses++;
             break;
+          }
           default:
         }
         return false;
@@ -4099,7 +4103,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         uses: 0,
         execute: async function (ctx) {
           switch(this.uses) {
-            case 0:
+            case 0: {
               const newName = await ctx.selectTextInput(this.description, true);
               if (newName) {
                 ctx.card.name[ctx.card.currentSide - 1] = newName;
@@ -4107,7 +4111,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
               }
               this.uses++;
               break;
-            case 1:
+            }
+            case 1: {
               let resource1: Partial<ResourceMap> | null = null;
               while (resource1 === null) {
                 resource1 = await ctx.selectResourceChoice([
@@ -4122,7 +4127,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
               await addResourceMapToCard(ctx.card, resource1);
               this.uses++;
               break;
-            case 2:
+            }
+            case 2: {
               let resource2: Partial<ResourceMap> | null = null;
               while (resource2 === null) {
                 resource2 = await ctx.selectResourceChoice([
@@ -4137,6 +4143,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
               await addResourceMapToCard(ctx.card, resource2);
               this.uses++;
               break;
+            }
             default:
           }
           return false;
