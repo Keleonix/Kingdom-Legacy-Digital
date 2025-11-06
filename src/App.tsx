@@ -3931,11 +3931,9 @@ export default function Game() {
       if (!raw) return alert(`No save found named '${name}'.`);
       const parsed = JSON.parse(raw);
       
-      // Helper function to reconstruct GameCard instances from saved data
       const reconstructCards = (cards: GameCard[]): GameCard[] => {
         return (cards || []).map(cardData => {
           const card = new GameCard({});
-          // Copy all properties from saved data
           Object.assign(card, cardData);
           return card;
         });
