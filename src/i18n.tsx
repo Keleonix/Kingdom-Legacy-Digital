@@ -44,6 +44,11 @@ export type TranslationKeys =
   
   // Link words
   | 'and'
+
+  // Card Effects Descriptions
+  | 'staysInPlay' | 'cardEffect_Plains'
+
+  // Card Descriptions
   
   ;
 
@@ -171,6 +176,13 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
 
     // Link Words
     and: 'et',
+
+    // Card Effects Descriptions
+    staysInPlay: "Reste en jeu.",
+    cardEffect_Plains: "Défaussez une carte alliée pour gagner gold x2.",
+
+  // Card Descriptions
+
   },
   en: {
     // UI Elements
@@ -294,6 +306,13 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
 
     // Link Words
     and: 'and',
+
+    // Card Effects Descriptions
+    staysInPlay: "Stays in play.",
+    cardEffect_Plains: "Discard a friendly card to gain gold x2.",
+
+    // Card Descriptions
+    
   }
 };
 

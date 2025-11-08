@@ -2535,6 +2535,7 @@ export default function Game() {
             upgradeCard,
             handleCardUpdate,
             addDiscoverableCard,
+            t,
           };
           
           const result = await effect.execute(context);
@@ -2628,6 +2629,7 @@ export default function Game() {
           upgradeCard,
           handleCardUpdate,
           addDiscoverableCard,
+          t,
         };
         
         await effect.execute(context);
@@ -2663,7 +2665,7 @@ export default function Game() {
       const currentPlayArea = playAreaRef.current;
       currentPlayArea.forEach(card => {
         const effects = getCardEffects(card.id, card.currentSide);
-        const hasStayInPlay = effects.some(eff => eff.timing === "stayInPlay");
+        const hasStayInPlay = effects.some(eff => eff.timing === "staysInPlay");
         const isInTemporaryList = temporaryCardListRef.current.some(tempCard => tempCard.id === card.id);
 
         if (hasStayInPlay || isInTemporaryList) cardsToKeep.push(card);
@@ -2768,6 +2770,7 @@ export default function Game() {
               upgradeCard,
               handleCardUpdate,
               addDiscoverableCard,
+              t,
             };
             
             const specialFameValue = fameValueEffect.execute(context);
@@ -3001,8 +3004,8 @@ export default function Game() {
     }
     
     const modifiers: Array<{
-      filter: (card: GameCard) => boolean;
-      zones: string[];
+      filter: (card: GameCard, t?: (key: TranslationKeys) => string) => boolean;
+      zones: string[] | ((t: (key: TranslationKeys) => string) => string[]);
       bonus: Partial<ResourceMap>;
       source: GameCard;
     }> = [];
@@ -3034,7 +3037,11 @@ export default function Game() {
     }
     
     for (const modifier of modifiers) {
-      if (modifier.zones.includes(zone) && modifier.filter(card)) {
+      const resolvedZones = typeof modifier.zones === 'function' 
+        ? modifier.zones(t) 
+        : modifier.zones;
+      
+      if (resolvedZones.includes(zone) && modifier.filter(card, t)) {
         Object.entries(modifier.bonus).forEach(([key, value]) => {
           const resourceKey = key as keyof ResourceMap;
           bonus[resourceKey] = (bonus[resourceKey] || 0) + (value as number);
@@ -3270,6 +3277,7 @@ export default function Game() {
             upgradeCard,
             handleCardUpdate,
             addDiscoverableCard,
+            t,
           };
           
           const canDestroy = await effect.execute(context);
@@ -3385,6 +3393,7 @@ export default function Game() {
       upgradeCard,
       handleCardUpdate,
       addDiscoverableCard,
+      t,
     };
 
     if (typeof effectIndex === "number" && effectIndex >= 0 && effectIndex < effects.length) {
@@ -3726,6 +3735,7 @@ export default function Game() {
           upgradeCard,
           handleCardUpdate,
           addDiscoverableCard,
+          t,
         };
         
         const additionalCostPaid = await additionalCostEffect.execute(context);
@@ -3819,6 +3829,7 @@ export default function Game() {
             upgradeCard,
             handleCardUpdate,
             addDiscoverableCard,
+            t,
           };
           
           await effect.execute(context);
@@ -3904,6 +3915,7 @@ export default function Game() {
             upgradeCard,
             handleCardUpdate,
             addDiscoverableCard,
+            t,
           };
           
           if (await effect.execute(context)) {

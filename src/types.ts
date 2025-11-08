@@ -99,7 +99,7 @@ export type EffectTiming =
   | "endOfRound"
   | "otherCardPlayed"
   | "onClick"
-  | "stayInPlay"
+  | "staysInPlay"
   | "onResourceGain"
   | "onAdvance"
   | "doesNothing"
