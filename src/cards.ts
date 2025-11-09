@@ -2,7 +2,7 @@ import { emptyResource, type GameCard, type ResourceMap, type Upgrade } from "./
 
 export const allCards: GameCard[] = [
   { id: 0,
-    name: ["Bienvenue", "", "Règles d'Or", ""],
+    name: ['card0_name_1', '', 'card0_name_3', ''],
     resources: [
       [],
       [],
@@ -11,9 +11,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "Assurez-vous d'avoir bien lu les règles avant de commencer à jouer (Settings -> Guide)! Retenez bien les Règles d'Or (voir -> Back Up). Après les avoirs lues, effects/destroy .",
-      "",
+      '',
       "1. Ne jamais changer le côté d'une carte sans qu'un effet ne vous le permette. 2. Vous pouvez regarder vos cartes mais pas celles du deck de campagne avant d'y avoir été invité. 3. Au début de chaque manche (sauf 1ère), découvrez 2 cartes suivantes depuis le deck de campagne. 4. Une carte dont le côté change est toujours immédiatement défaussée. 5. Améliorer une carte met fin à votre tour.",
-      "",
+      '',
     ],
     upgrades: [
       [],
@@ -22,7 +22,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Parchemin", "", "Parchemin", ""],
+    type: ['scroll', '', 'scroll', ''],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -63,7 +63,7 @@ export const allCards: GameCard[] = [
       " ",
       "effects/activate Défaussez une carte alliée pour gagner resources/gold resources/gold .",
       "effects/passive Reste en jeu. ",
-      "",
+      '',
     ],
     upgrades: [
       [{ cost: { gold: 2 }, nextSide: 2 }],
@@ -72,7 +72,7 @@ export const allCards: GameCard[] = [
       [{ cost: { wood: 3 }, nextSide: 3 }],
     ],
     currentSide: 1,
-    type: ["Terrain", "Terrain", "Bâtiment", "Terrain"],
+    type: ['land', 'land', 'building', 'land'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -113,7 +113,7 @@ export const allCards: GameCard[] = [
       " ",
       "effects/activate Défaussez une carte alliée pour gagner resources/gold resources/gold .",
       "effects/passive Reste en jeu. ",
-      "",
+      '',
     ],
     upgrades: [
       [{ cost: { gold: 2 }, nextSide: 2 }],
@@ -122,7 +122,7 @@ export const allCards: GameCard[] = [
       [{ cost: { wood: 3 }, nextSide: 3 }],
     ],
     currentSide: 1,
-    type: ["Terrain", "Terrain", "Bâtiment", "Terrain"],
+    type: ['land', 'land', 'building', 'land'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -163,7 +163,7 @@ export const allCards: GameCard[] = [
       " ",
       "effects/activate Défaussez une carte alliée pour gagner resources/gold resources/gold .",
       "effects/passive Reste en jeu. ",
-      "",
+      '',
     ],
     upgrades: [
       [{ cost: { gold: 2 }, nextSide: 2 }],
@@ -172,7 +172,7 @@ export const allCards: GameCard[] = [
       [{ cost: { wood: 3 }, nextSide: 3 }],
     ],
     currentSide: 1,
-    type: ["Terrain", "Terrain", "Bâtiment", "Terrain"],
+    type: ['land', 'land', 'building', 'land'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -213,7 +213,7 @@ export const allCards: GameCard[] = [
       " ",
       "effects/activate Défaussez une carte alliée pour gagner resources/gold resources/gold .",
       "effects/passive Reste en jeu. ",
-      "",
+      '',
     ],
     upgrades: [
       [{ cost: { gold: 2 }, nextSide: 2 }],
@@ -222,7 +222,7 @@ export const allCards: GameCard[] = [
       [{ cost: { wood: 3 }, nextSide: 3 }],
     ],
     currentSide: 1,
-    type: ["Terrain", "Terrain", "Bâtiment", "Terrain"],
+    type: ['land', 'land', 'building', 'land'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -263,7 +263,7 @@ export const allCards: GameCard[] = [
       " ",
       "effects/activate Dépensez resources/gold pour gagner resources/stone resources/stone .",
       "effects/destroy Découvrez une Mine (84/85). ",
-      "",
+      '',
     ],
     upgrades: [
       [{ cost: { gold: 2 }, nextSide: 2 }],
@@ -272,7 +272,7 @@ export const allCards: GameCard[] = [
       [{ cost: { gold: 2, wood: 2 }, nextSide: 3 }],
     ],
     currentSide: 1,
-    type: ["Terrain", "Terrain", "Terrain", "Terrain"],
+    type: ['land', 'land', 'land', 'land'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -313,7 +313,7 @@ export const allCards: GameCard[] = [
       " ",
       "effects/activate Dépensez resources/gold pour gagner resources/stone resources/stone .",
       "effects/destroy Découvrez une Mine (84/85). ",
-      "",
+      '',
     ],
     upgrades: [
       [{ cost: { gold: 2 }, nextSide: 2 }],
@@ -322,7 +322,7 @@ export const allCards: GameCard[] = [
       [{ cost: { gold: 2, wood: 2 }, nextSide: 3 }],
     ],
     currentSide: 1,
-    type: ["Terrain", "Terrain", "Terrain", "Terrain"],
+    type: ['land', 'land', 'land', 'land'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -359,9 +359,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/activate Gagnez resources/wood resources/wood resources/wood , puis Front Down.",
-      "",
+      '',
       "effects/destroy Découvrez un Autel (82/83).",
-      "",
+      '',
     ],
     upgrades: [
       [{ cost: { stone: 2 }, nextSide: 3 }],
@@ -370,7 +370,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Terrain", "Terrain", "Bâtiment", "Bâtiment"],
+    type: ['land', 'land', 'building', 'building'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -407,9 +407,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/activate Gagnez resources/wood resources/wood resources/wood , puis Front Down.",
-      "",
+      '',
       "effects/destroy Découvrez un Autel (82/83).",
-      "",
+      '',
     ],
     upgrades: [
       [{ cost: { stone: 2 }, nextSide: 3 }],
@@ -418,7 +418,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Terrain", "Terrain", "Bâtiment", "Bâtiment"],
+    type: ['land', 'land', 'building', 'building'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -456,7 +456,7 @@ export const allCards: GameCard[] = [
       ],
     ],
     effects: [
-      "",
+      '',
       "effects/activate Jouez un Terrain depuis votre défausse.",
       "effects/activate Jouez une carte depuis votre défausse.",
       "effects/activate Jouez un Terrain ou Bâtiment depuis votre défausse.",
@@ -468,7 +468,7 @@ export const allCards: GameCard[] = [
       [{ cost: { stone: 6, wood: 2, ingot: 1 }, nextSide: 3 }],
     ],
     currentSide: 1,
-    type: ["Bâtiment", "Bâtiment", "Bâtiment", "Bâtiment"],
+    type: ['building', 'building', 'building', 'building'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -509,7 +509,7 @@ export const allCards: GameCard[] = [
     effects: [
       "effects/activate Dépensez resources/gold pour gagner resources/wood .",
       "effects/activate Dépensez resources/gold pour gagner resources/wood / resources/stone .",
-      "",
+      '',
       "effects/activate Dépensez resources/gold pour gagner resources/wood / resources/stone / resources/ingot .",
     ],
     upgrades: [
@@ -519,7 +519,7 @@ export const allCards: GameCard[] = [
       [{ cost: { gold: 5 }, nextSide: 3 }],
     ],
     currentSide: 1,
-    type: ["Personne", "Bâtiment", "Evénement", "Bâtiment"],
+    type: ['person', 'building', 'event', 'building'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -558,7 +558,7 @@ export const allCards: GameCard[] = [
       "effects/activate Dépensez resources/gold pour gagner resources/wood .",
       "effects/activate Dépensez resources/gold pour gagner resources/wood resources/wood .",
       "effects/passive Reste en jeu.",
-      "",
+      '',
     ],
     upgrades: [
       [{ cost: { gold: 3 }, nextSide: 2 }],
@@ -567,7 +567,7 @@ export const allCards: GameCard[] = [
       [{ cost: { wood: 4 }, nextSide: 3 }],
     ],
     currentSide: 1,
-    type: ["Terrain", "Terrain", "Bâtiment", "Terrain"],
+    type: ['land', 'land', 'building', 'land'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -606,9 +606,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       " ",
-      "",
+      '',
       "effects/activate Découvrez un nouveau territoire (71/72/73/74). Puis -> Back Down.",
-      "",
+      '',
     ],
     upgrades: [
       [{ cost: { wood: 3 }, nextSide: 2 }],
@@ -617,7 +617,7 @@ export const allCards: GameCard[] = [
       [{ cost: { gold: 2 }, nextSide: 3 }],
     ],
     currentSide: 1,
-    type: ["Terrain", "Terrain", "Personne", "Terrain"],
+    type: ['land', 'land', 'person', 'land'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -639,7 +639,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 13,
-    name: ["Exploitant", "", "Domestique", ""],
+    name: ["Exploitant", '', "Domestique", ''],
     resources: [
       [{ ...emptyResource }],
       [{ ...emptyResource }],
@@ -648,9 +648,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/activate Choisissez un Terrain en jeu. Gagnez les ressources qui correspondent à sa production.",
-      "",
+      '',
       "effects/activate Gagnez resources/gold / resources/wood / resources/stone .",
-      "",
+      '',
     ],
     upgrades: [
       [],
@@ -659,7 +659,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Personne", "", "Personne", ""],
+    type: ['person', '', 'person', ''],
     choice: true,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -681,7 +681,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 14,
-    name: ["Bandit", "", "Travailleur", ""],
+    name: ["Bandit", '', "Travailleur", ''],
     resources: [
       [ { fame: -2 } ],
       [{ ...emptyResource }],
@@ -690,9 +690,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "Peut être -> par un Missionaire. effects/forced Carte Jouée : Bloque 1 carte avec production d' resources/gold . effects/activate Dépensez resources/military pour vaincre ( effects/destroy ) et gagner 2 ressources au choix.",
-      "",
+      '',
       "effects/activate Choisissez un Bâtiment en jeu. Gagnez les ressources qui correspondent à sa production.",
-      "",
+      '',
     ],
     upgrades: [
       [],
@@ -701,7 +701,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Ennemi", "", "Personne", ""],
+    type: ['enemy', '', 'person', ''],
     choice: false,
     checkboxes: [],
     negative: [true, false, false, false],
@@ -742,7 +742,7 @@ export const allCards: GameCard[] = [
       " ",
       "effects/activate Dépensez resources/gold pour gagner resources/stone resources/stone .",
       "effects/destroy Découvrez une Mine (84/85). ",
-      "",
+      '',
     ],
     upgrades: [
       [{ cost: { gold: 2 }, nextSide: 2 }],
@@ -751,7 +751,7 @@ export const allCards: GameCard[] = [
       [{ cost: { gold: 2, wood: 2 }, nextSide: 3 }],
     ],
     currentSide: 1,
-    type: ["Terrain", "Terrain", "Terrain", "Terrain"],
+    type: ['land', 'land', 'land', 'land'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -773,7 +773,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 16,
-    name: ["Bandit", "", "Exploitant", ""],
+    name: ["Bandit", '', "Exploitant", ''],
     resources: [
       [ { fame: -2 } ],
       [{ ...emptyResource }],
@@ -782,9 +782,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "Peut être -> par un Missionaire. effects/forced Carte Jouée : Bloque 1 carte avec production d' resources/gold . effects/activate Dépensez resources/military pour vaincre ( effects/destroy ) et gagner 2 ressources au choix.",
-      "",
+      '',
       "effects/activate Choisissez un Terrain en jeu. Gagnez les ressources qui correspondent à sa production.",
-      "",
+      '',
     ],
     upgrades: [
       [],
@@ -793,7 +793,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Ennemi", "", "Personne", ""],
+    type: ['enemy', '', 'person', ''],
     choice: false,
     checkboxes: [],
     negative: [true, false, false, false],
@@ -823,7 +823,7 @@ export const allCards: GameCard[] = [
       [ { gold: 1, fame: 3 } ],
     ],
     effects: [
-      "",
+      '',
       "effects/activate Dépensez  resources/gold resources/gold resources/gold pour découvrir un Missionaire (103).",
       "effects/passive Cette carte produit+1 resources/gold pour chaque Personne en jeu.",
       "effects/activate Dépensez resources/gold resources/gold resources/gold resources/gold pour découvrir un Prêtre (104).",
@@ -835,7 +835,7 @@ export const allCards: GameCard[] = [
       [{ cost: { ingot: 1, wood: 2, stone: 3 }, nextSide: 3 }],
     ],
     currentSide: 1,
-    type: ["Terrain", "Bâtiment", "Bâtiment", "Bâtiment"],
+    type: ['land', 'building', 'building', 'building'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -865,7 +865,7 @@ export const allCards: GameCard[] = [
       [ { ingot: 1, fame: 4 } ],
     ],
     effects: [
-      "",
+      '',
       "effects/activate Réinitialisez pour découvrir des Bijoux (90).",
       "effects/passive Reste en jeu.",
       "effects/activate Gagnez resources/military pour chaque personne en jeu.",
@@ -879,7 +879,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Terrain", "Bâtiment", "Bâtiment", "Bâtiment"],
+    type: ['land', 'building', 'building', 'building'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -916,9 +916,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/activate Gagnez resources/wood resources/wood resources/wood , puis Front Down.",
-      "",
+      '',
       "effects/destroy Découvrez un Autel (82/83).",
-      "",
+      '',
     ],
     upgrades: [
       [{ cost: { stone: 2 }, nextSide: 3 }],
@@ -927,7 +927,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Terrain", "Terrain", "Bâtiment", "Bâtiment"],
+    type: ['land', 'land', 'building', 'building'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -957,10 +957,10 @@ export const allCards: GameCard[] = [
       [ { gold: 1, fame: 3 } ],
     ],
     effects: [
-      "",
-      "",
-      "",
-      "",
+      '',
+      '',
+      '',
+      '',
     ],
     upgrades: [
       [{ cost: { gold: 1, wood: 1 }, nextSide: 2 }],
@@ -969,7 +969,7 @@ export const allCards: GameCard[] = [
       [{ cost: { gold: 1, wood: 2 }, nextSide: 3 }],
     ],
     currentSide: 1,
-    type: ["Terrain", "Terrain", "Terrain", "Terrain"],
+    type: ['land', 'land', 'land', 'land'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -999,10 +999,10 @@ export const allCards: GameCard[] = [
       [ { gold: 1, fame: 3 } ],
     ],
     effects: [
-      "",
-      "",
-      "",
-      "",
+      '',
+      '',
+      '',
+      '',
     ],
     upgrades: [
       [{ cost: { gold: 1, wood: 1 }, nextSide: 2 }],
@@ -1011,7 +1011,7 @@ export const allCards: GameCard[] = [
       [{ cost: { gold: 1, wood: 2 }, nextSide: 3 }],
     ],
     currentSide: 1,
-    type: ["Terrain", "Terrain", "Terrain", "Terrain"],
+    type: ['land', 'land', 'land', 'land'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -1041,8 +1041,8 @@ export const allCards: GameCard[] = [
       [ { gold: 2, export: 2, fame: 1 } ],
     ],
     effects: [
-      "",
-      "",
+      '',
+      '',
       "effects/passive Reste en jeu. effects/passive Défaussez la carte du sommet de votre pioche.",
       "effects/activate Découvrez les Rivages (75).",
     ],
@@ -1053,7 +1053,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Terrain", "Bâtiment", "Bâtiment", "Maritime"],
+    type: ['land', 'building', 'building', 'seafaring'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -1075,7 +1075,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 23,
-    name: ["STOP !", "", "", ""],
+    name: ["STOP !", '', '', ''],
     resources: [
       [],
       [],
@@ -1084,9 +1084,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/activate Découvrez également les cartes 24 à 27 pour cette manche.",
-      "",
-      "",
-      "",
+      '',
+      '',
+      '',
     ],
     upgrades: [
       [],
@@ -1095,7 +1095,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Parchemin", "", "", ""],
+    type: ['scroll', '', '', ''],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -1117,7 +1117,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 24,
-    name: ["Terre Fertile/Efficacité", "", "", ""],
+    name: ["Terre Fertile/Efficacité", '', '', ''],
     resources: [
       [],
       [],
@@ -1126,9 +1126,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/destroy Ajoutez 1 resources/gold à la production d'un terrain, puis choisissez un Bâtiment et rajoutez 1 à une ressource qu'il produit déjà.",
-      "",
-      "",
-      "",
+      '',
+      '',
+      '',
     ],
     upgrades: [
       [],
@@ -1137,7 +1137,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Parchemin", "", "", ""],
+    type: ['scroll', '', '', ''],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -1159,7 +1159,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 25,
-    name: ["Armée", "", "Grande Armée", ""],
+    name: ["Armée", '', "Grande Armée", ''],
     resources: [
       [ emptyResource ],
       [ emptyResource ],
@@ -1168,9 +1168,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/time Dépensez les resources/military (1 à 10, incrément de 1) pour cocher la case de gauche à droite, à la dernière carte, Back Up et découvrez l'Etat Vassal (135).",
-      "",
+      '',
       "effects/time Dépensez les resources/military (10, 10, 12, 12, 15) pour cocher la case de gauche à droite.",
-      "",
+      '',
     ],
     upgrades: [
       [],
@@ -1179,7 +1179,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Permanente", "", "Permanente", ""],
+    type: ['permanent', '', 'permanent', ''],
     choice: false,
     checkboxes: [
       [ {content: "fame x1", checked: false},
@@ -1222,7 +1222,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 26,
-    name: ["Trésor", "", "Immense Trésor", ""],
+    name: ["Trésor", '', "Immense Trésor", ''],
     resources: [
       [ emptyResource ],
       [ emptyResource ],
@@ -1231,9 +1231,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/time dépensez les resources/gold (1 à 12, incrément de 1) pour cocher la case de gauche à droite. A la dernière carte, Back Up.",
-      "",
+      '',
       "effects/time dépensez les resources/gold (13 à 17, incrément de 1) pour cocher la case de gauche à droite.",
-      "",
+      '',
     ],
     upgrades: [
       [],
@@ -1242,7 +1242,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Permanente", "", "Permanente", ""],
+    type: ['permanent', '', 'permanent', ''],
     choice: false,
     checkboxes: [
       [ {content: "fame x1", checked: false},
@@ -1287,7 +1287,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 27,
-    name: ["Exportations", "", "Exportations de Masse", ""],
+    name: ["Exportations", '', "Exportations de Masse", ''],
     resources: [
       [ emptyResource ],
       [ emptyResource ],
@@ -1296,9 +1296,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "Dépensez des resources/export pour atteindre des paliers, 10: Ajoutez resources/gold / resources/wood / resources/stone sur un Terrain, 20: Un Personnage gagne \" effects/passive Reste en jeu.\", 30: Découvrez Adoubement (80), 40: Ajoutez resources/ingot / resources/military / resources/export sur 1 Bâtiment, 55: Ajoutez resources/wood / resources/stone / resources/ingot / resources/military sur une carte, 75: Ajoutez resources/fame x5 sur une carte, 100: -> Back Up. effects/passive Dépensez des resources/export .",
-      "",
+      '',
       "Dépensez des resources/export pour atteindre des paliers, 25: Ajoutez resources/fame sur deux Terrains, 50: Ajoutez resources/fame x5 sur une Personne, 75: Découvrez Visite Royale (107), 100: Ajoutez resources/fame x5 sur un Bâtiment, 150: effects/check une autre carte Permanente, 200: effects/check toutes les autres cartes Permanentes au choix, 250: Découvrez Relations Commerciales (117). effects/passive Dépensez des resources/export .",
-      "",
+      '',
     ],
     upgrades: [
       [],
@@ -1307,7 +1307,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Permanente", "", "Permanente", ""],
+    type: ['permanent', '', 'permanent', ''],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -1329,7 +1329,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 28,
-    name: ["Eruption Volcanique", "", "Terres Brulées", "Jeune Forêt"],
+    name: ["Eruption Volcanique", '', "Terres Brulées", "Jeune Forêt"],
     resources: [
       [ emptyResource ],
       [ emptyResource ],
@@ -1338,8 +1338,8 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/forced Tant qu'elle est en jeu, détruisez le prochain Terrain que vous jouez. Lorsque vous le faite, Back Up.",
-      "",
-      "",
+      '',
+      '',
       "effects/time Ajoutez 1 effects/check dans l'ordre et à *: Ajoutez resources/wood à la production de cette carte.",
     ],
     upgrades: [
@@ -1349,16 +1349,16 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Evénement", "", "Terrain", "Terrain"],
+    type: ['event', '', 'land', 'land'],
     choice: false,
     checkboxes: [
       [],
       [],
       [],
       [ {content: "*", checked: false},
-        {content: "", checked: false},
+        {content: '', checked: false},
         {content: "*", checked: false},
-        {content: "", checked: false},
+        {content: '', checked: false},
         {content: "*", checked: false},
       ],
     ],
@@ -1389,9 +1389,9 @@ export const allCards: GameCard[] = [
       [ { fame: 4 } ],
     ],
     effects: [
-      "",
-      "",
-      "",
+      '',
+      '',
+      '',
       "effects/activate Réinitialisez pour ajouter une resource de votre choix à la production de l'une des étapes de cette carte qui ne comporte pas encore de modification.",
     ],
     upgrades: [
@@ -1401,7 +1401,7 @@ export const allCards: GameCard[] = [
       [{ cost: {  }, nextSide: 2 }, { cost: {  }, nextSide: 3 }],
     ],
     currentSide: 1,
-    type: ["Personne", "Personne", "Personne", "Personne"],
+    type: ['person', 'person', 'person', 'person'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -1423,7 +1423,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 30,
-    name: ["STOP !", "", "", ""],
+    name: ["STOP !", '', '', ''],
     resources: [
       [],
       [],
@@ -1432,9 +1432,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/destroy Découvrez les cartes 31 à 34, choisissez-en 2 à découvrir et détruisez les 2 autres.",
-      "",
-      "",
-      "",
+      '',
+      '',
+      '',
     ],
     upgrades: [
       [],
@@ -1443,7 +1443,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Parchemin", "", "", ""],
+    type: ['scroll', '', '', ''],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -1485,7 +1485,7 @@ export const allCards: GameCard[] = [
       [{ cost: { gold: 2, wood: 2, export: 2 }, nextSide: 3 }],
     ],
     currentSide: 1,
-    type: ["Personne", "Bâtiment", "Bâtiment", "Bâtiment"],
+    type: ['person', 'building', 'building', 'building'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -1507,7 +1507,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 32,
-    name: ["Scientifique", "", "Observatoire", "Laboratoire"],
+    name: ["Scientifique", '', "Observatoire", "Laboratoire"],
     resources: [
       [ emptyResource ],
       [ emptyResource ],
@@ -1516,7 +1516,7 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/passive Toutes les Personnes, Scientifique inclus, produisent +1 resources/gold .",
-      "",
+      '',
       "effects/time Découvrez l'Astronome (95).",
       "effects/time Découvrez l'Alchimiste (96).",
     ],
@@ -1527,7 +1527,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Personne", "", "Bâtiment", "Bâtiment"],
+    type: ['person', '', 'building', 'building'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -1549,7 +1549,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 33,
-    name: ["Ingénieur", "", "Trébuchet", ""],
+    name: ["Ingénieur", '', "Trébuchet", ''],
     resources: [
       [ emptyResource ],
       [ emptyResource ],
@@ -1558,9 +1558,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/activate Détruisez l'une des cartes suivantes: Cabane de Bûcheron - découvrez (100). Grange - découvrez (101). Bâteau de pêche - découvrez (102).",
-      "",
+      '',
       "effects/destroy Vainquez un ennemi (défausse, en jeu ou permanent). Puis marquez effects/check la case suivante de la carte Armée.",
-      "",
+      '',
     ],
     upgrades: [
       [{ cost: { wood: 1, stone: 2, ingot: 1 }, nextSide: 3 }],
@@ -1569,7 +1569,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Personne", "", "Bâtiment", ""],
+    type: ['person', '', 'building', ''],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -1591,7 +1591,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 34,
-    name: ["Inventrice", "", "Inventrice Inspirée", ""],
+    name: ["Inventrice", '', "Inventrice Inspirée", ''],
     resources: [
       [ emptyResource ],
       [ emptyResource ],
@@ -1600,9 +1600,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "Vaut 5 resources/fame par effects/check .",
-      "",
+      '',
       "Vaut la fame de l'Inventrice. effects/activate réinitialisez et ajoutez 1 effects/check . Découvrez une invention (97/98/99) ou gagnez une ressource de votre choix pour chaque effects/check . Vaut 5 resources/fame par effects/check .",
-      "",
+      '',
     ],
     upgrades: [
       [{ cost: { gold: 4 }, nextSide: 3 }],
@@ -1611,12 +1611,12 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Personne", "", "Personne", ""],
+    type: ['person', '', 'person', ''],
     choice: false,
     checkboxes: [
-      [ {content: "", checked: false},
-        {content: "", checked: false},
-        {content: "", checked: false}
+      [ {content: '', checked: false},
+        {content: '', checked: false},
+        {content: '', checked: false}
       ],
       [],
       [],
@@ -1660,7 +1660,7 @@ export const allCards: GameCard[] = [
       " ",
       "effects/activate Dépensez resources/gold pour gagner resources/stone resources/stone .",
       "effects/destroy Découvrez une Mine (84/85). ",
-      "",
+      '',
     ],
     upgrades: [
       [{ cost: { gold: 2 }, nextSide: 2 }],
@@ -1669,7 +1669,7 @@ export const allCards: GameCard[] = [
       [{ cost: { gold: 2, wood: 2 }, nextSide: 3 }],
     ],
     currentSide: 1,
-    type: ["Terrain", "Terrain", "Terrain", "Terrain"],
+    type: ['land', 'land', 'land', 'land'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -1691,7 +1691,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 36,
-    name: ["Mercenaire", "", "Sir __", ""],
+    name: ["Mercenaire", '', "Sir __", ''],
     resources: [
       [ emptyResource ],
       [ emptyResource ],
@@ -1700,9 +1700,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/activate Dépensez resources/gold resources/gold pour ajouter 1 ou deux effects/check .",
-      "",
+      '',
       "effects/time Dépensez resources/ingot resources/ingot resources/ingot pour ajouter resources/military sur cette carte ( effects/oneTime ). effects/time Dépensez resources/ingot resources/ingot resources/ingot resources/ingot pour ajouter resources/military sur cette carte ( effects/oneTime ). ",
-      "",
+      '',
     ],
     upgrades: [
       [{ cost: { gold: 3, ingot: 1 }, nextSide: 3 }],
@@ -1711,7 +1711,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Personne", "", "Personne", ""],
+    type: ['person', '', 'person', ''],
     choice: false,
     checkboxes: [
       [
@@ -1747,7 +1747,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 37,
-    name: ["STOP !", "", "", ""],
+    name: ["STOP !", '', '', ''],
     resources: [
       [],
       [],
@@ -1756,9 +1756,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/activate Découvrez les cartes 38 à 42. Choisissez le côté des cartes Objectif.",
-      "",
-      "",
-      "",
+      '',
+      '',
+      '',
     ],
     upgrades: [
       [],
@@ -1767,7 +1767,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Parchemin", "", "", ""],
+    type: ['scroll', '', '', ''],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -1789,7 +1789,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 38,
-    name: ["L'Union fait la Force", "", "Domination Militaire", ""],
+    name: ["L'Union fait la Force", '', "Domination Militaire", ''],
     resources: [
       [],
       [],
@@ -1798,9 +1798,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "Vaut 2 resources/fame par Personne.",
-      "",
+      '',
       "Vaut 2 resources/fame par production de resources/military .",
-      "",
+      '',
     ],
     upgrades: [
       [],
@@ -1809,7 +1809,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Objectif - Permanente", "", "Objectif - Permanente", ""],
+    type: ['goal - permanent', '', 'goal - permanent', ''],
     choice: true,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -1831,7 +1831,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 39,
-    name: ["Elargir les frontières", "", "Optimisation", ""],
+    name: ["Elargir les frontières", '', "Optimisation", ''],
     resources: [
       [],
       [],
@@ -1840,9 +1840,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "Votre royaume doit comprendre 70 cartes ou plus (hors permanentes). Cette carte vaut -2 resources/fame pour chaque carte manquante.",
-      "",
+      '',
       "Vaut -1 resources/fame par carte valant 0 resources/fame (hors permanentes).",
-      "",
+      '',
     ],
     upgrades: [
       [],
@@ -1851,7 +1851,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Objectif - Permanente", "", "Objectif - Permanente", ""],
+    type: ['goal - permanent', '', 'goal - permanent', ''],
     choice: true,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -1873,7 +1873,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 40,
-    name: ["Loyauté", "", "Commerce", ""],
+    name: ["Loyauté", '', "Commerce", ''],
     resources: [
       [],
       [],
@@ -1882,9 +1882,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "Vaut 35 resources/fame s'il n'y a plus d'ennemi dans votre royaume.",
-      "",
+      '',
       "Vaut 25 resources/fame si votre production de resources/export est de 8 ou plus.",
-      "",
+      '',
     ],
     upgrades: [
       [],
@@ -1893,7 +1893,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Objectif - Permanente", "", "Objectif - Permanente", ""],
+    type: ['goal - permanent', '', 'goal - permanent', ''],
     choice: true,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -1915,7 +1915,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 41,
-    name: ["Bouffon", "", "Marchande", ""],
+    name: ["Bouffon", '', "Marchande", ''],
     resources: [
       [ emptyResource ],
       [ emptyResource ],
@@ -1924,9 +1924,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/passive Reste en jeu. effects/activate Défaussez la carte au sommet de votre pioche. effects/activate Ajoutez 1 effects/check .",
-      "",
+      '',
       "effects/activate Ajoutez 1 à 2 effects/check .",
-      "",
+      '',
     ],
     upgrades: [
       [],
@@ -1935,7 +1935,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Personne", "", "Personne", ""],
+    type: ['person', '', 'person', ''],
     choice: true,
     checkboxes: [
       [
@@ -1996,7 +1996,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 42,
-    name: ["Exploitant", "", "Grenier", ""],
+    name: ["Exploitant", '', "Grenier", ''],
     resources: [
       [ emptyResource ],
       [],
@@ -2005,9 +2005,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/activate Choisissez un Terrain en jeu. Gagnez les ressources qui correspondent à sa production.",
-      "",
+      '',
       "effects/passive Reste en jeu. effects/optional Fin du Tour: Défaussez pour qu'une autre carte reste en jeu.",
-      "",
+      '',
     ],
     upgrades: [
       [],
@@ -2016,7 +2016,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Personne", "", "Bâtiment", ""],
+    type: ['person', '', 'building', ''],
     choice: true,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -2038,7 +2038,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 43,
-    name: ["Maçon", "", "Route Pavée", "Rue Pavée"],
+    name: ["Maçon", '', "Route Pavée", "Rue Pavée"],
     resources: [
       [ { stone: 1 } ],
       [],
@@ -2047,7 +2047,7 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/activate Dépensez resources/gold resources/gold pour découvrir un projet de bâtiment (88/89).",
-      "",
+      '',
       "effects/time Inspectez les cartes (109) et (110), détruisez l'une et découvrez l'autre.",
       "effects/time Inspectez les cartes (111) et (112), détruisez l'une et découvrez l'autre.",
     ],
@@ -2058,7 +2058,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Personne", "", "Terrain", "Terrain"],
+    type: ['person', '', 'land', 'land'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -2080,7 +2080,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 44,
-    name: ["Orage", "", "Pluie", ""],
+    name: ["Orage", '', "Pluie", ''],
     resources: [
       [ emptyResource ],
       [],
@@ -2089,9 +2089,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/forced Carte jouée: défaussez les 3 premières cartes de votre pioche, puis -> (Back Up).",
-      "",
+      '',
       "effects/passive La production des Terrains est doublée. effects/passive Vous ne pouvez jouer aucune carte. effects/forced Fin du Tour: -> (Front Up).",
-      "",
+      '',
     ],
     upgrades: [
       [],
@@ -2100,7 +2100,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Catastrophe", "", "Catastrophe", ""],
+    type: ['event', '', 'event', ''],
     choice: false,
     checkboxes: [],
     negative: [true, false, true, false],
@@ -2122,7 +2122,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 45,
-    name: ["Chevalier Noir", "", "Garçon Admiratif", "Ecuyer"],
+    name: ["Chevalier Noir", '', "Garçon Admiratif", "Ecuyer"],
     resources: [
       [ { fame: -3 } ],
       [],
@@ -2131,7 +2131,7 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/passive Vous ne pouvez ni jouer, ni améliorer de cartes, ni même utiliser les effets effects/time . effects/activate Dépensez resources/military resources/military resources/military pour vaincre (-> Back Up).",
-      "",
+      '',
       "effects/destroy Gagnez resources/military resources/military .",
       "effects/destroy Gagnez resources/military resources/military resources/military .",
     ],
@@ -2142,7 +2142,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Ennemi", "", "Personne", "Personne"],
+    type: ['enemy', '', 'person', 'person'],
     choice: false,
     checkboxes: [],
     negative: [true, false, false, false],
@@ -2164,7 +2164,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 46,
-    name: ["Camp", "Camp d'Entrainement", "", "Sir __"],
+    name: ["Camp", "Camp d'Entrainement", '', "Sir __"],
     resources: [
       [ { gold: 1 } ],
       [ { fame: 1 } ],
@@ -2172,10 +2172,10 @@ export const allCards: GameCard[] = [
       [ { military: 2, fame: 3 } ],
     ],
     effects: [
-      "",
+      '',
       "effects/activate Dépensez resources/gold pour gagner resources/military .",
-      "",
-      "",
+      '',
+      '',
     ],
     upgrades: [
       [{ cost: { gold: 1, wood: 1, ingot: 1 }, nextSide: 2 }],
@@ -2184,7 +2184,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Terrain", "Terrain", "", "Personne - Chevalier"],
+    type: ['land', 'land', '', 'person - knight'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -2206,7 +2206,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 47,
-    name: ["STOP !", "", "", ""],
+    name: ["STOP !", '', '', ''],
     resources: [
       [],
       [],
@@ -2215,9 +2215,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/destroy Découvrez les cartes 48 à 51. Découvrez-en 2 et détruisez les 2 autres.",
-      "",
-      "",
-      "",
+      '',
+      '',
+      '',
     ],
     upgrades: [
       [],
@@ -2226,7 +2226,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Parchemin", "", "", ""],
+    type: ['scroll', '', '', ''],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -2268,7 +2268,7 @@ export const allCards: GameCard[] = [
       [{ cost: { gold: 6 }, nextSide: 3 }],
     ],
     currentSide: 1,
-    type: ["Personne", "Personne", "Personne", "Personne"],
+    type: ['person', 'person', 'person', 'person'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -2290,7 +2290,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 49,
-    name: ["Architecte Royal", "", "Pont des Merveilles", ""],
+    name: ["Architecte Royal", '', "Pont des Merveilles", ''],
     resources: [
       [ { stone: 1 } ],
       [],
@@ -2299,9 +2299,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/activate Détruisez l'une des cartes suivantes: Château (10) - découvrez (123), Mine de Diamant (84/85) - découvrez (124), Temple (82/83) - découvrez (125). ",
-      "",
-      "",
-      "",
+      '',
+      '',
+      '',
     ],
     upgrades: [
       [ {cost: {}, nextSide: 3, otherCost: "Détruisez le Pont de Pierre (12)" } ],
@@ -2310,7 +2310,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Personne", "", "Bâtiment", ""],
+    type: ['person', '', 'building', ''],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -2352,7 +2352,7 @@ export const allCards: GameCard[] = [
       [{ cost: { export: 5 }, nextSide: 3 }],
     ],
     currentSide: 1,
-    type: ["Personne", "Personne", "Personne", "Personne"],
+    type: ['person', 'person', 'person', 'person'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -2394,7 +2394,7 @@ export const allCards: GameCard[] = [
       [{ cost: { stone: 3, ingot: 2 }, nextSide: 3 }],
     ],
     currentSide: 1,
-    type: ["Personne", "Personne", "Personne", "Personne"],
+    type: ['person', 'person', 'person', 'person'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -2424,10 +2424,10 @@ export const allCards: GameCard[] = [
       [ { gold: 1, fame: 2 } ],
     ],
     effects: [
-      "",
-      "",
+      '',
+      '',
       "effects/activate Réinitialisez pour découvrir un Village (105). (D'autre cartes peuvent découvrir le Village)",
-      "",
+      '',
     ],
     upgrades: [
       [{ cost: { wood: 3 }, nextSide: 2 }],
@@ -2436,7 +2436,7 @@ export const allCards: GameCard[] = [
       [{ cost: { wood: 4, stone: 2 }, nextSide: 3 }],
     ],
     currentSide: 1,
-    type: ["Terrain", "Terrain", "Terrain", "Terrain"],
+    type: ['land', 'land', 'land', 'land'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -2458,7 +2458,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 53,
-    name: ["Sorcière", "", "Hutte de la Sorcière", ""],
+    name: ["Sorcière", '', "Hutte de la Sorcière", ''],
     resources: [
       [ { fame: -3 } ],
       [],
@@ -2467,9 +2467,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/activate Dépensez resources/military resources/military resources/military pour vaincre ( effects/destroy ). effects/activate Défaussez 3 Personnes pour -> (Back Up). effects/forced Fin du tour: Découvrez les 2 prochaines cartes de la boîte, puis -> (Back Up).",
-      "",
+      '',
       "effects/activate Dépensez resources/military resources/military resources/military pour vaincre ( effects/destroy ). effects/activate Détruisez une Personne pour effects/destroy . effects/forced Fin du Tour: Découvre les 2 prochaines cartes de la boîte, puis effects/destroy .",
-      "",
+      '',
     ],
     upgrades: [
       [],
@@ -2478,7 +2478,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Ennemi", "", "Ennemi", ""],
+    type: ['enemy', '', 'enemy', ''],
     choice: false,
     checkboxes: [],
     negative: [true, false, true, false],
@@ -2500,7 +2500,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 54,
-    name: ["Scribe", "", "Architecte", ""],
+    name: ["Scribe", '', "Architecte", ''],
     resources: [
       [ emptyResource ],
       [],
@@ -2509,9 +2509,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/optional Fin du tour: Défaussez pour que 1 ou 2 autres cartes restent en jeu.",
-      "",
+      '',
       "effects/time Réinitialisez pour découvrir un projet de construction (78/79).",
-      "",
+      '',
     ],
     upgrades: [
       [{ cost: { gold: 5 }, nextSide: 3 }],
@@ -2520,7 +2520,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Personne", "", "Personne", ""],
+    type: ['person', '', 'person', ''],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -2542,7 +2542,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 55,
-    name: ["Lord Aethan", "", "Lord Nimrod", ""],
+    name: ["Lord Aethan", '', "Lord Nimrod", ''],
     resources: [
       [ { gold: 1, wood: 1, stone: 1 } ],
       [],
@@ -2551,9 +2551,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/activate Découvrez la Coopération (80) ou le Domaine (81). effects/passive Ajoutez 1 effects/check .",
-      "",
+      '',
       "effects/time Découvrez un Raid (133) et un Rival (134). effects/activate Ajoutez 1 effects/check .",
-      "",
+      '',
     ],
     upgrades: [
       [],
@@ -2562,7 +2562,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Personne", "", "Personne", ""],
+    type: ['person', '', 'person', ''],
     choice: true,
     checkboxes: [
       [
@@ -2607,7 +2607,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 56,
-    name: ["Peste", "", "Soldat Ennemi", ""],
+    name: ["Peste", '', "Soldat Ennemi", ''],
     resources: [
       [ { fame: -2 } ],
       [],
@@ -2616,9 +2616,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/passive Reste en jeu. effects/forced Fin de Manche: Détruisez 2 Personnes de votre royaume. Puis -> (Back Front).",
-      "",
+      '',
       "effects/forced Carte Jouée: Bloque 1 Bâtiment/Terrain en jeu. effects/passive : Reste en jeu. effects/forced Fin de Manche: Détruisez la carte bloquée. effects/activate Dépensez resources/military resources/military pour vaincre ( effects/destroy ).",
-      "",
+      '',
     ],
     upgrades: [
       [],
@@ -2627,7 +2627,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Evénement", "", "Ennemi", ""],
+    type: ['event', '', 'enemy', ''],
     choice: false,
     checkboxes: [],
     negative: [true, false, true, false],
@@ -2649,7 +2649,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 57,
-    name: ["Assassin", "", "Soldat Ennemi", ""],
+    name: ["Assassin", '', "Soldat Ennemi", ''],
     resources: [
       [ { fame: -2 } ],
       [],
@@ -2658,9 +2658,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/forced Détruisez la prochaine Personne que vous jouez. Lorsque vous le faites, ->. effects/activate Dépensez resources/military resources/military resources/military pour vaincre (->).",
-      "",
+      '',
       "effects/forced Carte Jouée: Bloque 1 Bâtiment/Terrain en jeu. effects/passive : Reste en jeu. effects/forced Fin de Manche: Détruisez la carte bloquée. effects/activate Dépensez resources/military resources/military pour vaincre ( effects/destroy ).",
-      "",
+      '',
     ],
     upgrades: [
       [],
@@ -2669,7 +2669,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Ennemi", "", "Ennemi", ""],
+    type: ['enemy', '', 'enemy', ''],
     choice: false,
     checkboxes: [],
     negative: [true, false, true, false],
@@ -2691,7 +2691,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 58,
-    name: ["Ville en Flamme", "", "Terre Brûlée", "Jeune Forêt"],
+    name: ["Ville en Flamme", '', "Terre Brûlée", "Jeune Forêt"],
     resources: [
       [ emptyResource ],
       [],
@@ -2700,8 +2700,8 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/passive Reste en jeu. effects/forced Fin de Manche: Détruisez 1 Bâtiment de votre royaume, puis -> (Back Up).",
-      "",
-      "",
+      '',
+      '',
       "effects/time Ajoutez 1 effects/check dans l'ordre. *: Ajoutez resources/wood à la production de cette carte.",
     ],
     upgrades: [
@@ -2711,16 +2711,16 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Catastrophe", "", "Terrain", "Terrain"],
+    type: ['event', '', 'land', 'land'],
     choice: false,
     checkboxes: [
       [],
       [],
       [],
       [ {content: "*", checked: false},
-        {content: "", checked: false},
+        {content: '', checked: false},
         {content: "*", checked: false},
-        {content: "", checked: false},
+        {content: '', checked: false},
         {content: "*", checked: false},
       ],
     ],
@@ -2751,8 +2751,8 @@ export const allCards: GameCard[] = [
       [ { fame: 5 } ],
     ],
     effects: [
-      "",
-      "",
+      '',
+      '',
       "effects/passive Reste en jeu. ",
       "effects/activate Défaussez 6 cartes alliées pour découvrir un Artefact (108).",
     ],
@@ -2763,7 +2763,7 @@ export const allCards: GameCard[] = [
       [{ cost: { gold: 1, ingot: 2 }, nextSide: 3 }],
     ],
     currentSide: 1,
-    type: ["Terrain", "Terrain", "Terrain", "Terrain"],
+    type: ['land', 'land', 'land', 'land'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -2785,7 +2785,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 60,
-    name: ["Bandit d'Elite", "", "Travailleur", ""],
+    name: ["Bandit d'Elite", '', "Travailleur", ''],
     resources: [
       [ { fame: -5 } ],
       [],
@@ -2794,9 +2794,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "Peut être -> par un Missionaire. effects/forced Carte jouée: Bloque 3 cartes avec une production. effects/activate Dépensez resources/military resources/military resources/military pour vaincre ( effects/destroy ) et gagner 3 ressources au choix.",
-      "",
+      '',
       "effects/activate Choisissez un Bâtiment en jeu. Gagnez les ressources qui correspondent à sa production. ",
-      "",
+      '',
     ],
     upgrades: [
       [],
@@ -2805,7 +2805,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Ennemi", "", "Personne", ""],
+    type: ['enemy', '', 'person', ''],
     choice: false,
     checkboxes: [],
     negative: [true, false, false, false],
@@ -2827,7 +2827,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 61,
-    name: ["Prince des Ténèbres", "", "Garçon Admiratif", "Ecuyer"],
+    name: ["Prince des Ténèbres", '', "Garçon Admiratif", "Ecuyer"],
     resources: [
       [ { fame: -7 } ],
       [],
@@ -2836,7 +2836,7 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/passive Vous ne pouvez ni jouer, ni améliorer de cartes, ni utiliser effects/time . effects/activate Dépensez resources/military resources/military resources/military resources/military resources/military pour vaincre (->).",
-      "",
+      '',
       "effects/destroy Gagnez resources/military resources/military .",
       "effects/destroy Gagnez resources/military resources/military resources/military .",
     ],
@@ -2847,7 +2847,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Ennemi", "", "Personne", ""],
+    type: ['enemy', '', 'person', ''],
     choice: false,
     checkboxes: [],
     negative: [true, false, false, false],
@@ -2869,7 +2869,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 62,
-    name: ["Camp", "Camp d'entrainement", "", "Sir __"],
+    name: ["Camp", "Camp d'entrainement", '', "Sir __"],
     resources: [
       [ { gold: 1 } ],
       [ { fame: 1 } ],
@@ -2877,10 +2877,10 @@ export const allCards: GameCard[] = [
       [ { military: 2, fame: 3 } ],
     ],
     effects: [
-      "",
+      '',
       "effects/activate Dépensez resources/gold pour gagner resources/military .",
-      "",
-      "",
+      '',
+      '',
     ],
     upgrades: [
       [{ cost: { gold: 1, wood: 1, ingot: 1 }, nextSide: 2 }],
@@ -2889,7 +2889,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Terrain", "Terrain", "", "Personne - Chevalier"],
+    type: ['land', 'land', '', 'person - knight'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -2928,7 +2928,7 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       " ",
-      "",
+      '',
       "effects/passive Reste en jeu. ",
       "effects/activate Défaussez une autre Personne pour gagner 2 ressources de votre choix.",
     ],
@@ -2939,7 +2939,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Terrain", "Bâtiment", "Bâtiment", "Personne"],
+    type: ['land', 'building', 'building', 'person'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -2961,7 +2961,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 64,
-    name: ["Bandit d'Elite", "", "Exploitant", ""],
+    name: ["Bandit d'Elite", '', "Exploitant", ''],
     resources: [
       [ { fame: -5 } ],
       [],
@@ -2970,9 +2970,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/forced Carte jouée: Bloque 3 cartes avec une production. effects/activate Dépensez resources/military resources/military resources/military pour vaincre ( effects/destroy ) et gagner 3 ressources au choix. (Peut être -> (Front Up) par un Missionaire)",
-      "",
+      '',
       "effects/activate Choisissez un Terrain en jeu. Gagnez les ressources qui correspondent à sa production. ",
-      "",
+      '',
     ],
     upgrades: [
       [],
@@ -2981,7 +2981,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Ennemi", "", "Personne", ""],
+    type: ['enemy', '', 'person', ''],
     choice: false,
     checkboxes: [],
     negative: [true, false, false, false],
@@ -3003,7 +3003,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 65,
-    name: ["Tornade", "", "Innodations", ""],
+    name: ["Tornade", '', "Innodations", ''],
     resources: [
       [ emptyResource ],
       [],
@@ -3012,9 +3012,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/passive Reste en jeu. effects/forced Fin de Manche: Détruisez 3 cartez alliées du royaume. Puis -> (Back Up).",
-      "",
+      '',
       "effects/passive Reste en jeu. effects/forced Bloque tous les Bâtiments (max 5). effects/forced Fin de Manche: Détruisez cette carte et 1 Bâtiment bloqué ou 2 autres cartes alliées.",
-      "",
+      '',
     ],
     upgrades: [
       [],
@@ -3023,7 +3023,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Catastrophe", "", "Catastrophe", ""],
+    type: ['event', '', 'event', ''],
     choice: false,
     checkboxes: [],
     negative: [true, false, true, false],
@@ -3045,7 +3045,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 66,
-    name: ["Jeune Princesse", "Princesse Pourrie Gâtée", "Princesse Bien Elevée", ""],
+    name: ["Jeune Princesse", "Princesse Pourrie Gâtée", "Princesse Bien Elevée", ''],
     resources: [
       [ { fame: 2 } ],
       [ emptyResource ],
@@ -3056,7 +3056,7 @@ export const allCards: GameCard[] = [
       "effects/forced Fin du Tour: Défaussez 2 Personnes ou Front Down.",
       "effects/forced Carte Jouée: Défaussez 2 cartes alliées en jeu.",
       "effects/activate Gagnez 1 ressource de votre choix.",
-      "",
+      '',
     ],
     upgrades: [
       [{ cost: {}, nextSide: 3, otherCost: "2 Personnes, 2 Terrains, 2 Bâtiments" }],
@@ -3065,7 +3065,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Personne", "Personne", "Personne - Dame", ""],
+    type: ['person', 'person', 'person - lady', ''],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -3087,7 +3087,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 67,
-    name: ["Maladie", "Diminué", "Festin", ""],
+    name: ["Maladie", "Diminué", "Festin", ''],
     resources: [
       [ { fame: -8 } ],
       [ { fame: -2 } ],
@@ -3098,7 +3098,7 @@ export const allCards: GameCard[] = [
       "effects/forced Carte Jouée: Défaussez la prochaine carte de votre pioche.",
       "Cette carte est Permanente.",
       "effects/activate Gagnez 1 ressource de votre choix.",
-      "",
+      '',
     ],
     upgrades: [
       [
@@ -3110,7 +3110,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Evénement", "Etat - Permanente", "Evénement", ""],
+    type: ['event', 'state - permanent', 'event', ''],
     choice: false,
     checkboxes: [],
     negative: [true, false, false, false],
@@ -3132,7 +3132,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 68,
-    name: ["STOP !", "", "", ""],
+    name: ["STOP !", '', '', ''],
     resources: [
       [],
       [],
@@ -3141,9 +3141,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/activate Découvrez les cartes 69 et 70. A la fin de la manche comptez votre resources/fame (Fin du jeu).",
-      "",
-      "",
-      "",
+      '',
+      '',
+      '',
     ],
     upgrades: [
       [],
@@ -3152,7 +3152,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Parchemin", "", "", ""],
+    type: ['scroll', '', '', ''],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -3174,7 +3174,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 69,
-    name: ["Touche Finale", "", "Banquet", ""],
+    name: ["Touche Finale", '', "Banquet", ''],
     resources: [
       [ emptyResource ],
       [],
@@ -3183,9 +3183,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/destroy Ajoutez resources/export et resources/fame x5 à une carte en jeu.",
-      "",
+      '',
       "effects/destroy Gagnez 4 ressources au choix.",
-      "",
+      '',
     ],
     upgrades: [
       [],
@@ -3194,7 +3194,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Evénement", "", "Evénement", ""],
+    type: ['event', '', 'event', ''],
     choice: true,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -3216,7 +3216,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 70,
-    name: ["Visite Royale", "", "Inquisitrice", ""],
+    name: ["Visite Royale", '', "Inquisitrice", ''],
     resources: [
       [ emptyResource ],
       [],
@@ -3225,9 +3225,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/activate Barrez 1 icône de ressource dans le coût d'amélioration d'une carte en jeu.",
-      "",
+      '',
       "effects/destroy Détruisez une carte négative en jeu.",
-      "",
+      '',
     ],
     upgrades: [
       [],
@@ -3236,7 +3236,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Evénement", "", "Personne", ""],
+    type: ['event', '', 'person', ''],
     choice: true,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -3277,7 +3277,7 @@ export const allCards: GameCard[] = [
       " ",
       "effects/activate Dépensez resources/gold pour gagner resources/stone resources/stone .",
       "effects/destroy Découvrez une Mine (84/85). ",
-      "",
+      '',
     ],
     upgrades: [
       [{ cost: { gold: 2 }, nextSide: 2 }],
@@ -3286,7 +3286,7 @@ export const allCards: GameCard[] = [
       [{ cost: { gold: 2, wood: 2 }, nextSide: 3 }],
     ],
     currentSide: 1,
-    type: ["Terrain", "Terrain", "Terrain", "Terrain"],
+    type: ['land', 'land', 'land', 'land'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -3323,9 +3323,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/activate Gagnez resources/wood resources/wood resources/wood , puis Front Down.",
-      "",
+      '',
       "effects/destroy Découvrez un Autel (82/83).",
-      "",
+      '',
     ],
     upgrades: [
       [{ cost: { stone: 2 }, nextSide: 3 }],
@@ -3334,7 +3334,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Terrain", "Terrain", "Bâtiment", "Bâtiment"],
+    type: ['land', 'land', 'building', 'building'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -3367,10 +3367,10 @@ export const allCards: GameCard[] = [
       [ { stone: 2, ingot: 2, fame: -3 } ],
     ],
     effects: [
-      "",
+      '',
       "Peut compter comme 2 Personnes.",
       "effects/passive Reste en jeu.",
-      "",
+      '',
     ],
     upgrades: [
       [
@@ -3382,7 +3382,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Terrain", "Personne", "Bâtiment", "Evénement"],
+    type: ['land', 'person', 'building', 'event'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -3424,10 +3424,10 @@ export const allCards: GameCard[] = [
       ],
     ],
     effects: [
-      "",
-      "",
+      '',
+      '',
       "effects/forced Carte Jouée: Découvrez le Pirate (76).",
-      "",
+      '',
     ],
     upgrades: [
       [{ cost: { gold: 1, wood: 3 }, nextSide: 2 }],
@@ -3436,7 +3436,7 @@ export const allCards: GameCard[] = [
       [{ cost: { gold: 1, wood : 2}, nextSide: 3, otherCost: "2 Personnes" }],
     ],
     currentSide: 1,
-    type: ["Terrain", "Bâtiment", "Maritime - Navire", "Maritime - Navire"],
+    type: ['land', 'building', 'seafaring - ship', 'seafaring - ship'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -3478,10 +3478,10 @@ export const allCards: GameCard[] = [
       ],
     ],
     effects: [
-      "",
-      "",
+      '',
+      '',
       "effects/forced Carte Jouée: Découvrez le Pirate (76).",
-      "",
+      '',
     ],
     upgrades: [
       [{ cost: { gold: 1, wood: 3 }, nextSide: 2 }],
@@ -3490,7 +3490,7 @@ export const allCards: GameCard[] = [
       [{ cost: { gold: 1, wood : 2}, nextSide: 3, otherCost: "2 Personnes" }],
     ],
     currentSide: 1,
-    type: ["Terrain", "Bâtiment", "Maritime - Navire", "Maritime - Navire"],
+    type: ['land', 'building', 'seafaring - ship', 'seafaring - ship'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -3512,7 +3512,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 76,
-    name: ["Pirate", "", "Précieux Allié", ""],
+    name: ["Pirate", '', "Précieux Allié", ''],
     resources: [
       [ { fame: -2 } ],
       [],
@@ -3524,9 +3524,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/passive Reste en jeux. effects/passive Lorsque vous gagnez des resources/gold , gagnez 1 resources/gold de moins. effects/activate Dépensez resources/military resources/military pour vaincre ( effects/destroy ) puis découvrez le Lagon (77).",
-      "",
+      '',
       "effects/activate Découvrez la Chasse au Trésor (93).",
-      "",
+      '',
     ],
     upgrades: [
       [{ cost: { gold: 4, ingot: 1 }, nextSide: 3 }],
@@ -3535,7 +3535,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Ennemi", "", "Personne - Maritime", ""],
+    type: ['enemy', '', 'person - seafaring', ''],
     choice: false,
     checkboxes: [],
     negative: [true, false, false, false],
@@ -3565,10 +3565,10 @@ export const allCards: GameCard[] = [
       [ { gold: 2, export: 1 } ],
     ],
     effects: [
-      "",
-      "",
+      '',
+      '',
       "effects/activate Jouez une carte Maritime depuis la défausse.",
-      "",
+      '',
     ],
     upgrades: [
       [
@@ -3580,7 +3580,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Terrain", "Maritime", "Bâtiment", "Terrain - Maritime"],
+    type: ['land', 'seafaring', 'building', 'land - seafaring'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -3610,10 +3610,10 @@ export const allCards: GameCard[] = [
       [ { fame: 10 } ],
     ],
     effects: [
-      "",
-      "",
-      "",
-      "",
+      '',
+      '',
+      '',
+      '',
     ],
     upgrades: [
       [ { cost: { stone: 4 }, nextSide: 2 } ],
@@ -3622,7 +3622,7 @@ export const allCards: GameCard[] = [
       [ { cost: { gold: 6 }, nextSide: 3 } ],
     ],
     currentSide: 1,
-    type: ["Bâtiment", "Bâtiment", "Bâtiment", "Bâtiment"],
+    type: ['building', 'building', 'building', 'building'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -3664,7 +3664,7 @@ export const allCards: GameCard[] = [
       [ { cost: { gold: 4, stone: 2 }, nextSide: 3 } ],
     ],
     currentSide: 1,
-    type: ["Bâtiment", "Bâtiment", "Bâtiment", "Bâtiment"],
+    type: ['building', 'building', 'building', 'building'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -3686,7 +3686,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 80,
-    name: ["Coopération", "", "Faveur", ""],
+    name: ["Coopération", '', "Faveur", ''],
     resources: [
       [ emptyResource ],
       [],
@@ -3695,9 +3695,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/activate Défaussez 2 Personnes pour gagner 3 ressources au choix puis ->.",
-      "",
+      '',
       "effects/passive Reste en jeu. effects/activate Gagnez une ressource au choix, puis ->.",
-      "",
+      '',
     ],
     upgrades: [
       [],
@@ -3706,7 +3706,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Evénement", "", "Evénement", ""],
+    type: ['event', '', 'event', ''],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -3736,7 +3736,7 @@ export const allCards: GameCard[] = [
       [ { fame: 6 } ],
     ],
     effects: [
-      "",
+      '',
       "effects/passive Lorsque vous purgez cette carte, vous pouvez annuler la purge de 1 autre carte.",
       "effects/passive Lorsque vous purgez cette carte, vous pouvez annuler la purge de 3 autres cartes.",
       "effects/passive Lorsque vous purgez cette carte, vous pouvez annuler la purge de 2 autres cartes.",
@@ -3748,7 +3748,7 @@ export const allCards: GameCard[] = [
       [ { cost: { wood: 3, stone: 3 }, nextSide: 3 } ],
     ],
     currentSide: 1,
-    type: ["Terrain", "Terrain", "Terrain", "Terrain"],
+    type: ['land', 'land', 'land', 'land'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -3798,7 +3798,7 @@ export const allCards: GameCard[] = [
       [{ cost: { gold: 2, wood: 2, stone: 2 }, nextSide: 3 }],
     ],
     currentSide: 1,
-    type: ["Terrain", "Bâtiment", "Bâtiment", "Bâtiment"],
+    type: ['land', 'building', 'building', 'building'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -3848,7 +3848,7 @@ export const allCards: GameCard[] = [
       [{ cost: { gold: 2, wood: 2, stone: 2 }, nextSide: 3 }],
     ],
     currentSide: 1,
-    type: ["Terrain", "Bâtiment", "Bâtiment", "Bâtiment"],
+    type: ['land', 'building', 'building', 'building'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -3886,10 +3886,10 @@ export const allCards: GameCard[] = [
       ],
     ],
     effects: [
-      "",
-      "",
-      "",
-      "",
+      '',
+      '',
+      '',
+      '',
     ],
     upgrades: [
       [{ cost: { wood: 3 }, nextSide: 2 }],
@@ -3898,7 +3898,7 @@ export const allCards: GameCard[] = [
       [{ cost: { gold: 2, wood: 2, stone: 2 }, nextSide: 3 }],
     ],
     currentSide: 1,
-    type: ["Bâtiment", "Bâtiment", "Bâtiment", "Bâtiment"],
+    type: ['building', 'building', 'building', 'building'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -3936,10 +3936,10 @@ export const allCards: GameCard[] = [
       ],
     ],
     effects: [
-      "",
-      "",
-      "",
-      "",
+      '',
+      '',
+      '',
+      '',
     ],
     upgrades: [
       [{ cost: { wood: 3 }, nextSide: 2 }],
@@ -3948,7 +3948,7 @@ export const allCards: GameCard[] = [
       [{ cost: { gold: 2, wood: 2, stone: 2 }, nextSide: 3 }],
     ],
     currentSide: 1,
-    type: ["Bâtiment", "Bâtiment", "Bâtiment", "Bâtiment"],
+    type: ['building', 'building', 'building', 'building'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -3970,7 +3970,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 86,
-    name: ["Adoubement", "", "Rénovation", ""],
+    name: ["Adoubement", '', "Rénovation", ''],
     resources: [
       [ emptyResource ],
       [],
@@ -3979,9 +3979,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/passive Reste en jeu. effects/forced Fin de Manche: Ajoutez resources/gold resources/military et \"Chevalier\" à 1 Personne, puis ->.",
-      "",
+      '',
       "effects/passive Reste en jeu. effects/forced Fin de Manche: Ajoutez resources/wood / resources/stone et resources/ingot / resources/export à 1 Bâtiment, puis effects/destroy .",
-      "",
+      '',
     ],
     upgrades: [
       [],
@@ -3990,7 +3990,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Evénement", "", "Evénement", ""],
+    type: ['event', '', 'event', ''],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -4012,7 +4012,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 87,
-    name: ["Quêtes", "", "", ""],
+    name: ["Quêtes", '', '', ''],
     resources: [
       [ emptyResource ],
       [],
@@ -4021,9 +4021,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/time défaussez des Personnes (1, 2, 2, 3, 3, 4, 5, 6, 7) pour cocher la case de gauche à droite.",
-      "",
-      "",
-      "",
+      '',
+      '',
+      '',
     ],
     upgrades: [
       [],
@@ -4032,7 +4032,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Parchemin - Permanente", "", "", ""],
+    type: ['permanent', '', '', ''],
     choice: false,
     checkboxes: [
       [ {content: "fame x1", checked: false},
@@ -4068,7 +4068,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 88,
-    name: ["Une Tour Idéale", "", "", ""],
+    name: ["Une Tour Idéale", '', '', ''],
     resources: [
       [ emptyResource ],
       [],
@@ -4077,9 +4077,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/time dépensez les resources/stone (1 à 10, incrément de 1) pour cocher la case de gauche à droite.",
-      "",
-      "",
-      "",
+      '',
+      '',
+      '',
     ],
     upgrades: [
       [],
@@ -4088,7 +4088,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Parchemin - Permanente", "", "", ""],
+    type: ['permanent', '', '', ''],
     choice: false,
     checkboxes: [
       [ {content: "fame x3", checked: false},
@@ -4133,7 +4133,7 @@ export const allCards: GameCard[] = [
       [ { military: 1 } ],
     ],
     effects: [
-      "",
+      '',
       "effects/passive La production des Bâtiments gagne +1 resources/gold .",
       "effects/activate Marquer 1 effects/check , une fois complet ->.",
       "effects/passive Reste en jeu. effects/activate Marquez 1 effects/check une des cases au choix pour défausser 1 Ennemi. (Vaut 2 resources/fame par effects/check .)",
@@ -4148,20 +4148,20 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Terrain", "Terrain", "Bâtiment", "Bâtiment"],
+    type: ['land', 'land', 'building', 'building'],
     choice: false,
     checkboxes: [
       [],
       [],
       [
-        {content: "", checked: false},
-        {content: "", checked: false},
-        {content: "", checked: false}
+        {content: '', checked: false},
+        {content: '', checked: false},
+        {content: '', checked: false}
       ],
       [
-        {content: "", checked: false},
-        {content: "", checked: false},
-        {content: "", checked: false},
+        {content: '', checked: false},
+        {content: '', checked: false},
+        {content: '', checked: false},
         {content: "military", checked: false},
         {content: "military", checked: false},
         {content: "gold", checked: false},
@@ -4189,7 +4189,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 90,
-    name: ["Bijoux", "", "", ""],
+    name: ["Bijoux", '', '', ''],
     resources: [
       [ emptyResource ],
       [],
@@ -4198,9 +4198,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/time dépensez les resources/ingot (1 à 10, incrément de 1) pour cocher la case de gauche à droite, puis gagnez 5 resources/export .",
-      "",
-      "",
-      "",
+      '',
+      '',
+      '',
     ],
     upgrades: [
       [],
@@ -4209,7 +4209,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Parchemin - Permanente", "", "", ""],
+    type: ['permanent', '', '', ''],
     choice: false,
     checkboxes: [
       [ {content: "fame x1", checked: false},
@@ -4246,7 +4246,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 91,
-    name: ["Construire une Arche", "", "L'Arche", ""],
+    name: ["Construire une Arche", '', "L'Arche", ''],
     resources: [
       [ emptyResource ],
       [],
@@ -4255,9 +4255,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/time dépensez les resources/wood (2 à 10, incrément de 2) pour cocher la case de gauche à droite, une fois complétée, ->",
-      "",
+      '',
       "effects/activate Inscrivez 1 effects/check pour chaque paire de Personnes que vous avez en jeu. (Vaut +1 resources/fame pour chaque effects/check )",
-      "",
+      '',
     ],
     upgrades: [
       [],
@@ -4266,33 +4266,33 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Parchemin - Permanente", "", "Maritime", ""],
+    type: ['permanent', '', 'seafaring', ''],
     choice: false,
     checkboxes: [
       [
-        {content: "", checked: false},
-        {content: "", checked: false},
-        {content: "", checked: false},
-        {content: "", checked: false},
-        {content: "", checked: false}
+        {content: '', checked: false},
+        {content: '', checked: false},
+        {content: '', checked: false},
+        {content: '', checked: false},
+        {content: '', checked: false}
       ],
       [],
-      [ {content: "", checked: false},
-        {content: "", checked: false},
-        {content: "", checked: false},
-        {content: "", checked: false},
-        {content: "", checked: false},
-        {content: "", checked: false},
-        {content: "", checked: false},
-        {content: "", checked: false},
-        {content: "", checked: false}, 
-        {content: "", checked: false},
-        {content: "", checked: false},
-        {content: "", checked: false},
-        {content: "", checked: false},
-        {content: "", checked: false},
-        {content: "", checked: false},
-        {content: "", checked: false}
+      [ {content: '', checked: false},
+        {content: '', checked: false},
+        {content: '', checked: false},
+        {content: '', checked: false},
+        {content: '', checked: false},
+        {content: '', checked: false},
+        {content: '', checked: false},
+        {content: '', checked: false},
+        {content: '', checked: false}, 
+        {content: '', checked: false},
+        {content: '', checked: false},
+        {content: '', checked: false},
+        {content: '', checked: false},
+        {content: '', checked: false},
+        {content: '', checked: false},
+        {content: '', checked: false}
       ],
       []
     ],
@@ -4315,7 +4315,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 92,
-    name: ["__", "", "__", ""],
+    name: ["__", '', "__", ''],
     resources: [
       [ emptyResource ],
       [],
@@ -4324,9 +4324,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/forced Jouée la 1ère fois: Donne-lui un nom ! effects/forced Jouée la 2ème fois: Ajoutez resources/military / resources/fame x5. effects/forced Jouée la 3ème fois: Ajoutez resources/export / resources/fame x5.",
-      "",
+      '',
       "effects/passive Reste en jeu. effects/forced Jouée la 1ère fois: Donne-lui un nom ! effects/forced Jouée la 2ème fois: Ajoutez une ressource de votre choix à cette carte (hors resources/fame ). effects/forced Jouée la 3ème fois: Ajoutez une ressource de votre choix à cette carte (hors resources/fame ).",
-      "",
+      '',
     ],
     upgrades: [
       [],
@@ -4335,7 +4335,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Personne", "", "Personne", ""],
+    type: ['person', '', 'person', ''],
     choice: true,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -4365,10 +4365,10 @@ export const allCards: GameCard[] = [
       [ { gold: 1, fame: 5 } ],
     ],
     effects: [
-      "",
+      '',
       "effects/forced Fin du Tour: Hélas, vous découvrez un Traître (94).",
-      "",
-      "",
+      '',
+      '',
     ],
     upgrades: [
       [ {cost: {gold: 1, wood: 1, ingot: 1}, nextSide: 2} ],
@@ -4377,7 +4377,7 @@ export const allCards: GameCard[] = [
       [ {cost: {}, nextSide: 3, otherCost: "2 Maritimes" } ],
     ],
     currentSide: 1,
-    type: ["Maritime", "Maritime", "Evénement", "Maritime"],
+    type: ['seafaring', 'seafaring', 'event', 'seafaring'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -4399,7 +4399,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 94,
-    name: ["Traître", "", "Malédiction", ""],
+    name: ["Traître", '', "Malédiction", ''],
     resources: [
       [ { fame: -2 } ],
       [],
@@ -4408,9 +4408,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/forced Carte Jouée: Défaussez 2 Personnes. effects/activate Dépensez resources/military resources/military resources/military resources/military pour vaincre ( effects/destroy ).",
-      "",
+      '',
       "effects/passive Lorsque vous Progressez, jouez 2 cartes supplémentaires.",
-      "",
+      '',
     ],
     upgrades: [
       [],
@@ -4419,7 +4419,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Ennemi", "", "Evénement", ""],
+    type: ['enemy', '', 'event', ''],
     choice: true,
     checkboxes: [],
     negative: [true, false, true, false],
@@ -4441,7 +4441,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 95,
-    name: ["Astronome", "", "Astrologue", ""],
+    name: ["Astronome", '', "Astrologue", ''],
     resources: [
       [ emptyResource ],
       [],
@@ -4450,9 +4450,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/activate Dépensez resources/gold resources/gold pour inscrire 1 effects/check . (Vaut 2 resources/fame par effects/check )",
-      "",
+      '',
       "effects/activate Remettez au-dessus ou en-dessous de votre pioche jusqu'à 3 autres de vos cartes en jeu.",
-      "",
+      '',
     ],
     upgrades: [
       [],
@@ -4461,18 +4461,18 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Personne", "", "Personne", ""],
+    type: ['person', '', 'person', ''],
     choice: true,
     checkboxes: [
       [
-        { content: "", checked: false }, { content: "", checked: false },
-        { content: "", checked: false }, { content: "", checked: false },
-        { content: "", checked: false }, { content: "", checked: false },
-        { content: "", checked: false }, { content: "", checked: false },
-        { content: "", checked: false }, { content: "", checked: false },
-        { content: "", checked: false }, { content: "", checked: false },
-        { content: "", checked: false }, { content: "", checked: false },
-        { content: "", checked: false }, { content: "", checked: false },
+        { content: '', checked: false }, { content: '', checked: false },
+        { content: '', checked: false }, { content: '', checked: false },
+        { content: '', checked: false }, { content: '', checked: false },
+        { content: '', checked: false }, { content: '', checked: false },
+        { content: '', checked: false }, { content: '', checked: false },
+        { content: '', checked: false }, { content: '', checked: false },
+        { content: '', checked: false }, { content: '', checked: false },
+        { content: '', checked: false }, { content: '', checked: false },
       ],
       [],
       [],
@@ -4517,7 +4517,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Personne", "Potion - Objet", "Potion - Objet", "Potion - Objet"],
+    type: ['person', 'potion - item', 'potion - item', 'potion - item'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -4547,10 +4547,10 @@ export const allCards: GameCard[] = [
       [ { export: 2, fame: 6 } ],
     ],
     effects: [
-      "",
-      "",
-      "",
-      "",
+      '',
+      '',
+      '',
+      '',
     ],
     upgrades: [
       [ { cost: { gold: 2 }, nextSide: 2 } ],
@@ -4559,7 +4559,7 @@ export const allCards: GameCard[] = [
       [ { cost: { gold: 4 }, nextSide: 3 } ],
     ],
     currentSide: 1,
-    type: ["Invention", "Invention", "Invention", "Invention"],
+    type: ['invention', 'invention', 'invention', 'invention'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -4601,12 +4601,12 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Maritime", "Maritime", "Invention", "Maritime"],
+    type: ['seafaring', 'seafaring', 'invention', 'seafaring'],
     choice: false,
     checkboxes: [
       [
-        { content: "", checked: false }, { content: "", checked: false },
-        { content: "", checked: false }, { content: "", checked: false },
+        { content: '', checked: false }, { content: '', checked: false },
+        { content: '', checked: false }, { content: '', checked: false },
         { content: "gold", checked: false }, { content: "gold", checked: false },
         { content: "gold", checked: false }, { content: "gold", checked: false },
       ],
@@ -4617,14 +4617,14 @@ export const allCards: GameCard[] = [
         { content: "export", checked: false }, { content: "export", checked: false },
       ],
       [
-        { content: "", checked: false }, { content: "", checked: false },
-        { content: "", checked: false }, { content: "", checked: false },
+        { content: '', checked: false }, { content: '', checked: false },
+        { content: '', checked: false }, { content: '', checked: false },
       ],
       [
-        { content: "", checked: false }, { content: "", checked: false },
-        { content: "", checked: false }, { content: "", checked: false },
-        { content: "", checked: false }, { content: "", checked: false },
-        { content: "", checked: false }, { content: "", checked: false },
+        { content: '', checked: false }, { content: '', checked: false },
+        { content: '', checked: false }, { content: '', checked: false },
+        { content: '', checked: false }, { content: '', checked: false },
+        { content: '', checked: false }, { content: '', checked: false },
       ],
     ],
     negative: [false, false, false, false],
@@ -4654,10 +4654,10 @@ export const allCards: GameCard[] = [
       [ { military: 2, fame: -6 } ],
     ],
     effects: [
-      "",
-      "",
-      "",
-      "",
+      '',
+      '',
+      '',
+      '',
     ],
     upgrades: [
       [ { cost: { ingot: 2 }, nextSide: 2 } ],
@@ -4666,7 +4666,7 @@ export const allCards: GameCard[] = [
       [ { cost: { gold: 6 }, nextSide: 3 } ],
     ],
     currentSide: 1,
-    type: ["Invention", "Invention - Objet", "Etat", "Bâtiment"],
+    type: ['invention', 'invention - item', 'state', 'building'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -4699,9 +4699,9 @@ export const allCards: GameCard[] = [
       ],
     ],
     effects: [
-      "",
+      '',
       "effects/activate Découvrez Construire une Arche (91).",
-      "",
+      '',
       "effects/passive resources/export et resources/wood peuvent être utilisés de manière interchangeable.",
     ],
     upgrades: [
@@ -4711,7 +4711,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Bâtiment", "Bâtiment", "Bâtiment", "Maritime"],
+    type: ['building', 'building', 'building', 'seafaring'],
     choice: true,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -4741,7 +4741,7 @@ export const allCards: GameCard[] = [
       [ { fame: 5 } ],
     ],
     effects: [
-      "",
+      '',
       "effects/passive Reste en jeu.",
       "effects/optional Fin du Tour: cette carte ou une autre au choix reste en jeu.",
       "effects/optional Fin du Tour: 2 cartes au choix restent en jeu.",
@@ -4753,7 +4753,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Terrain", "Bâtiment - Terrain", "Bâtiment", "Bâtiment"],
+    type: ['land', 'building - land', 'building', 'building'],
     choice: true,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -4783,8 +4783,8 @@ export const allCards: GameCard[] = [
       [ { fame: 13 } ],
     ],
     effects: [
-      "",
-      "",
+      '',
+      '',
       "effects/activate Inscrivez 1 effects/check , une fois complété, ->.",
       "effects/passive La production de chaque carte maritime augmente de +1 resources/gold .",
     ],
@@ -4795,14 +4795,14 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Maritime", "Maritime", "Maritime", "Etat - Permanente"],
+    type: ['seafaring', 'seafaring', 'seafaring', 'state - permanent'],
     choice: true,
     checkboxes: [
       [],
       [],
       [
-        { content: "", checked: false }, { content: "", checked: false },
-        { content: "", checked: false }, { content: "", checked: false },
+        { content: '', checked: false }, { content: '', checked: false },
+        { content: '', checked: false }, { content: '', checked: false },
       ],
       [],
     ],
@@ -4825,7 +4825,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 103,
-    name: ["Missionaire", "", "Apiculteur", ""],
+    name: ["Missionaire", '', "Apiculteur", ''],
     resources: [
       [ emptyResource ],
       [],
@@ -4834,9 +4834,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/activate Dépensez resources/gold resources/gold resources/gold pour convertir (->) un Bandit.",
-      "",
+      '',
       "effects/activate Inscrivez 1 effects/check . Une fois complété, ajoutez resources/gold à cette carte.",
-      "",
+      '',
     ],
     upgrades: [
       [ { cost: { gold: 3 }, nextSide: 3 } ],
@@ -4845,14 +4845,14 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Personne", "", "Personne", ""],
+    type: ['person', '', 'person', ''],
     choice: false,
     checkboxes: [
       [],
       [],
       [
-        { content: "", checked: false }, { content: "", checked: false },
-        { content: "", checked: false }, { content: "", checked: false },
+        { content: '', checked: false }, { content: '', checked: false },
+        { content: '', checked: false }, { content: '', checked: false },
       ],
       [],
     ],
@@ -4875,7 +4875,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 104,
-    name: ["Prêtre", "", "Cardinal", ""],
+    name: ["Prêtre", '', "Cardinal", ''],
     resources: [
       [ emptyResource ],
       [],
@@ -4884,9 +4884,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/activate Dépensez resources/gold resources/gold pour améliorer 1 carte en jeu, en payant son coût. (Cela ne met pas FIN au tour.)",
-      "",
+      '',
       "effects/activate Améliorez 1 carte en jeu, en payant son coût. (Cela ne met pas FIN au tour.)",
-      "",
+      '',
     ],
     upgrades: [
       [ { cost: { gold: 6, export: 2 }, nextSide: 3 } ],
@@ -4895,7 +4895,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Personne", "", "Personne", ""],
+    type: ['person', '', 'person', ''],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -4937,7 +4937,7 @@ export const allCards: GameCard[] = [
       [ { cost: { wood: 6 }, nextSide: 3 } ],
     ],
     currentSide: 1,
-    type: ["Terrain", "Terrain", "Terrain", "Terrain"],
+    type: ['land', 'land', 'land', 'land'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -4967,10 +4967,10 @@ export const allCards: GameCard[] = [
       [ { fame: 40 } ],
     ],
     effects: [
-      "",
-      "",
+      '',
+      '',
       "effects/optional Fin du Tour: Si votre pioche est vide, inscrivez 1 effects/check . (Vaut 5 resources/fame par effects/check )",
-      "",
+      '',
     ],
     upgrades: [
       [ { cost: { wood: 2, stone: 4 }, nextSide: 2 } ],
@@ -4979,16 +4979,16 @@ export const allCards: GameCard[] = [
       [ { cost: { stone: 6, ingot: 3 }, nextSide: 3 } ],
     ],
     currentSide: 1,
-    type: ["Bâtiment", "Bâtiment", "Bâtiment", "Bâtiment"],
+    type: ['building', 'building', 'building', 'building'],
     choice: false,
     checkboxes: [
       [],
       [],
       [
-        { content: "", checked: false }, { content: "", checked: false },
-        { content: "", checked: false }, { content: "", checked: false },
-        { content: "", checked: false }, { content: "", checked: false },
-        { content: "", checked: false }, { content: "", checked: false },
+        { content: '', checked: false }, { content: '', checked: false },
+        { content: '', checked: false }, { content: '', checked: false },
+        { content: '', checked: false }, { content: '', checked: false },
+        { content: '', checked: false }, { content: '', checked: false },
       ],
       [],
     ],
@@ -5011,7 +5011,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 107,
-    name: ["Visite Royale", "", "Inquisitrice", ""],
+    name: ["Visite Royale", '', "Inquisitrice", ''],
     resources: [
       [ emptyResource ],
       [],
@@ -5020,9 +5020,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/activate Barrez 1 icône de ressource dans le coût d'amélioration d'une carte en jeu.",
-      "",
+      '',
       "effects/destroy Détruisez une carte négative en jeu.",
-      "",
+      '',
     ],
     upgrades: [
       [],
@@ -5031,7 +5031,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Evénement", "", "Personne", ""],
+    type: ['event', '', 'person', ''],
     choice: true,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -5053,7 +5053,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 108,
-    name: ["Cristal Ethéré Royale", "", "", ""],
+    name: ["Cristal Ethéré Royale", '', '', ''],
     resources: [
       [ { fame: 10 } ],
       [],
@@ -5062,9 +5062,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "Cette carte ne peut pas être détruite.",
-      "",
-      "",
-      "",
+      '',
+      '',
+      '',
     ],
     upgrades: [
       [],
@@ -5073,7 +5073,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Artefact - Permanente", "", "", ""],
+    type: ['artefact - permanent', '', '', ''],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -5110,10 +5110,10 @@ export const allCards: GameCard[] = [
       ],
     ],
     effects: [
-      "",
-      "",
+      '',
+      '',
       "effects/activate Défaussez le nombre de personne de votre choix pour gagner autant de resources/fame . Puis inscrivez 1 effects/check .",
-      "",
+      '',
     ],
     upgrades: [
       [ { cost: { wood: 2 }, nextSide: 2, otherCost: "1 Personne" } ],
@@ -5122,15 +5122,15 @@ export const allCards: GameCard[] = [
       [ { cost: { stone: 4 }, nextSide: 3 } ],
     ],
     currentSide: 1,
-    type: ["Bâtiment", "Bâtiment", "Bâtiment", "Bâtiment"],
+    type: ['building', 'building', 'building', 'building'],
     choice: false,
     checkboxes: [
       [],
       [],
       [
-        { content: "", checked: false },
-        { content: "", checked: false },
-        { content: "", checked: false },
+        { content: '', checked: false },
+        { content: '', checked: false },
+        { content: '', checked: false },
       ],
       [],
     ],
@@ -5164,8 +5164,8 @@ export const allCards: GameCard[] = [
       [ { gold: 1, wood: 1, fame: 3 } ],
     ],
     effects: [
-      "",
-      "",
+      '',
+      '',
       "effects/activate Choisissez une carte en jeu ou dans la défausse, placez-la sous la pioche.",
       "effects/activate Remettez une carte en jeu sous la pioche.",
     ],
@@ -5176,7 +5176,7 @@ export const allCards: GameCard[] = [
       [ {cost: { wood: 6 }, nextSide: 3} ],
     ],
     currentSide: 1,
-    type: ["Bâtiment", "Bâtiment", "Terrain", "Terrain"],
+    type: ['building', 'building', 'land', 'land'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -5218,7 +5218,7 @@ export const allCards: GameCard[] = [
       [{ cost: { stone: 4 }, nextSide: 3 }],
     ],
     currentSide: 1,
-    type: ["Bâtiment", "Bâtiment", "Bâtiment", "Bâtiment"],
+    type: ['building', 'building', 'building', 'building'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -5260,7 +5260,7 @@ export const allCards: GameCard[] = [
       [{ cost: { gold: 4 }, nextSide: 3 }],
     ],
     currentSide: 1,
-    type: ["Bâtiment", "Bâtiment", "Personne", "Bâtiment"],
+    type: ['building', 'building', 'person', 'building'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -5282,7 +5282,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 113,
-    name: ["Cheval", "", "", ""],
+    name: ["Cheval", '', '', ''],
     resources: [
       [ { gold: 1 } ],
       [ emptyResource ],
@@ -5290,10 +5290,10 @@ export const allCards: GameCard[] = [
       [ emptyResource ],
     ],
     effects: [
-      "",
-      "",
-      "",
-      "",
+      '',
+      '',
+      '',
+      '',
     ],
     upgrades: [
       [],
@@ -5302,7 +5302,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Elevage - Cheval", "", "", ""],
+    type: ['livestock - horse', '', '', ''],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -5324,7 +5324,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 114,
-    name: ["Cheval", "", "", ""],
+    name: ["Cheval", '', '', ''],
     resources: [
       [ { military: 1 } ],
       [ emptyResource ],
@@ -5332,10 +5332,10 @@ export const allCards: GameCard[] = [
       [ emptyResource ],
     ],
     effects: [
-      "",
-      "",
-      "",
-      "",
+      '',
+      '',
+      '',
+      '',
     ],
     upgrades: [
       [],
@@ -5344,7 +5344,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Elevage - Cheval", "", "", ""],
+    type: ['livestock - horse', '', '', ''],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -5366,7 +5366,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 115,
-    name: ["Cheval", "", "", ""],
+    name: ["Cheval", '', '', ''],
     resources: [
       [
         { wood: 1 },
@@ -5377,10 +5377,10 @@ export const allCards: GameCard[] = [
       [ emptyResource ],
     ],
     effects: [
-      "",
-      "",
-      "",
-      "",
+      '',
+      '',
+      '',
+      '',
     ],
     upgrades: [
       [],
@@ -5389,7 +5389,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Elevage - Cheval", "", "", ""],
+    type: ['livestock - horse', '', '', ''],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -5411,7 +5411,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 116,
-    name: ["Aric Blackwood", "", "Eadric Shadowstrike", ""],
+    name: ["Aric Blackwood", '', "Eadric Shadowstrike", ''],
     resources: [
       [ { gold: 2 } ],
       [ { ...emptyResource} ],
@@ -5420,9 +5420,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/passive Reste en jeu. effects/forced Carte Jouée: vous devez défausser une carte en jeu.",
-      "",
+      '',
       "effects/passive Reste en jeu. effects/activate Défaussez 2 Personnes pour gagner resources/military resources/military resources/military .",
-      "",
+      '',
     ],
     upgrades: [
       [],
@@ -5431,7 +5431,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Personne", "", "Personne", ""],
+    type: ['person', '', 'person', ''],
     choice: true,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -5453,7 +5453,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 117,
-    name: ["Relations Commerciales", "", "", ""],
+    name: ["Relations Commerciales", '', '', ''],
     resources: [
       [ { ...emptyResource} ],
       [ { ...emptyResource} ],
@@ -5462,9 +5462,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/passive Dépensez resources/export resources/export resources/export pour gagner une ressource au choix.",
-      "",
-      "",
-      "",
+      '',
+      '',
+      '',
     ],
     upgrades: [
       [],
@@ -5473,7 +5473,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Permanente", "", "", ""],
+    type: ['permanent', '', '', ''],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -5515,7 +5515,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Bâtiment", "Bâtiment", "Bâtiment", "Bâtiment"],
+    type: ['building', 'building', 'building', 'building'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -5556,7 +5556,7 @@ export const allCards: GameCard[] = [
     effects: [
       "effects/activate Dépensez resources/gold pour gagner resources/wood .",
       "effects/activate Dépensez resources/gold pour gagner resources/wood / resources/stone .",
-      "",
+      '',
       "effects/activate Dépensez resources/gold pour gagner resources/wood / resources/stone / resources/ingot .",
     ],
     upgrades: [
@@ -5566,7 +5566,7 @@ export const allCards: GameCard[] = [
       [{ cost: { gold: 5 }, nextSide: 3 }],
     ],
     currentSide: 1,
-    type: ["Personne", "Bâtiment", "Evénement", "Bâtiment"],
+    type: ['person', 'building', 'event', 'building'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -5608,7 +5608,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Personne - Dame", "Personne - Dame", "Personne - Dame", "Personne - Dame"],
+    type: ['person - lady', 'person - lady', 'person - lady', 'person - lady'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -5630,7 +5630,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 121,
-    name: ["Roi Alahar", "", "Reine Jemimah", ""],
+    name: ["Roi Alahar", '', "Reine Jemimah", ''],
     resources: [
       [ { military: 2, fame: -5 } ],
       [ { ...emptyResource} ],
@@ -5639,9 +5639,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "effects/passive Reste en jeu.",
-      "",
+      '',
       "effects/activate Défaussez 1 Personne comportant 5 resources/fame ou plus pour inscrire 1 effects/check . (Vaut 3 par effects/check )",
-      "",
+      '',
     ],
     upgrades: [
       [],
@@ -5650,16 +5650,16 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Personne", "", "Personne - Dame", ""],
+    type: ['person', '', 'person - lady', ''],
     choice: true,
     checkboxes:  [
       [],
       [],
       [
-        { content: "", checked: false }, { content: "", checked: false },
-        { content: "", checked: false }, { content: "", checked: false },
-        { content: "", checked: false }, { content: "", checked: false },
-        { content: "", checked: false },
+        { content: '', checked: false }, { content: '', checked: false },
+        { content: '', checked: false }, { content: '', checked: false },
+        { content: '', checked: false }, { content: '', checked: false },
+        { content: '', checked: false },
       ],
       [],
     ],
@@ -5682,7 +5682,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 122,
-    name: ["Consort Royal", "", "Consort Royal", ""],
+    name: ["Consort Royal", '', "Consort Royal", ''],
     resources: [
       [ { gold: 1, export: 2 } ],
       [ { ...emptyResource} ],
@@ -5690,10 +5690,10 @@ export const allCards: GameCard[] = [
       [ { ...emptyResource} ],
     ],
     effects: [
-      "",
-      "",
-      "",
-      "",
+      '',
+      '',
+      '',
+      '',
     ],
     upgrades: [
       [],
@@ -5702,7 +5702,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Personne - Dame", "", "Personne - Chevalier", ""],
+    type: ['person - lady', '', 'person - knight', ''],
     choice: true,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -5744,7 +5744,7 @@ export const allCards: GameCard[] = [
       [ {cost: { stone: 4, ingot: 4 }, nextSide: 2} ],
     ],
     currentSide: 1,
-    type: ["Bâtiment", "Bâtiment", "Bâtiment", "Bâtiment"],
+    type: ['building', 'building', 'building', 'building'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -5774,10 +5774,10 @@ export const allCards: GameCard[] = [
       [ { ingot: 3, export: 4, fame: 21 } ],
     ],
     effects: [
-      "",
-      "",
-      "",
-      "",
+      '',
+      '',
+      '',
+      '',
     ],
     upgrades: [
       [ {cost: { wood: 2, ingot: 2 }, nextSide: 2} ],
@@ -5786,7 +5786,7 @@ export const allCards: GameCard[] = [
       [ {cost: { wood: 2, ingot: 4 }, nextSide: 2} ],
     ],
     currentSide: 1,
-    type: ["Evénement", "Evénement", "Evénement", "Evénement"],
+    type: ['event', 'event', 'event', 'event'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -5828,14 +5828,14 @@ export const allCards: GameCard[] = [
       [{ cost: { export: 8 }, nextSide: 3 }],
     ],
     currentSide: 1,
-    type: ["Bâtiment", "Bâtiment", "Bâtiment", "Bâtiment"],
+    type: ['building', 'building', 'building', 'building'],
     choice: false,
     checkboxes: [
       [],
       [],
       [
-        {content: "", checked: false}, {content: "", checked: false},
-        {content: "", checked: false}, {content: "", checked: false},
+        {content: '', checked: false}, {content: '', checked: false},
+        {content: '', checked: false}, {content: '', checked: false},
       ],
       []
     ],
@@ -5866,10 +5866,10 @@ export const allCards: GameCard[] = [
       [ { gold: 2, export: 1 } ],
     ],
     effects: [
-      "",
-      "",
-      "",
-      "",
+      '',
+      '',
+      '',
+      '',
     ],
     upgrades: [
       [ { cost: { gold: 2, ingot: 1 }, nextSide: 2 } ],
@@ -5878,7 +5878,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Terrain", "Terrain", "Terrain", "Terrain"],
+    type: ['land', 'land', 'land', 'land'],
     choice: true,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -5908,9 +5908,9 @@ export const allCards: GameCard[] = [
       [ { export: 1 } ],
     ],
     effects: [
-      "",
-      "",
-      "",
+      '',
+      '',
+      '',
       "effects/passive Défaussez 1 Personne pour gagner resources/export resources/export .",
     ],
     upgrades: [
@@ -5920,7 +5920,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Terrain", "Terrain", "Terrain", "Terrain"],
+    type: ['land', 'land', 'land', 'land'],
     choice: true,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -5950,10 +5950,10 @@ export const allCards: GameCard[] = [
       [ emptyResource ],
     ],
     effects: [
-      "",
-      "",
+      '',
+      '',
       "Vaut 7 par effects/check . effects/time Défaussez 1 Personne et dépensez resources/stone resources/stone resources/stone pour inscrire effects/check .",
-      "",
+      '',
     ],
     upgrades: [
       [ { cost: { gold: 2, wood: 2 }, nextSide: 2 } ],
@@ -5962,16 +5962,16 @@ export const allCards: GameCard[] = [
       [ { cost: {}, nextSide: 3, otherCost: "2 Personnes" } ],
     ],
     currentSide: 1,
-    type: ["Terrain", "Terrain", "Terrain", "Terrain"],
+    type: ['land', 'land', 'land', 'land'],
     choice: false,
     checkboxes:  [
       [],
       [],
       [
-        { content: "" , checked: false }, { content: "" , checked: false },
-        { content: "" , checked: false }, { content: "" , checked: false },
-        { content: "" , checked: false }, { content: "" , checked: false },
-        { content: "" , checked: false }
+        { content: '' , checked: false }, { content: '' , checked: false },
+        { content: '' , checked: false }, { content: '' , checked: false },
+        { content: '' , checked: false }, { content: '' , checked: false },
+        { content: '' , checked: false }
       ],
       [],
     ],
@@ -6004,7 +6004,7 @@ export const allCards: GameCard[] = [
     effects: [
       "effects/optional Lorsque vous l'améliorez ajoutez 1 resources/gold à un Terrain en jeu.",
       "effects/optional Lorsque vous l'améliorez boostez 1 carte en jeu.",
-      "",
+      '',
       "effects/optional Lorsque vous l'améliorez 1 Terrain gagne \" effects/passive Reste en jeu. \".",
     ],
     upgrades: [
@@ -6014,7 +6014,7 @@ export const allCards: GameCard[] = [
       [ { cost: {}, nextSide: 3 } ],
     ],
     currentSide: 1,
-    type: ["Terrain", "Terrain", "Terrain", "Terrain"],
+    type: ['land', 'land', 'land', 'land'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -6044,7 +6044,7 @@ export const allCards: GameCard[] = [
       [ { military: 2 } ],
     ],
     effects: [
-      "",
+      '',
       "effects/passive Vous pouvez regardez les 2 cartes du dessus de votre pioche.",
       "effects/passive Reste en jeu.",
       "Vaut 4 resources/fame pour chaque Murailles, celle-ci incluse. effects/passive Reste en jeu.",
@@ -6059,7 +6059,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Terrain", "Bâtiment", "Bâtiment", "Bâtiment"],
+    type: ['land', 'building', 'building', 'building'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -6089,7 +6089,7 @@ export const allCards: GameCard[] = [
       [ { military: 1, fame: 3 } ],
     ],
     effects: [
-      "",
+      '',
       "effects/activate Défaussez une autre carte pour gagner resources/military resources/military .",
       "effects/passive Reste en jeu.",
       "effects/activate Dépensez resources/gold pour jouer une Personne depuis la défausse.",
@@ -6104,7 +6104,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Terrain", "Terrain", "Bâtiment", "Bâtiment"],
+    type: ['land', 'land', 'building', 'building'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -6134,9 +6134,9 @@ export const allCards: GameCard[] = [
       [ { military: 1, fame: 3 } ],
     ],
     effects: [
-      "",
-      "",
-      "",
+      '',
+      '',
+      '',
       "effects/passive Reste en jeu.",
     ],
     upgrades: [
@@ -6149,7 +6149,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Terrain", "Terrain", "Bâtiment", "Bâtiment"],
+    type: ['land', 'land', 'building', 'building'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -6191,7 +6191,7 @@ export const allCards: GameCard[] = [
       [ { cost: { military: 5 }, nextSide: 3 } ],
     ],
     currentSide: 1,
-    type: ["Evénement", "Evénement", "Evénement", "Evénement"],
+    type: ['event', 'event', 'event', 'event'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -6213,7 +6213,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 134,
-    name: ["Rival Beau-Gosse", "", "Allié Noble", ""],
+    name: ["Rival Beau-Gosse", '', "Allié Noble", ''],
     resources: [
       [ emptyResource ],
       [],
@@ -6222,9 +6222,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       "Vaut -5 pour chaque case non effects/check . effects/passive Ne peut pas être détruit, à moins que Lord Nimrod n'ai été détruit. effects/activate Défaussez Lord Nimrod et dépensez les ressources d'une case pour inscrire effects/check , une fois complétées, ->.",
-      "",
+      '',
       "effects/activate Choisissez une Personne en jeu et gagnez les ressources qui correspondent à sa production.",
-      "",
+      '',
     ],
     upgrades: [
       [],
@@ -6233,7 +6233,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ["Personne", "", "Personne", ""],
+    type: ['person', '', 'person', ''],
     choice: false,
     checkboxes:  [
       [
@@ -6285,7 +6285,7 @@ export const allCards: GameCard[] = [
       [ { cost: { military: 8 }, nextSide: 3 } ],
     ],
     currentSide: 1,
-    type: ["Terrain - Ennemi", "Evénement", "Terrain", "Terrain"],
+    type: ['land - enemy', 'event', 'land', 'land'],
     choice: false,
     checkboxes: [],
     negative: [true, false, false, false],
@@ -6327,17 +6327,17 @@ export const allCards: GameCard[] = [
       [ {cost: { }, nextSide: 4} ],
     ],
     currentSide: 1,
-    type: ["Evénement - Permanente", "Evénement - Permanente", "Evénement - Permanente", "Evénement - Permanente"],
+    type: ['event - permanent', 'event - permanent', 'event - permanent', 'event - permanent'],
     choice: false,
     checkboxes: [
       [],
       [],
       [],
       [
-        { content: "", checked: false }, { content: "", checked: false },
-        { content: "", checked: false }, { content: "", checked: false },
-        { content: "", checked: false }, { content: "", checked: false },
-        { content: "", checked: false }, { content: "", checked: false },
+        { content: '', checked: false }, { content: '', checked: false },
+        { content: '', checked: false }, { content: '', checked: false },
+        { content: '', checked: false }, { content: '', checked: false },
+        { content: '', checked: false }, { content: '', checked: false },
       ],
     ],
     negative: [false, false, false, false],
@@ -6379,7 +6379,7 @@ export const allCards: GameCard[] = [
       [ {cost: { }, nextSide: 4} ],
     ],
     currentSide: 1,
-    type: ["Evénement - Permanente", "Evénement - Permanente", "Evénement - Permanente", "Evénement - Permanente"],
+    type: ['event - permanent', 'event - permanent', 'event - permanent', 'event - permanent'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -6421,14 +6421,14 @@ export const allCards: GameCard[] = [
       [ {cost: { }, nextSide: 4} ],
     ],
     currentSide: 1,
-    type: ["Evénement - Permanente", "Evénement - Permanente", "Evénement - Permanente", "Evénement - Permanente"],
+    type: ['event - permanent', 'event - permanent', 'event - permanent', 'event - permanent'],
     choice: false,
     checkboxes: [
       [],
       [
-        { content: "", checked: false }, { content: "", checked: false },
-        { content: "", checked: false }, { content: "", checked: false },
-        { content: "", checked: false }, { content: "", checked: false }
+        { content: '', checked: false }, { content: '', checked: false },
+        { content: '', checked: false }, { content: '', checked: false },
+        { content: '', checked: false }, { content: '', checked: false }
       ],
       [],
       [],

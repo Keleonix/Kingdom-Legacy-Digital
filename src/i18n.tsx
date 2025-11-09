@@ -19,8 +19,10 @@ export type TranslationKeys =
   | 'up' | 'down'
   
   // Card Types
-  | 'terrain' | 'building' | 'person' | 'knight' | 'dame' | 'maritime'
+  | 'land' | 'building' | 'person' | 'knight' | 'lady' | 'seafaring'
   | 'ship' | 'event' | 'enemy' | 'permanent' | 'scroll' | 'choice'
+  | 'potion' | 'item' | 'invention' | 'artefact' | 'livestock'
+  | 'horse'
   
   // Resources
   | 'gold' | 'wood' | 'stone' | 'military' | 'ingot' | 'export' | 'fame'
@@ -44,6 +46,12 @@ export type TranslationKeys =
   
   // Link words
   | 'and'
+
+  // Card Names
+  | 'card0_name_1' | 'card0_name_3'
+
+    // Card Specific Names interaction
+   | 'bandit' | 'wall'
 
   // Card Effects Descriptions
   | 'staysInPlay' | 'cardEffect_Plains'
@@ -113,18 +121,24 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     back: 'Verso',
     
     // Card Types
-    terrain: 'Terrain',
+    land: 'Terrain',
     building: 'Bâtiment',
     person: 'Personne',
     knight: 'Chevalier',
-    dame: 'Dame',
-    maritime: 'Maritime',
+    lady: 'Dame',
+    seafaring: 'Maritime',
     ship: 'Navire',
     event: 'Événement',
     enemy: 'Ennemi',
     permanent: 'Permanente',
     scroll: 'Parchemin',
     choice: 'Choix',
+    potion: 'Potion',
+    item: 'Objet',
+    invention: 'Invention',
+    artefact: 'Artefact',
+    livestock: 'Elevage',
+    horse: 'Cheval',
     
     // Resources
     gold: 'Or',
@@ -176,6 +190,14 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
 
     // Link Words
     and: 'et',
+
+    // Card Names
+    card0_name_1: "Bienvenue",
+    card0_name_3: "Règles d'or",
+
+    // Card Specific Names interaction
+    bandit: "Bandit",
+    wall: "Muraille",
 
     // Card Effects Descriptions
     staysInPlay: "Reste en jeu.",
@@ -243,18 +265,24 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     back: 'Back',
     
     // Card Types
-    terrain: 'Land',
+    land: 'Land',
     building: 'Building',
     person: 'Person',
     knight: 'Knight',
-    dame: 'Lady',
-    maritime: 'Maritime',
+    lady: 'Lady',
+    seafaring: 'Seafaring',
     ship: 'Ship',
     event: 'Event',
     enemy: 'Enemy',
     permanent: 'Permanent',
     scroll: 'Scroll',
     choice: 'Choice',
+    potion: 'Potion',
+    item: 'Item',
+    invention: 'Invention',
+    artefact: 'Artefact',
+    livestock: 'Livestock',
+    horse: 'Horse',
     
     // Resources
     gold: 'Gold',
@@ -306,6 +334,14 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
 
     // Link Words
     and: 'and',
+
+    // Card Names
+    card0_name_1: "Welcome",
+    card0_name_3: "Golden Rules",
+
+    // Card Specific Names interaction
+    bandit: "Bandit",
+    wall: "Wall",
 
     // Card Effects Descriptions
     staysInPlay: "Stays in play.",

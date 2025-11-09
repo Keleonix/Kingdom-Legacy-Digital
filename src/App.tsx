@@ -69,15 +69,16 @@ function getBackgroundStyle(card: GameCard, sideIdx: number) {
   let types: string[] = [];
 
   if (Array.isArray(rawType)) {
-    types = rawType.flatMap((t) => t.split(" - ").map((s: string) => s.trim()));
+    types = rawType.flatMap((t) => t.split(" - ").map((s: string) => s.trim().toLowerCase()));
   } else if (typeof rawType === "string") {
-    types = rawType.split(" - ").map((s: string) => s.trim());
+    types = rawType.split(" - ").map((s: string) => s.trim().toLowerCase());
   }
 
-  const colors = types.map((t) => TYPE_COLORS[t] || "#f4c2d7");
+  // Les types sont maintenant en minuscules et correspondent aux clés de TYPE_COLORS
+  const colors = types.map((t) => TYPE_COLORS[t] || TYPE_COLORS["default"]);
 
   if (card.negative[card.currentSide - 1]) {
-    colors.push(TYPE_COLORS["Ennemi"]);
+    colors.push(TYPE_COLORS["enemy"]); // ← Utiliser la clé en anglais
   }
 
   if (colors.length === 0) {
@@ -400,14 +401,14 @@ function CardPreviewPopup({
           {/* Front Up (Side 1) */}
           <div ref={cardRefs.frontUp} className="border rounded p-2 max-w-[200px]" style={getBackgroundStyle(card, 0)}>
             <div className="font-semibold text-sm mb-1">{t('frontUp')}</div>
-            {card.name[0] ? (
+            {t(card.name[0] as TranslationKeys) ? (
               <>
-                <div className="text-xs font-bold mb-1 border-t">{card.name[0]}</div>
-                <div className="text-[10px] text-gray-700 mb-1">{card.type[0]}</div>
+                <div className="text-xs font-bold mb-1 border-t">{t(card.name[0] as TranslationKeys)}</div>
+                <div className="text-[10px] text-gray-700 mb-1">{t(card.type[0] as TranslationKeys)}</div>
                 <div className="text-[10px] mb-1">
                   {renderSideOptions(card.resources[0], 0)}
                 </div>
-                {card.effects[0] && (
+                {t(card.effects[0] as TranslationKeys) && (
                   <div className="text-[9px] mt-1 border-t pt-2">
                     {renderEffectText(card.effects[0])}
                   </div>
@@ -435,14 +436,14 @@ function CardPreviewPopup({
           {/* Back Up (Side 3) */}
           <div ref={cardRefs.backUp} className="border rounded p-2 max-w-[200px]" style={getBackgroundStyle(card, 2)}>
             <div className="font-semibold text-sm mb-1">{t('backUp')}</div>
-            {card.name[2] ? (
+            {t(card.name[2] as TranslationKeys) ? (
               <>
-                <div className="text-xs font-bold mb-1 border-t">{card.name[2]}</div>
-                <div className="text-[10px] text-gray-700 mb-1">{card.type[2]}</div>
+                <div className="text-xs font-bold mb-1 border-t">{t(card.name[2] as TranslationKeys)}</div>
+                <div className="text-[10px] text-gray-700 mb-1">{t(card.type[2] as TranslationKeys)}</div>
                 <div className="text-[10px] mb-1">
                   {renderSideOptions(card.resources[2], 2)}
                 </div>
-                {card.effects[2] && (
+                {t(card.effects[2] as TranslationKeys) && (
                   <div className="text-[9px] mt-1 border-t pt-2">
                     {renderEffectText(card.effects[2])}
                   </div>
@@ -470,14 +471,14 @@ function CardPreviewPopup({
           {/* Front Down (Side 2) */}
           <div ref={cardRefs.frontDown} className="border rounded p-2 max-w-[200px]" style={getBackgroundStyle(card, 1)}>
             <div className="font-semibold text-sm mb-1">{t('frontDown')}</div>
-            {card.name[1] ? (
+            {t(card.name[1] as TranslationKeys) ? (
               <>
-                <div className="text-xs font-bold mb-1 border-t">{card.name[1]}</div>
-                <div className="text-[10px] text-gray-700 mb-1">{card.type[1]}</div>
+                <div className="text-xs font-bold mb-1 border-t">{t(card.name[1] as TranslationKeys)}</div>
+                <div className="text-[10px] text-gray-700 mb-1">{t(card.type[1] as TranslationKeys)}</div>
                 <div className="text-[10px] mb-1">
                   {renderSideOptions(card.resources[1], 1)}
                 </div>
-                {card.effects[1] && (
+                {t(card.effects[1] as TranslationKeys) && (
                   <div className="text-[9px] mt-1 border-t pt-2">
                     {renderEffectText(card.effects[1])}
                   </div>
@@ -505,14 +506,14 @@ function CardPreviewPopup({
           {/* Back Down (Side 4) */}
           <div ref={cardRefs.backDown} className="border rounded p-2 max-w-[200px]" style={getBackgroundStyle(card, 3)}>
             <div className="font-semibold text-sm mb-1">{t('backDown')}</div>
-            {card.name[3] ? (
+            {t(card.name[3] as TranslationKeys) ? (
               <>
-                <div className="text-xs font-bold mb-1 border-t">{card.name[3]}</div>
-                <div className="text-[10px] text-gray-700 mb-1">{card.type[3]}</div>
+                <div className="text-xs font-bold mb-1 border-t">{t(card.name[3] as TranslationKeys)}</div>
+                <div className="text-[10px] text-gray-700 mb-1">{t(card.type[3] as TranslationKeys)}</div>
                 <div className="text-[10px] mb-1">
                   {renderSideOptions(card.resources[3], 3)}
                 </div>
-                {card.effects[3] && (
+                {t(card.effects[3] as TranslationKeys) && (
                   <div className="text-[9px] mt-1 border-t pt-2">
                     {renderEffectText(card.effects[3])}
                   </div>
@@ -739,10 +740,10 @@ function CardView({
   }, [showUpgradePreview, upgradePreviewSide]);
 
   const resOptions = card.GetResources();
-  const effect = card.GetEffect();
+  const effect = card.GetEffect(t);
   const currentUpgrades = card.GetUpgrades();
-  const type = card.GetType();
-  const name = card.GetName();
+  const type = card.GetType(t);
+  const name = card.GetName(t);
 
   // helper to render icons for a single resource option object (opt)
   function renderOptionIcons(opt: Record<string, number>, keyPrefix = "") {
@@ -886,7 +887,7 @@ function CardView({
           ${!interactable ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
         >
         <CardContent className="text-center p-2 overflow-hidden">
-          {card.GetType().includes(t('permanent')) && <img src={"effects/permanent.png"} alt={t('permanentZone')} title={t('permanentZone')} className="w-49 h-2" />}
+          {card.GetType(t).includes(t('permanent')) && <img src={"effects/permanent.png"} alt={t('permanentZone')} title={t('permanentZone')} className="w-49 h-2" />}
           {card.choice && (card.currentSide == 1 || card.currentSide == 3) && <img src={"effects/choice.png"} alt={t('choice')} title={t('choice')} className="w-49 h-2" />}
           <div>
             <p className="font-bold text-sm line-clamp-2">
@@ -1289,7 +1290,7 @@ function CardPopup({
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[60]">
       <div className="bg-white p-4 rounded-xl space-y-4 max-w-3xl relative max-h-[80vh] overflow-y-auto">
-        <h2 className="font-bold">{localCard.GetName()}</h2>
+        <h2 className="font-bold">{localCard.GetName(t)}</h2>
 
         {/* Editeur de noms pour chaque face */}
         <div>
@@ -3023,7 +3024,7 @@ export default function Game() {
     }
     
     for (const activeCard of permanentZone) {
-      if (activeCard.GetType().includes(t('permanent'))) {
+      if (activeCard.GetType(t).includes(t('permanent'))) {
         const effects = getCardEffects(activeCard.id, activeCard.currentSide);
         for (const effect of effects) {
           if (effect.timing === "modifyProduction" && effect.productionModifier) {
@@ -3469,7 +3470,7 @@ export default function Game() {
     if (toZone === t('playArea') && checkPlayRestrictions()) {
       return;
     }
-    if (fetchCardsInZone((c) => c.id === id, fromZone)[0].GetType().includes(t('scroll')) && toZone !== t('destroy')) {
+    if (fetchCardsInZone((c) => c.id === id, fromZone)[0].GetType(t).includes(t('scroll')) && toZone !== t('destroy')) {
       return;
     }
 
@@ -3491,7 +3492,7 @@ export default function Game() {
     if (fromZone === t('blocked')) setBlockedZone((b) => removeById(b, id));
     if (fromZone === t('permanentZone')) setPermanentZone((pe) => removeById(pe, id));
 
-    if (fetchCardsInZone((c) => c.id === id, fromZone)[0].GetType().includes(t('permanent'))) {
+    if (fetchCardsInZone((c) => c.id === id, fromZone)[0].GetType(t).includes(t('permanent'))) {
       setPermanentZone((pe) => [...pe, toAdd]);
       return;
     }
@@ -4413,7 +4414,7 @@ export default function Game() {
                     onTapAction={handleTapAction}
                     onRightClick={handleTapAction}
                     onExecuteCardEffect={async (card, zone) => {
-                      if (card.GetType() === "Parchemin") {
+                      if (card.GetType(t) === "Parchemin") {
                         return handleExecuteCardEffect(card, zone, "onClick");
                       }
                       return Promise.resolve();

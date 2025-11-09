@@ -2,6 +2,8 @@
 // Types
 // -------------------
 
+import type { TranslationKeys } from "./i18n";
+
 export type ResourceMap = {
   gold: number;
   wood: number;
@@ -53,22 +55,21 @@ export const EFFECT_BUTTON_KEYWORDS = [
 ];
 
 export const TYPE_COLORS: Record<string, string> = {
-  Maritime: "#a7bed3",   // muted blue
-  Navire: "#a7bed3",   // muted blue
-  Bâtiment: "#cfd4d9",   // light grey
-  Permanente: "#dbdbdbff",   // light grey
-  Personne: "#f6e5a5",   // soft pastel yellow
-  Chevalier: "#f6e5a5",   // soft pastel yellow
-  Dame: "#f6e5a5",   // soft pastel yellow
-  Objectif: "#f6e5a5",   // soft pastel yellow
-  Evénement: "#f4c2d7",  // pastel pink
-  Terrain: "#b6d7a8",    // muted green
-  Ennemi: "#e6a5a5",     // soft red
-  Catastrophe: "#e6a5a5",// soft red
-  Parchemin: "#e6c2a5ff",// soft brown
-  Elevage: "#f8ad70ff",
-  Cheval: "#f8ad70ff",
-  Cargaison: "#c59f90ff",
+  seafaring: "#a7bed3",   // muted blue
+  ship: "#a7bed3",   // muted blue
+  building: "#cfd4d9",   // light grey
+  permanent: "#dbdbdbff",   // light grey
+  person: "#f6e5a5",   // soft pastel yellow
+  knight: "#f6e5a5",   // soft pastel yellow
+  lady: "#f6e5a5",   // soft pastel yellow
+  goal: "#f6e5a5",   // soft pastel yellow
+  event: "#f4c2d7",  // pastel pink
+  land: "#b6d7a8",    // muted green
+  enemy: "#e6a5a5",     // soft red
+  scroll: "#e6c2a5ff",// soft brown
+  livestock: "#f8ad70ff",
+  horse: "#f8ad70ff",
+  cargo: "#c59f90ff",
   default: "#f7a0c4ff",  // pastel redish pink
 };
 
@@ -118,7 +119,7 @@ export class GameCard {
   id = -1;
   name: string[] = ["", "", "", ""];
   currentSide = 1; // 1..4
-  type = ["", "", "", ""];
+  type: string[] = ["", "", "", ""];
   choice = false;
   resources: Partial<ResourceMap>[][] = [];
   effects: string[] = [];
@@ -175,16 +176,31 @@ export class GameCard {
     return this.resources[this.currentSide - 1] ?? [{ ...emptyResource }];
   }
 
-  GetEffect(): string {
-    return this.effects[this.currentSide - 1] ?? "";
+  GetEffect(t: (key: TranslationKeys) => string): string {
+    return t(this.effects[this.currentSide - 1] as TranslationKeys) ?? "";
   }
 
-  GetName(): string {
-    return this.name[this.currentSide - 1] ?? "";
+  GetName(t: (key: TranslationKeys) => string): string {
+    return t(this.name[this.currentSide - 1] as TranslationKeys);
   }
 
-  GetType(): string {
-    return this.type[this.currentSide - 1] ?? "";
+  GetType(t: (key: TranslationKeys) => string): string {
+    const rawType = this.type[this.currentSide - 1];
+    if (!rawType) return "";
+    
+    const translateSingle = (singleType: string): string => {
+      const normalized = singleType.trim().toLowerCase();
+      
+      try {
+        return t(normalized as TranslationKeys);
+      } catch {
+        return singleType;
+      }
+    };
+    
+    return rawType.split(" - ")
+      .map(type => translateSingle(type))
+      .join(" - ");
   }
 
   GetUpgrades(): Upgrade[] {
