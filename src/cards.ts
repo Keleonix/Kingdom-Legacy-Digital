@@ -2,7 +2,7 @@ import { emptyResource, type GameCard, type ResourceMap, type Upgrade } from "./
 
 export const allCards: GameCard[] = [
   { id: 0,
-    name: ['card0_name_1', '', 'card0_name_3', ''],
+    name: ['welcome', '', 'golden_rules', ''],
     resources: [
       [],
       [],
