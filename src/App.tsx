@@ -107,11 +107,11 @@ function renderCheckboxContent(content: string | undefined) {
   resources.forEach(resource => {
     const match = resource.match(/^(\w+)\s*x(\d+)$/i);
     if (match && RESOURCE_KEYS.includes(match[1] as keyof ResourceMap)) {
-      // Format: "gold x5"
+      // Format: "coin x5"
       parsedResources.push({ name: match[1], count: parseInt(match[2]) });
     }
     else if (RESOURCE_KEYS.includes(resource as keyof ResourceMap)) {
-      // Format: "gold" (default count = 1)
+      // Format: "coin" (default count = 1)
       parsedResources.push({ name: resource, count: 1 });
     }
   });
@@ -1375,7 +1375,7 @@ function CardPopup({
               localCard.effects[localCard.currentSide - 1] = e.target.value;
               setLocalCard(cloneGameCard(localCard));
             }}
-            placeholder="Enter effect text (use 'resources/gold' or 'effects/fire' for icons)"
+            placeholder="Enter effect text (use 'resources/coin' or 'effects/fire' for icons)"
           />
         </div>
 
@@ -1444,7 +1444,7 @@ function CardPopup({
                     box.content = e.target.value;
                     setLocalCard(cloneGameCard(localCard));
                   }}
-                  placeholder="'*' or comma-separated resource keys (e.g. gold,silver)"
+                  placeholder="'*' or comma-separated resource keys (e.g. coin,silver)"
                 />
               </div>
             </div>

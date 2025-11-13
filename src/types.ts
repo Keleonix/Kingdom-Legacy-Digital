@@ -5,12 +5,12 @@
 import type { TranslationKeys } from "./i18n";
 
 export type ResourceMap = {
-  gold: number;
+  coin: number;
   wood: number;
   stone: number;
-  military: number;
-  ingot: number;
-  export: number;
+  sword: number;
+  metal: number;
+  tradeGood: number;
   fame: number;
 };
 
@@ -26,12 +26,12 @@ export type PopupPayload = {
 };
 
 export const RESOURCE_KEYS: (keyof ResourceMap)[] = [
-  "gold",
+  "coin",
   "wood",
   "stone",
-  "military",
-  "ingot",
-  "export",
+  "sword",
+  "metal",
+  "tradeGood",
   "fame"
 ];
 
@@ -74,12 +74,12 @@ export const TYPE_COLORS: Record<string, string> = {
 };
 
 export const emptyResource: ResourceMap = {
-  gold: 0,
+  coin: 0,
   wood: 0,
   stone: 0,
-  military: 0,
-  ingot: 0,
-  export: 0,
+  sword: 0,
+  metal: 0,
+  tradeGood: 0,
   fame: 0
 };
 

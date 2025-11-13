@@ -25,7 +25,7 @@ export type TranslationKeys =
   | 'horse'
   
   // Resources
-  | 'gold' | 'wood' | 'stone' | 'military' | 'ingot' | 'export' | 'fame'
+  | 'coin' | 'wood' | 'stone' | 'sword' | 'metal' | 'tradeGood' | 'fame'
   
   // Actions & Messages
   | 'selectCards' | 'chooseResource' | 'discoverCard' | 'destroyCard'
@@ -50,63 +50,59 @@ export type TranslationKeys =
   // Card Names
   | 'welcome' | 'golden_rules'
   | 'wild_grass' | 'plains' | 'food_barns' | 'farmlands'
-  | 'distant_mountains' | 'rocky_area' | 'shallow_mines' | 'quarry'
+  | 'distant_mountain' | 'rocky_area' | 'shallow_mines' | 'quarry'
   | 'forest' | 'felled_forest' | 'sacred_well' | 'lumberjack'
   | 'headquarters' | 'town_hall' | 'castle' | 'keep'
   | 'trader' | 'bazaar' | 'festival' | 'market'
-  | 'card11_name_1' | 'card11_name_2' | 'card11_name_3' | 'card11_name_4'
-  | 'card12_name_1' | 'card12_name_2' | 'card12_name_3' | 'card12_name_4'
-  | 'card13_name_1' | 'card13_name_3'
-  | 'card14_name_1' | 'card14_name_3'
-  | 'card17_name_1' | 'card17_name_2' | 'card17_name_3' | 'card17_name_4'
-  | 'card18_name_1' | 'card18_name_2' | 'card18_name_3' | 'card18_name_4'
-  | 'card20_name_1' | 'card20_name_2' | 'card20_name_3' | 'card20_name_4'
-  | 'card22_name_1' | 'card22_name_2' | 'card22_name_3' | 'card22_name_4'
-  | 'card23_name_1'
-  | 'card24_name_1'
-  | 'card25_name_1' | 'card25_name_3'
-  | 'card26_name_1' | 'card26_name_3'
-  | 'card27_name_1' | 'card27_name_3'
-  | 'card28_name_1' | 'card28_name_3' | 'card28_name_4'
-  | 'card29_name_1' | 'card29_name_2' | 'card29_name_3' | 'card29_name_4'
-  | 'card30_name_1'
-  | 'card31_name_1' | 'card31_name_2' | 'card31_name_3' | 'card31_name_4'
-  | 'card32_name_1' | 'card32_name_3' | 'card32_name_4'
-  | 'card33_name_1' | 'card33_name_3'
-  | 'card34_name_1' | 'card34_name_3'
-  | 'card36_name_1' | 'card36_name_3'
-  | 'card37_name_1'
-  | 'card38_name_1' | 'card38_name_3'
-  | 'card39_name_1' | 'card39_name_3'
-  | 'card40_name_1' | 'card40_name_3'
-  | 'card41_name_1' | 'card41_name_3'
-  | 'card42_name_1' | 'card42_name_3'
-  | 'card43_name_1' | 'card43_name_3' | 'card43_name_4'
-  | 'card44_name_1' | 'card44_name_3'
-  | 'card45_name_1' | 'card45_name_3' | 'card45_name_4'
-  | 'card46_name_1' | 'card46_name_2' | 'card46_name_4'
-  | 'card47_name_1'
-  | 'card48_name_1' | 'card48_name_2' | 'card48_name_3' | 'card48_name_4'
-  | 'card49_name_1' | 'card49_name_3'
-  | 'card50_name_1'
-  | 'card51_name_1' | 'card51_name_3'
-  | 'card52_name_1' | 'card52_name_2' | 'card52_name_3' | 'card52_name_4'
-  | 'card53_name_1' | 'card53_name_3'
-  | 'card54_name_1' | 'card54_name_3'
-  | 'card55_name_1' | 'card55_name_3'
-  | 'card56_name_1' | 'card56_name_3'
-  | 'card57_name_1' | 'card57_name_3'
-  | 'card58_name_1' | 'card58_name_3' | 'card58_name_4'
-  | 'card59_name_1' | 'card59_name_2' | 'card59_name_3' | 'card59_name_4'
-  | 'card60_name_1' | 'card60_name_3'
-  | 'card61_name_1' | 'card61_name_3' | 'card61_name_4'
-  | 'card63_name_1' | 'card63_name_2' | 'card63_name_3' | 'card63_name_4'
-  | 'card65_name_1' | 'card65_name_3'
-  | 'card66_name_1' | 'card66_name_2' | 'card66_name_3'
-  | 'card67_name_1' | 'card67_name_2' | 'card67_name_3'
-  | 'card68_name_1'
-  | 'card69_name_1' | 'card69_name_3'
-  | 'card70_name_1' | 'card70_name_3'
+  | 'jungle' | 'huge_trees' | 'treehouses' | 'deep_jungle'
+  | 'river' | 'bridge' | 'explorers' | 'stone_bridge'
+  | 'field_worker' | 'Servant'
+  | 'bandit' | 'worker'
+  | 'hill' | 'chapel' | 'cathedral' | 'church'
+  | 'east_cliffs' | 'smithy' | 'wall' | 'arsenal'
+  | 'swamp' | 'accessible_swamp' | 'exotic_fruit_trees' | 'swamp_garden'
+  | 'lake' | 'fishermans_cabin' | 'lighthouse' | 'fishing_boat'
+  | 'stop'
+  | 'fertile_soil_efficiency'
+  | 'army' | 'grand_army'
+  | 'treasure' | 'extended_treseaure'
+  | 'export' | 'mass_export'
+  | 'volcanic_eruption' | 'ashlands' | 'young_forest'
+  | 'opportunist' | 'recruit' | 'labourer' | 'pretend_noble'
+  | 'etrepeneur' | 'hotel' | 'tavern' | 'cozy_pub'
+  | 'scientist' | 'observatory' | 'lab'
+  | 'engineer' | 'trebuchet'
+  | 'inventor' | 'inspired_inventor'
+  | 'mercenary' | 'sir__'
+  | 'strength_in_number' | 'military_domination'
+  | 'expanding_borders' | 'maximizer'
+  | 'loyalty'
+  | 'jester' | 'merchant'
+  | 'storage'
+  | 'mason' | 'brick_road' | 'stone_street'
+  | 'thunderstorm' | 'rain'
+  | 'dark_knight' | 'impressed_boy' | 'squire'
+  | 'camp' | 'training_grounds'
+  | 'envoy' | 'emissary' | 'ambassador' | 'diplomat'
+  | 'royal_architect' | 'bridge_of_marvel'
+  | 'traveller'
+  | 'magistrate' | 'strategist'
+  | 'mighty_mound' | 'hill_settlement' | 'peak_village' | 'hill_village'
+  | 'witch' | 'witch_cabin'
+  | 'scribe' | 'architect'
+  | 'lord_aethan' | 'lord_nimrod'
+  | 'plague' | 'enemy_soldier'
+  | 'assassin'
+  | 'city_fire'
+  | 'mysterious_cave' | 'dungeon' | 'treasures' | 'lost_civilization'
+  | 'skilled_bandit'
+  | 'dark_prince'
+  | 'far_fields' | 'inn' | 'innkeeper'
+  | 'tornado' | 'flooding'
+  | 'young_princess' | 'spoiled_princess' | 'educated_princess'
+  | 'sickness' | 'crippled' | 'feast'
+  | 'finishing_touch' | 'banquet'
+  | 'royal_visit' | 'inquisitor'
   | 'card73_name_1' | 'card73_name_2' | 'card73_name_3' | 'card73_name_4'
   | 'card74_name_1' | 'card74_name_2' | 'card74_name_3' | 'card74_name_4'
   | 'card76_name_1' | 'card76_name_3'
@@ -166,9 +162,6 @@ export type TranslationKeys =
   | 'card136_name_1' | 'card136_name_2' | 'card136_name_3' | 'card136_name_4'
   | 'card137_name_1' | 'card137_name_2' | 'card137_name_3' | 'card137_name_4'
   | 'card138_name_1' | 'card138_name_2' | 'card138_name_3' | 'card138_name_4'
-
-    // Card Specific Names interaction
-  | 'bandit' | 'wall'
 
   // Card Effects Descriptions
   | 'staysInPlay' | 'cardEffect_Plains'
@@ -258,12 +251,12 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     horse: 'Cheval',
     
     // Resources
-    gold: 'Or',
+    coin: 'Or',
     wood: 'Bois',
     stone: 'Pierre',
-    military: 'Militaire',
-    ingot: 'Lingot',
-    export: 'Export',
+    sword: 'Militaire',
+    metal: 'Lingot',
+    tradeGood: 'Exportation',
     fame: 'Renommée',
     
     // Actions & Messages
@@ -315,7 +308,7 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     plains: "Plaines",
     food_barns: "Grange",
     farmlands: "Terres Cultivées",
-    distant_mountains: "Montagnes Lointaines",
+    distant_mountain: "Montagnes Lointaines",
     rocky_area: "Zone Rocheuse",
     shallow_mines: "Mine Profonde",
     quarry: "Carrière",
@@ -331,138 +324,124 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     bazaar: "Bazar",
     festival: "Festival",
     market: "Marché",
-    card11_name_1: "Jungle",
-    card11_name_2: "Arbres Géants",
-    card11_name_3: "Cabanes dans les Arbres",
-    card11_name_4: "Jungle Profonde",
-    card12_name_1: "Rivière",
-    card12_name_2: "Pont",
-    card12_name_3: "Explorateurs",
-    card12_name_4: "Pont de Pierre",
-    card13_name_1: "Exploitant",
-    card13_name_3: "Domestique",
-    card14_name_1: "Bandit",
-    card14_name_3: "Travailleur",
-    card17_name_1: "Colline",
-    card17_name_2: "Chappelle",
-    card17_name_3: "Cathédrale",
-    card17_name_4: "Eglise",
-    card18_name_1: "Falaise de l'Est",
-    card18_name_2: "Forge",
-    card18_name_3: "Muraille",
-    card18_name_4: "Armurerie",
-    card20_name_1: "Marais",
-    card20_name_2: "Marais Aménagés",
-    card20_name_3: "Arbres à Fruits Exotiques",
-    card20_name_4: "Jardin du Marais",
-    card22_name_1: "Lac",
-    card22_name_2: "Chalet du Pêcheur",
-    card22_name_3: "Phare",
-    card22_name_4: "Bateau de Pêche",
-    card23_name_1: "STOP !",
-    card24_name_1: "Terre Fertile/Efficacité",
-    card25_name_1: "Armée",
-    card25_name_3: "Grande Armée",
-    card26_name_1: "Trésor",
-    card26_name_3: "Immense Trésor",
-    card27_name_1: "Exportations",
-    card27_name_3: "Exportations de Masse",
-    card28_name_1: "Eruption Volcanique",
-    card28_name_3: "Terres Brulées",
-    card28_name_4: "Jeune Forêt",
-    card29_name_1: "Opportuniste",
-    card29_name_2: "Recrue",
-    card29_name_3: "Artisan",
-    card29_name_4: "Prétendu Noble",
-    card30_name_1: "STOP !",
-    card31_name_1: "Entrepreneur",
-    card31_name_2: "Hôtel",
-    card31_name_3: "Taverne",
-    card31_name_4: "Bar Confortable",
-    card32_name_1: "Scientifique",
-    card32_name_3: "Observatoire",
-    card32_name_4: "Laboratoire",
-    card33_name_1: "Ingénieur",
-    card33_name_3: "Trébuchet",
-    card34_name_1: "Inventrice",
-    card34_name_3: "Inventrice Inspirée",
-    card36_name_1: "Mercenaire",
-    card36_name_3: "Sir __",
-    card37_name_1: "STOP !",
-    card38_name_1: "L'Union fait la Force",
-    card38_name_3: "Domination Militaire",
-    card39_name_1: "Elargir les frontières",
-    card39_name_3: "Optimisation",
-    card40_name_1: "Loyauté",
-    card40_name_3: "Commerce",
-    card41_name_1: "Bouffon",
-    card41_name_3: "Marchande",
-    card42_name_1: "Exploitant",
-    card42_name_3: "Grenier",
-    card43_name_1: "Maçon",
-    card43_name_3: "Route Pavée",
-    card43_name_4: "Rue Pavée",
-    card44_name_1: "Orage",
-    card44_name_3: "Pluie",
-    card45_name_1: "Chevalier Noir",
-    card45_name_3: "Garçon Admiratif",
-    card45_name_4: "Ecuyer",
-    card46_name_1: "Camp",
-    card46_name_2: "Camp d'Entrainement",
-    card46_name_4: "Sir __",
-    card47_name_1: "STOP !",
-    card48_name_1: "Envoyé",
-    card48_name_2: "Emissaire",
-    card48_name_3: "Ambassadeur",
-    card48_name_4: "Diplomate",
-    card49_name_1: "Architecte Royal",
-    card49_name_3: "Pont des Merveilles",
-    card50_name_1: "Voyageur",
-    card51_name_1: "Magistrat",
-    card51_name_3: "Stratège",
-    card52_name_1: "Grosse Butte",
-    card52_name_2: "Hameau sur la Colline",
-    card52_name_3: "Village Culminant",
-    card52_name_4: "Village",
-    card53_name_1: "Sorcière",
-    card53_name_3: "Hutte de la Sorcière",
-    card54_name_1: "Scribe",
-    card54_name_3: "Architecte",
-    card55_name_1: "Lord Aethan",
-    card55_name_3: "Lord Nimrod",
-    card56_name_1: "Peste",
-    card56_name_3: "Soldat Ennemi",
-    card57_name_1: "Assassin",
-    card57_name_3: "Soldat Ennemi",
-    card58_name_1: "Ville en Flamme",
-    card58_name_3: "Terre Brûlée",
-    card58_name_4: "Jeune Forêt",
-    card59_name_1: "Grotte Mystérieuse",
-    card59_name_2: "Souterrains",
-    card59_name_3: "Trésor",
-    card59_name_4: "Civilisation Oubliée",
-    card60_name_1: "Bandit d'Elite",
-    card60_name_3: "Travailleur",
-    card61_name_1: "Prince des Ténèbres",
-    card61_name_3: "Garçon Admiratif",
-    card61_name_4: "Ecuyer",
-    card63_name_1: "Terres Lointaines",
-    card63_name_2: "Auberge",
-    card63_name_3: "Muraille",
-    card63_name_4: "Aubergiste",
-    card65_name_1: "Tornade",
-    card65_name_3: "Innodations",
-    card66_name_1: "Jeune Princesse",
-    card66_name_2: "Princesse Pourrie Gâtée",
-    card66_name_3: "Princesse Bien Elevée",
-    card67_name_1: "Maladie",
-    card67_name_2: "Diminué",
-    card67_name_3: "Festin",
-    card68_name_1: "STOP !",
-    card69_name_1: "Touche Finale",
-    card69_name_3: "Banquet",
-    card70_name_1: "Visite Royale",
-    card70_name_3: "Inquisitrice",
+    jungle: "Jungle",
+    huge_trees: "Arbres Géants",
+    treehouses: "Cabanes dans les Arbres",
+    deep_jungle: "Jungle Profonde",
+    river: "Rivière",
+    bridge: "Pont",
+    explorers: "Explorateurs",
+    stone_bridge: "Pont de Pierre",
+    field_worker: "Exploitant",
+    Servant: "Domestique",
+    bandit: "Bandit",
+    worker: "Travailleur",
+    hill: "Colline",
+    chapel: "Chappelle",
+    cathedral: "Cathédrale",
+    church: "Eglise",
+    east_cliffs: "Falaise de l'Est",
+    smithy: "Forge",
+    wall: "Muraille",
+    arsenal: "Armurerie",
+    swamp: "Marais",
+    accessible_swamp: "Marais Aménagés",
+    exotic_fruit_trees: "Arbres à Fruits Exotiques",
+    swamp_garden: "Jardin du Marais",
+    lake: "Lac",
+    fishermans_cabin: "Chalet du Pêcheur",
+    lighthouse: "Phare",
+    fishing_boat: "Bateau de Pêche",
+    stop: "STOP !",
+    fertile_soil_efficiency: "Terre Fertile/Efficacité",
+    army: "Armée",
+    grand_army: "Grande Armée",
+    treasure: "Trésor",
+    extended_treseaure: "Immense Trésor",
+    export: "Exportations",
+    mass_export: "Exportations de Masse",
+    volcanic_eruption: "Eruption Volcanique",
+    ashlands: "Terres Brulées",
+    young_forest: "Jeune Forêt",
+    opportunist: "Opportuniste",
+    recruit: "Recrue",
+    labourer: "Artisan",
+    pretend_noble: "Prétendu Noble",
+    etrepeneur: "Entrepreneur",
+    hotel: "Hôtel",
+    tavern: "Taverne",
+    cozy_pub: "Bar Confortable",
+    scientist: "Scientifique",
+    observatory: "Observatoire",
+    lab: "Laboratoire",
+    engineer: "Ingénieur",
+    trebuchet: "Trébuchet",
+    inventor: "Inventrice",
+    inspired_inventor: "Inventrice Inspirée",
+    mercenary: "Mercenaire",
+    sir__: "Sir __",
+    strength_in_number: "L'Union fait la Force",
+    military_domination: "Domination Militaire",
+    expanding_borders: "Elargir les frontières",
+    maximizer: "Optimisation",
+    loyalty: "Loyauté",
+    jester: "Bouffon",
+    merchant: "Marchande",
+    storage: "Grenier",
+    mason: "Maçon",
+    brick_road: "Route Pavée",
+    stone_street: "Rue Pavée",
+    thunderstorm: "Orage",
+    rain: "Pluie",
+    dark_knight: "Chevalier Noir",
+    impressed_boy: "Garçon Admiratif",
+    squire: "Ecuyer",
+    camp: "Camp",
+    training_grounds: "Camp d'Entrainement",
+    envoy: "Envoyé",
+    emissary: "Emissaire",
+    ambassador: "Ambassadeur",
+    diplomat: "Diplomate",
+    royal_architect: "Architecte Royal",
+    bridge_of_marvel: "Pont des Merveilles",
+    traveller: "Voyageur",
+    magistrate: "Magistrat",
+    strategist: "Stratège",
+    mighty_mound: "Grosse Butte",
+    hill_settlement: "Hameau sur la Colline",
+    peak_village: "Village Culminant",
+    hill_village: "Village",
+    witch: "Sorcière",
+    witch_cabin: "Hutte de la Sorcière",
+    scribe: "Scribe",
+    architect: "Architecte",
+    lord_aethan: "Lord Aethan",
+    lord_nimrod: "Lord Nimrod",
+    plague: "Peste",
+    enemy_soldier: "Soldat Ennemi",
+    assassin: "Assassin",
+    city_fire: "Ville en Flamme",
+    mysterious_cave: "Grotte Mystérieuse",
+    dungeon: "Souterrains",
+    treasures: "Trésor",
+    lost_civilization: "Civilisation Oubliée",
+    skilled_bandit: "Bandit d'Elite",
+    dark_prince: "Prince des Ténèbres",
+    far_fields: "Terres Lointaines",
+    inn: "Auberge",
+    innkeeper: "Aubergiste",
+    tornado: "Tornade",
+    flooding: "Innodations",
+    young_princess: "Jeune Princesse",
+    spoiled_princess: "Princesse Pourrie Gâtée",
+    educated_princess: "Princesse Bien Elevée",
+    sickness: "Maladie",
+    crippled: "Diminué",
+    feast: "Festin",
+    finishing_touch: "Touche Finale",
+    banquet: "Banquet",
+    royal_visit: "Visite Royale",
+    inquisitor: "Inquisitrice",
     card73_name_1: "Canyon de l'Ouest",
     card73_name_2: "Mineurs",
     card73_name_3: "Muraille",
@@ -642,13 +621,9 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     card138_name_3: "Résistance",
     card138_name_4: "Attaque",
 
-    // Card Specific Names interaction
-    bandit: "Bandit",
-    wall: "Muraille",
-
     // Card Effects Descriptions
     staysInPlay: "Reste en jeu.",
-    cardEffect_Plains: "Défaussez une carte alliée pour gagner gold x2.",
+    cardEffect_Plains: "Défaussez une carte alliée pour gagner coin x2.",
 
   // Card Descriptions
 
@@ -732,12 +707,12 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     horse: 'Horse',
     
     // Resources
-    gold: 'Gold',
+    coin: 'Gold',
     wood: 'Wood',
     stone: 'Stone',
-    military: 'Military',
-    ingot: 'Ingot',
-    export: 'Export',
+    sword: 'Military',
+    metal: 'Ingot',
+    tradeGood: 'Trade Good',
     fame: 'Fame',
     
     // Actions & Messages
@@ -789,7 +764,7 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     plains: "Plains",
     food_barns: "Food Barns",
     farmlands: "Farmlands",
-    distant_mountains: "Distant Mountains",
+    distant_mountain: "Distant Mountain",
     rocky_area: "Rocky Area",
     shallow_mines: "Shallow Mine",
     quarry: "Quarry",
@@ -805,138 +780,124 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     bazaar: "Bazaar",
     festival: "Festival",
     market: "Market",
-    card11_name_1: "Jungle",
-    card11_name_2: "Giant Trees",
-    card11_name_3: "Tree Houses",
-    card11_name_4: "Deep Jungle",
-    card12_name_1: "River",
-    card12_name_2: "Bridge",
-    card12_name_3: "Explorers",
-    card12_name_4: "Stone Bridge",
-    card13_name_1: "Exploiter",
-    card13_name_3: "Servant",
-    card14_name_1: "Bandit",
-    card14_name_3: "Worker",
-    card17_name_1: "Hill",
-    card17_name_2: "Chapel",
-    card17_name_3: "Cathedral",
-    card17_name_4: "Church",
-    card18_name_1: "Eastern Cliff",
-    card18_name_2: "Forge",
-    card18_name_3: "Wall",
-    card18_name_4: "Armory",
-    card20_name_1: "Swamp",
-    card20_name_2: "Developed Swamp",
-    card20_name_3: "Exotic Fruit Trees",
-    card20_name_4: "Swamp Garden",
-    card22_name_1: "Lake",
-    card22_name_2: "Fisherman's Cottage",
-    card22_name_3: "Lighthouse",
-    card22_name_4: "Fishing Boat",
-    card23_name_1: "STOP!",
-    card24_name_1: "Fertile Land/Efficiency",
-    card25_name_1: "Army",
-    card25_name_3: "Great Army",
-    card26_name_1: "Treasure",
-    card26_name_3: "Immense Treasure",
-    card27_name_1: "Exports",
-    card27_name_3: "Mass Exports",
-    card28_name_1: "Volcanic Eruption",
-    card28_name_3: "Scorched Earth",
-    card28_name_4: "Young Forest",
-    card29_name_1: "Opportunist",
-    card29_name_2: "Recruit",
-    card29_name_3: "Artisan",
-    card29_name_4: "Pretender Noble",
-    card30_name_1: "STOP!",
-    card31_name_1: "Entrepreneur",
-    card31_name_2: "Hotel",
-    card31_name_3: "Tavern",
-    card31_name_4: "Cozy Bar",
-    card32_name_1: "Scientist",
-    card32_name_3: "Observatory",
-    card32_name_4: "Laboratory",
-    card33_name_1: "Engineer",
-    card33_name_3: "Trebuchet",
-    card34_name_1: "Inventor",
-    card34_name_3: "Inspired Inventor",
-    card36_name_1: "Mercenary",
-    card36_name_3: "Sir __",
-    card37_name_1: "STOP!",
-    card38_name_1: "Strength in Unity",
-    card38_name_3: "Military Domination",
-    card39_name_1: "Expanding Borders",
-    card39_name_3: "Optimization",
-    card40_name_1: "Loyalty",
-    card40_name_3: "Trade",
-    card41_name_1: "Jester",
-    card41_name_3: "Merchant Woman",
-    card42_name_1: "Exploiter",
-    card42_name_3: "Granary",
-    card43_name_1: "Mason",
-    card43_name_3: "Paved Road",
-    card43_name_4: "Paved Street",
-    card44_name_1: "Storm",
-    card44_name_3: "Rain",
-    card45_name_1: "Black Knight",
-    card45_name_3: "Admiring Boy",
-    card45_name_4: "Squire",
-    card46_name_1: "Camp",
-    card46_name_2: "Training Camp",
-    card46_name_4: "Sir __",
-    card47_name_1: "STOP!",
-    card48_name_1: "Envoy",
-    card48_name_2: "Emissary",
-    card48_name_3: "Ambassador",
-    card48_name_4: "Diplomat",
-    card49_name_1: "Royal Architect",
-    card49_name_3: "Bridge of Wonders",
-    card50_name_1: "Traveler",
-    card51_name_1: "Magistrate",
-    card51_name_3: "Strategist",
-    card52_name_1: "Big Mound",
-    card52_name_2: "Hillside Hamlet",
-    card52_name_3: "Summit Village",
-    card52_name_4: "Village",
-    card53_name_1: "Witch",
-    card53_name_3: "Witch's Hut",
-    card54_name_1: "Scribe",
-    card54_name_3: "Architect",
-    card55_name_1: "Lord Aethan",
-    card55_name_3: "Lord Nimrod",
-    card56_name_1: "Plague",
-    card56_name_3: "Enemy Soldier",
-    card57_name_1: "Assassin",
-    card57_name_3: "Enemy Soldier",
-    card58_name_1: "Burning City",
-    card58_name_3: "Scorched Earth",
-    card58_name_4: "Young Forest",
-    card59_name_1: "Mysterious Cave",
-    card59_name_2: "Underground",
-    card59_name_3: "Treasure",
-    card59_name_4: "Forgotten Civilization",
-    card60_name_1: "Elite Bandit",
-    card60_name_3: "Worker",
-    card61_name_1: "Prince of Darkness",
-    card61_name_3: "Admiring Boy",
-    card61_name_4: "Squire",
-    card63_name_1: "Distant Lands",
-    card63_name_2: "Inn",
-    card63_name_3: "Wall",
-    card63_name_4: "Innkeeper",
-    card65_name_1: "Tornado",
-    card65_name_3: "Floods",
-    card66_name_1: "Young Princess",
-    card66_name_2: "Spoiled Princess",
-    card66_name_3: "Well-Mannered Princess",
-    card67_name_1: "Illness",
-    card67_name_2: "Diminished",
-    card67_name_3: "Feast",
-    card68_name_1: "STOP!",
-    card69_name_1: "Finishing Touch",
-    card69_name_3: "Banquet",
-    card70_name_1: "Royal Visit",
-    card70_name_3: "Inquisitor",
+    jungle: "Jungle",
+    huge_trees: "Huge Trees",
+    treehouses: "Treehouses",
+    deep_jungle: "Deep Jungle",
+    river: "River",
+    bridge: "Bridge",
+    explorers: "Explorers",
+    stone_bridge: "Stone Bridge",
+    field_worker: "Field Worker",
+    Servant: "Servant",
+    bandit: "Bandit",
+    worker: "Worker",
+    hill: "Hill",
+    chapel: "Chapel",
+    cathedral: "Cathedral",
+    church: "Church",
+    east_cliffs: "East Cliffs",
+    smithy: "Smithy",
+    wall: "Wall",
+    arsenal: "Arsenal",
+    swamp: "Swamp",
+    accessible_swamp: "Accessible Swamp",
+    exotic_fruit_trees: "Exotic Fruit Trees",
+    swamp_garden: "Swamp Garden",
+    lake: "Lake",
+    fishermans_cabin: "Fisherman's Cabin",
+    lighthouse: "Lighthouse",
+    fishing_boat: "Fishing Boat",
+    stop: "STOP!",
+    fertile_soil_efficiency: "Fertile Soil/Efficiency",
+    army: "Army",
+    grand_army: "Grand Army",
+    treasure: "Treasure",
+    extended_treseaure: "Immense Treasure",
+    export: "Exports",
+    mass_export: "Mass Exports",
+    volcanic_eruption: "Volcanic Eruption",
+    ashlands: "Ashlands",
+    young_forest: "Young Forest",
+    opportunist: "Opportunist",
+    recruit: "Recruit",
+    labourer: "Labourer",
+    pretend_noble: "Pretend Noble",
+    etrepeneur: "Entrepreneur",
+    hotel: "Hotel",
+    tavern: "Tavern",
+    cozy_pub: "Cozy Pub",
+    scientist: "Scientist",
+    observatory: "Observatory",
+    lab: "Lab",
+    engineer: "Engineer",
+    trebuchet: "Trebuchet",
+    inventor: "Inventor",
+    inspired_inventor: "Inspired Inventor",
+    mercenary: "Mercenary",
+    sir__: "Sir __",
+    strength_in_number: "Strength in Numbers",
+    military_domination: "Military Domination",
+    expanding_borders: "Expanding Borders",
+    maximizer: "Maximizer",
+    loyalty: "Loyalty",
+    jester: "Jester",
+    merchant: "Merchant",
+    storage: "Storage",
+    mason: "Mason",
+    brick_road: "Brick Road",
+    stone_street: "Paved Street",
+    thunderstorm: "Thunderstorm",
+    rain: "Rain",
+    dark_knight: "Dark Knight",
+    impressed_boy: "Admiring Boy",
+    squire: "Squire",
+    camp: "Camp",
+    training_grounds: "Training Grounds",
+    envoy: "Envoy",
+    emissary: "Emissary",
+    ambassador: "Ambassador",
+    diplomat: "Diplomat",
+    royal_architect: "Royal Architect",
+    bridge_of_marvel: "Bridge of Marvel",
+    traveller: "Traveller",
+    magistrate: "Magistrate",
+    strategist: "Strategist",
+    mighty_mound: "Mighty Mound",
+    hill_settlement: "Hill Settlement",
+    peak_village: "Summit Village",
+    hill_village: "Village",
+    witch: "Witch",
+    witch_cabin: "Witch Cabin",
+    scribe: "Scribe",
+    architect: "Architect",
+    lord_aethan: "Lord Aethan",
+    lord_nimrod: "Lord Nimrod",
+    plague: "Plague",
+    enemy_soldier: "Enemy Soldier",
+    assassin: "Assassin",
+    city_fire: "City Fire",
+    mysterious_cave: "Mysterious Cave",
+    dungeon: "Dungeon",
+    treasures: "Treasures",
+    lost_civilization: "Lost Civilization",
+    skilled_bandit: "Skilled Bandit",
+    dark_prince: "Dark Prince",
+    far_fields: "Distant Lands",
+    inn: "Inn",
+    innkeeper: "Innkeeper",
+    tornado: "Tornado",
+    flooding: "Flooding",
+    young_princess: "Young Princess",
+    spoiled_princess: "Spoiled Princess",
+    educated_princess: "Educated Princess",
+    sickness: "Sickness",
+    crippled: "Crippled",
+    feast: "Feast",
+    finishing_touch: "Finishing Touch",
+    banquet: "Banquet",
+    royal_visit: "Royal Visit",
+    inquisitor: "Inquisitor",
     card73_name_1: "Western Canyon",
     card73_name_2: "Miners",
     card73_name_3: "Wall",
@@ -1116,13 +1077,9 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     card138_name_3: "Resistance",
     card138_name_4: "Attack",
 
-    // Card Specific Names interaction
-    bandit: "Bandit",
-    wall: "Wall",
-
     // Card Effects Descriptions
     staysInPlay: "Stays in play.",
-    cardEffect_Plains: "Discard a friendly card to gain gold x2.",
+    cardEffect_Plains: "Discard a friendly card to gain coin x2.",
 
     // Card Descriptions
     
