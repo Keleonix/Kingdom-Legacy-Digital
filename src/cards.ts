@@ -44,7 +44,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 1,
-    name: ["Herbes Sauvages", "Plaines", "Grange", "Terres Cultivées"],
+    name: ['wild_grass', 'plains', 'food_barns', 'farmlands'],
     resources: [
       [
         { coin: 1 }
@@ -94,7 +94,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 2,
-    name: ["Herbes Sauvages", "Plaines", "Grange", "Terres Cultivées"],
+    name: ['wild_grass', 'plains', 'food_barns', 'farmlands'],
     resources: [
       [
         { coin: 1 }
@@ -144,7 +144,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 3,
-    name: ["Herbes Sauvages", "Plaines", "Grange", "Terres Cultivées"],
+    name: ['wild_grass', 'plains', 'food_barns', 'farmlands'],
     resources: [
       [
         { coin: 1 }
@@ -194,7 +194,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 4,
-    name: ["Herbes Sauvages", "Plaines", "Grange", "Terres Cultivées"],
+    name: ['wild_grass', 'plains', 'food_barns', 'farmlands'],
     resources: [
       [
         { coin: 1 }
@@ -244,7 +244,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 5,
-    name: ["Montagnes Lointaines", "Zone Rocheuse", "Mine Profonde", "Carrière"],
+    name: ['distant_mountain', 'rocky_area', 'shallow_mines', 'quarry'],
     resources: [
       [
         { coin: 1 }
@@ -294,7 +294,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 6,
-    name: ["Montagnes Lointaines", "Zone Rocheuse", "Mine Profonde", "Carrière"],
+    name: ['distant_mountain', 'rocky_area', 'shallow_mines', 'quarry'],
     resources: [
       [
         { coin: 1 }
@@ -344,7 +344,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 7,
-    name: ["Forêt", "Coupe Rase", "Puit Sacré", "Cabane de Bûcheron"],
+    name: ['forest', 'felled_forest', 'sacred_well', 'lumberjack'],
     resources: [
       [
         { wood: 1 }
@@ -392,7 +392,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 8,
-    name: ["Forêt", "Coupe Rase", "Puit Sacré", "Cabane de Bûcheron"],
+    name: ['forest', 'felled_forest', 'sacred_well', 'lumberjack'],
     resources: [
       [
         { wood: 1 }
@@ -440,7 +440,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 9,
-    name: ["Quartier Général", "Hôtel de Ville", "Château", "Donjon"],
+    name: ['headquarters', 'town_hall', 'castle', 'keep'],
     resources: [
       [
         { coin: 1 }
@@ -490,7 +490,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 10,
-    name: ["Commerçante", "Bazar", "Festival", "Marché"],
+    name: ['trader', 'bazaar', 'festival', 'market'],
     resources: [
       [{ ...emptyResource }],
       [
@@ -541,7 +541,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 11,
-    name: ["Jungle", "Arbres Géants", "Cabanes dans les Arbres", "Jungle Profonde"],
+    name: ['jungle', 'huge_trees', 'treehouses', 'deep_jungle'],
     resources: [
       [{ ...emptyResource }],
       [
@@ -589,7 +589,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 12,
-    name: ["Rivière", "Pont", "Explorateurs", "Pont de Pierre"],
+    name: ['river', 'bridge', 'explorers', 'stone_bridge'],
     resources: [
       [
         { coin: 1 }
@@ -639,7 +639,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 13,
-    name: ["Exploitant", '', "Domestique", ''],
+    name: ['field_worker', '', 'servant', ''],
     resources: [
       [{ ...emptyResource }],
       [{ ...emptyResource }],
@@ -681,7 +681,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 14,
-    name: ["Bandit", '', "Travailleur", ''],
+    name: ['bandit', '', 'worker', ''],
     resources: [
       [ { fame: -2 } ],
       [{ ...emptyResource }],
@@ -723,7 +723,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 15,
-    name: ["Montagnes Lointaines", "Zone Rocheuse", "Mine Profonde", "Carrière"],
+    name: ['distant_mountain', 'rocky_area', 'shallow_mines', 'quarry'],
     resources: [
       [
         { coin: 1 }
@@ -773,7 +773,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 16,
-    name: ["Bandit", '', "Exploitant", ''],
+    name: ['bandit', '', 'field_worker', ''],
     resources: [
       [ { fame: -2 } ],
       [{ ...emptyResource }],
@@ -815,7 +815,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 17,
-    name: ["Colline", "Chappelle", "Cathédrale", "Eglise"],
+    name: ['hill', 'chapel', 'cathedral', 'church'],
     resources: [
       [ { coin: 1 } ],
       [ { coin: 1, fame: 1 } ],
@@ -857,7 +857,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 18,
-    name: ["Falaise de l'Est", "Forge", "Muraille", "Armurerie"],
+    name: ['east_cliffs', 'smithy', 'wall', 'arsenal'],
     resources: [
       [ { stone: 1 } ],
       [ { metal: 1, fame: 1 } ],
@@ -901,7 +901,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 19,
-    name: ["Forêt", "Coupe Rase", "Puit Sacré", "Cabane de Bûcheron"],
+    name: ['forest', 'felled_forest', 'sacred_well', 'lumberjack'],
     resources: [
       [
         { wood: 1 }
@@ -949,7 +949,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 20,
-    name: ["Marais", "Marais Aménagés", "Arbres à Fruits Exotiques", "Jardin du Marais"],
+    name: ['swamp', 'accessible_swamp', 'exotic_fruit_trees', 'swamp_garden'],
     resources: [
       [{ ...emptyResource }],
       [ { fame: 1 } ],
@@ -991,7 +991,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 21,
-    name: ["Marais", "Marais Aménagés", "Arbres à Fruits Exotiques", "Jardin du Marais"],
+    name: ['swamp', 'accessible_swamp', 'exotic_fruit_trees', 'swamp_garden'],
     resources: [
       [{ ...emptyResource }],
       [ { fame: 1 } ],
@@ -1033,7 +1033,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 22,
-    name: ["Lac", "Chalet du Pêcheur", "Phare", "Bateau de Pêche"],
+    name: ['lake', 'fishermans_cabin', 'lighthouse', 'fishing_boat'],
     resources: [
       [ { coin: 1, fame: 1 } ],
       [ { coin: 1, fame: 1 } ],
@@ -1075,7 +1075,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 23,
-    name: ["STOP !", '', '', ''],
+    name: ['stop', '', '', ''],
     resources: [
       [],
       [],
@@ -1423,7 +1423,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 30,
-    name: ["STOP !", '', '', ''],
+    name: ['stop', '', '', ''],
     resources: [
       [],
       [],
@@ -1641,7 +1641,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 35,
-    name: ["Montagnes Lointaines", "Zone Rocheuse", "Mine Profonde", "Carrière"],
+    name: ['distant_mountain', 'rocky_area', 'shallow_mines', 'quarry'],
     resources: [
       [
         { coin: 1 }
@@ -1747,7 +1747,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 37,
-    name: ["STOP !", '', '', ''],
+    name: ['stop', '', '', ''],
     resources: [
       [],
       [],
@@ -1996,7 +1996,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 42,
-    name: ["Exploitant", '', "Grenier", ''],
+    name: ['field_worker', '', "Grenier", ''],
     resources: [
       [ emptyResource ],
       [],
@@ -2206,7 +2206,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 47,
-    name: ["STOP !", '', '', ''],
+    name: ['stop', '', '', ''],
     resources: [
       [],
       [],
@@ -2785,7 +2785,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 60,
-    name: ["Bandit d'Elite", '', "Travailleur", ''],
+    name: ["Bandit d'Elite", '', 'worker', ''],
     resources: [
       [ { fame: -5 } ],
       [],
@@ -2911,7 +2911,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 63,
-    name: ["Terres Lointaines", "Auberge", "Muraille", "Aubergiste"],
+    name: ["Terres Lointaines", "Auberge", 'wall', "Aubergiste"],
     resources: [
       [
         { coin: 1 }
@@ -2961,7 +2961,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 64,
-    name: ["Bandit d'Elite", '', "Exploitant", ''],
+    name: ["Bandit d'Elite", '', 'field_worker', ''],
     resources: [
       [ { fame: -5 } ],
       [],
@@ -3132,7 +3132,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 68,
-    name: ["STOP !", '', '', ''],
+    name: ['stop', '', '', ''],
     resources: [
       [],
       [],
@@ -3258,7 +3258,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 71,
-    name: ["Montagnes Lointaines", "Zone Rocheuse", "Mine Profonde", "Carrière"],
+    name: ['distant_mountain', 'rocky_area', 'shallow_mines', 'quarry'],
     resources: [
       [
         { coin: 1 }
@@ -3308,7 +3308,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 72,
-    name: ["Forêt", "Coupe Rase", "Puit Sacré", "Cabane de Bûcheron"],
+    name: ['forest', 'felled_forest', 'sacred_well', 'lumberjack'],
     resources: [
       [
         { wood: 1 }
@@ -3356,7 +3356,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 73,
-    name: ["Canyon de l'Ouest", "Mineurs", "Muraille", "Travaux Forcés"],
+    name: ["Canyon de l'Ouest", "Mineurs", 'wall', "Travaux Forcés"],
     resources: [
       [
         { stone: 1 },
@@ -3557,7 +3557,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 77,
-    name: ["Lagon", "Canoë", "Île Luxuriante", "Porte Maritime Fortifiée"],
+    name: ["Lagon", "Canoë", "Porte Maritime Fortifiée", "Île Luxuriante"],
     resources: [
       [ { coin: 1 } ],
       [ emptyResource ],
@@ -3870,7 +3870,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 84,
-    name: ["Mine", "Mine Profonde", "Mine de Diamant", "Mine de Rubis"],
+    name: ["Mine", 'shallow_mines', "Mine de Diamant", "Mine de Rubis"],
     resources: [
       [
         { stone: 1, metal: 1, fame: 4 }
@@ -3920,7 +3920,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 85,
-    name: ["Mine", "Mine Profonde", "Mine de Diamant", "Mine de Rubis"],
+    name: ["Mine", 'shallow_mines', "Mine de Diamant", "Mine de Rubis"],
     resources: [
       [
         { stone: 1, metal: 1, fame: 4 }
@@ -4753,7 +4753,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ['land', 'building - land', 'building', 'building'],
+    type: ['land - invention', 'land - invention', 'building', 'building'],
     choice: true,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -5153,7 +5153,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 110,
-    name: ["Grange", "Grande Grange", "Campagne", "Campagne Prospère"],
+    name: ['food_barns', "Grande Grange", "Campagne", "Campagne Prospère"],
     resources: [
       [ { coin: 1 } ],
       [
@@ -5537,7 +5537,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 119,
-    name: ["Commerçante", "Bazar", "Festival", "Marché"],
+    name: ['trader', 'bazaar', 'festival', 'market'],
     resources: [
       [{ ...emptyResource }],
       [
@@ -6081,7 +6081,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 131,
-    name: ["Plaines du Nord", "Douves", "Muraille", "Pont des Douves"],
+    name: ["Plaines du Nord", "Douves", 'wall', "Pont des Douves"],
     resources: [
       [ { coin: 1 } ],
       [ { sword: 1, fame: 2 } ],
@@ -6126,7 +6126,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 132,
-    name: ["Collines Meridionales", "Terrasses", "Moulin à Vent", "Murailles"],
+    name: ["Collines Meridionales", "Terrasses", "Moulin à Vent", 'wall'],
     resources: [
       [ { coin: 1 } ],
       [ { sword: 1, fame: 2 } ],
