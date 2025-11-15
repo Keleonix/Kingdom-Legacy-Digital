@@ -953,7 +953,7 @@ export const allCards: GameCard[] = [
     resources: [
       [{ ...emptyResource }],
       [ { fame: 1 } ],
-      [ { tradeGood: 2, fame: 4 } ],
+      [ { tradegood: 2, fame: 4 } ],
       [ { coin: 1, fame: 3 } ],
     ],
     effects: [
@@ -995,7 +995,7 @@ export const allCards: GameCard[] = [
     resources: [
       [{ ...emptyResource }],
       [ { fame: 1 } ],
-      [ { tradeGood: 2, fame: 4 } ],
+      [ { tradegood: 2, fame: 4 } ],
       [ { coin: 1, fame: 3 } ],
     ],
     effects: [
@@ -1038,7 +1038,7 @@ export const allCards: GameCard[] = [
       [ { coin: 1, fame: 1 } ],
       [ { coin: 1, fame: 1 } ],
       [ { fame: 5 } ],
-      [ { coin: 2, tradeGood: 2, fame: 1 } ],
+      [ { coin: 2, tradegood: 2, fame: 1 } ],
     ],
     effects: [
       '',
@@ -1117,7 +1117,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 24,
-    name: ["Terre Fertile/Efficacité", '', '', ''],
+    name: ['fertile_soil_efficiency', '', '', ''],
     resources: [
       [],
       [],
@@ -1159,7 +1159,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 25,
-    name: ["Armée", '', "Grande Armée", ''],
+    name: ['army', '', 'grand_army', ''],
     resources: [
       [ emptyResource ],
       [ emptyResource ],
@@ -1222,7 +1222,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 26,
-    name: ["Trésor", '', "Immense Trésor", ''],
+    name: ['treasure', '', 'extended_treseaure', ''],
     resources: [
       [ emptyResource ],
       [ emptyResource ],
@@ -1287,7 +1287,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 27,
-    name: ["Exportations", '', "Exportations de Masse", ''],
+    name: ['export', '', 'mass_export', ''],
     resources: [
       [ emptyResource ],
       [ emptyResource ],
@@ -1295,9 +1295,9 @@ export const allCards: GameCard[] = [
       [ emptyResource ],
     ],
     effects: [
-      "Dépensez des resources/tradeGood pour atteindre des paliers, 10: Ajoutez resources/coin / resources/wood / resources/stone sur un Terrain, 20: Un Personnage gagne \" effects/passive Reste en jeu.\", 30: Découvrez Adoubement (80), 40: Ajoutez resources/metal / resources/sword / resources/tradeGood sur 1 Bâtiment, 55: Ajoutez resources/wood / resources/stone / resources/metal / resources/sword sur une carte, 75: Ajoutez resources/fame x5 sur une carte, 100: -> Back Up. effects/passive Dépensez des resources/tradeGood .",
+      "Dépensez des resources/tradegood pour atteindre des paliers, 10: Ajoutez resources/coin / resources/wood / resources/stone sur un Terrain, 20: Un Personnage gagne \" effects/passive Reste en jeu.\", 30: Découvrez Adoubement (80), 40: Ajoutez resources/metal / resources/sword / resources/tradegood sur 1 Bâtiment, 55: Ajoutez resources/wood / resources/stone / resources/metal / resources/sword sur une carte, 75: Ajoutez resources/fame x5 sur une carte, 100: -> Back Up. effects/passive Dépensez des resources/tradegood .",
       '',
-      "Dépensez des resources/tradeGood pour atteindre des paliers, 25: Ajoutez resources/fame sur deux Terrains, 50: Ajoutez resources/fame x5 sur une Personne, 75: Découvrez Visite Royale (107), 100: Ajoutez resources/fame x5 sur un Bâtiment, 150: effects/check une autre carte Permanente, 200: effects/check toutes les autres cartes Permanentes au choix, 250: Découvrez Relations Commerciales (117). effects/passive Dépensez des resources/tradeGood .",
+      "Dépensez des resources/tradegood pour atteindre des paliers, 25: Ajoutez resources/fame sur deux Terrains, 50: Ajoutez resources/fame x5 sur une Personne, 75: Découvrez Visite Royale (107), 100: Ajoutez resources/fame x5 sur un Bâtiment, 150: effects/check une autre carte Permanente, 200: effects/check toutes les autres cartes Permanentes au choix, 250: Découvrez Relations Commerciales (117). effects/passive Dépensez des resources/tradegood .",
       '',
     ],
     upgrades: [
@@ -1329,7 +1329,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 28,
-    name: ["Eruption Volcanique", '', "Terres Brulées", "Jeune Forêt"],
+    name: ['volcanic_eruption', '', 'ashlands', 'young_forest'],
     resources: [
       [ emptyResource ],
       [ emptyResource ],
@@ -1381,7 +1381,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 29,
-    name: ["Opportuniste", "Recrue", "Artisan", "Prétendu Noble"],
+    name: ['opportunist', 'recruit', 'labourer', 'pretend_noble'],
     resources: [
       [ { coin: 1 } ],
       [ { sword: 1 } ],
@@ -1465,12 +1465,12 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 31,
-    name: ["Entrepreneur", "Hôtel", "Taverne", "Bar Confortable"],
+    name: ['etrepeneur', 'hotel', 'tavern', 'cozy_pub'],
     resources: [
-      [ { tradeGood: 1 } ],
-      [ { coin: 1, tradeGood: 1, fame: 2 } ],
-      [ { coin: 2, tradeGood: 2, fame: 4 } ],
-      [ { tradeGood: 2, fame: 2 } ],
+      [ { tradegood: 1 } ],
+      [ { coin: 1, tradegood: 1, fame: 2 } ],
+      [ { coin: 2, tradegood: 2, fame: 4 } ],
+      [ { tradegood: 2, fame: 2 } ],
     ],
     effects: [
       "effects/time Découvrez l'Ecole (118).",
@@ -1482,7 +1482,7 @@ export const allCards: GameCard[] = [
       [{ cost: { coin: 1, wood: 3 }, nextSide: 2 }],
       [{ cost: { coin: 1, wood: 1, stone: 1 }, nextSide: 4 }],
       [],
-      [{ cost: { coin: 2, wood: 2, tradeGood: 2 }, nextSide: 3 }],
+      [{ cost: { coin: 2, wood: 2, tradegood: 2 }, nextSide: 3 }],
     ],
     currentSide: 1,
     type: ['person', 'building', 'building', 'building'],
@@ -1507,12 +1507,12 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 32,
-    name: ["Scientifique", '', "Observatoire", "Laboratoire"],
+    name: ['scientist', '', 'observatory', 'lab'],
     resources: [
       [ emptyResource ],
       [ emptyResource ],
-      [ { coin: 1, tradeGood: 1, fame: 5 } ],
-      [ { coin: 1, tradeGood: 2, fame: 10 } ],
+      [ { coin: 1, tradegood: 1, fame: 5 } ],
+      [ { coin: 1, tradegood: 2, fame: 10 } ],
     ],
     effects: [
       "effects/passive Toutes les Personnes, Scientifique inclus, produisent +1 resources/coin .",
@@ -1549,7 +1549,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 33,
-    name: ["Ingénieur", '', "Trébuchet", ''],
+    name: ['engineer', '', 'trebuchet', ''],
     resources: [
       [ emptyResource ],
       [ emptyResource ],
@@ -1591,7 +1591,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 34,
-    name: ["Inventrice", '', "Inventrice Inspirée", ''],
+    name: ['inventor', '', 'inspired_inventor', ''],
     resources: [
       [ emptyResource ],
       [ emptyResource ],
@@ -1691,7 +1691,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 36,
-    name: ["Mercenaire", '', "Sir __", ''],
+    name: ['mercenary', '', 'sir__', ''],
     resources: [
       [ emptyResource ],
       [ emptyResource ],
@@ -1789,7 +1789,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 38,
-    name: ["L'Union fait la Force", '', "Domination Militaire", ''],
+    name: ['strength_in_number', '', 'military_domination', ''],
     resources: [
       [],
       [],
@@ -1831,7 +1831,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 39,
-    name: ["Elargir les frontières", '', "Optimisation", ''],
+    name: ['expanding_borders', '', 'maximizer', ''],
     resources: [
       [],
       [],
@@ -1873,7 +1873,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 40,
-    name: ["Loyauté", '', "Commerce", ''],
+    name: ['loyalty', '', 'trader_obj', ''],
     resources: [
       [],
       [],
@@ -1883,7 +1883,7 @@ export const allCards: GameCard[] = [
     effects: [
       "Vaut 35 resources/fame s'il n'y a plus d'ennemi dans votre royaume.",
       '',
-      "Vaut 25 resources/fame si votre production de resources/tradeGood est de 8 ou plus.",
+      "Vaut 25 resources/fame si votre production de resources/tradegood est de 8 ou plus.",
       '',
     ],
     upgrades: [
@@ -1915,7 +1915,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 41,
-    name: ["Bouffon", '', "Marchande", ''],
+    name: ['jester', '', 'merchant', ''],
     resources: [
       [ emptyResource ],
       [ emptyResource ],
@@ -1945,8 +1945,8 @@ export const allCards: GameCard[] = [
         {content: "coin, wood", checked: false},
         {content: "coin, wood", checked: false},
         {content: "coin, wood", checked: false},
-        {content: "tradeGood, tradeGood", checked: false},
-        {content: "tradeGood, tradeGood", checked: false}
+        {content: "tradegood, tradegood", checked: false},
+        {content: "tradegood, tradegood", checked: false}
       ],
       [],
       [
@@ -1996,7 +1996,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 42,
-    name: ['field_worker', '', "Grenier", ''],
+    name: ['field_worker', '', 'storage', ''],
     resources: [
       [ emptyResource ],
       [],
@@ -2038,7 +2038,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 43,
-    name: ["Maçon", '', "Route Pavée", "Rue Pavée"],
+    name: ['mason', '', 'brick_road', 'stone_street'],
     resources: [
       [ { stone: 1 } ],
       [],
@@ -2080,7 +2080,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 44,
-    name: ["Orage", '', "Pluie", ''],
+    name: ['thunderstorm', '', 'rain', ''],
     resources: [
       [ emptyResource ],
       [],
@@ -2122,7 +2122,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 45,
-    name: ["Chevalier Noir", '', "Garçon Admiratif", "Ecuyer"],
+    name: ['dark_knight', '', 'impressed_boy', 'squire'],
     resources: [
       [ { fame: -3 } ],
       [],
@@ -2164,7 +2164,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 46,
-    name: ["Camp", "Camp d'Entrainement", '', "Sir __"],
+    name: ['camp', 'training_grounds', '', 'sir__'],
     resources: [
       [ { coin: 1 } ],
       [ { fame: 1 } ],
@@ -2248,7 +2248,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 48,
-    name: ["Envoyé", "Emissaire", "Ambassadeur", "Diplomate"],
+    name: ['envoy', 'emissary', 'ambassador', 'diplomat'],
     resources: [
       [ emptyResource ],
       [ { fame: 1 } ],
@@ -2290,7 +2290,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 49,
-    name: ["Architecte Royal", '', "Pont des Merveilles", ''],
+    name: ['royal_architect', '', 'bridge_of_marvel', ''],
     resources: [
       [ { stone: 1 } ],
       [],
@@ -2332,7 +2332,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 50,
-    name: ["Voyageur", "Voyageur", "Voyageur", "Voyageur"],
+    name: ['traveller', 'traveller', 'traveller', 'traveller'],
     resources: [
       [ emptyResource ],
       [ emptyResource ],
@@ -2346,10 +2346,10 @@ export const allCards: GameCard[] = [
       "effects/time Découvrez un Terrain (128).",
     ],
     upgrades: [
-      [{ cost: { tradeGood: 3 }, nextSide: 2 }],
-      [{ cost: { tradeGood: 3 }, nextSide: 4 }],
+      [{ cost: { tradegood: 3 }, nextSide: 2 }],
+      [{ cost: { tradegood: 3 }, nextSide: 4 }],
       [],
-      [{ cost: { tradeGood: 5 }, nextSide: 3 }],
+      [{ cost: { tradegood: 5 }, nextSide: 3 }],
     ],
     currentSide: 1,
     type: ['person', 'person', 'person', 'person'],
@@ -2374,7 +2374,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 51,
-    name: ["Magistrat", "Magistrat", "Stratège", "Magistrat"],
+    name: ['magistrate', 'magistrate', 'strategist', 'magistrate'],
     resources: [
       [ emptyResource ],
       [ emptyResource ],
@@ -2416,11 +2416,11 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 52,
-    name: ["Grosse Butte", "Hameau sur la Colline", "Village Culminant", "Village"],
+    name: ['mighty_mound', 'hill_settlement', 'peak_village', 'hill_village'],
     resources: [
       [ emptyResource ],
       [ { coin: 1, fame: 1 } ],
-      [ { coin: 2, tradeGood: 1, fame: 6 } ],
+      [ { coin: 2, tradegood: 1, fame: 6 } ],
       [ { coin: 1, fame: 2 } ],
     ],
     effects: [
@@ -2458,7 +2458,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 53,
-    name: ["Sorcière", '', "Hutte de la Sorcière", ''],
+    name: ['witch', '', 'witch_cabin', ''],
     resources: [
       [ { fame: -3 } ],
       [],
@@ -2500,7 +2500,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 54,
-    name: ["Scribe", '', "Architecte", ''],
+    name: ['scribe', '', 'architect', ''],
     resources: [
       [ emptyResource ],
       [],
@@ -2542,7 +2542,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 55,
-    name: ["Lord Aethan", '', "Lord Nimrod", ''],
+    name: ['lord_aethan', '', 'lord_nimrod', ''],
     resources: [
       [ { coin: 1, wood: 1, stone: 1 } ],
       [],
@@ -2571,7 +2571,7 @@ export const allCards: GameCard[] = [
         {content: "wood, wood", checked: false},
         {content: "wood, wood", checked: false},
         {content: "stone, stone", checked: false},
-        {content: "tradeGood", checked: false},
+        {content: "tradegood", checked: false},
         {content: "sword", checked: false},
         {content: "metal", checked: false},
       ],
@@ -2607,7 +2607,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 56,
-    name: ["Peste", '', "Soldat Ennemi", ''],
+    name: ['plague', '', 'enemy_soldier', ''],
     resources: [
       [ { fame: -2 } ],
       [],
@@ -2649,7 +2649,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 57,
-    name: ["Assassin", '', "Soldat Ennemi", ''],
+    name: ['assassin', '', 'enemy_soldier', ''],
     resources: [
       [ { fame: -2 } ],
       [],
@@ -2691,7 +2691,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 58,
-    name: ["Ville en Flamme", '', "Terre Brûlée", "Jeune Forêt"],
+    name: ['city_fire', '', 'ashlands', 'young_forest'],
     resources: [
       [ emptyResource ],
       [],
@@ -2743,7 +2743,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 59,
-    name: ["Grotte Mystérieuse", "Souterrains", "Trésor", "Civilisation Oubliée"],
+    name: ['mysterious_cave', 'dungeon', 'treasures', 'lost_civilization'],
     resources: [
       [ emptyResource ],
       [ { fame: 2 } ],
@@ -2785,7 +2785,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 60,
-    name: ["Bandit d'Elite", '', 'worker', ''],
+    name: ['skilled_bandit', '', 'worker', ''],
     resources: [
       [ { fame: -5 } ],
       [],
@@ -2827,7 +2827,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 61,
-    name: ["Prince des Ténèbres", '', "Garçon Admiratif", "Ecuyer"],
+    name: ['dark_prince', '', 'impressed_boy', 'squire'],
     resources: [
       [ { fame: -7 } ],
       [],
@@ -2869,7 +2869,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 62,
-    name: ["Camp", "Camp d'entrainement", '', "Sir __"],
+    name: ['camp', 'training_grounds', '', 'sir__'],
     resources: [
       [ { coin: 1 } ],
       [ { fame: 1 } ],
@@ -2911,7 +2911,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 63,
-    name: ["Terres Lointaines", "Auberge", 'wall', "Aubergiste"],
+    name: ['far_fields', 'inn', 'wall', 'innkeeper'],
     resources: [
       [
         { coin: 1 }
@@ -2961,7 +2961,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 64,
-    name: ["Bandit d'Elite", '', 'field_worker', ''],
+    name: ['skilled_bandit', '', 'field_worker', ''],
     resources: [
       [ { fame: -5 } ],
       [],
@@ -3003,7 +3003,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 65,
-    name: ["Tornade", '', "Innodations", ''],
+    name: ['tornado', '', 'flooding', ''],
     resources: [
       [ emptyResource ],
       [],
@@ -3045,7 +3045,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 66,
-    name: ["Jeune Princesse", "Princesse Pourrie Gâtée", "Princesse Bien Elevée", ''],
+    name: ['young_princess', 'spoiled_princess', 'educated_princess', ''],
     resources: [
       [ { fame: 2 } ],
       [ emptyResource ],
@@ -3087,7 +3087,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 67,
-    name: ["Maladie", "Diminué", "Festin", ''],
+    name: ['sickness', 'crippled', 'feast', ''],
     resources: [
       [ { fame: -8 } ],
       [ { fame: -2 } ],
@@ -3102,7 +3102,7 @@ export const allCards: GameCard[] = [
     ],
     upgrades: [
       [
-        {cost: {tradeGood: 6}, nextSide: 3},
+        {cost: {tradegood: 6}, nextSide: 3},
         {cost: {coin: 1}, nextSide: 2}
       ],
       [],
@@ -3174,7 +3174,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 69,
-    name: ["Touche Finale", '', "Banquet", ''],
+    name: ['finishing_touch', '', 'banquet', ''],
     resources: [
       [ emptyResource ],
       [],
@@ -3182,7 +3182,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "effects/destroy Ajoutez resources/tradeGood et resources/fame x5 à une carte en jeu.",
+      "effects/destroy Ajoutez resources/tradegood et resources/fame x5 à une carte en jeu.",
       '',
       "effects/destroy Gagnez 4 ressources au choix.",
       '',
@@ -3216,7 +3216,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 70,
-    name: ["Visite Royale", '', "Inquisitrice", ''],
+    name: ['royal_visit', '', 'inquisitor', ''],
     resources: [
       [ emptyResource ],
       [],
@@ -3356,7 +3356,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 73,
-    name: ["Canyon de l'Ouest", "Mineurs", 'wall', "Travaux Forcés"],
+    name: ['west_canyon', 'miners', 'wall', 'forced_labour'],
     resources: [
       [
         { stone: 1 },
@@ -3404,7 +3404,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 74,
-    name: ["Littoral", "Chantiers Navals", "Route Commerciale", "Navire Marchand"],
+    name: ['shore', 'shipyard', 'trade_route', 'trade_ship'],
     resources: [
       [ { coin: 1 } ],
       [
@@ -3415,12 +3415,12 @@ export const allCards: GameCard[] = [
         { coin: 1 },
         { wood: 1 },
         { metal: 1 },
-        { tradeGood: 1, fame: 13 }
+        { tradegood: 1, fame: 13 }
       ],
       [
         { coin: 1 },
         { wood: 1 },
-        { tradeGood: 1, fame: 6 }
+        { tradegood: 1, fame: 6 }
       ],
     ],
     effects: [
@@ -3458,7 +3458,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 75,
-    name: ["Littoral", "Chantiers Navals", "Route Commerciale", "Navire Marchand"],
+    name: ['shore', 'shipyard', 'trade_route', 'trade_ship'],
     resources: [
       [ { coin: 1 } ],
       [
@@ -3469,12 +3469,12 @@ export const allCards: GameCard[] = [
         { coin: 1 },
         { wood: 1 },
         { metal: 1 },
-        { tradeGood: 1, fame: 13 }
+        { tradegood: 1, fame: 13 }
       ],
       [
         { coin: 1 },
         { wood: 1 },
-        { tradeGood: 1, fame: 6 }
+        { tradegood: 1, fame: 6 }
       ],
     ],
     effects: [
@@ -3512,7 +3512,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 76,
-    name: ["Pirate", '', "Précieux Allié", ''],
+    name: ['pirate', '', 'skilled_ally', ''],
     resources: [
       [ { fame: -2 } ],
       [],
@@ -3557,12 +3557,12 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 77,
-    name: ["Lagon", "Canoë", "Porte Maritime Fortifiée", "Île Luxuriante"],
+    name: ['laggon', 'raft', 'sea_gate_wall', 'lush_island'],
     resources: [
       [ { coin: 1 } ],
       [ emptyResource ],
       [ { sword: 1, fame: 3 } ],
-      [ { coin: 2, tradeGood: 1 } ],
+      [ { coin: 2, tradegood: 1 } ],
     ],
     effects: [
       '',
@@ -3572,7 +3572,7 @@ export const allCards: GameCard[] = [
     ],
     upgrades: [
       [
-        { cost: { stone: 3, tradeGood: 1 }, nextSide: 2 },
+        { cost: { stone: 3, tradegood: 1 }, nextSide: 2 },
         { cost: { wood: 3 }, nextSide: 3 }
       ],
       [ {cost: {}, nextSide: 4} ],
@@ -3602,7 +3602,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 78,
-    name: ["Statue", "Monument", "Colonne Dorée", "Obélisque"],
+    name: ['statue', 'monument', 'golden_pillar', 'obelisk'],
     resources: [
       [ { fame: 2 } ],
       [ { fame: 5 } ],
@@ -3644,7 +3644,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 79,
-    name: ["Villa", "Demeure", "Palais", "Manoir"],
+    name: ['villa', 'estate', 'palace', 'mansion'],
     resources: [
       [ emptyResource ],
       [ { fame: 3 } ],
@@ -3686,7 +3686,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 80,
-    name: ["Coopération", '', "Faveur", ''],
+    name: ['cooperation', '', 'favor', ''],
     resources: [
       [ emptyResource ],
       [],
@@ -3728,7 +3728,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 81,
-    name: ["Domaine Aethien", "Domaine Aethien", "Domaine Aethien", "Domaine Aethien"],
+    name: ['aethan_estate', 'aethan_estate', 'aethan_estate', 'aethan_estate'],
     resources: [
       [ emptyResource ],
       [ { fame: 3 } ],
@@ -3770,7 +3770,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 82,
-    name: ["Autel", "Sanctuaire", "Temple", "Oratoire"],
+    name: ['shrine', 'sanctuary', 'temple', 'oratory'],
     resources: [
       [
         { fame: 3 }
@@ -3820,7 +3820,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 83,
-    name: ["Autel", "Sanctuaire", "Temple", "Oratoire"],
+    name: ['shrine', 'sanctuary', 'temple', 'oratory'],
     resources: [
       [
         { fame: 3 }
@@ -3870,7 +3870,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 84,
-    name: ["Mine", 'shallow_mines', "Mine de Diamant", "Mine de Rubis"],
+    name: ['mine', 'deep_mine', 'diamond_mine', 'ruby_mine'],
     resources: [
       [
         { stone: 1, metal: 1, fame: 4 }
@@ -3879,10 +3879,10 @@ export const allCards: GameCard[] = [
         { stone: 1, metal: 2, fame: 6 }
       ],
       [
-        { stone: 1, metal: 2, tradeGood: 2, fame: 13 }
+        { stone: 1, metal: 2, tradegood: 2, fame: 13 }
       ],
       [
-        { stone: 1, metal: 2, tradeGood: 1, fame: 9 }
+        { stone: 1, metal: 2, tradegood: 1, fame: 9 }
       ],
     ],
     effects: [
@@ -3920,7 +3920,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 85,
-    name: ["Mine", 'shallow_mines', "Mine de Diamant", "Mine de Rubis"],
+    name: ['mine', 'deep_mine', 'diamond_mine', 'ruby_mine'],
     resources: [
       [
         { stone: 1, metal: 1, fame: 4 }
@@ -3929,10 +3929,10 @@ export const allCards: GameCard[] = [
         { stone: 1, metal: 2, fame: 6 }
       ],
       [
-        { stone: 1, metal: 2, tradeGood: 2, fame: 13 }
+        { stone: 1, metal: 2, tradegood: 2, fame: 13 }
       ],
       [
-        { stone: 1, metal: 2, tradeGood: 1, fame: 9 }
+        { stone: 1, metal: 2, tradegood: 1, fame: 9 }
       ],
     ],
     effects: [
@@ -3970,7 +3970,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 86,
-    name: ["Adoubement", '', "Rénovation", ''],
+    name: ['dubbing', '', 'renovation', ''],
     resources: [
       [ emptyResource ],
       [],
@@ -3980,7 +3980,7 @@ export const allCards: GameCard[] = [
     effects: [
       "effects/passive Reste en jeu. effects/forced Fin de Manche: Ajoutez resources/coin resources/sword et \"Chevalier\" à 1 Personne, puis ->.",
       '',
-      "effects/passive Reste en jeu. effects/forced Fin de Manche: Ajoutez resources/wood / resources/stone et resources/metal / resources/tradeGood à 1 Bâtiment, puis effects/destroy .",
+      "effects/passive Reste en jeu. effects/forced Fin de Manche: Ajoutez resources/wood / resources/stone et resources/metal / resources/tradegood à 1 Bâtiment, puis effects/destroy .",
       '',
     ],
     upgrades: [
@@ -4012,7 +4012,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 87,
-    name: ["Quêtes", '', '', ''],
+    name: ['quests', '', '', ''],
     resources: [
       [ emptyResource ],
       [],
@@ -4068,7 +4068,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 88,
-    name: ["Une Tour Idéale", '', '', ''],
+    name: ['a_perfect_tower', '', '', ''],
     resources: [
       [ emptyResource ],
       [],
@@ -4125,7 +4125,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 89,
-    name: ["Fosse Insondable", "Puits du Village", "Colonie de la Fosse", "Prison"],
+    name: ['deep_pit', 'town_well', 'pit_settlement', 'prison'],
     resources: [
       [ { stone: 1 } ],
       [ { fame: 3 } ],
@@ -4189,7 +4189,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 90,
-    name: ["Bijoux", '', '', ''],
+    name: ['jewellery', '', '', ''],
     resources: [
       [ emptyResource ],
       [],
@@ -4197,7 +4197,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "effects/time dépensez les resources/metal (1 à 10, incrément de 1) pour cocher la case de gauche à droite, puis gagnez 5 resources/tradeGood .",
+      "effects/time dépensez les resources/metal (1 à 10, incrément de 1) pour cocher la case de gauche à droite, puis gagnez 5 resources/tradegood .",
       '',
       '',
       '',
@@ -4246,7 +4246,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 91,
-    name: ["Construire une Arche", '', "L'Arche", ''],
+    name: ['build_an_ark', '', 'the_ark', ''],
     resources: [
       [ emptyResource ],
       [],
@@ -4315,7 +4315,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 92,
-    name: ["__", '', "__", ''],
+    name: ['___', '', '___', ''],
     resources: [
       [ emptyResource ],
       [],
@@ -4323,7 +4323,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "effects/forced Jouée la 1ère fois: Donne-lui un nom ! effects/forced Jouée la 2ème fois: Ajoutez resources/sword / resources/fame x5. effects/forced Jouée la 3ème fois: Ajoutez resources/tradeGood / resources/fame x5.",
+      "effects/forced Jouée la 1ère fois: Donne-lui un nom ! effects/forced Jouée la 2ème fois: Ajoutez resources/sword / resources/fame x5. effects/forced Jouée la 3ème fois: Ajoutez resources/tradegood / resources/fame x5.",
       '',
       "effects/passive Reste en jeu. effects/forced Jouée la 1ère fois: Donne-lui un nom ! effects/forced Jouée la 2ème fois: Ajoutez une ressource de votre choix à cette carte (hors resources/fame ). effects/forced Jouée la 3ème fois: Ajoutez une ressource de votre choix à cette carte (hors resources/fame ).",
       '',
@@ -4357,7 +4357,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 93,
-    name: ["Chasse au Trésor", "Baie des Pirates", "Trésor Pirate", "Carte au Trésor"],
+    name: ['treasure_hunt', 'pirate_cove', 'pirate_treasure', 'treasure_map'],
     resources: [
       [ emptyResource ],
       [ emptyResource ],
@@ -4399,7 +4399,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 94,
-    name: ["Traître", '', "Malédiction", ''],
+    name: ['backstabber', '', 'blood_curse', ''],
     resources: [
       [ { fame: -2 } ],
       [],
@@ -4441,7 +4441,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 95,
-    name: ["Astronome", '', "Astrologue", ''],
+    name: ['astronomer', '', 'astrologist', ''],
     resources: [
       [ emptyResource ],
       [],
@@ -4497,7 +4497,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 96,
-    name: ["Alchimiste", "Potion de Force", "Potion d'Amour", "Potion de Soin"],
+    name: ['alchemist', 'potion_of_stregnt', 'love_potion', 'healing_potion'],
     resources: [
       [ emptyResource ],
       [ emptyResource ],
@@ -4507,7 +4507,7 @@ export const allCards: GameCard[] = [
     effects: [
       "effects/activate Dépensez resources/coin resources/coin pour orienter cette carte selon votre choix.",
       "effects/activate Réinitialisez cette carte pour gagner resources/sword resources/sword resources/sword .",
-      "effects/activate Réinitialisez cette carte pour gagner resources/tradeGood resources/tradeGood resources/tradeGood resources/tradeGood resources/tradeGood .",
+      "effects/activate Réinitialisez cette carte pour gagner resources/tradegood resources/tradegood resources/tradegood resources/tradegood resources/tradegood .",
       "effects/optional Lorsque vous défaussez une Personne, vous pouvez réinitialiser cette carte à la place.",
     ],
     upgrades: [
@@ -4539,12 +4539,12 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 97,
-    name: ["Rouet", "Soie", "Mode", "Exportation d'Etoffe"],
+    name: ['spinning_wheel', 'silk', 'fashion', 'cloth_export'],
     resources: [
       [ { fame: 2 } ],
-      [ { tradeGood: 1, fame: 4 } ],
-      [ { tradeGood: 3, fame: 10 } ],
-      [ { tradeGood: 2, fame: 6 } ],
+      [ { tradegood: 1, fame: 4 } ],
+      [ { tradegood: 3, fame: 10 } ],
+      [ { tradegood: 2, fame: 6 } ],
     ],
     effects: [
       '',
@@ -4581,7 +4581,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 98,
-    name: ["Boussole", "Navigation", "Calendrier", "Astrolabe"],
+    name: ['compass', 'navigation', 'calendar', 'astrolabe'],
     resources: [
       [ { fame: 2 } ],
       [ { fame: 8 } ],
@@ -4613,8 +4613,8 @@ export const allCards: GameCard[] = [
       [
         { content: "coin", checked: false }, { content: "coin", checked: false },
         { content: "coin", checked: false }, { content: "coin", checked: false },
-        { content: "tradeGood", checked: false }, { content: "tradeGood", checked: false },
-        { content: "tradeGood", checked: false }, { content: "tradeGood", checked: false },
+        { content: "tradegood", checked: false }, { content: "tradegood", checked: false },
+        { content: "tradegood", checked: false }, { content: "tradegood", checked: false },
       ],
       [
         { content: '', checked: false }, { content: '', checked: false },
@@ -4646,10 +4646,10 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 99,
-    name: ["Châtiment Publique", "Instrument de Torture", "Ere Post-Barbare", "Salle de Torture"],
+    name: ['public_punishment', 'torture_device', 'post_barbaric', 'torture_chamber'],
     resources: [
       [ { sword: 1, fame: -2 } ],
-      [ { sword: 1, tradeGood: 1, fame: -3 } ],
+      [ { sword: 1, tradegood: 1, fame: -3 } ],
       [ { fame: 15 } ],
       [ { sword: 2, fame: -6 } ],
     ],
@@ -4688,21 +4688,21 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 100,
-    name: ["Scierie Publique", "Industrie du Bois", "Exportation de Bois", "Cargaison de Bois"],
+    name: ['saw_mill', 'wood_industry', 'wood_export', 'wood_shipment'],
     resources: [
       [ { wood: 3, fame: 3 } ],
       [ { wood: 4, fame: 3 } ],
-      [ { tradeGood: 2, fame: 4 } ],
+      [ { tradegood: 2, fame: 4 } ],
       [
         { wood: 2 },
-        { tradeGood: 2, fame: 6 }
+        { tradegood: 2, fame: 6 }
       ],
     ],
     effects: [
       '',
       "effects/activate Découvrez Construire une Arche (91).",
       '',
-      "effects/passive resources/tradeGood et resources/wood peuvent être utilisés de manière interchangeable.",
+      "effects/passive resources/tradegood et resources/wood peuvent être utilisés de manière interchangeable.",
     ],
     upgrades: [
       [ { cost: { wood: 3 }, nextSide: 2 } ],
@@ -4733,7 +4733,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 101,
-    name: ["Labours", "Machines Agricoles", "Grange Agrandie", "Entrepôt Royal"],
+    name: ['ploughs', 'farming_machines', 'larger_barns', 'royal_storehouse'],
     resources: [
       [ { coin: 3, fame: 4 } ],
       [ { coin: 4, fame: 8 } ],
@@ -4775,10 +4775,10 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 102,
-    name: ["Bateaux de Pêche", "Comme un Poisson (dans l'eau)", "Exportation de Bois", "Cargaison de Bois"],
+    name: ['fishing_ships', 'fish_n_chips', 'fish_quota', 'fishing_excellence'],
     resources: [
       [ { coin: 3, fame: 2 } ],
-      [ { coin: 2, tradeGood: 2, fame: 4 } ],
+      [ { coin: 2, tradegood: 2, fame: 4 } ],
       [ { coin: 2, fame: 4 } ],
       [ { fame: 13 } ],
     ],
@@ -4825,7 +4825,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 103,
-    name: ["Missionaire", '', "Apiculteur", ''],
+    name: ['missionary', '', 'beekeeper', ''],
     resources: [
       [ emptyResource ],
       [],
@@ -4875,7 +4875,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 104,
-    name: ["Prêtre", '', "Cardinal", ''],
+    name: ['priest', '', 'cardinal', ''],
     resources: [
       [ emptyResource ],
       [],
@@ -4889,7 +4889,7 @@ export const allCards: GameCard[] = [
       '',
     ],
     upgrades: [
-      [ { cost: { coin: 6, tradeGood: 2 }, nextSide: 3 } ],
+      [ { cost: { coin: 6, tradegood: 2 }, nextSide: 3 } ],
       [],
       [],
       [],
@@ -4917,7 +4917,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 105,
-    name: ["Petit Village sur la Colline", "Village sur la Colline", "Ville sur la Colline", "Grande Ville"],
+    name: ['small_hill_town', 'hill_town', 'city_on_a_hill', 'large_town'],
     resources: [
       [ { fame: 6 } ],
       [ { fame: 8 } ],
@@ -4959,7 +4959,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 106,
-    name: ["Camelot", "Camelot", "Camelot", "Camelot"],
+    name: ['camelot', 'camelot', 'camelot', 'camelot'],
     resources: [
       [ { fame: 15 } ],
       [ { fame: 20 } ],
@@ -5011,7 +5011,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 107,
-    name: ["Visite Royale", '', "Inquisitrice", ''],
+    name: ['royal_visit', '', 'inquisitor', ''],
     resources: [
       [ emptyResource ],
       [],
@@ -5053,7 +5053,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 108,
-    name: ["Cristal Ethéré Royale", '', '', ''],
+    name: ['ether_crystal', '', '', ''],
     resources: [
       [ { fame: 10 } ],
       [],
@@ -5095,7 +5095,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 109,
-    name: ["Petite Guilde", "Guilde", "Manoir de la Guilde", "Hotêl de la Guilde"],
+    name: ['small_guild', 'guild', 'grand_guild_hall', 'guild_hall'],
     resources: [
       [ { coin: 1 } ],
       [
@@ -5153,7 +5153,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 110,
-    name: ['food_barns', "Grande Grange", "Campagne", "Campagne Prospère"],
+    name: ['barn', 'large_barn', 'thriving_countryside', 'countryside'],
     resources: [
       [ { coin: 1 } ],
       [
@@ -5198,7 +5198,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 111,
-    name: ["Manoir", "Grand Manoir", "Imposante Demeur", "Noble Demeur"],
+    name: ['manor', 'large_manor', 'grand_residence', 'noble_residence'],
     resources: [
       [ { coin: 6 } ],
       [ { coin: 6 } ],
@@ -5240,7 +5240,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 112,
-    name: ["Etable", "Etable", "Palfrenier", "Grande Etable"],
+    name: ['stable', 'stable', 'groom', 'large_stable'],
     resources: [
       [ emptyResource ],
       [ emptyResource ],
@@ -5282,7 +5282,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 113,
-    name: ["Cheval", '', '', ''],
+    name: ['horse', '', '', ''],
     resources: [
       [ { coin: 1 } ],
       [ emptyResource ],
@@ -5324,7 +5324,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 114,
-    name: ["Cheval", '', '', ''],
+    name: ['horse', '', '', ''],
     resources: [
       [ { sword: 1 } ],
       [ emptyResource ],
@@ -5366,7 +5366,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 115,
-    name: ["Cheval", '', '', ''],
+    name: ['horse', '', '', ''],
     resources: [
       [
         { wood: 1 },
@@ -5411,7 +5411,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 116,
-    name: ["Aric Blackwood", '', "Eadric Shadowstrike", ''],
+    name: ['aric_blackwood', '', 'eadric_shadowstrike', ''],
     resources: [
       [ { coin: 2 } ],
       [ { ...emptyResource} ],
@@ -5453,7 +5453,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 117,
-    name: ["Relations Commerciales", '', '', ''],
+    name: ['trade_relations', '', '', ''],
     resources: [
       [ { ...emptyResource} ],
       [ { ...emptyResource} ],
@@ -5461,7 +5461,7 @@ export const allCards: GameCard[] = [
       [ { ...emptyResource} ],
     ],
     effects: [
-      "effects/passive Dépensez resources/tradeGood resources/tradeGood resources/tradeGood pour gagner une ressource au choix.",
+      "effects/passive Dépensez resources/tradegood resources/tradegood resources/tradegood pour gagner une ressource au choix.",
       '',
       '',
       '',
@@ -5495,7 +5495,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 118,
-    name: ["Petite Ecole", "Ecole", "Ecole Réputée", "Ecole Reconnue"],
+    name: ['small_school', 'school', 'renowned_school', 'prominent_school'],
     resources: [
       [ { ...emptyResource} ],
       [ { ...emptyResource} ],
@@ -5588,7 +5588,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 120,
-    name: ["Investisseur", "Investisseur", "Investisseur", "Investisseur"],
+    name: ['investor', 'investor', 'investor', 'investor'],
     resources: [
       [ { ...emptyResource} ],
       [ { ...emptyResource} ],
@@ -5630,7 +5630,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 121,
-    name: ["Roi Alahar", '', "Reine Jemimah", ''],
+    name: ['king_alahar', '', 'queen_jeminah', ''],
     resources: [
       [ { sword: 2, fame: -5 } ],
       [ { ...emptyResource} ],
@@ -5682,9 +5682,9 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 122,
-    name: ["Consort Royal", '', "Consort Royal", ''],
+    name: ['royal_consort', '', 'royal_consort', ''],
     resources: [
-      [ { coin: 1, tradeGood: 2 } ],
+      [ { coin: 1, tradegood: 2 } ],
       [ { ...emptyResource} ],
       [ { wood: 1, stone: 1 } ],
       [ { ...emptyResource} ],
@@ -5724,7 +5724,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 123,
-    name: ["Château Majestueux", "Château Monumental", "Forteresse Imprenable", "Forteresse"],
+    name: ['grand_castle', 'huge_castle', 'impregnable_fortress', 'fortress'],
     resources: [
       [ { sword: 1, fame: 15 } ],
       [ { sword: 2, fame: 20 } ],
@@ -5766,12 +5766,12 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 124,
-    name: ["Extraction de joyaux", "Taille de Joyau", "Exposition du Joyau", "Polissage du Joyau"],
+    name: ['jewel_extraction', 'jewel_cutting', 'jewel_exhibit', 'jewel_polishing'],
     resources: [
-      [ { stone: 1, metal: 2, tradeGood: 2, fame: 15 } ],
-      [ { metal: 2, tradeGood: 3, fame: 18 } ],
-      [ { metal: 3, tradeGood: 6, fame: 25 } ],
-      [ { metal: 3, tradeGood: 4, fame: 21 } ],
+      [ { stone: 1, metal: 2, tradegood: 2, fame: 15 } ],
+      [ { metal: 2, tradegood: 3, fame: 18 } ],
+      [ { metal: 3, tradegood: 6, fame: 25 } ],
+      [ { metal: 3, tradegood: 4, fame: 21 } ],
     ],
     effects: [
       '',
@@ -5808,7 +5808,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 125,
-    name: ["Grand Temple", "Temple Sculpté", "Temple de la Lumière", "Temple Légendaire"],
+    name: ['large_temple', 'ornate_temple', 'temple_of_light', 'legendary_temple'],
     resources: [
       [ { stone: 1, fame: 18 } ],
       [ { fame: 22 } ],
@@ -5818,14 +5818,14 @@ export const allCards: GameCard[] = [
     effects: [
       "effects/optional Fin du Tour: Défaussez pour que 5 autre cartes restent en jeu.",
       "effects/optional Fin du Tour: Défaussez pour que 5 autre cartes restent en jeu.",
-      "effects/optional Fin du Tour: Défaussez pour que 5 autre cartes restent en jeu. effects/time dépensez resources/tradeGood resources/tradeGood resources/tradeGood resources/tradeGood pour inscrire 1 effects/check .(Quand vous la purgez, cette carte vaut +10 resources/fame par effects/check .",
+      "effects/optional Fin du Tour: Défaussez pour que 5 autre cartes restent en jeu. effects/time dépensez resources/tradegood resources/tradegood resources/tradegood resources/tradegood pour inscrire 1 effects/check .(Quand vous la purgez, cette carte vaut +10 resources/fame par effects/check .",
       "effects/optional Fin du Tour: Défaussez pour que 5 autre cartes restent en jeu.",
     ],
     upgrades: [
-      [ { cost: { coin: 3, tradeGood: 3 }, nextSide: 2 } ],
-      [ { cost: { coin: 3, stone: 3, tradeGood: 3 }, nextSide: 4 } ],
+      [ { cost: { coin: 3, tradegood: 3 }, nextSide: 2 } ],
+      [ { cost: { coin: 3, stone: 3, tradegood: 3 }, nextSide: 4 } ],
       [],
-      [{ cost: { tradeGood: 8 }, nextSide: 3 }],
+      [{ cost: { tradegood: 8 }, nextSide: 3 }],
     ],
     currentSide: 1,
     type: ['building', 'building', 'building', 'building'],
@@ -5858,12 +5858,12 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 126,
-    name: ["Forêt de Pins", "Forêt de Pins", "Mare", "Mare Poissonneuse"],
+    name: ['pine_forest', 'pine_forest', 'pond', 'fish_pond'],
     resources: [
       [ { wood: 1 } ],
       [ { wood: 2 } ],
       [ { coin: 1 } ],
-      [ { coin: 2, tradeGood: 1 } ],
+      [ { coin: 2, tradegood: 1 } ],
     ],
     effects: [
       '',
@@ -5900,18 +5900,18 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 127,
-    name: ["Rochers", "Rochers", "Champignons", "Champignons"],
+    name: ['boulders', 'boulders', 'mushrooms', 'mushrooms'],
     resources: [
       [ { stone: 1 } ],
       [ { stone: 2 } ],
-      [ { tradeGood: 1 } ],
-      [ { tradeGood: 1 } ],
+      [ { tradegood: 1 } ],
+      [ { tradegood: 1 } ],
     ],
     effects: [
       '',
       '',
       '',
-      "effects/passive Défaussez 1 Personne pour gagner resources/tradeGood resources/tradeGood .",
+      "effects/passive Défaussez 1 Personne pour gagner resources/tradegood resources/tradegood .",
     ],
     upgrades: [
       [ { cost: { metal: 2 }, nextSide: 2 } ],
@@ -5942,11 +5942,11 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 128,
-    name: ["Ravin", "Gouffre", "Site de Fouilles", "Ruines Antiques"],
+    name: ['ravine', 'chasm', 'excavation_site', 'ancient_ruins'],
     resources: [
       [ emptyResource ],
       [ emptyResource ],
-      [ { coin: 1, tradeGood: 1 } ],
+      [ { coin: 1, tradegood: 1 } ],
       [ emptyResource ],
     ],
     effects: [
@@ -5994,7 +5994,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 129,
-    name: ["Sources Chaudes", "Fontaine", "Rivière d'Eau Pure", "Canaux"],
+    name: ['hot_springs', 'fountain', 'sweet_water_river', 'canals'],
     resources: [
       [ emptyResource ],
       [ { fame: 2 } ],
@@ -6036,7 +6036,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 130,
-    name: ["Ville Frontalière", "Tour de Garde", "Mur Intérieur", "Double Muraille"],
+    name: ['town_border', 'watchtower', 'inner_wall', 'double_wall'],
     resources: [
       [ { coin: 1 } ],
       [ { sword: 1, fame: 4 } ],
@@ -6081,7 +6081,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 131,
-    name: ["Plaines du Nord", "Douves", 'wall', "Pont des Douves"],
+    name: ['north_plains', 'moat', 'wall', 'moat_bridge'],
     resources: [
       [ { coin: 1 } ],
       [ { sword: 1, fame: 2 } ],
@@ -6126,7 +6126,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 132,
-    name: ["Collines Meridionales", "Terrasses", "Moulin à Vent", 'wall'],
+    name: ['south_hills', 'terrace_land', 'windmill', 'wall'],
     resources: [
       [ { coin: 1 } ],
       [ { sword: 1, fame: 2 } ],
@@ -6171,7 +6171,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 133,
-    name: ["Raid", "Razzia", "Saccage", "Pillage"],
+    name: ['raid', 'looting', 'plundering', 'pillaging'],
     resources: [
       [ emptyResource ],
       [ emptyResource ],
@@ -6213,7 +6213,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 134,
-    name: ["Rival Beau-Gosse", '', "Allié Noble", ''],
+    name: ['handsome_rival', '', 'noble_ally', ''],
     resources: [
       [ emptyResource ],
       [],
@@ -6240,7 +6240,7 @@ export const allCards: GameCard[] = [
         { content: "coin x5", checked: false },
         { content: "sword x2", checked: false },
         { content: "sword x3", checked: false },
-        { content: "tradeGood x3", checked: false },
+        { content: "tradegood x3", checked: false },
       ],
       [],
       [],
@@ -6265,7 +6265,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 135,
-    name: ["Terres Frontalières", "Occupation", "Etats Vassaux", "Villages Alliés"],
+    name: ['bordering_lands', 'occupation', 'vassal_states', 'unruly_towns'],
     resources: [
       [ emptyResource ],
       [ emptyResource ],
@@ -6307,7 +6307,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 136,
-    name: ["Prospérité (extension)", "Engranger des réserves", "Décret Royal", "Soulèvement"],
+    name: ['prosperity_expansion', 'hoarding', 'royal_decree', 'uprising'],
     resources: [
       [],
       [],
@@ -6359,7 +6359,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 137,
-    name: ["Le Moulin à Eau (extension)", "Récolte Productive", "Fermes Abandonnées", "Surplus"],
+    name: ['the_water_mill_expansion', 'efficient_farming', 'obsolete_farms', 'surplus'],
     resources: [
       [],
       [],
@@ -6370,7 +6370,7 @@ export const allCards: GameCard[] = [
       "Jouez 1 manche durant laquelle vous pouvez gagner resources/coin resources/coin resources/coin une fois par tour, puis ->.",
       "Jouez 1 manche. effects/time Défaussez 2 Bâtiments pour ajouter une resources/coin à un Terrain en jeu, puis ->.",
       "Jouez 1 manche. Puis, détruisez cette extension avec 1 carte avec une production d' resources/coin .",
-      "Jouez 1 manche durant laquelle les Terrains produisent de l' resources/coin peuvent produire des resources/tradeGood à la place, puis ->.",
+      "Jouez 1 manche durant laquelle les Terrains produisent de l' resources/coin peuvent produire des resources/tradegood à la place, puis ->.",
     ],
     upgrades: [
       [ {cost: { }, nextSide: 2} ],
@@ -6401,7 +6401,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 138,
-    name: ["Frontière Contestée (extension)", "Espionnage", "Résistance", "Attaque"],
+    name: ['border_dispute_expansion', 'espionage', 'resistance', 'attack'],
     resources: [
       [],
       [],

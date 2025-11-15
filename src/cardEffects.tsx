@@ -697,7 +697,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             { stone: 1 },
             { sword: 1 },
             { metal: 1 },
-            { tradeGood: 1 },
+            { tradegood: 1 },
           ]);
           if (!choice1) {
             return false;
@@ -708,7 +708,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             { stone: 1 },
             { sword: 1 },
             { metal: 1 },
-            { tradeGood: 1 },
+            { tradegood: 1 },
           ]);
           if(choice2) {
             applyChoice(ctx, choice1);
@@ -797,7 +797,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             { stone: 1 },
             { sword: 1 },
             { metal: 1 },
-            { tradeGood: 1 },
+            { tradegood: 1 },
           ]);
           if (!choice1) {
             return false;
@@ -808,7 +808,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             { stone: 1 },
             { sword: 1 },
             { metal: 1 },
-            { tradeGood: 1 },
+            { tradegood: 1 },
           ]);
           if(choice2) {
             applyChoice(ctx, choice1);
@@ -1176,26 +1176,26 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       }],
   },
-  27: {
+  27: { // TODO : translate end of round effects
     1: [{ // Exportation
-        description: "Dépensez des tradeGood, recevez des récompenses",
+        description: "Dépensez des tradegood, recevez des récompenses",
         timing: "onClick",
         execute: async function (ctx) {
-          const oldExportValue = ctx.card.GetResources()[0].tradeGood ?? 0;
+          const oldExportValue = ctx.card.GetResources()[0].tradegood ?? 0;
           const thresholdValues = [10, 20, 30, 40, 55, 75, 100];
 
-          if (ctx.resources.tradeGood > 0) {
-            await addResourceMapToCard(ctx.card, { tradeGood: ctx.resources.tradeGood });
-            ctx.setResources(prev => ({ ...prev, tradeGood: 0 }));
+          if (ctx.resources.tradegood > 0) {
+            await addResourceMapToCard(ctx.card, { tradegood: ctx.resources.tradegood });
+            ctx.setResources(prev => ({ ...prev, tradegood: 0 }));
           }
 
-          const newExport = ctx.card.GetResources()[0].tradeGood ?? 0;
+          const newExport = ctx.card.GetResources()[0].tradegood ?? 0;
           for (const threshold of thresholdValues) {
             if (oldExportValue < threshold && newExport >= threshold) {
               switch(threshold) {
                 case 10:
                   ctx.registerEndRoundEffect(
-                    "Récompense tradeGood (seuil 10): Ajoutez coin/wood/stone à 1 Terrain",
+                    "Récompense tradegood (seuil 10): Ajoutez coin/wood/stone à 1 Terrain",
                     async () => {
                       const choice = await ctx.selectResourceChoice([
                         { coin: 1 },  
@@ -1211,9 +1211,9 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                   break;
                 case 20:
                   ctx.registerEndRoundEffect(
-                    "Récompense tradeGood (seuil 20): Ajoute \"Reste en Jeu\" à une personne",
+                    "Récompense tradegood (seuil 20): Ajoute \"Reste en Jeu\" à une personne",
                     async () => {
-                      const card = (await ctx.selectCardsFromZone((card) => (card.GetType(ctx.t).includes(ctx.t('person'))), ctx.t('deck'), "Récompense tradeGood (seuil 20): Ajoute \"Reste en Jeu\" à une personne", 1)).slice(0)[0];
+                      const card = (await ctx.selectCardsFromZone((card) => (card.GetType(ctx.t).includes(ctx.t('person'))), ctx.t('deck'), "Récompense tradegood (seuil 20): Ajoute \"Reste en Jeu\" à une personne", 1)).slice(0)[0];
                       ctx.addCardEffect(card.id, card.currentSide, ctx.t('deck'), stayInPlayEffect, stayInPlayText);
                     },
                     false
@@ -1221,7 +1221,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                   break;
                 case 30:
                   ctx.registerEndRoundEffect(
-                    "Récompense tradeGood (seuil 30): Découvre Adoubement (80)",
+                    "Récompense tradegood (seuil 30): Découvre Adoubement (80)",
                     async () => {
                       await ctx.discoverCard(
                         (card) => [80].includes(card.id),
@@ -1236,12 +1236,12 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                   break;
                 case 40:
                   ctx.registerEndRoundEffect(
-                    "Récompense tradeGood (seuil 40): Ajoutez metal/sword/tradeGood à 1 Bâtiment",
+                    "Récompense tradegood (seuil 40): Ajoutez metal/sword/tradegood à 1 Bâtiment",
                     async () => {
                       const choice = await ctx.selectResourceChoice([
                         { metal: 1 },  
                         { sword: 1 },
-                        { tradeGood: 1 }
+                        { tradegood: 1 }
                       ]);
                       if(choice) {
                         await ctx.boostProductivity((card: GameCard) => (card.GetType(ctx.t) === ctx.t('building')), ctx.t('deck'), resolveDescription(this.description, ctx.t), choice);
@@ -1252,7 +1252,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                   break;
                 case 55:
                   ctx.registerEndRoundEffect(
-                    "Récompense tradeGood (seuil 55): Ajoutez wood/stone/metal/sword à 1 carte",
+                    "Récompense tradegood (seuil 55): Ajoutez wood/stone/metal/sword à 1 carte",
                     async () => {
                       const choice = await ctx.selectResourceChoice([
                         { wood: 1 },  
@@ -1269,7 +1269,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                   break;
                 case 75:
                   ctx.registerEndRoundEffect(
-                    "Récompense tradeGood (seuil 75): Ajoutez fame x5 à 1 carte",
+                    "Récompense tradegood (seuil 75): Ajoutez fame x5 à 1 carte",
                     async () => {
                       await ctx.boostProductivity(() => (true), ctx.t('deck'), resolveDescription(this.description, ctx.t), { fame: 5 });
                     },
@@ -1278,7 +1278,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                   break;
                 case 100:
                   ctx.registerEndRoundEffect(
-                    "Récompense tradeGood (seuil 100): Retournez la carte",
+                    "Récompense tradegood (seuil 100): Retournez la carte",
                     async () => {
                       await ctx.upgradeCard(ctx.card, 3);
                     },
@@ -1292,24 +1292,24 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       }],
     3: [{ // Exportation de Masse
-        description: "Dépensez des tradeGood, recevez des récompenses",
+        description: "Dépensez des tradegood, recevez des récompenses",
         timing: "onClick",
         execute: async function (ctx) {
-          const oldExportValue = ctx.card.GetResources()[0].tradeGood ?? 0;
+          const oldExportValue = ctx.card.GetResources()[0].tradegood ?? 0;
           const thresholdValues = [25, 50, 75, 100, 150, 200, 250];
 
-          if (ctx.resources.tradeGood > 0) {
-            await addResourceMapToCard(ctx.card, { tradeGood: ctx.resources.tradeGood });
-            ctx.setResources(prev => ({ ...prev, tradeGood: 0 }));
+          if (ctx.resources.tradegood > 0) {
+            await addResourceMapToCard(ctx.card, { tradegood: ctx.resources.tradegood });
+            ctx.setResources(prev => ({ ...prev, tradegood: 0 }));
           }
 
-          const newExport = ctx.card.GetResources()[0].tradeGood ?? 0;
+          const newExport = ctx.card.GetResources()[0].tradegood ?? 0;
           for (const threshold of thresholdValues) {
             if (oldExportValue < threshold && newExport >= threshold) {
               switch(threshold) {
                 case 25:
                   ctx.registerEndRoundEffect(
-                    "Récompense tradeGood (seuil 25): Ajoute 1 fame à 2 Terrains",
+                    "Récompense tradegood (seuil 25): Ajoute 1 fame à 2 Terrains",
                     async () => {
                       await ctx.boostProductivity((card) => (card.GetType(ctx.t).includes(ctx.t('land'))), ctx.t('deck'), resolveDescription(this.description, ctx.t), { fame: 1 });
                       await ctx.boostProductivity((card) => (card.GetType(ctx.t).includes(ctx.t('land'))), ctx.t('deck'), resolveDescription(this.description, ctx.t), { fame: 1 });
@@ -1319,7 +1319,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                   break;
                 case 50:
                   ctx.registerEndRoundEffect(
-                    "Récompense tradeGood (seuil 50): Ajoute 5 fame à 1 Personne",
+                    "Récompense tradegood (seuil 50): Ajoute 5 fame à 1 Personne",
                     async () => {
                       await ctx.boostProductivity((card) => (card.GetType(ctx.t).includes(ctx.t('person'))), ctx.t('deck'), resolveDescription(this.description, ctx.t), { fame: 5 });
                     },
@@ -1328,7 +1328,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                   break;
                 case 75:
                   ctx.registerEndRoundEffect(
-                    "Récompense tradeGood (seuil 75): Décrouvrez la Visite Royale (107)",
+                    "Récompense tradegood (seuil 75): Décrouvrez la Visite Royale (107)",
                     async () => {
                       await ctx.discoverCard(
                         (card) => [107].includes(card.id),
@@ -1343,7 +1343,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                   break;
                 case 100:
                   ctx.registerEndRoundEffect(
-                    "Récompense tradeGood (seuil 100): Ajoute 5 fame à 1 Bâtiment",
+                    "Récompense tradegood (seuil 100): Ajoute 5 fame à 1 Bâtiment",
                     async () => {
                       await ctx.boostProductivity((card) => (card.GetType(ctx.t).includes(ctx.t('building'))), ctx.t('deck'), resolveDescription(this.description, ctx.t), { fame: 5 });
                     },
@@ -1352,12 +1352,12 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                   break;
                 case 150:
                   ctx.registerEndRoundEffect(
-                    "Récompense tradeGood (seuil 150): Check une carte Permanente",
+                    "Récompense tradegood (seuil 150): Check une carte Permanente",
                     async () => {
                       const card = (await ctx.selectCardsFromZone(
                           (card) => (card.id !== ctx.card.id && card.checkboxes.length !== 0),
                           ctx.t('permanentZone'),
-                          "Récompense tradeGood (seuil 150): Check une carte Permanente",
+                          "Récompense tradegood (seuil 150): Check une carte Permanente",
                           1
                       ))[0];
                       const subCtx = ctx;
@@ -1369,7 +1369,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                   break;
                 case 200:
                   ctx.registerEndRoundEffect(
-                    "Récompense tradeGood (seuil 200): Check toutes les cartes Permanentes souhaitées",
+                    "Récompense tradegood (seuil 200): Check toutes les cartes Permanentes souhaitées",
                     async () => {
                       const cards = ctx.fetchCardsInZone(
                         (card) => (card.id !== ctx.card.id && card.checkboxes.length !== 0),
@@ -1386,7 +1386,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                   break;
                 case 250:
                   ctx.registerEndRoundEffect(
-                    "Récompense tradeGood (seuil 250): Découvrez les Relation Commerciales (117)",
+                    "Récompense tradegood (seuil 250): Découvrez les Relation Commerciales (117)",
                     async () => {
                       await ctx.discoverCard(
                         (card) => [117].includes(card.id),
@@ -1580,7 +1580,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: "Détruisez Cabane de Bûcheron/Grange/Bâteau de pêche pour découvrir (100)/(101)/(102)",
       timing: "onClick",
       execute: async function (ctx) {
-        const cardsNames = ["Cabane de Bûcheron", "Grange", "Bâteau de pêche"];
+        const cardsNames = [ctx.t('lumberjack'), ctx.t('food_barns'), ctx.t('fishing_boat')];
         const card = (await ctx.selectCardsFromZone((card) => cardsNames.includes(card.GetName(ctx.t)), ctx.t('playArea'), resolveDescription(this.description, ctx.t), 1)).slice(0)[0];
         await new Promise(resolve => setTimeout(resolve, 100));
         if (card) {
@@ -1642,7 +1642,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           {stone: checkedBoxes},
           {metal: checkedBoxes},
           {sword: checkedBoxes},
-          {tradeGood: checkedBoxes}
+          {tradegood: checkedBoxes}
         ];
         
         const selectedResource = await ctx.selectResourceChoice(resourcesChoice);
@@ -2137,7 +2137,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: "Détruisez Château/Mine de Diamant/Temple pour découvrir (123)/(124)/(125)",
       timing: "onClick",
       execute: async function (ctx) {
-        const cardsNames = ["Château", "Mine de Diamant", "Temple"];
+        const cardsNames = [ctx.t('castle'), ctx.t('diamond_mine'), ctx.t('temple')];
         const card = (await ctx.selectCardsFromZone((card) => cardsNames.includes(card.GetName(ctx.t)), ctx.t('playArea'), resolveDescription(this.description, ctx.t), 1)).slice(0)[0];
         await new Promise(resolve => setTimeout(resolve, 100));
         if (card) {
@@ -2209,7 +2209,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
               { stone: 1 },
               { sword: 1 },
               { metal: 1 },
-              { tradeGood: 1 },
+              { tradegood: 1 },
             ]);
             if (!choice1) {
               return false;
@@ -2220,7 +2220,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
               { stone: 1 },
               { sword: 1 },
               { metal: 1 },
-              { tradeGood: 1 },
+              { tradegood: 1 },
             ]);
             if(choice2) {
               applyChoice(ctx, choice1);
@@ -2754,7 +2754,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         let selectedCards: GameCard[] = [];
         const filter = (card: GameCard) =>
           (card.GetResources().some(
-            (res) => ((res.coin ?? 0) + (res.wood ?? 0) + (res.stone ?? 0) + (res.metal ?? 0) + (res.sword ?? 0) + (res.tradeGood ?? 0)) >= 1));
+            (res) => ((res.coin ?? 0) + (res.wood ?? 0) + (res.stone ?? 0) + (res.metal ?? 0) + (res.sword ?? 0) + (res.tradegood ?? 0)) >= 1));
         while (selectedCards.length == 0 && ctx.filterZone(ctx.zone, filter).length !== 0) {
           selectedCards = await ctx.selectCardsFromZone(filter, ctx.t('playArea'), resolveDescription(this.description, ctx.t), 3);
         }
@@ -2778,7 +2778,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             { stone: 1 },
             { sword: 1 },
             { metal: 1 },
-            { tradeGood: 1 },
+            { tradegood: 1 },
           ]);
           if (!choice1) {
             return false;
@@ -2789,7 +2789,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             { stone: 1 },
             { sword: 1 },
             { metal: 1 },
-            { tradeGood: 1 },
+            { tradegood: 1 },
           ]);
           if (!choice2) {
             return false;
@@ -2800,7 +2800,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             { stone: 1 },
             { sword: 1 },
             { metal: 1 },
-            { tradeGood: 1 },
+            { tradegood: 1 },
           ]);
           if(choice3) {
             applyChoice(ctx, choice1);
@@ -2913,7 +2913,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             { stone: 1 },
             { sword: 1 },
             { metal: 1 },
-            { tradeGood: 1 },
+            { tradegood: 1 },
           ]);
           if (!choice1) {
             return false;
@@ -2924,7 +2924,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             { stone: 1 },
             { sword: 1 },
             { metal: 1 },
-            { tradeGood: 1 },
+            { tradegood: 1 },
           ]);
           if(choice2) {
             applyChoice(ctx, choice1);
@@ -2945,7 +2945,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         let selectedCards: GameCard[] = [];
         const filter = (card: GameCard) =>
           (card.GetResources().some(
-            (res) => ((res.coin ?? 0) + (res.wood ?? 0) + (res.stone ?? 0) + (res.metal ?? 0) + (res.sword ?? 0) + (res.tradeGood ?? 0)) >= 1));
+            (res) => ((res.coin ?? 0) + (res.wood ?? 0) + (res.stone ?? 0) + (res.metal ?? 0) + (res.sword ?? 0) + (res.tradegood ?? 0)) >= 1));
         while (selectedCards.length == 0 && ctx.filterZone(ctx.zone, filter).length !== 0) {
           selectedCards = await ctx.selectCardsFromZone(filter, ctx.t('playArea'), resolveDescription(this.description, ctx.t), 3);
         }
@@ -2969,7 +2969,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             { stone: 1 },
             { sword: 1 },
             { metal: 1 },
-            { tradeGood: 1 },
+            { tradegood: 1 },
           ]);
           if (!choice1) {
             return false;
@@ -2980,7 +2980,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             { stone: 1 },
             { sword: 1 },
             { metal: 1 },
-            { tradeGood: 1 },
+            { tradegood: 1 },
           ]);
           if (!choice2) {
             return false;
@@ -2991,7 +2991,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             { stone: 1 },
             { sword: 1 },
             { metal: 1 },
-            { tradeGood: 1 },
+            { tradegood: 1 },
           ]);
           if(choice3) {
             applyChoice(ctx, choice1);
@@ -3150,7 +3150,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             { stone: 1 },
             { sword: 1 },
             { metal: 1 },
-            { tradeGood: 1 },
+            { tradegood: 1 },
           ]);
           if(choice1) {
             applyChoice(ctx, choice1);
@@ -3179,7 +3179,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             { stone: 1 },
             { sword: 1 },
             { metal: 1 },
-            { tradeGood: 1 },
+            { tradegood: 1 },
           ]);
           if(choice1) {
             applyChoice(ctx, choice1);
@@ -3205,12 +3205,12 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   69: {
     1: [{ // Touche Finale
-        description: "Ajoutez 1 tradeGood et 5 fame à 1 carte en jeu",
+        description: "Ajoutez 1 tradegood et 5 fame à 1 carte en jeu",
         timing: "onClick",
         execute: async function (ctx) {
           const card = (await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, ctx.t('playArea'), resolveDescription(this.description, ctx.t), 0, 1))[0];
           if (card) {
-            ctx.boostProductivity((c) => c.id === card.id, ctx.t('playArea'), resolveDescription(this.description, ctx.t), {tradeGood: 1, fame: 5});
+            ctx.boostProductivity((c) => c.id === card.id, ctx.t('playArea'), resolveDescription(this.description, ctx.t), {tradegood: 1, fame: 5});
             ctx.deleteCardInZone(ctx.zone, ctx.card.id);
           }
           return false;
@@ -3226,7 +3226,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             { stone: 1 },
             { sword: 1 },
             { metal: 1 },
-            { tradeGood: 1 },
+            { tradegood: 1 },
           ]);
           if (!choice1) {
             return false;
@@ -3237,7 +3237,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             { stone: 1 },
             { sword: 1 },
             { metal: 1 },
-            { tradeGood: 1 },
+            { tradegood: 1 },
           ]);
           if (!choice2) {
             return false;
@@ -3248,7 +3248,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             { stone: 1 },
             { sword: 1 },
             { metal: 1 },
-            { tradeGood: 1 },
+            { tradegood: 1 },
           ]);
           if (!choice3) {
             return false;
@@ -3259,7 +3259,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             { stone: 1 },
             { sword: 1 },
             { metal: 1 },
-            { tradeGood: 1 },
+            { tradegood: 1 },
           ]);
           if(choice4) {
             applyChoice(ctx, choice1);
@@ -3535,7 +3535,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             { stone: 1 },
             { sword: 1 },
             { metal: 1 },
-            { tradeGood: 1 },
+            { tradegood: 1 },
           ]);
           if (!choice1) {
             return false;
@@ -3546,7 +3546,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             { stone: 1 },
             { sword: 1 },
             { metal: 1 },
-            { tradeGood: 1 },
+            { tradegood: 1 },
           ]);
           if (!choice2) {
             return false;
@@ -3557,7 +3557,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             { stone: 1 },
             { sword: 1 },
             { metal: 1 },
-            { tradeGood: 1 },
+            { tradegood: 1 },
           ]);
           if(choice3) {
             applyChoice(ctx, choice1);
@@ -3593,7 +3593,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             { stone: 1 },
             { sword: 1 },
             { metal: 1 },
-            { tradeGood: 1 },
+            { tradegood: 1 },
           ]);
           if(choice) {
             applyChoice(ctx, choice);
@@ -3781,7 +3781,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: "Ajoutez resources/wood / resources/stone et resources/metal / resources/tradeGood à 1 Bâtiment",
+        description: "Ajoutez resources/wood / resources/stone et resources/metal / resources/tradegood à 1 Bâtiment",
         timing: "endOfRound",
         execute: async function (ctx) {
           let choice1;
@@ -3797,7 +3797,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           while (!choice2) {
             choice2 = await ctx.selectResourceChoice([  
               { metal: 1 },
-              { tradeGood: 1 },
+              { tradegood: 1 },
             ]);
           }
           const card = selected[0];
@@ -3976,7 +3976,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
             if (!checkbox.checked) {
               checkbox.checked = true;
-              ctx.setResources(prev => ({ ...prev, metal: prev.metal - ingotToPay, tradeGood: prev.tradeGood + 5 }));
+              ctx.setResources(prev => ({ ...prev, metal: prev.metal - ingotToPay, tradegood: prev.tradegood + 5 }));
               ctx.effectEndTurn();
               break;
             }
@@ -4045,7 +4045,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   92: {
     1: [{ // __
-      description: "1: Donnes un nom. 2: Rajoutes sword/fame x5. 3: Rajoutes tradeGood/fame x5.",
+      description: "1: Donnes un nom. 2: Rajoutes sword/fame x5. 3: Rajoutes tradegood/fame x5.",
       timing: "played",
       uses: 0,
       execute: async function (ctx) {
@@ -4075,7 +4075,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             let resource2: Partial<ResourceMap> | null = null;
             while (resource2 === null) {
               resource2 = await ctx.selectResourceChoice([
-                { tradeGood: 1 },
+                { tradegood: 1 },
                 { fame: 5 }
               ]);
             }
@@ -4123,7 +4123,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                   { stone: 1 },
                   { sword: 1 },
                   { metal: 1 },
-                  { tradeGood: 1 }
+                  { tradegood: 1 }
                 ]);
               }
               await addResourceMapToCard(ctx.card, resource1);
@@ -4139,7 +4139,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                   { stone: 1 },
                   { sword: 1 },
                   { metal: 1 },
-                  { tradeGood: 1 }
+                  { tradegood: 1 }
                 ]);
               }
               await addResourceMapToCard(ctx.card, resource2);
@@ -4262,10 +4262,10 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Potion d'Amour
-      description: "Réinitialisez pour gagnez tradeGood x5",
+      description: "Réinitialisez pour gagnez tradegood x5",
       timing: "onClick",
       execute: async function (ctx) {
-        ctx.setResources(prev => ({ ...prev, tradeGood: prev.tradeGood + 5 }));
+        ctx.setResources(prev => ({ ...prev, tradegood: prev.tradegood + 5 }));
         await ctx.upgradeCard(ctx.card, 1);
         return true;
       }
@@ -4462,14 +4462,14 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     4: [{ // Cargaison de Bois
-      description: "Dépensez les wood / tradeGood de manière interchangeable",
+      description: "Dépensez les wood / tradegood de manière interchangeable",
       timing: "onClick",
       execute: async function (ctx) {
-        if (ctx.resources.tradeGood > 0) {
-          ctx.setResources(prev => ({ ...prev, wood: prev.wood + prev.tradeGood, tradeGood: 0 }));
+        if (ctx.resources.tradegood > 0) {
+          ctx.setResources(prev => ({ ...prev, wood: prev.wood + prev.tradegood, tradegood: 0 }));
         }
         else if (ctx.resources.wood > 0) {
-          ctx.setResources(prev => ({ ...prev, wood: 0, tradeGood: prev.wood + prev.tradeGood }));
+          ctx.setResources(prev => ({ ...prev, wood: 0, tradegood: prev.wood + prev.tradegood }));
         }
         return false;
       }
@@ -4683,7 +4683,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             { stone: 1 },
             { sword: 1 },
             { metal: 1 },
-            { tradeGood: 1 }
+            { tradegood: 1 }
           ]);
           if(choice) {
             ctx.setResources(prev => ({ ...prev, coin: prev.coin - 2 }));
@@ -4705,7 +4705,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             { stone: 1 },
             { sword: 1 },
             { metal: 1 },
-            { tradeGood: 1 }
+            { tradegood: 1 }
           ]);
           if(choice) {
             ctx.setResources(prev => ({ ...prev, coin: prev.coin - 1 }));
@@ -4762,7 +4762,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           { stone: 1 },
           { sword: 1 },
           { metal: 1 },
-          { tradeGood: 1 }
+          { tradegood: 1 }
         ]);
         
         if (choice) {
@@ -4876,7 +4876,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
   },
-  110: {
+  110: { // TODO : translate string select
     3: [{ // Campagne
       description: "Sélectionnez une carte en jeu ou dans la défausse pour la mettre sous la pioche",
       timing: "onClick",
@@ -4996,7 +4996,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
               { stone: 1 },
               { sword: 1 },
               { metal: 1 },
-              { tradeGood: 1 }
+              { tradegood: 1 }
             ]);
             if (choice) {
               addResourceMapToCard(card, choice);
@@ -5095,20 +5095,20 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   117: {
     1: [{
-      description: "Dépensez tradeGood x3 pour gagner une ressource au choix",
+      description: "Dépensez tradegood x3 pour gagner une ressource au choix",
       timing: "onClick",
       execute: async function (ctx) {
-        if (ctx.resources.tradeGood >= 3) {
+        if (ctx.resources.tradegood >= 3) {
           const choice = await ctx.selectResourceChoice([
             { coin: 1 },
             { wood: 1 },
             { stone: 1 },
             { sword: 1 },
             { metal: 1 },
-            { tradeGood: 1 }
+            { tradegood: 1 }
           ]);
           if (choice) {
-            ctx.setResources(prev => ({ ...prev, tradeGood: prev.tradeGood - 3 }));
+            ctx.setResources(prev => ({ ...prev, tradegood: prev.tradegood - 3 }));
             applyResourceMapDelta(ctx.setResources, choice);
           }
         }
@@ -5199,7 +5199,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
               { stone: 1 },
               { sword: 1 },
               { metal: 1 },
-              { tradeGood: 1 }
+              { tradegood: 1 }
             ]);
             if (choice) {
               addResourceMapToCard(card, choice);
@@ -5226,7 +5226,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
               { stone: 1 },
               { sword: 1 },
               { metal: 1 },
-              { tradeGood: 1 }
+              { tradegood: 1 }
             ]);
             if (choice) {
               addResourceMapToCard(card, choice);
@@ -5300,7 +5300,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           { stone: 1 },
           { sword: 1 },
           { metal: 1 },
-          { tradeGood: 1 }
+          { tradegood: 1 }
         ]);
         if (!choice1) {
           return false;
@@ -5311,7 +5311,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           { stone: 1 },
           { sword: 1 },
           { metal: 1 },
-          { tradeGood: 1 }
+          { tradegood: 1 }
         ]);
         if (!choice2) {
           return false;
@@ -5322,7 +5322,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           { stone: 1 },
           { sword: 1 },
           { metal: 1 },
-          { tradeGood: 1 }
+          { tradegood: 1 }
         ]);
         if (choice3) {
           applyResourceMapDelta(ctx.setResources, choice1);
@@ -5344,7 +5344,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           { stone: 1 },
           { sword: 1 },
           { metal: 1 },
-          { tradeGood: 1 }
+          { tradegood: 1 }
         ]);
         if (!choice1) {
           return false;
@@ -5355,7 +5355,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           { stone: 1 },
           { sword: 1 },
           { metal: 1 },
-          { tradeGood: 1 }
+          { tradegood: 1 }
         ]);
         if (!choice2) {
           return false;
@@ -5366,7 +5366,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           { stone: 1 },
           { sword: 1 },
           { metal: 1 },
-          { tradeGood: 1 }
+          { tradegood: 1 }
         ]);
         if (choice3) {
           applyResourceMapDelta(ctx.setResources, choice1);
@@ -5388,7 +5388,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           { stone: 1 },
           { sword: 1 },
           { metal: 1 },
-          { tradeGood: 1 }
+          { tradegood: 1 }
         ]);
         if (choice) {
           applyResourceMapDelta(ctx.setResources, choice);
@@ -5407,7 +5407,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           { stone: 1 },
           { sword: 1 },
           { metal: 1 },
-          { tradeGood: 1 }
+          { tradegood: 1 }
         ]);
         if (!choice1) {
           return false;
@@ -5418,7 +5418,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           { stone: 1 },
           { sword: 1 },
           { metal: 1 },
-          { tradeGood: 1 }
+          { tradegood: 1 }
         ]);
         if (!choice2) {
           return false;
@@ -5429,7 +5429,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           { stone: 1 },
           { sword: 1 },
           { metal: 1 },
-          { tradeGood: 1 }
+          { tradegood: 1 }
         ]);
         if (choice3) {
           applyResourceMapDelta(ctx.setResources, choice1);
@@ -5611,10 +5611,10 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: "Dépensez tradeGood x4 pour check",
+        description: "Dépensez tradegood x4 pour check",
         timing: "onClick",
         execute: async function (ctx) {
-          if (ctx.resources.tradeGood >= 4 && !ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked)) {
+          if (ctx.resources.tradegood >= 4 && !ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked)) {
             await checkNextBox(ctx.card);
             ctx.effectEndTurn();
           }
@@ -5640,13 +5640,13 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   127: {
     4: [{ // Champignons
-      description: "Défaussez 1 Personne pour gagner tradeGood x2",
+      description: "Défaussez 1 Personne pour gagner tradegood x2",
       timing: "onClick",
       execute: async function (ctx) {
         const card = (await ctx.selectCardsFromZone((card) => card.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'), resolveDescription(this.description, ctx.t), 1))[0];
         if (card) {
           ctx.dropToDiscard({id: card.id, fromZone: ctx.t('playArea')});
-          ctx.setResources(prev => ({ ...prev, tradeGood: prev.tradeGood + 2 }));
+          ctx.setResources(prev => ({ ...prev, tradegood: prev.tradegood + 2 }));
         }
         return false;
       }
@@ -5800,7 +5800,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           { stone: 1 },
           { sword: 1 },
           { metal: 1 },
-          { tradeGood: 1 },
+          { tradegood: 1 },
         ]);
         if(choice) {
           applyChoice(ctx, choice);
@@ -5819,7 +5819,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           { stone: 1 },
           { sword: 1 },
           { metal: 1 },
-          { tradeGood: 1 },
+          { tradegood: 1 },
         ]);
         if (!choice1) {
           return false;
@@ -5830,7 +5830,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           { stone: 1 },
           { sword: 1 },
           { metal: 1 },
-          { tradeGood: 1 },
+          { tradegood: 1 },
         ]);
         if(choice2) {
           applyChoice(ctx, choice1);
@@ -5850,7 +5850,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           { stone: 1 },
           { sword: 1 },
           { metal: 1 },
-          { tradeGood: 1 },
+          { tradegood: 1 },
         ]);
         if (!choice1) {
           return false;
@@ -5861,7 +5861,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           { stone: 1 },
           { sword: 1 },
           { metal: 1 },
-          { tradeGood: 1 },
+          { tradegood: 1 },
         ]);
         if (!choice2) {
           return false;
@@ -5872,7 +5872,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           { stone: 1 },
           { sword: 1 },
           { metal: 1 },
-          { tradeGood: 1 },
+          { tradegood: 1 },
         ]);
         if(choice3) {
           applyChoice(ctx, choice1);
@@ -5893,7 +5893,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           { stone: 1 },
           { sword: 1 },
           { metal: 1 },
-          { tradeGood: 1 },
+          { tradegood: 1 },
         ]);
         if (!choice1) {
           return false;
@@ -5904,7 +5904,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           { stone: 1 },
           { sword: 1 },
           { metal: 1 },
-          { tradeGood: 1 },
+          { tradegood: 1 },
         ]);
         if(choice2) {
           applyChoice(ctx, choice1);
@@ -5921,14 +5921,14 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         description: "Ne peut pas être détruit avant Lord Nimrod (55)",
         timing: "destroyed",
         execute: async function (ctx) {
-          return (ctx.cardsForTrigger?.some((card) => card.GetName(ctx.t) !== "Lord Nimrod")?? true);
+          return (ctx.cardsForTrigger?.some((card) => card.GetName(ctx.t) !== ctx.t('lord_nimrod'))?? true);
         }
       },
       {
         description: "Défaussez Lord Nimrod et dépensez les ressources d'une case pour la check",
         timing: "onClick",
         execute: async function (ctx) {
-          const lord = ctx.fetchCardsInZone((card) => card.GetName(ctx.t) === "Lord Nimrod", ctx.t('playArea'))[0];
+          const lord = ctx.fetchCardsInZone((card) => card.GetName(ctx.t) === ctx.t('lord_nimrod'), ctx.t('playArea'))[0];
           if (!lord) {
             return false;
           }
@@ -6143,7 +6143,7 @@ export const cardFameValueRegistry: Record<number, Record<number, CardFameValue>
       }
     },
     3: { // Commerce
-      description: "Vaut 25 si vous produisez 8+ tradeGood",
+      description: "Vaut 25 si vous produisez 8+ tradegood",
       execute: function(ctx)  {
         const cards = ctx.fetchCardsInZone(() => true, ctx.t('deck'));
 
@@ -6151,7 +6151,7 @@ export const cardFameValueRegistry: Record<number, Record<number, CardFameValue>
           const resourceMaps = card.GetResources() || [];
 
           const exportProduced = resourceMaps.reduce(
-            (max, res) => Math.max(max, res.tradeGood || 0),
+            (max, res) => Math.max(max, res.tradegood || 0),
             0
           );
 

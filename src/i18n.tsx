@@ -25,7 +25,7 @@ export type TranslationKeys =
   | 'horse'
   
   // Resources
-  | 'coin' | 'wood' | 'stone' | 'sword' | 'metal' | 'tradeGood' | 'fame'
+  | 'coin' | 'wood' | 'stone' | 'sword' | 'metal' | 'tradegood' | 'fame'
   
   // Actions & Messages
   | 'selectCards' | 'chooseResource' | 'discoverCard' | 'destroyCard'
@@ -76,7 +76,7 @@ export type TranslationKeys =
   | 'mercenary' | 'sir__'
   | 'strength_in_number' | 'military_domination'
   | 'expanding_borders' | 'maximizer'
-  | 'loyalty'
+  | 'loyalty' | 'trader_obj'
   | 'jester' | 'merchant'
   | 'storage'
   | 'mason' | 'brick_road' | 'stone_street'
@@ -255,7 +255,7 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     stone: 'Pierre',
     sword: 'Militaire',
     metal: 'Lingot',
-    tradeGood: 'Exportation',
+    tradegood: 'Exportation',
     fame: 'Renommée',
     
     // Actions & Messages
@@ -384,6 +384,7 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     expanding_borders: "Elargir les frontières",
     maximizer: "Optimisation",
     loyalty: "Loyauté",
+    trader_obj: "Commerce",
     jester: "Bouffon",
     merchant: "Marchande",
     storage: "Grenier",
@@ -422,7 +423,7 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     city_fire: "Ville en Flamme",
     mysterious_cave: "Grotte Mystérieuse",
     dungeon: "Souterrains",
-    treasures: "Trésor",
+    treasures: "Trésors",
     lost_civilization: "Civilisation Oubliée",
     skilled_bandit: "Bandit d'Elite",
     dark_prince: "Prince des Ténèbres",
@@ -706,7 +707,7 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     stone: 'Stone',
     sword: 'Military',
     metal: 'Ingot',
-    tradeGood: 'Trade Good',
+    tradegood: 'Trade Good',
     fame: 'Fame',
     
     // Actions & Messages
@@ -835,6 +836,7 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     expanding_borders: "Expanding Borders",
     maximizer: "Maximizer",
     loyalty: "Loyalty",
+    trader_obj: "Trader",
     jester: "Jester",
     merchant: "Merchant",
     storage: "Storage",

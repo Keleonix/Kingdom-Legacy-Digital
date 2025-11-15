@@ -10,7 +10,7 @@ export type ResourceMap = {
   stone: number;
   sword: number;
   metal: number;
-  tradeGood: number;
+  tradegood: number;
   fame: number;
 };
 
@@ -31,7 +31,7 @@ export const RESOURCE_KEYS: (keyof ResourceMap)[] = [
   "stone",
   "sword",
   "metal",
-  "tradeGood",
+  "tradegood",
   "fame"
 ];
 
@@ -79,7 +79,7 @@ export const emptyResource: ResourceMap = {
   stone: 0,
   sword: 0,
   metal: 0,
-  tradeGood: 0,
+  tradegood: 0,
   fame: 0
 };
 
