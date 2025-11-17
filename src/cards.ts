@@ -5952,7 +5952,7 @@ export const allCards: GameCard[] = [
     effects: [
       '',
       '',
-      'effect_description_ravine',
+      'effect_description_excavation_site',
       '',
     ],
     upgrades: [

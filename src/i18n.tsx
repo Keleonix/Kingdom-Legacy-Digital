@@ -45,7 +45,7 @@ export type TranslationKeys =
   | 'originalGame' | 'gameDesign' | 'publisher' | 'digitalAdaptation' | 'disclaimer'
   
   // Link words
-  | 'and'
+  | 'and' | 'yes' | 'no'
 
   // Cards Names
   | 'welcome' | 'golden_rules'
@@ -366,7 +366,7 @@ export type TranslationKeys =
   | 'effect_description_temple_of_light'
   | 'effect_description_legendary_temple'
   | 'effect_description_mushrooms'
-  | 'effect_description_ravine'
+  | 'effect_description_excavation_site'
   | 'effect_description_hot_springs'
   | 'effect_description_fountain'
   | 'effect_description_canals'
@@ -397,8 +397,25 @@ export type TranslationKeys =
   | 'effect_description_resistance'
   | 'effect_description_attack'
 
-  // Cards Effects
-  
+  // EoR Effects
+  | 'eor_export_10'
+  | 'eor_export_20'
+  | 'eor_export_30'
+  | 'eor_export_40'
+  | 'eor_export_55'
+  | 'eor_export_75'
+  | 'eor_export_100'
+  | 'eor_mass_export_25'
+  | 'eor_mass_export_50'
+  | 'eor_mass_export_75'
+  | 'eor_mass_export_100'
+  | 'eor_mass_export_150'
+  | 'eor_mass_export_200'
+  | 'eor_mass_export_250'
+
+  // String Choice
+  | 'string_choice_health_potion'
+  | 'string_choice_thriving_countryside'
   ;
 
 // Dictionnaire de traductions
@@ -531,6 +548,8 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
 
     // Link Words
     and: 'et',
+    yes: 'Oui',
+    no: 'Non',
 
     // Cards Names
     welcome: "Bienvenue",
@@ -1052,7 +1071,7 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     effect_description_temple_of_light: "effects/optional Fin du Tour: Défaussez pour que 5 autre cartes restent en jeu. effects/time dépensez resources/tradegood resources/tradegood resources/tradegood resources/tradegood pour inscrire 1 effects/check .(Quand vous la purgez, cette carte vaut +10 resources/fame par effects/check .)",
     effect_description_legendary_temple: "effects/optional Fin du Tour: Défaussez pour que 5 autre cartes restent en jeu.",
     effect_description_mushrooms: "effects/passive Défaussez 1 Personne pour gagner resources/tradegood resources/tradegood .",
-    effect_description_ravine: "Vaut 7 par effects/check . effects/time Défaussez 1 Personne et dépensez resources/stone resources/stone resources/stone pour inscrire effects/check .",
+    effect_description_excavation_site: "Vaut 7 par effects/check . effects/time Défaussez 1 Personne et dépensez resources/stone resources/stone resources/stone pour inscrire effects/check .",
     effect_description_hot_springs: "effects/optional Lorsque vous l'améliorez ajoutez 1 resources/coin à un Terrain en jeu.",
     effect_description_fountain: "effects/optional Lorsque vous l'améliorez boostez 1 carte en jeu.",
     effect_description_canals: "effects/optional Lorsque vous l'améliorez 1 Terrain gagne \" effects/passive Reste en jeu. \".",
@@ -1083,8 +1102,25 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     effect_description_resistance: "Jouez 1 manche durant laquelle vous pouvez dépenser autant d' resources/sword que vous le souhaitez pour les mettre sur cette carte. Après la manche, ajoutez autant de resources/fame (max 100) à un Terrain, puis détruisez cette extension.",
     effect_description_attack: "Jouez 1 manche. effects/forced Fin du Tour: Si vous n'avez aucune resources/sword , enlevez 1 production d'1 carte en jeu. effects/forced Fin de Manche: Ajoutez une ressource (non- resources/fame ) au choix à une carte alliée, puis ->.",
 
-  // Cards Effects
+    // EoR Effects
+    eor_export_10: " (seuil 10): Ajoutez coin/wood/stone à 1 Terrain",
+    eor_export_20: " (seuil 20): Ajoute \"Reste en Jeu\" à une personne",
+    eor_export_30: " (seuil 30): Découvre Adoubement (80)",
+    eor_export_40: " (seuil 40): Ajoutez metal/sword/tradegood à 1 Bâtiment",
+    eor_export_55: " (seuil 55): Ajoutez wood/stone/metal/sword à 1 carte",
+    eor_export_75: " (seuil 75): Ajoutez fame x5 à 1 carte",
+    eor_export_100: " (seuil 100): Retournez la carte",
+    eor_mass_export_25: " (seuil 25): Ajoute 1 fame à 2 Terrains",
+    eor_mass_export_50: " (seuil 50): Ajoute 5 fame à 1 Personne",
+    eor_mass_export_75: " (seuil 75): Décrouvrez la Visite Royale (107)",
+    eor_mass_export_100: " (seuil 100): Ajoute 5 fame à 1 Bâtiment",
+    eor_mass_export_150: " (seuil 150): Check une carte Permanente",
+    eor_mass_export_200: " (seuil 200): Check toutes les cartes Permanentes souhaitées",
+    eor_mass_export_250: " (seuil 250): Découvrez les Relation Commerciales (117)",
 
+    // String Choice
+    string_choice_health_potion: "Défausser la Potion de Soin pour garder une Personne en jeu ?",
+    string_choice_thriving_countryside: "Depuis la Zone de Jeu ou la Défausse?",
   },
   en: {
     // UI Elements
@@ -1214,6 +1250,8 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
 
     // Link Words
     and: 'and',
+    yes: 'Yes',
+    no: 'No',
 
     // Cards Names
     welcome: "Welcome",
@@ -1533,7 +1571,7 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
 
     // Cards Effects Descriptions
     staysInPlay: "effects/passive Stays in play.",
-    effect_description_plains: "effects/activate Discard a friendly card to gain coin x2.",
+    effect_description_plains: "effects/activate Discard a friendly card to gain resources/coin resources/coin .",
     effect_description_rocky_area: "effects/activate Spend resources/coin to gain resources/stone resources/stone .",
     effect_description_shallow_mines: "effects/destroy Discover a Mine (84/85). ",
     effect_description_forest: "effects/activate Gain resources/wood resources/wood resources/wood , then Front Down.",
@@ -1735,7 +1773,7 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     effect_description_temple_of_light: "effects/optional End of Turn : Discard so that 5 other cards stay in play. effects/time Spend resources/tradegood resources/tradegood resources/tradegood resources/tradegood to add 1 effects/check .(When purging this card, this card is wirth +10 resources/fame per effects/check .)",
     effect_description_legendary_temple: "effects/optional End of Turn : Discard so that 5 other cards stay in play.",
     effect_description_mushrooms: "effects/passive Discard 1 Person to gain resources/tradegood resources/tradegood .",
-    effect_description_ravine: "Worth 7 per effects/check . effects/time Discard 1 Person and spend resources/stone resources/stone resources/stone to mark effects/check .",
+    effect_description_excavation_site: "Worth 7 per effects/check . effects/time Discard 1 Person and spend resources/stone resources/stone resources/stone to mark effects/check .",
     effect_description_hot_springs: "effects/optional When you upgrade it add 1 resources/coin to a Land in play.",
     effect_description_fountain: "effects/optional When you upgrade it boost 1 card in play.",
     effect_description_canals: "effects/optional When you upgrade it 1 Land gains \"effects/passive Stays in play. \".",
@@ -1766,6 +1804,25 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     effect_description_resistance: "Play 1 round during which you can spend as many resources/sword as you want to put them on this card. After the round, add as many resources/fame (max 100) to a Land, then destroy this extension.",
     effect_description_attack: "Play 1 round. effects/forced End of Turn: If you have no resources/sword , remove 1 production from 1 card in play. effects/forced End of Round: Add a resource (non- resources/fame ) of your choice to a friendly card, then ->.",
 
+    // EoR Effects
+    eor_export_10: " (seuil 10): Add coin/wood/stone to 1 Land",
+    eor_export_20: " (seuil 20): Add \"Stays in Play.\" to 1 Person.",
+    eor_export_30: " (seuil 30): Discover  (80)",
+    eor_export_40: " (seuil 40): Ajoutez metal/sword/tradegood à 1 Bâtiment",
+    eor_export_55: " (seuil 55): Ajoutez wood/stone/metal/sword à 1 carte",
+    eor_export_75: " (seuil 75): Ajoutez fame x5 à 1 carte",
+    eor_export_100: " (seuil 100): Retournez la carte",
+    eor_mass_export_25: " (seuil 25): Ajoute 1 fame à 2 Terrains",
+    eor_mass_export_50: " (seuil 50): Ajoute 5 fame à 1 Personne",
+    eor_mass_export_75: " (seuil 75): Décrouvrez la Visite Royale (107)",
+    eor_mass_export_100: " (seuil 100): Ajoute 5 fame à 1 Bâtiment",
+    eor_mass_export_150: " (seuil 150): Check une carte Permanente",
+    eor_mass_export_200: " (seuil 200): Check toutes les cartes Permanentes souhaitées",
+    eor_mass_export_250: " (seuil 250): Découvrez les Relation Commerciales (117)",
+
+    // String Choice
+    string_choice_health_potion: "Discard the Health Potion to keep a Person in play ?",
+    string_choice_thriving_countryside: "From Play Area or Discard?",
   }
 };
 

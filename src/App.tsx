@@ -48,8 +48,7 @@ function resourceIconPath(key: keyof ResourceMap) {
 }
 
 // side label helper
-function sideLabel(side: number) {
-  const { t } = useTranslation();
+function sideLabel(side: number, t: (key: TranslationKeys) => string) {
   return side === 1
     ? t('frontUp')
     : side === 2
@@ -396,9 +395,8 @@ function CardPreviewPopup({
       <div className="font-bold text-lg mb-3 text-center">{t('card')} #{card.id}</div>
 
       <div className="relative">
-        {/* 2x2 Grid Layout */}
         <div className="grid grid-cols-2 gap-3 max-w-[450px]">
-          {/* Front Up (Side 1) */}
+          {/* Front Up (Side 1) - INDEX 0 */}
           <div ref={cardRefs.frontUp} className="border rounded p-2 max-w-[200px]" style={getBackgroundStyle(card, 0)}>
             <div className="font-semibold text-sm mb-1">{t('frontUp')}</div>
             {card.name[0] ? (
@@ -417,13 +415,12 @@ function CardPreviewPopup({
                     {renderEffectText(card.GetEffect(t, 0))}
                   </div>
                 )}
-                {/* Upgrades */}
                 {card.upgrades[0]?.length > 0 && (
                   <div className="mt-2 border-t pt-2">
                     <div className="text-[9px] font-semibold mb-1">{t('upgrades')}:</div>
                     {card.upgrades[0].map((upg, idx) => (
                       <div key={idx} className="text-[8px] mb-1 flex items-center gap-1 flex-wrap">
-                        <span className="text-blue-600">→ {sideLabel(upg.nextSide)}</span>
+                        <span className="text-blue-600">→ {sideLabel(upg.nextSide, t)}</span>
                         <span className="text-gray-600 flex items-center gap-1">
                           ({renderUpgradeCost(upg)})
                         </span>
@@ -437,7 +434,7 @@ function CardPreviewPopup({
             )}
           </div>
 
-          {/* Back Up (Side 3) */}
+          {/* Back Up (Side 3) - INDEX 2 */}
           <div ref={cardRefs.backUp} className="border rounded p-2 max-w-[200px]" style={getBackgroundStyle(card, 2)}>
             <div className="font-semibold text-sm mb-1">{t('backUp')}</div>
             {card.name[2] ? (
@@ -456,13 +453,12 @@ function CardPreviewPopup({
                     {renderEffectText(card.GetEffect(t, 2))}
                   </div>
                 )}
-                {/* Upgrades */}
                 {card.upgrades[2]?.length > 0 && (
                   <div className="mt-2 border-t pt-2">
                     <div className="text-[9px] font-semibold mb-1">{t('upgrades')}:</div>
                     {card.upgrades[2].map((upg, idx) => (
                       <div key={idx} className="text-[8px] mb-1 flex items-center gap-1 flex-wrap">
-                        <span className="text-blue-600">→ {sideLabel(upg.nextSide)}</span>
+                        <span className="text-blue-600">→ {sideLabel(upg.nextSide, t)}</span>
                         <span className="text-gray-600 flex items-center gap-1">
                           ({renderUpgradeCost(upg)})
                         </span>
@@ -476,7 +472,7 @@ function CardPreviewPopup({
             )}
           </div>
 
-          {/* Front Down (Side 2) */}
+          {/* Front Down (Side 2) - INDEX 1 */}
           <div ref={cardRefs.frontDown} className="border rounded p-2 max-w-[200px]" style={getBackgroundStyle(card, 1)}>
             <div className="font-semibold text-sm mb-1">{t('frontDown')}</div>
             {card.name[1] ? (
@@ -495,13 +491,12 @@ function CardPreviewPopup({
                     {renderEffectText(card.GetEffect(t, 1))}
                   </div>
                 )}
-                {/* Upgrades */}
                 {card.upgrades[1]?.length > 0 && (
                   <div className="mt-2 border-t pt-2">
                     <div className="text-[9px] font-semibold mb-1">{t('upgrades')}:</div>
                     {card.upgrades[1].map((upg, idx) => (
                       <div key={idx} className="text-[8px] mb-1 flex items-center gap-1 flex-wrap">
-                        <span className="text-blue-600">→ {sideLabel(upg.nextSide)}</span>
+                        <span className="text-blue-600">→ {sideLabel(upg.nextSide, t)}</span>
                         <span className="text-gray-600 flex items-center gap-1">
                           ({renderUpgradeCost(upg)})
                         </span>
@@ -515,7 +510,7 @@ function CardPreviewPopup({
             )}
           </div>
 
-          {/* Back Down (Side 4) */}
+          {/* Back Down (Side 4) - INDEX 3 */}
           <div ref={cardRefs.backDown} className="border rounded p-2 max-w-[200px]" style={getBackgroundStyle(card, 3)}>
             <div className="font-semibold text-sm mb-1">{t('backDown')}</div>
             {card.name[3] ? (
@@ -534,13 +529,12 @@ function CardPreviewPopup({
                     {renderEffectText(card.GetEffect(t, 3))}
                   </div>
                 )}
-                {/* Upgrades */}
                 {card.upgrades[3]?.length > 0 && (
                   <div className="mt-2 border-t pt-2">
                     <div className="text-[9px] font-semibold mb-1">{t('upgrades')}:</div>
                     {card.upgrades[3].map((upg, idx) => (
                       <div key={idx} className="text-[8px] mb-1 flex items-center gap-1 flex-wrap">
-                        <span className="text-blue-600">→ {sideLabel(upg.nextSide)}</span>
+                        <span className="text-blue-600">→ {sideLabel(upg.nextSide, t)}</span>
                         <span className="text-gray-600 flex items-center gap-1">
                           ({renderUpgradeCost(upg)})
                         </span>
@@ -899,8 +893,8 @@ function CardView({
           if (onTapAction) onTapAction(card, fromZone);
         }}
         style={getBackgroundStyle(card, currentSideIdx)}
-        className={`w-49 h-70 m-2 flex flex-col items-center justify-between border 
-          ${!interactable ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}`}
+        className={`w-49 h-70 m-2 flex flex-col items-center justify-between border-2 shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 
+          ${!interactable ? "opacity-60 cursor-not-allowed" : "cursor-pointer hover:border-blue-400"}`}
         >
         <CardContent className="text-center p-2 overflow-hidden">
           {card.GetType(t).includes(t('permanent')) && <img src={"effects/permanent.png"} alt={t('permanentZone')} title={t('permanentZone')} className="w-49 h-2" />}
@@ -959,7 +953,7 @@ function CardView({
                       if (!interactable || !onGainResources) return;
                       onGainResources(card, displayOpt, fromZone);
                     }}
-                    className="text-[10px] px-2 py-1 border rounded bg-white flex items-center gap-1 hover:bg-gray-100 transition"
+                    className="text-[10px] px-2 py-1 border rounded bg-white flex items-center hover:bg-gray-100 transition"
                   >
                     {icons}
                   </button>
@@ -996,7 +990,7 @@ function CardView({
                     setShowUpgradePreview(false);
                     setUpgradePreviewSide(null);
                   }}
-                  className="text-[10px] px-2 py-1 border rounded bg-white flex items-center gap-1 hover:bg-gray-100 transition"
+                  className="text-[10px] px-2 py-1 border rounded bg-white flex items-center hover:bg-gray-100 transition"
                 >
                   <div className="flex items-center gap-1">
                     {upg.cost ? (
@@ -1012,7 +1006,7 @@ function CardView({
                       <span className="text-[11px] italic">{upg.otherCost}</span>
                     )}
                   </div>
-                  <div className="text-[11px]">{"→ "}{sideLabel(upg.nextSide)}</div>
+                  <div className="text-[11px]">{"→ "}{sideLabel(upg.nextSide, t)}</div>
                 </button>
               ))}
             </div>
@@ -1066,7 +1060,7 @@ function CardView({
           }}
         >
           <div className="font-bold text-center mb-2">
-            {sideLabel(upgradePreviewSide)}
+            {sideLabel(upgradePreviewSide, t)}
           </div>
           
           <div className="border rounded p-2" style={getBackgroundStyle(card, upgradePreviewSide - 1)}>
@@ -1164,8 +1158,8 @@ if (name === t('playArea') || name === t('blocked')) {
 }
 
   return (
-    <div ref={ref} className="p-2 border rounded min-h-[130px]" style={{background: "linear-gradient(to top left, #ebebebff, #ecececff)"}}>
-      <h2 className="text-lg font-bold">{name}</h2>
+    <div ref={ref} className="p-4 border-2 rounded-xl min-h-[130px] shadow-lg bg-gradient-to-br from-gray-50 to-gray-100 hover:shadow-xl transition-shadow duration-300">
+      <h2 className="text-xl font-bold mb-3 text-gray-800">{name}</h2>
       <div
         className={containerClass}
         style={gridTemplate ? { gridTemplateColumns: gridTemplate, alignItems: "start" } : {}}
@@ -1382,7 +1376,7 @@ function CardPopup({
 
         {/* Effects section */}
         <div>
-          <h3 className="font-bold">Effect (for {sideLabel(localCard.currentSide)})</h3>
+          <h3 className="font-bold">Effect (for {sideLabel(localCard.currentSide, t)})</h3>
           <textarea
             className="w-full border rounded p-2 text-sm"
             rows={3}
@@ -1398,7 +1392,7 @@ function CardPopup({
         {/* Editable Resources: multiple options per side, show as list, allow add/remove */}
         <div>
           <div className="flex items-center justify-between">
-            <h3 className="font-bold">Resources (options for {sideLabel(localCard.currentSide)})</h3>
+            <h3 className="font-bold">Resources (options for {sideLabel(localCard.currentSide, t)})</h3>
             <Button size="sm" onClick={addOption}>Add Option</Button>
           </div>
 
@@ -1436,7 +1430,7 @@ function CardPopup({
         {/* Checkboxes editor for current side */}
         <div>
           <div className="flex items-center justify-between">
-            <h3 className="font-bold">Checkboxes (for {sideLabel(localCard.currentSide)})</h3>
+            <h3 className="font-bold">Checkboxes (for {sideLabel(localCard.currentSide, t)})</h3>
           </div>
 
           {currentCheckboxes.length === 0 && <div className="text-sm text-gray-400">No checkboxes</div>}
@@ -1469,7 +1463,7 @@ function CardPopup({
 
         {/* Upgrades for current side */}
         <div>
-          <h3 className="font-bold">Upgrades ({sideLabel(localCard.currentSide)})</h3>
+          <h3 className="font-bold">Upgrades ({sideLabel(localCard.currentSide, t)})</h3>
           {currentSideUpgrades.length === 0 ? (
             <div className="text-sm text-gray-400">No upgrades</div>
           ) : (
@@ -1527,7 +1521,7 @@ function CardPopup({
                   {/* Select Upgrade */}
                   <div>
                     <div className="text-xs font-medium mb-1">Upgrades to:</div>
-                    {sideLabel(upg.nextSide)}: {localCard.name[upg.nextSide - 1] || 'Unnamed'}
+                    {sideLabel(upg.nextSide, t)}: {localCard.name[upg.nextSide - 1] || 'Unnamed'}
                   </div>
                 </div>
               );
@@ -1914,7 +1908,7 @@ const CardSideSelectionPopup: React.FC<{
                     className="w-4 h-4"
                   />
                   <div className="flex flex-col">
-                    <span className="font-medium text-sm">{sideLabel(sideNum)}</span>
+                    <span className="font-medium text-sm">{sideLabel(sideNum, t)}</span>
                     <span className="text-xs text-gray-600">{sideName}</span>
                   </div>
                 </label>
@@ -1989,7 +1983,7 @@ const UpgradeCostSelectionPopup: React.FC<{
                   <div className="flex items-center gap-2 mb-1">
                     <span className="font-medium text-sm">{t('upgrades')} {idx + 1}</span>
                     <span className="text-xs text-gray-600">
-                      → {sideLabel(upg.nextSide)}
+                      → {sideLabel(upg.nextSide, t)}
                     </span>
                   </div>
                   <div className="flex items-center gap-2 flex-wrap">
@@ -2967,24 +2961,25 @@ export default function Game() {
             let finalBoost = prodBoost;
             
             if (finalBoost === null) {
-              // Filtrer les options : retirer fame et les valeurs <= 0
-              const filteredOptions = selectedCard.resources[selectedCard.currentSide - 1].map(option => {
-                const filtered: Partial<ResourceMap> = {};
+              const availableResources = new Set<string>();
+              selectedCard.resources[selectedCard.currentSide - 1].forEach(option => {
                 Object.entries(option).forEach(([key, value]) => {
                   if (key !== 'fame' && typeof value === 'number' && value > 0) {
-                    filtered[key as keyof ResourceMap] = value;
+                    availableResources.add(key);
                   }
                 });
-                return filtered;
-              }).filter(option => Object.keys(option).length > 0); // Retirer les options vides
+              });
               
-              if (filteredOptions.length === 0) {
+              if (availableResources.size === 0) {
                 resolve(false);
                 return;
               }
               
-              // Attendre le choix de l'utilisateur
-              const chosenResources = await selectResourceChoice(filteredOptions);
+              const resourceOptions: Array<Partial<ResourceMap>> = Array.from(availableResources).map(key => ({
+                [key as keyof ResourceMap]: 1
+              }));
+              
+              const chosenResources = await selectResourceChoice(resourceOptions);
               if (chosenResources) {
                 finalBoost = chosenResources;
               } else {
@@ -2993,16 +2988,13 @@ export default function Game() {
               }
             }
             
-            // Appliquer le boost à toutes les options de ressources de la carte
             for (const resourceChoice of selectedCard.resources[selectedCard.currentSide - 1]) {
               for (const key in finalBoost) {
                 const resourceKey = key as keyof ResourceMap;
-                const amount = finalBoost[resourceKey] ?? 0;
-                resourceChoice[resourceKey] = (resourceChoice[resourceKey] ?? 0) + amount;
+                resourceChoice[resourceKey] = (resourceChoice[resourceKey] ?? 0) + 1;
               }
             }
             
-            // Mettre à jour la carte dans le deck
             replaceCardInZone(zone, selectedCard.id, selectedCard);
             resolve(true);
           } else {
@@ -4038,7 +4030,7 @@ export default function Game() {
   }, [language]);
 
   useEffect(() => {
-    document.body.style.background = "linear-gradient(to top left, #6d6d6dff, #ebebebff)";
+    document.body.style.background = "linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)";
     document.body.style.backgroundAttachment = "fixed";
     document.body.style.minHeight = "100vh";
     
@@ -4075,7 +4067,7 @@ export default function Game() {
                 showAll={false}
                 onTapAction={handleTapAction}
               />
-              {discard.length > 0 && <Button onClick={() => setShowDiscard(true)}>See discard</Button>}
+              <Button disabled={discard.length === 0} onClick={() => setShowDiscard(true)}>See discard</Button>
             </div>
 
             {/* Permanent zone */}
@@ -4106,8 +4098,8 @@ export default function Game() {
 
             {/* Campaign Deck */}
             <div className="w-[200px]">
-              <div className="p-2 border rounded" style={{background: "linear-gradient(to bottom right, #ebebebff, #ecececff)"}}>
-                <h2 className="text-s font-bold mb-2">{t('campaign')}</h2>
+              <div className="w-[200px] bg-gradient-to-br from-purple-50 to-pink-50 p-3 rounded-xl shadow-lg border-2 border-purple-200">
+                <h2 className="text-sm font-bold mb-2 text-purple-800">{t('campaign')}</h2>
                 <div className="space-y-2">
                   <select 
                     className="w-full border rounded px-2 py-1 text-s"
@@ -4198,21 +4190,35 @@ export default function Game() {
         </div>
 
         {/* Resource Pool */}
-        <div>
-          <div className="grid grid-cols-7 sm:grid-cols-7 lg:grid-cols-7 gap-2 sm:gap-3 lg:gap-4 min-w-240 max-h-0">
+        <div className="bg-white/80 backdrop-blur-sm p-2 rounded-xl shadow-lg border-2 border-gray-200">
+          <div className="grid grid-cols-7 gap-2 max-w-[1400px]">
             {RESOURCE_KEYS.map((key) => (
-              <div key={key} className="flex flex-col items-center gap-2 p-2 bg-white rounded-lg min-w-0">
-                <img src={resourceIconPath(key)} alt={key} title={key} className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" />
-                <div className="flex items-center gap-1 w-full justify-center">
-                  <Button size="sm" gap-1 onClick={() => updateResource(key, -1)} hidden={key === "fame"}>-</Button>
+              <div key={key} className="flex items-center gap-1 p-1 bg-gradient-to-br from-white to-gray-50 rounded-lg shadow-sm border border-gray-200">
+                <img src={resourceIconPath(key)} alt={key} title={key} className="w-5 h-5 flex-shrink-0" />
+                <div className="flex items-center gap-1">
+                  <Button 
+                    size="sm" 
+                    onClick={() => updateResource(key, -1)} 
+                    hidden={key === "fame"}
+                    className="h-6 w-6 p-0 text-xs"
+                  >
+                    -
+                  </Button>
                   <input
                     type="number"
-                    className="w-12 sm:w-16 text-center border rounded text-xs sm:text-sm py-1"
+                    className="w-10 text-center border rounded text-xs py-0.5"
                     value={resources[key]}
                     onChange={(e) => setResources((r) => ({ ...r, [key]: parseInt(e.target.value || "0", 10) || 0 }))}
                     disabled={key === "fame"}
                   />
-                  <Button size="sm" gap-1 onClick={() => updateResource(key, 1)} hidden={key === "fame"}>+</Button>
+                  <Button 
+                    size="sm" 
+                    onClick={() => updateResource(key, 1)} 
+                    hidden={key === "fame"}
+                    className="h-6 w-6 p-0 text-xs"
+                  >
+                    +
+                  </Button>
                 </div>
               </div>
             ))}
@@ -4221,9 +4227,9 @@ export default function Game() {
 
         {/* Settings Modal */}
         {showSettings && (
-          <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-            <div className="bg-white p-4 rounded-xl space-y-4 max-w-md">
-              <h2 className="font-bold">{t('settings')}</h2>
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 animate-[fadeIn_0.2s_ease-out]">
+          <div className="bg-white p-6 rounded-2xl shadow-2xl space-y-4 max-w-md w-full mx-4 animate-[slideUp_0.3s_ease-out]">
+            <h2 className="font-bold text-2xl text-gray-800 border-b-2 border-blue-500 pb-2">{t('settings')}</h2>
               <div className="flex flex-col gap-2">
                 {/* Language Selection */}
                 <LanguageSelector />

@@ -172,12 +172,14 @@ export class GameCard {
   }
 
   // returns array of options for the current side
-  GetResources(): Partial<ResourceMap>[] {
-    return this.resources[this.currentSide - 1] ?? [{ ...emptyResource }];
+  GetResources(sideIndex?: number): Partial<ResourceMap>[] {
+    const index = sideIndex !== undefined ? sideIndex : (this.currentSide - 1);
+    return this.resources[index] ?? [{ ...emptyResource }];
   }
 
   GetEffect(t: (key: TranslationKeys) => string, sideIndex?: number): string {
-    const rawEffects = sideIndex ? this.effects[sideIndex] : this.effects[this.currentSide - 1];
+    const index = sideIndex !== undefined ? sideIndex : (this.currentSide - 1);
+    const rawEffects = this.effects[index];
     if (!rawEffects) return "";
     
     const translateSingle = (singleEffect: string): string => {
@@ -196,12 +198,13 @@ export class GameCard {
   }
 
   GetName(t: (key: TranslationKeys) => string, sideIndex?: number): string {
-    const side = sideIndex ? sideIndex : this.currentSide - 1;
-    return t(this.name[side] as TranslationKeys);
+    const index = sideIndex !== undefined ? sideIndex : (this.currentSide - 1);
+    return t(this.name[index] as TranslationKeys);
   }
 
   GetType(t: (key: TranslationKeys) => string, sideIndex?: number): string {
-    const rawType = sideIndex ? this.type[sideIndex] : this.type[this.currentSide - 1];
+    const index = sideIndex !== undefined ? sideIndex : (this.currentSide - 1);
+    const rawType = this.type[index];
     if (!rawType) return "";
     
     const translateSingle = (singleType: string): string => {
@@ -219,7 +222,8 @@ export class GameCard {
       .join(" - ");
   }
 
-  GetUpgrades(): Upgrade[] {
-    return this.upgrades[this.currentSide - 1] ?? [];
+  GetUpgrades(sideIndex?: number): Upgrade[] {
+    const index = sideIndex !== undefined ? sideIndex : (this.currentSide - 1);
+    return this.upgrades[index] ?? [];
   }
 }
