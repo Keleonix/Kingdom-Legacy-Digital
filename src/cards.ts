@@ -60,9 +60,9 @@ export const allCards: GameCard[] = [
       ],
     ],
     effects: [
-      " ",
-      "effects/activate Défaussez une carte alliée pour gagner resources/coin resources/coin .",
-      "effects/passive Reste en jeu. ",
+      '',
+      'effect_description_plains',
+      'staysInPlay',
       '',
     ],
     upgrades: [
@@ -110,9 +110,9 @@ export const allCards: GameCard[] = [
       ],
     ],
     effects: [
-      " ",
-      "effects/activate Défaussez une carte alliée pour gagner resources/coin resources/coin .",
-      "effects/passive Reste en jeu. ",
+      '',
+      'effect_description_plains',
+      'staysInPlay',
       '',
     ],
     upgrades: [
@@ -160,9 +160,9 @@ export const allCards: GameCard[] = [
       ],
     ],
     effects: [
-      " ",
-      "effects/activate Défaussez une carte alliée pour gagner resources/coin resources/coin .",
-      "effects/passive Reste en jeu. ",
+      '',
+      'effect_description_plains',
+      'staysInPlay',
       '',
     ],
     upgrades: [
@@ -210,9 +210,9 @@ export const allCards: GameCard[] = [
       ],
     ],
     effects: [
-      " ",
-      "effects/activate Défaussez une carte alliée pour gagner resources/coin resources/coin .",
-      "effects/passive Reste en jeu. ",
+      '',
+      'effect_description_plains',
+      'staysInPlay',
       '',
     ],
     upgrades: [
@@ -260,9 +260,9 @@ export const allCards: GameCard[] = [
       ],
     ],
     effects: [
-      " ",
-      "effects/activate Dépensez resources/coin pour gagner resources/stone resources/stone .",
-      "effects/destroy Découvrez une Mine (84/85). ",
+      '',
+      'effect_description_rocky_area',
+      'effect_description_shallow_mines',
       '',
     ],
     upgrades: [
@@ -310,9 +310,9 @@ export const allCards: GameCard[] = [
       ],
     ],
     effects: [
-      " ",
-      "effects/activate Dépensez resources/coin pour gagner resources/stone resources/stone .",
-      "effects/destroy Découvrez une Mine (84/85). ",
+      '',
+      'effect_description_rocky_area',
+      'effect_description_shallow_mines',
       '',
     ],
     upgrades: [
@@ -358,9 +358,9 @@ export const allCards: GameCard[] = [
       ],
     ],
     effects: [
-      "effects/activate Gagnez resources/wood resources/wood resources/wood , puis Front Down.",
+      'effect_description_forest',
       '',
-      "effects/destroy Découvrez un Autel (82/83).",
+      'effect_description_sacred_well',
       '',
     ],
     upgrades: [
@@ -406,9 +406,9 @@ export const allCards: GameCard[] = [
       ],
     ],
     effects: [
-      "effects/activate Gagnez resources/wood resources/wood resources/wood , puis Front Down.",
+      'effect_description_forest',
       '',
-      "effects/destroy Découvrez un Autel (82/83).",
+      'effect_description_sacred_well',
       '',
     ],
     upgrades: [
@@ -457,9 +457,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       '',
-      "effects/activate Jouez un Terrain depuis votre défausse.",
-      "effects/activate Jouez une carte depuis votre défausse.",
-      "effects/activate Jouez un Terrain ou Bâtiment depuis votre défausse.",
+      'effect_description_town_hall',
+      'effect_description_castle',
+      'effect_description_keep',
     ],
     upgrades: [
       [{ cost: { stone: 3, wood: 1 }, nextSide: 2 }],
@@ -507,10 +507,10 @@ export const allCards: GameCard[] = [
       ],
     ],
     effects: [
-      "effects/activate Dépensez resources/coin pour gagner resources/wood .",
-      "effects/activate Dépensez resources/coin pour gagner resources/wood / resources/stone .",
+      'effect_description_trader',
+      'effect_description_bazaar',
       '',
-      "effects/activate Dépensez resources/coin pour gagner resources/wood / resources/stone / resources/metal .",
+      'effect_description_market',
     ],
     upgrades: [
       [{ cost: { coin: 3 }, nextSide: 2 }],
@@ -555,9 +555,9 @@ export const allCards: GameCard[] = [
       ],
     ],
     effects: [
-      "effects/activate Dépensez resources/coin pour gagner resources/wood .",
-      "effects/activate Dépensez resources/coin pour gagner resources/wood resources/wood .",
-      "effects/passive Reste en jeu.",
+      'effect_description_jungle',
+      'effect_description_huge_trees',
+      'staysInPlay',
       '',
     ],
     upgrades: [
@@ -605,9 +605,9 @@ export const allCards: GameCard[] = [
       ],
     ],
     effects: [
-      " ",
       '',
-      "effects/activate Découvrez un nouveau territoire (71/72/73/74). Puis -> Back Down.",
+      '',
+      'effect_description_explorers',
       '',
     ],
     upgrades: [
@@ -647,9 +647,9 @@ export const allCards: GameCard[] = [
       [{ ...emptyResource }],
     ],
     effects: [
-      "effects/activate Choisissez un Terrain en jeu. Gagnez les ressources qui correspondent à sa production.",
+      'effect_description_field_worker',
       '',
-      "effects/activate Gagnez resources/coin / resources/wood / resources/stone .",
+      'effect_description_servant',
       '',
     ],
     upgrades: [
@@ -689,9 +689,9 @@ export const allCards: GameCard[] = [
       [{ ...emptyResource }],
     ],
     effects: [
-      "Peut être -> par un Missionaire. effects/forced Carte Jouée : Bloque 1 carte avec production d' resources/coin . effects/activate Dépensez resources/sword pour vaincre ( effects/destroy ) et gagner 2 ressources au choix.",
+      'effect_description_bandit',
       '',
-      "effects/activate Choisissez un Bâtiment en jeu. Gagnez les ressources qui correspondent à sa production.",
+      'effect_description_worker',
       '',
     ],
     upgrades: [
@@ -739,9 +739,9 @@ export const allCards: GameCard[] = [
       ],
     ],
     effects: [
-      " ",
-      "effects/activate Dépensez resources/coin pour gagner resources/stone resources/stone .",
-      "effects/destroy Découvrez une Mine (84/85). ",
+      '',
+      'effect_description_rocky_area',
+      'effect_description_shallow_mines',
       '',
     ],
     upgrades: [
@@ -781,9 +781,9 @@ export const allCards: GameCard[] = [
       [{ ...emptyResource }],
     ],
     effects: [
-      "Peut être -> par un Missionaire. effects/forced Carte Jouée : Bloque 1 carte avec production d' resources/coin . effects/activate Dépensez resources/sword pour vaincre ( effects/destroy ) et gagner 2 ressources au choix.",
+      'effect_description_bandit',
       '',
-      "effects/activate Choisissez un Terrain en jeu. Gagnez les ressources qui correspondent à sa production.",
+      'effect_description_field_worker',
       '',
     ],
     upgrades: [
@@ -824,9 +824,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       '',
-      "effects/activate Dépensez  resources/coin resources/coin resources/coin pour découvrir un Missionaire (103).",
-      "effects/passive Cette carte produit+1 resources/coin pour chaque Personne en jeu.",
-      "effects/activate Dépensez resources/coin resources/coin resources/coin resources/coin pour découvrir un Prêtre (104).",
+      'effect_description_chapel',
+      'effect_description_cathedral',
+      'effect_description_church',
     ],
     upgrades: [
       [{ cost: { coin: 1, wood: 1, stone: 1 }, nextSide: 2 }],
@@ -866,9 +866,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       '',
-      "effects/activate Réinitialisez pour découvrir des Bijoux (90).",
-      "effects/passive Reste en jeu.",
-      "effects/activate Gagnez resources/sword pour chaque personne en jeu.",
+      'effect_description_smithy',
+      'staysInPlay',
+      'effect_description_arsenal',
     ],
     upgrades: [
       [{ cost: { stone: 1, wood: 1, metal: 2 }, nextSide: 2 },
@@ -915,9 +915,9 @@ export const allCards: GameCard[] = [
       ],
     ],
     effects: [
-      "effects/activate Gagnez resources/wood resources/wood resources/wood , puis Front Down.",
+      'effect_description_forest',
       '',
-      "effects/destroy Découvrez un Autel (82/83).",
+      'effect_description_sacred_well',
       '',
     ],
     upgrades: [
@@ -1043,8 +1043,8 @@ export const allCards: GameCard[] = [
     effects: [
       '',
       '',
-      "effects/passive Reste en jeu. effects/passive Défaussez la carte du sommet de votre pioche.",
-      "effects/activate Découvrez les Rivages (75).",
+      'effect_description_lighthouse',
+      'effect_description_fishing_boat',
     ],
     upgrades: [
       [{ cost: { stone: 2, wood: 1 }, nextSide: 2 }, { cost: { stone: 4 }, nextSide: 3 }],
@@ -1083,7 +1083,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "effects/activate Découvrez également les cartes 24 à 27 pour cette manche.",
+      'effect_description_stop_1',
       '',
       '',
       '',
@@ -1125,7 +1125,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "effects/destroy Ajoutez 1 resources/coin à la production d'un terrain, puis choisissez un Bâtiment et rajoutez 1 à une ressource qu'il produit déjà.",
+      'effect_description_fertile_soil_efficiency',
       '',
       '',
       '',
@@ -1167,9 +1167,9 @@ export const allCards: GameCard[] = [
       [ emptyResource ],
     ],
     effects: [
-      "effects/time Dépensez les resources/sword (1 à 10, incrément de 1) pour cocher la case de gauche à droite, à la dernière carte, Back Up et découvrez l'Etat Vassal (135).",
+      'effect_description_army',
       '',
-      "effects/time Dépensez les resources/sword (10, 10, 12, 12, 15) pour cocher la case de gauche à droite.",
+      'effect_description_grand_army',
       '',
     ],
     upgrades: [
@@ -1230,9 +1230,9 @@ export const allCards: GameCard[] = [
       [ emptyResource ],
     ],
     effects: [
-      "effects/time dépensez les resources/coin (1 à 12, incrément de 1) pour cocher la case de gauche à droite. A la dernière carte, Back Up.",
+      'effect_description_treasure',
       '',
-      "effects/time dépensez les resources/coin (13 à 17, incrément de 1) pour cocher la case de gauche à droite.",
+      'effect_description_extended_treasure',
       '',
     ],
     upgrades: [
@@ -1295,9 +1295,9 @@ export const allCards: GameCard[] = [
       [ emptyResource ],
     ],
     effects: [
-      "Dépensez des resources/tradegood pour atteindre des paliers, 10: Ajoutez resources/coin / resources/wood / resources/stone sur un Terrain, 20: Un Personnage gagne \" effects/passive Reste en jeu.\", 30: Découvrez Adoubement (80), 40: Ajoutez resources/metal / resources/sword / resources/tradegood sur 1 Bâtiment, 55: Ajoutez resources/wood / resources/stone / resources/metal / resources/sword sur une carte, 75: Ajoutez resources/fame x5 sur une carte, 100: -> Back Up. effects/passive Dépensez des resources/tradegood .",
+      'effect_description_export',
       '',
-      "Dépensez des resources/tradegood pour atteindre des paliers, 25: Ajoutez resources/fame sur deux Terrains, 50: Ajoutez resources/fame x5 sur une Personne, 75: Découvrez Visite Royale (107), 100: Ajoutez resources/fame x5 sur un Bâtiment, 150: effects/check une autre carte Permanente, 200: effects/check toutes les autres cartes Permanentes au choix, 250: Découvrez Relations Commerciales (117). effects/passive Dépensez des resources/tradegood .",
+      'effect_description_mass_export',
       '',
     ],
     upgrades: [
@@ -1337,10 +1337,10 @@ export const allCards: GameCard[] = [
       [ emptyResource ],
     ],
     effects: [
-      "effects/forced Tant qu'elle est en jeu, détruisez le prochain Terrain que vous jouez. Lorsque vous le faite, Back Up.",
+      'effect_description_volcanic_eruption',
       '',
       '',
-      "effects/time Ajoutez 1 effects/check dans l'ordre et à *: Ajoutez resources/wood à la production de cette carte.",
+      'effect_description_young_forest',
     ],
     upgrades: [
       [],
@@ -1392,7 +1392,7 @@ export const allCards: GameCard[] = [
       '',
       '',
       '',
-      "effects/activate Réinitialisez pour ajouter une resource de votre choix à la production de l'une des étapes de cette carte qui ne comporte pas encore de modification.",
+      'effect_description_pretend_noble',
     ],
     upgrades: [
       [{ cost: {  }, nextSide: 2 }, { cost: {  }, nextSide: 3 }],
@@ -1431,7 +1431,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "effects/destroy Découvrez les cartes 31 à 34, choisissez-en 2 à découvrir et détruisez les 2 autres.",
+      'effect_description_stop_2',
       '',
       '',
       '',
@@ -1473,10 +1473,10 @@ export const allCards: GameCard[] = [
       [ { tradegood: 2, fame: 2 } ],
     ],
     effects: [
-      "effects/time Découvrez l'Ecole (118).",
-      "effects/activate Gagnez resources/coin par Personne en jeu.",
-      "effects/activate Découvrez les Quêtes (87).",
-      "effects/activate Défaussez une Personne pour découvrir un Etranger (92).",
+      'effect_description_etrepeneur',
+      'effect_description_hotel',
+      'effect_description_tavern',
+      'effect_description_cozy_pub',
     ],
     upgrades: [
       [{ cost: { coin: 1, wood: 3 }, nextSide: 2 }],
@@ -1515,10 +1515,10 @@ export const allCards: GameCard[] = [
       [ { coin: 1, tradegood: 2, fame: 10 } ],
     ],
     effects: [
-      "effects/passive Toutes les Personnes, Scientifique inclus, produisent +1 resources/coin .",
+      'effect_description_scientist',
       '',
-      "effects/time Découvrez l'Astronome (95).",
-      "effects/time Découvrez l'Alchimiste (96).",
+      'effect_description_observatory',
+      'effect_description_lab',
     ],
     upgrades: [
       [{ cost: { wood: 1, stone: 2, metal: 1 }, nextSide: 3 }],
@@ -1557,9 +1557,9 @@ export const allCards: GameCard[] = [
       [ emptyResource ],
     ],
     effects: [
-      "effects/activate Détruisez l'une des cartes suivantes: Cabane de Bûcheron - découvrez (100). Grange - découvrez (101). Bâteau de pêche - découvrez (102).",
+      'effect_description_engineer',
       '',
-      "effects/destroy Vainquez un ennemi (défausse, en jeu ou permanent). Puis marquez effects/check la case suivante de la carte Armée.",
+      'effect_description_trebuchet',
       '',
     ],
     upgrades: [
@@ -1599,9 +1599,9 @@ export const allCards: GameCard[] = [
       [ emptyResource ],
     ],
     effects: [
-      "Vaut 5 resources/fame par effects/check .",
+      'effect_description_inventor',
       '',
-      "Vaut la fame de l'Inventrice. effects/activate réinitialisez et ajoutez 1 effects/check . Découvrez une invention (97/98/99) ou gagnez une ressource de votre choix pour chaque effects/check . Vaut 5 resources/fame par effects/check .",
+      'effect_description_inspired_inventor',
       '',
     ],
     upgrades: [
@@ -1657,9 +1657,9 @@ export const allCards: GameCard[] = [
       ],
     ],
     effects: [
-      " ",
-      "effects/activate Dépensez resources/coin pour gagner resources/stone resources/stone .",
-      "effects/destroy Découvrez une Mine (84/85). ",
+      '',
+      'effect_description_rocky_area',
+      'effect_description_shallow_mines',
       '',
     ],
     upgrades: [
@@ -1699,9 +1699,9 @@ export const allCards: GameCard[] = [
       [ emptyResource ],
     ],
     effects: [
-      "effects/activate Dépensez resources/coin resources/coin pour ajouter 1 ou deux effects/check .",
+      'effect_description_mercenary',
       '',
-      "effects/time Dépensez resources/metal resources/metal resources/metal pour ajouter resources/sword sur cette carte ( effects/oneTime ). effects/time Dépensez resources/metal resources/metal resources/metal resources/metal pour ajouter resources/sword sur cette carte ( effects/oneTime ). ",
+      'effect_description_sir__',
       '',
     ],
     upgrades: [
@@ -1755,7 +1755,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "effects/activate Découvrez les cartes 38 à 42. Choisissez le côté des cartes Objectif.",
+      'effect_description_stop_3',
       '',
       '',
       '',
@@ -1797,9 +1797,9 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "Vaut 2 resources/fame par Personne.",
+      'effect_description_strength_in_number',
       '',
-      "Vaut 2 resources/fame par production de resources/sword .",
+      'effect_description_military_domination',
       '',
     ],
     upgrades: [
@@ -1839,9 +1839,9 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "Votre royaume doit comprendre 70 cartes ou plus (hors permanentes). Cette carte vaut -2 resources/fame pour chaque carte manquante.",
+      'effect_description_expanding_borders',
       '',
-      "Vaut -1 resources/fame par carte valant 0 resources/fame (hors permanentes).",
+      'effect_description_maximizer',
       '',
     ],
     upgrades: [
@@ -1881,9 +1881,9 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "Vaut 35 resources/fame s'il n'y a plus d'ennemi dans votre royaume.",
+      'effect_description_loyalty',
       '',
-      "Vaut 25 resources/fame si votre production de resources/tradegood est de 8 ou plus.",
+      'effect_description_trader_obj',
       '',
     ],
     upgrades: [
@@ -1923,9 +1923,9 @@ export const allCards: GameCard[] = [
       [ emptyResource ],
     ],
     effects: [
-      "effects/passive Reste en jeu. effects/activate Défaussez la carte au sommet de votre pioche. effects/activate Ajoutez 1 effects/check .",
+      'effect_description_jester',
       '',
-      "effects/activate Ajoutez 1 à 2 effects/check .",
+      'effect_description_merchant',
       '',
     ],
     upgrades: [
@@ -2004,9 +2004,9 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "effects/activate Choisissez un Terrain en jeu. Gagnez les ressources qui correspondent à sa production.",
+      'effect_description_field_worker',
       '',
-      "effects/passive Reste en jeu. effects/optional Fin du Tour: Défaussez pour qu'une autre carte reste en jeu.",
+      'effect_description_storage',
       '',
     ],
     upgrades: [
@@ -2046,10 +2046,10 @@ export const allCards: GameCard[] = [
       [ { coin: 1, fame: 7 } ],
     ],
     effects: [
-      "effects/activate Dépensez resources/coin resources/coin pour découvrir un projet de bâtiment (88/89).",
+      'effect_description_mason',
       '',
-      "effects/time Inspectez les cartes (109) et (110), détruisez l'une et découvrez l'autre.",
-      "effects/time Inspectez les cartes (111) et (112), détruisez l'une et découvrez l'autre.",
+      'effect_description_brick_road',
+      'effect_description_stone_street',
     ],
     upgrades: [
       [{ cost: { coin: 1, stone: 2 }, nextSide: 3 }],
@@ -2088,9 +2088,9 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "effects/forced Carte jouée: défaussez les 3 premières cartes de votre pioche, puis -> (Back Up).",
+      'effect_description_thunderstorm',
       '',
-      "effects/passive La production des Terrains est doublée. effects/passive Vous ne pouvez jouer aucune carte. effects/forced Fin du Tour: -> (Front Up).",
+      'effect_description_rain',
       '',
     ],
     upgrades: [
@@ -2130,10 +2130,10 @@ export const allCards: GameCard[] = [
       [ { sword: 1, fame: 3 } ],
     ],
     effects: [
-      "effects/passive Vous ne pouvez ni jouer, ni améliorer de cartes, ni même utiliser les effets effects/time . effects/activate Dépensez resources/sword resources/sword resources/sword pour vaincre (-> Back Up).",
+      'effect_description_dark_knight',
       '',
-      "effects/destroy Gagnez resources/sword resources/sword .",
-      "effects/destroy Gagnez resources/sword resources/sword resources/sword .",
+      'effect_description_impressed_boy',
+      'effect_description_squire',
     ],
     upgrades: [
       [],
@@ -2173,7 +2173,7 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       '',
-      "effects/activate Dépensez resources/coin pour gagner resources/sword .",
+      'effect_description_training_grounds',
       '',
       '',
     ],
@@ -2214,7 +2214,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "effects/destroy Découvrez les cartes 48 à 51. Découvrez-en 2 et détruisez les 2 autres.",
+      'effect_description_stop_4',
       '',
       '',
       '',
@@ -2256,10 +2256,10 @@ export const allCards: GameCard[] = [
       [ { fame: 2 } ],
     ],
     effects: [
-      "effects/time Dépensez resources/coin resources/coin resources/coin pour découvrir une Commerçante (119).",
-      "effects/time Dépensez resources/coin resources/coin resources/coin pour découvrir un Investisseur (120).",
-      "effects/time Dépensez resources/coin resources/coin resources/coin pour découvrir le Consort (122).",
-      "effects/time Dépensez resources/coin resources/coin resources/coin pour découvrir une allié (121).",
+      'effect_description_envoy',
+      'effect_description_emissary',
+      'effect_description_ambassador',
+      'effect_description_diplomat',
     ],
     upgrades: [
       [{ cost: { coin: 3 }, nextSide: 2 }],
@@ -2298,7 +2298,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "effects/activate Détruisez l'une des cartes suivantes: Château (10) - découvrez (123), Mine de Diamant (84/85) - découvrez (124), Temple (82/83) - découvrez (125). ",
+      'effect_description_royal_architect',
       '',
       '',
       '',
@@ -2340,10 +2340,10 @@ export const allCards: GameCard[] = [
       [ emptyResource ],
     ],
     effects: [
-      "effects/time Découvrez un Terrain (126).",
-      "effects/time Découvrez un Terrain (127).",
-      "effects/time Découvrez un Terrain (129). effects/activate Défaussez un Terrain pour gagner 2 ressources au choix.",
-      "effects/time Découvrez un Terrain (128).",
+      'effect_description_traveller_1',
+      'effect_description_traveller_2',
+      'effect_description_traveller_3',
+      'effect_description_traveller_4',
     ],
     upgrades: [
       [{ cost: { tradegood: 3 }, nextSide: 2 }],
@@ -2382,10 +2382,10 @@ export const allCards: GameCard[] = [
       [ { fame: 2 } ],
     ],
     effects: [
-      "effects/time Découvrez une Frontière (130).",
-      "effects/time Découvrez une Frontière (131).",
-      "effects/activate Jouez une Muraille ou un Chevalier depuis la défausse.",
-      "effects/time Découvrez une Frontière (132).",
+      'effect_description_magistrate_1',
+      'effect_description_magistrate_2',
+      'effect_description_strategist',
+      'effect_description_magistrate_3',
     ],
     upgrades: [
       [{ cost: { stone: 3 }, nextSide: 2 }],
@@ -2426,7 +2426,7 @@ export const allCards: GameCard[] = [
     effects: [
       '',
       '',
-      "effects/activate Réinitialisez pour découvrir un Village (105). (D'autre cartes peuvent découvrir le Village)",
+      'effect_description_peak_village',
       '',
     ],
     upgrades: [
@@ -2466,9 +2466,9 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "effects/activate Dépensez resources/sword resources/sword resources/sword pour vaincre ( effects/destroy ). effects/activate Défaussez 3 Personnes pour -> (Back Up). effects/forced Fin du tour: Découvrez les 2 prochaines cartes de la boîte, puis -> (Back Up).",
+      'effect_description_witch',
       '',
-      "effects/activate Dépensez resources/sword resources/sword resources/sword pour vaincre ( effects/destroy ). effects/activate Détruisez une Personne pour effects/destroy . effects/forced Fin du Tour: Découvre les 2 prochaines cartes de la boîte, puis effects/destroy .",
+      'effect_description_witch_cabin',
       '',
     ],
     upgrades: [
@@ -2508,9 +2508,9 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "effects/optional Fin du tour: Défaussez pour que 1 ou 2 autres cartes restent en jeu.",
+      'effect_description_scribe',
       '',
-      "effects/time Réinitialisez pour découvrir un projet de construction (78/79).",
+      'effect_description_architect',
       '',
     ],
     upgrades: [
@@ -2550,9 +2550,9 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "effects/activate Découvrez la Coopération (80) ou le Domaine (81). effects/passive Ajoutez 1 effects/check .",
+      'effect_description_lord_aethan',
       '',
-      "effects/time Découvrez un Raid (133) et un Rival (134). effects/activate Ajoutez 1 effects/check .",
+      'effect_description_lord_nimrod',
       '',
     ],
     upgrades: [
@@ -2615,9 +2615,9 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "effects/passive Reste en jeu. effects/forced Fin de Manche: Détruisez 2 Personnes de votre royaume. Puis -> (Back Front).",
+      'effect_description_plague',
       '',
-      "effects/forced Carte Jouée: Bloque 1 Bâtiment/Terrain en jeu. effects/passive : Reste en jeu. effects/forced Fin de Manche: Détruisez la carte bloquée. effects/activate Dépensez resources/sword resources/sword pour vaincre ( effects/destroy ).",
+      'effect_description_enemy_soldier',
       '',
     ],
     upgrades: [
@@ -2657,9 +2657,9 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "effects/forced Détruisez la prochaine Personne que vous jouez. Lorsque vous le faites, ->. effects/activate Dépensez resources/sword resources/sword resources/sword pour vaincre (->).",
+      'effect_description_assassin',
       '',
-      "effects/forced Carte Jouée: Bloque 1 Bâtiment/Terrain en jeu. effects/passive : Reste en jeu. effects/forced Fin de Manche: Détruisez la carte bloquée. effects/activate Dépensez resources/sword resources/sword pour vaincre ( effects/destroy ).",
+      'effect_description_enemy_soldier',
       '',
     ],
     upgrades: [
@@ -2699,10 +2699,10 @@ export const allCards: GameCard[] = [
       [ { ...emptyResource }  ],
     ],
     effects: [
-      "effects/passive Reste en jeu. effects/forced Fin de Manche: Détruisez 1 Bâtiment de votre royaume, puis -> (Back Up).",
+      'effect_description_city_fire',
       '',
       '',
-      "effects/time Ajoutez 1 effects/check dans l'ordre. *: Ajoutez resources/wood à la production de cette carte.",
+      'effect_description_young_forest',
     ],
     upgrades: [
       [],
@@ -2753,8 +2753,8 @@ export const allCards: GameCard[] = [
     effects: [
       '',
       '',
-      "effects/passive Reste en jeu. ",
-      "effects/activate Défaussez 6 cartes alliées pour découvrir un Artefact (108).",
+      'staysInPlay',
+      'effect_description_lost_civilization',
     ],
     upgrades: [
       [{ cost: {}, nextSide: 2, otherCost: "1 Personne" }],
@@ -2793,9 +2793,9 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "Peut être -> par un Missionaire. effects/forced Carte jouée: Bloque 3 cartes avec une production. effects/activate Dépensez resources/sword resources/sword resources/sword pour vaincre ( effects/destroy ) et gagner 3 ressources au choix.",
+      'effect_description_skilled_bandit',
       '',
-      "effects/activate Choisissez un Bâtiment en jeu. Gagnez les ressources qui correspondent à sa production. ",
+      'effect_description_worker',
       '',
     ],
     upgrades: [
@@ -2835,10 +2835,10 @@ export const allCards: GameCard[] = [
       [ { fame: 3 } ],
     ],
     effects: [
-      "effects/passive Vous ne pouvez ni jouer, ni améliorer de cartes, ni utiliser effects/time . effects/activate Dépensez resources/sword resources/sword resources/sword resources/sword resources/sword pour vaincre (->).",
+      'effect_description_dark_prince',
       '',
-      "effects/destroy Gagnez resources/sword resources/sword .",
-      "effects/destroy Gagnez resources/sword resources/sword resources/sword .",
+      'effect_description_impressed_boy',
+      'effect_description_squire',
     ],
     upgrades: [
       [],
@@ -2878,7 +2878,7 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       '',
-      "effects/activate Dépensez resources/coin pour gagner resources/sword .",
+      'effect_description_training_grounds',
       '',
       '',
     ],
@@ -2927,10 +2927,10 @@ export const allCards: GameCard[] = [
       ],
     ],
     effects: [
-      " ",
       '',
-      "effects/passive Reste en jeu. ",
-      "effects/activate Défaussez une autre Personne pour gagner 2 ressources de votre choix.",
+      '',
+      'staysInPlay',
+      'effect_description_innkeeper',
     ],
     upgrades: [
       [{ cost: { coin: 2, wood: 2, stone: 2 }, nextSide: 2 }, { cost: { stone: 4 }, nextSide: 3 }],
@@ -2969,9 +2969,9 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "effects/forced Carte jouée: Bloque 3 cartes avec une production. effects/activate Dépensez resources/sword resources/sword resources/sword pour vaincre ( effects/destroy ) et gagner 3 ressources au choix. (Peut être -> (Front Up) par un Missionaire)",
+      'effect_description_skilled_bandit',
       '',
-      "effects/activate Choisissez un Terrain en jeu. Gagnez les ressources qui correspondent à sa production. ",
+      'effect_description_field_worker',
       '',
     ],
     upgrades: [
@@ -3011,9 +3011,9 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "effects/passive Reste en jeu. effects/forced Fin de Manche: Détruisez 3 cartez alliées du royaume. Puis -> (Back Up).",
+      'effect_description_tornado',
       '',
-      "effects/passive Reste en jeu. effects/forced Bloque tous les Bâtiments (max 5). effects/forced Fin de Manche: Détruisez cette carte et 1 Bâtiment bloqué ou 2 autres cartes alliées.",
+      'effect_description_flooding',
       '',
     ],
     upgrades: [
@@ -3053,9 +3053,9 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "effects/forced Fin du Tour: Défaussez 2 Personnes ou Front Down.",
-      "effects/forced Carte Jouée: Défaussez 2 cartes alliées en jeu.",
-      "effects/activate Gagnez 1 ressource de votre choix.",
+      'effect_description_young_princess',
+      'effect_description_spoiled_princess',
+      'effect_description_educated_princess',
       '',
     ],
     upgrades: [
@@ -3095,9 +3095,9 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "effects/forced Carte Jouée: Défaussez la prochaine carte de votre pioche.",
-      "Cette carte est Permanente.",
-      "effects/activate Gagnez 1 ressource de votre choix.",
+      'effect_description_sickness',
+      'thisCardIsPermanent',
+      'effect_description_feast',
       '',
     ],
     upgrades: [
@@ -3140,7 +3140,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "effects/activate Découvrez les cartes 69 et 70. A la fin de la manche comptez votre resources/fame (Fin du jeu).",
+      'effect_description_stop_5',
       '',
       '',
       '',
@@ -3182,9 +3182,9 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "effects/destroy Ajoutez resources/tradegood et resources/fame x5 à une carte en jeu.",
+      'effect_description_finishing_touch',
       '',
-      "effects/destroy Gagnez 4 ressources au choix.",
+      'effect_description_banquet',
       '',
     ],
     upgrades: [
@@ -3224,9 +3224,9 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "effects/activate Barrez 1 icône de ressource dans le coût d'amélioration d'une carte en jeu.",
+      'effect_description_royal_visit',
       '',
-      "effects/destroy Détruisez une carte négative en jeu.",
+      'effect_description_inquisitor',
       '',
     ],
     upgrades: [
@@ -3274,9 +3274,9 @@ export const allCards: GameCard[] = [
       ],
     ],
     effects: [
-      " ",
-      "effects/activate Dépensez resources/coin pour gagner resources/stone resources/stone .",
-      "effects/destroy Découvrez une Mine (84/85). ",
+      '',
+      'effect_description_rocky_area',
+      'effect_description_shallow_mines',
       '',
     ],
     upgrades: [
@@ -3322,9 +3322,9 @@ export const allCards: GameCard[] = [
       ],
     ],
     effects: [
-      "effects/activate Gagnez resources/wood resources/wood resources/wood , puis Front Down.",
+      'effect_description_forest',
       '',
-      "effects/destroy Découvrez un Autel (82/83).",
+      'effect_description_sacred_well',
       '',
     ],
     upgrades: [
@@ -3368,8 +3368,8 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       '',
-      "Peut compter comme 2 Personnes.",
-      "effects/passive Reste en jeu.",
+      'effect_description_miners',
+      'staysInPlay',
       '',
     ],
     upgrades: [
@@ -3426,7 +3426,7 @@ export const allCards: GameCard[] = [
     effects: [
       '',
       '',
-      "effects/forced Carte Jouée: Découvrez le Pirate (76).",
+      'effect_description_trade_route',
       '',
     ],
     upgrades: [
@@ -3480,7 +3480,7 @@ export const allCards: GameCard[] = [
     effects: [
       '',
       '',
-      "effects/forced Carte Jouée: Découvrez le Pirate (76).",
+      'effect_description_trade_route',
       '',
     ],
     upgrades: [
@@ -3523,9 +3523,9 @@ export const allCards: GameCard[] = [
       [ emptyResource ],
     ],
     effects: [
-      "effects/passive Reste en jeux. effects/passive Lorsque vous gagnez des resources/coin , gagnez 1 resources/coin de moins. effects/activate Dépensez resources/sword resources/sword pour vaincre ( effects/destroy ) puis découvrez le Lagon (77).",
+      'effect_description_pirate',
       '',
-      "effects/activate Découvrez la Chasse au Trésor (93).",
+      'effect_description_skilled_ally',
       '',
     ],
     upgrades: [
@@ -3567,7 +3567,7 @@ export const allCards: GameCard[] = [
     effects: [
       '',
       '',
-      "effects/activate Jouez une carte Maritime depuis la défausse.",
+      'effect_description_sea_gate_wall',
       '',
     ],
     upgrades: [
@@ -3652,10 +3652,10 @@ export const allCards: GameCard[] = [
       [ { fame: 7 } ],
     ],
     effects: [
-      "effects/optional Fin du Tour: Défaussez pour que 1 Personne reste en jeu.",
-      "effects/optional Fin du Tour: Défaussez pour que 2 Personne restent en jeu.",
-      "effects/optional Fin du Tour: Défaussez pour que 2 cartes restent en jeu.",
-      "effects/optional Fin du Tour: Défaussez pour que 1 carte reste en jeu.",
+      'effect_description_villa',
+      'effect_description_estate',
+      'effect_description_palace',
+      'effect_description_mansion',
     ],
     upgrades: [
       [ { cost: { wood: 2, stone: 4 }, nextSide: 2 } ],
@@ -3694,9 +3694,9 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "effects/activate Défaussez 2 Personnes pour gagner 3 ressources au choix puis ->.",
+      'effect_description_cooperation',
       '',
-      "effects/passive Reste en jeu. effects/activate Gagnez une ressource au choix, puis ->.",
+      'effect_description_favor',
       '',
     ],
     upgrades: [
@@ -3737,9 +3737,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       '',
-      "effects/passive Lorsque vous purgez cette carte, vous pouvez annuler la purge de 1 autre carte.",
-      "effects/passive Lorsque vous purgez cette carte, vous pouvez annuler la purge de 3 autres cartes.",
-      "effects/passive Lorsque vous purgez cette carte, vous pouvez annuler la purge de 2 autres cartes.",
+      'effect_description_aethan_estate_1',
+      'effect_description_aethan_estate_2',
+      'effect_description_aethan_estate_3',
     ],
     upgrades: [
       [ { cost: { wood: 2, stone: 2 }, nextSide: 2 } ],
@@ -3786,10 +3786,10 @@ export const allCards: GameCard[] = [
       ],
     ],
     effects: [
-      "effects/optional Fin du Tour : Défaussez pour que 1 autre carte reste en jeu.",
-      "effects/optional Fin du Tour : Défaussez pour que 2 autres cartes restent en jeu.",
-      "effects/optional Fin du Tour : Défaussez pour que 4 autres cartes restent en jeu.",
-      "effects/optional Fin du Tour : Défaussez pour que 3 autres cartes restent en jeu.",
+      'effect_description_shrine',
+      'effect_description_sanctuary',
+      'effect_description_temple',
+      'effect_description_oratory',
     ],
     upgrades: [
       [{ cost: { coin: 3 }, nextSide: 2 }],
@@ -3836,10 +3836,10 @@ export const allCards: GameCard[] = [
       ],
     ],
     effects: [
-      "effects/optional Fin du Tour : Défaussez pour que 1 autre carte reste en jeu.",
-      "effects/optional Fin du Tour : Défaussez pour que 2 autres cartes restent en jeu.",
-      "effects/optional Fin du Tour : Défaussez pour que 4 autres cartes restent en jeu.",
-      "effects/optional Fin du Tour : Défaussez pour que 3 autres cartes restent en jeu.",
+      'effect_description_shrine',
+      'effect_description_sanctuary',
+      'effect_description_temple',
+      'effect_description_oratory',
     ],
     upgrades: [
       [{ cost: { coin: 3 }, nextSide: 2 }],
@@ -3978,9 +3978,9 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "effects/passive Reste en jeu. effects/forced Fin de Manche: Ajoutez resources/coin resources/sword et \"Chevalier\" à 1 Personne, puis ->.",
+      'effect_description_dubbing',
       '',
-      "effects/passive Reste en jeu. effects/forced Fin de Manche: Ajoutez resources/wood / resources/stone et resources/metal / resources/tradegood à 1 Bâtiment, puis effects/destroy .",
+      'effect_description_renovation',
       '',
     ],
     upgrades: [
@@ -4020,7 +4020,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "effects/time défaussez des Personnes (1, 2, 2, 3, 3, 4, 5, 6, 7) pour cocher la case de gauche à droite.",
+      'effect_description_quests',
       '',
       '',
       '',
@@ -4076,7 +4076,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "effects/time dépensez les resources/stone (1 à 10, incrément de 1) pour cocher la case de gauche à droite.",
+      'effect_description_a_perfect_tower',
       '',
       '',
       '',
@@ -4134,9 +4134,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       '',
-      "effects/passive La production des Bâtiments gagne +1 resources/coin .",
-      "effects/activate Marquer 1 effects/check , une fois complet ->.",
-      "effects/passive Reste en jeu. effects/activate Marquez 1 effects/check une des cases au choix pour défausser 1 Ennemi. (Vaut 2 resources/fame par effects/check .)",
+      'effect_description_town_well',
+      'effect_description_pit_settlement',
+      'effect_description_prison',
     ],
     upgrades: [
       [
@@ -4197,7 +4197,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "effects/time dépensez les resources/metal (1 à 10, incrément de 1) pour cocher la case de gauche à droite, puis gagnez 5 resources/tradegood .",
+      'effect_description_jewellery',
       '',
       '',
       '',
@@ -4254,9 +4254,9 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "effects/time dépensez les resources/wood (2 à 10, incrément de 2) pour cocher la case de gauche à droite, une fois complétée, ->",
+      'effect_description_build_an_ark',
       '',
-      "effects/activate Inscrivez 1 effects/check pour chaque paire de Personnes que vous avez en jeu. (Vaut +1 resources/fame pour chaque effects/check )",
+      'effect_description_the_ark',
       '',
     ],
     upgrades: [
@@ -4323,9 +4323,9 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "effects/forced Jouée la 1ère fois: Donne-lui un nom ! effects/forced Jouée la 2ème fois: Ajoutez resources/sword / resources/fame x5. effects/forced Jouée la 3ème fois: Ajoutez resources/tradegood / resources/fame x5.",
+      'effect_description____1',
       '',
-      "effects/passive Reste en jeu. effects/forced Jouée la 1ère fois: Donne-lui un nom ! effects/forced Jouée la 2ème fois: Ajoutez une ressource de votre choix à cette carte (hors resources/fame ). effects/forced Jouée la 3ème fois: Ajoutez une ressource de votre choix à cette carte (hors resources/fame ).",
+      'effect_description____2',
       '',
     ],
     upgrades: [
@@ -4366,7 +4366,7 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       '',
-      "effects/forced Fin du Tour: Hélas, vous découvrez un Traître (94).",
+      'effect_description_pirate_cove',
       '',
       '',
     ],
@@ -4407,9 +4407,9 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "effects/forced Carte Jouée: Défaussez 2 Personnes. effects/activate Dépensez resources/sword resources/sword resources/sword resources/sword pour vaincre ( effects/destroy ).",
+      'effect_description_backstabber',
       '',
-      "effects/passive Lorsque vous Progressez, jouez 2 cartes supplémentaires.",
+      'effect_description_blood_curse',
       '',
     ],
     upgrades: [
@@ -4449,9 +4449,9 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "effects/activate Dépensez resources/coin resources/coin pour inscrire 1 effects/check . (Vaut 2 resources/fame par effects/check )",
+      'effect_description_astronomer',
       '',
-      "effects/activate Remettez au-dessus ou en-dessous de votre pioche jusqu'à 3 autres de vos cartes en jeu.",
+      'effect_description_astrologist',
       '',
     ],
     upgrades: [
@@ -4505,10 +4505,10 @@ export const allCards: GameCard[] = [
       [ emptyResource ],
     ],
     effects: [
-      "effects/activate Dépensez resources/coin resources/coin pour orienter cette carte selon votre choix.",
-      "effects/activate Réinitialisez cette carte pour gagner resources/sword resources/sword resources/sword .",
-      "effects/activate Réinitialisez cette carte pour gagner resources/tradegood resources/tradegood resources/tradegood resources/tradegood resources/tradegood .",
-      "effects/optional Lorsque vous défaussez une Personne, vous pouvez réinitialiser cette carte à la place.",
+      'effect_description_alchemist',
+      'effect_description_potion_of_strength',
+      'effect_description_love_potion',
+      'effect_description_healing_potion',
     ],
     upgrades: [
       [],
@@ -4589,10 +4589,10 @@ export const allCards: GameCard[] = [
       [ { fame: 15 } ],
     ],
     effects: [
-      "effects/activate Inscrivez 1 effects/check pour chaque carte Maritime en jeu, celle-ci incluse. Une fois complète, ->.",
-      "effects/activate Inscrivez 1 effects/check pour chaque carte Maritime en jeu, celle-ci incluse. Une fois complète, ->.",
-      "effects/activate Inscrivez 1 effects/check pour prendre 15 cartes au hasard de votre défausse et les placer en-dessous de votre pioche.",
-      "effects/activate Inscrivez 1 effects/check pour chaque carte Maritime en jeu, celle-ci incluse. Une fois complète, ->.",
+      'effect_description_compass',
+      'effect_description_navigation',
+      'effect_description_calendar',
+      'effect_description_astrolabe',
     ],
     upgrades: [
       [],
@@ -4700,9 +4700,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       '',
-      "effects/activate Découvrez Construire une Arche (91).",
+      'effect_description_saw_mill',
       '',
-      "effects/passive resources/tradegood et resources/wood peuvent être utilisés de manière interchangeable.",
+      'effect_description_wood_shipment',
     ],
     upgrades: [
       [ { cost: { wood: 3 }, nextSide: 2 } ],
@@ -4742,9 +4742,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       '',
-      "effects/passive Reste en jeu.",
-      "effects/optional Fin du Tour: cette carte ou une autre au choix reste en jeu.",
-      "effects/optional Fin du Tour: 2 cartes au choix restent en jeu.",
+      'staysInPlay',
+      'effect_description_larger_barns',
+      'effect_description_royal_storehouse',
     ],
     upgrades: [
       [ { cost: { wood: 4 }, nextSide: 2 } ],
@@ -4785,8 +4785,8 @@ export const allCards: GameCard[] = [
     effects: [
       '',
       '',
-      "effects/activate Inscrivez 1 effects/check , une fois complété, ->.",
-      "effects/passive La production de chaque carte maritime augmente de +1 resources/coin .",
+      'effect_description_fish_quota',
+      'effect_description_fishing_excellence',
     ],
     upgrades: [
       [ { cost: { wood: 2, coin: 1, metal: 1 }, nextSide: 2 } ],
@@ -4833,9 +4833,9 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "effects/activate Dépensez resources/coin resources/coin resources/coin pour convertir (->) un Bandit.",
+      'effect_description_missionary',
       '',
-      "effects/activate Inscrivez 1 effects/check . Une fois complété, ajoutez resources/coin à cette carte.",
+      'effect_description_beekeeper',
       '',
     ],
     upgrades: [
@@ -4883,9 +4883,9 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "effects/activate Dépensez resources/coin resources/coin pour améliorer 1 carte en jeu, en payant son coût. (Cela ne met pas FIN au tour.)",
+      'effect_description_priest',
       '',
-      "effects/activate Améliorez 1 carte en jeu, en payant son coût. (Cela ne met pas FIN au tour.)",
+      'effect_description_cardinal',
       '',
     ],
     upgrades: [
@@ -4925,10 +4925,10 @@ export const allCards: GameCard[] = [
       [ { fame: 10 } ],
     ],
     effects: [
-      "effects/activate Dépensez resources/coin resources/coin pour gagner 1 ressource au choix.",
-      "effects/activate Dépensez resources/coin pour gagner 1 ressource au choix.",
-      "effects/activate Oubliez cette carte pour découvrir Camelot (106).",
-      "effects/activate Dépensez 1 ressource au choix pour gagner 1 ressource au choix.",
+      'effect_description_small_hill_town',
+      'effect_description_hill_town',
+      'effect_description_city_on_a_hill',
+      'effect_description_large_town',
     ],
     upgrades: [
       [ { cost: { wood: 2, stone: 2 }, nextSide: 2 } ],
@@ -4969,7 +4969,7 @@ export const allCards: GameCard[] = [
     effects: [
       '',
       '',
-      "effects/optional Fin du Tour: Si votre pioche est vide, inscrivez 1 effects/check . (Vaut 5 resources/fame par effects/check )",
+      'effect_description_camelot',
       '',
     ],
     upgrades: [
@@ -5019,9 +5019,9 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "effects/activate Barrez 1 icône de ressource dans le coût d'amélioration d'une carte en jeu.",
+      'effect_description_royal_visit',
       '',
-      "effects/destroy Détruisez une carte négative en jeu.",
+      'effect_description_inquisitor',
       '',
     ],
     upgrades: [
@@ -5061,7 +5061,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "Cette carte ne peut pas être détruite.",
+      'thisCardIsIndestructible',
       '',
       '',
       '',
@@ -5112,7 +5112,7 @@ export const allCards: GameCard[] = [
     effects: [
       '',
       '',
-      "effects/activate Défaussez le nombre de personne de votre choix pour gagner autant de resources/fame . Puis inscrivez 1 effects/check .",
+      'effect_description_grand_guild_hall',
       '',
     ],
     upgrades: [
@@ -5166,8 +5166,8 @@ export const allCards: GameCard[] = [
     effects: [
       '',
       '',
-      "effects/activate Choisissez une carte en jeu ou dans la défausse, placez-la sous la pioche.",
-      "effects/activate Remettez une carte en jeu sous la pioche.",
+      'effect_description_thriving_countryside',
+      'effect_description_countryside',
     ],
     upgrades: [
       [ {cost: { wood: 3 }, nextSide: 2} ],
@@ -5208,7 +5208,7 @@ export const allCards: GameCard[] = [
     effects: [
       "effects/forced Lorsqu'elle produit réduisez les resources/coin de 1.",
       "effects/forced Lorsqu'elle produit réduisez les resources/coin de 1.",
-      "effects/time Découvrez un Noble (116).",
+      'effect_description_grand_residence',
       "effects/forced Lorsqu'elle produit réduisez les resources/coin de 1.",
     ],
     upgrades: [
@@ -5248,10 +5248,10 @@ export const allCards: GameCard[] = [
       [ emptyResource ],
     ],
     effects: [
-      "effects/time Dépensez resources/coin resources/coin pour découvrir un cheval (113).",
-      "effects/time Dépensez resources/coin resources/coin pour découvrir un cheval (114).",
-      "effects/activate Choisissez un Cheval en jeu avec 1 ou 2 ressources et ajoutez-lui resources/coin / resources/wood / resources/stone / resources/metal / resources/sword . effects/activate Jouez un cheval depuis la défausse.",
-      "effects/time Dépensez resources/coin resources/coin pour découvrir un cheval (115).",
+      'effect_description_stable_1',
+      'effect_description_stable_2',
+      'effect_description_groom',
+      'effect_description_large_stable',
     ],
     upgrades: [
       [{ cost: { wood: 3 }, nextSide: 2 }],
@@ -5419,9 +5419,9 @@ export const allCards: GameCard[] = [
       [ { ...emptyResource} ],
     ],
     effects: [
-      "effects/passive Reste en jeu. effects/forced Carte Jouée: vous devez défausser une carte en jeu.",
+      'effect_description_aric_blackwood',
       '',
-      "effects/passive Reste en jeu. effects/activate Défaussez 2 Personnes pour gagner resources/sword resources/sword resources/sword .",
+      'effect_description_eadric_shadowstrike',
       '',
     ],
     upgrades: [
@@ -5461,7 +5461,7 @@ export const allCards: GameCard[] = [
       [ { ...emptyResource} ],
     ],
     effects: [
-      "effects/passive Dépensez resources/tradegood resources/tradegood resources/tradegood pour gagner une ressource au choix.",
+      'effect_description_trade_relations',
       '',
       '',
       '',
@@ -5503,10 +5503,10 @@ export const allCards: GameCard[] = [
       [ { fame: 4 } ],
     ],
     effects: [
-      "effects/time Améliorez gratuitement 1 Personne en jeux, puis ->.",
-      "effects/time Améliorez gratuitement 1 Personne en jeux, puis ->.",
-      "effects/time Ajoutez 1 ressource à une Personne en jeux, puis effects/oneTime .",
-      "effects/time Ajoutez 1 ressource à une Personne en jeux, puis ->.",
+      'effect_description_small_school',
+      'effect_description_school',
+      'effect_description_renowned_school',
+      'effect_description_prominent_school',
     ],
     upgrades: [
       [],
@@ -5554,10 +5554,10 @@ export const allCards: GameCard[] = [
       ],
     ],
     effects: [
-      "effects/activate Dépensez resources/coin pour gagner resources/wood .",
-      "effects/activate Dépensez resources/coin pour gagner resources/wood / resources/stone .",
+      'effect_description_trader',
+      'effect_description_bazaar',
       '',
-      "effects/activate Dépensez resources/coin pour gagner resources/wood / resources/stone / resources/metal .",
+      'effect_description_market',
     ],
     upgrades: [
       [{ cost: { coin: 3 }, nextSide: 2 }],
@@ -5596,10 +5596,10 @@ export const allCards: GameCard[] = [
       [ { ...emptyResource} ],
     ],
     effects: [
-      "effects/activate Gagnez 3 ressources au choix, puis Front Down.",
-      "effects/activate Gagnez 3 ressources au choix, puis Back Down.",
-      "effects/activate Gagnez 1 ressource au choix.",
-      "effects/activate Gagnez 3 ressources au choix, puis Back Up.",
+      'effect_description_investor_1',
+      'effect_description_investor_2',
+      'effect_description_investor_3',
+      'effect_description_investor_4',
     ],
     upgrades: [
       [],
@@ -5638,9 +5638,9 @@ export const allCards: GameCard[] = [
       [ { ...emptyResource} ],
     ],
     effects: [
-      "effects/passive Reste en jeu.",
+      'staysInPlay',
       '',
-      "effects/activate Défaussez 1 Personne comportant 5 resources/fame ou plus pour inscrire 1 effects/check . (Vaut 3 par effects/check )",
+      'effect_description_queen_jeminah',
       '',
     ],
     upgrades: [
@@ -5732,10 +5732,10 @@ export const allCards: GameCard[] = [
       [ { sword: 2, fame: 25 } ],
     ],
     effects: [
-      "effects/activate Jouez 1 carte depuis la défausse.",
-      "effects/activate Jouez 1 carte depuis la défausse.",
-      "effects/activate Jouez 1 carte depuis la défausse. effects/optional Vous pouvez défausser 2 Murailles à la place de cette carte.",
-      "effects/activate Jouez 1 carte depuis la défausse.",
+      'effect_description_grand_castle',
+      'effect_description_huge_castle',
+      'effect_description_impregnable_fortress',
+      'effect_description_fortress',
     ],
     upgrades: [
       [ {cost: { wood: 2, stone: 2, metal: 2 }, nextSide: 2} ],
@@ -5816,10 +5816,10 @@ export const allCards: GameCard[] = [
       [ { fame: 28 } ],
     ],
     effects: [
-      "effects/optional Fin du Tour: Défaussez pour que 5 autre cartes restent en jeu.",
-      "effects/optional Fin du Tour: Défaussez pour que 5 autre cartes restent en jeu.",
-      "effects/optional Fin du Tour: Défaussez pour que 5 autre cartes restent en jeu. effects/time dépensez resources/tradegood resources/tradegood resources/tradegood resources/tradegood pour inscrire 1 effects/check .(Quand vous la purgez, cette carte vaut +10 resources/fame par effects/check .",
-      "effects/optional Fin du Tour: Défaussez pour que 5 autre cartes restent en jeu.",
+      'effect_description_large_temple',
+      'effect_description_ornate_temple',
+      'effect_description_temple_of_light',
+      'effect_description_legendary_temple',
     ],
     upgrades: [
       [ { cost: { coin: 3, tradegood: 3 }, nextSide: 2 } ],
@@ -5911,7 +5911,7 @@ export const allCards: GameCard[] = [
       '',
       '',
       '',
-      "effects/passive Défaussez 1 Personne pour gagner resources/tradegood resources/tradegood .",
+      'effect_description_mushrooms',
     ],
     upgrades: [
       [ { cost: { metal: 2 }, nextSide: 2 } ],
@@ -5952,7 +5952,7 @@ export const allCards: GameCard[] = [
     effects: [
       '',
       '',
-      "Vaut 7 par effects/check . effects/time Défaussez 1 Personne et dépensez resources/stone resources/stone resources/stone pour inscrire effects/check .",
+      'effect_description_ravine',
       '',
     ],
     upgrades: [
@@ -6002,10 +6002,10 @@ export const allCards: GameCard[] = [
       [ { fame: 5 } ],
     ],
     effects: [
-      "effects/optional Lorsque vous l'améliorez ajoutez 1 resources/coin à un Terrain en jeu.",
-      "effects/optional Lorsque vous l'améliorez boostez 1 carte en jeu.",
+      'effect_description_hot_springs',
+      'effect_description_fountain',
       '',
-      "effects/optional Lorsque vous l'améliorez 1 Terrain gagne \" effects/passive Reste en jeu. \".",
+      'effect_description_canals',
     ],
     upgrades: [
       [ { cost: { coin: 2, stone: 2 }, nextSide: 2 } ],
@@ -6045,9 +6045,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       '',
-      "effects/passive Vous pouvez regardez les 2 cartes du dessus de votre pioche.",
-      "effects/passive Reste en jeu.",
-      "Vaut 4 resources/fame pour chaque Murailles, celle-ci incluse. effects/passive Reste en jeu.",
+      'effect_description_watchtower',
+      'staysInPlay',
+      'effect_description_double_wall',
     ],
     upgrades: [
       [
@@ -6090,9 +6090,9 @@ export const allCards: GameCard[] = [
     ],
     effects: [
       '',
-      "effects/activate Défaussez une autre carte pour gagner resources/sword resources/sword .",
-      "effects/passive Reste en jeu.",
-      "effects/activate Dépensez resources/coin pour jouer une Personne depuis la défausse.",
+      'effect_description_moat',
+      'staysInPlay',
+      'effect_description_moat_bridge',
     ],
     upgrades: [
       [
@@ -6137,7 +6137,7 @@ export const allCards: GameCard[] = [
       '',
       '',
       '',
-      "effects/passive Reste en jeu.",
+      'staysInPlay',
     ],
     upgrades: [
       [
@@ -6179,10 +6179,10 @@ export const allCards: GameCard[] = [
       [ { fame: 3 } ],
     ],
     effects: [
-      "effects/activate Gagnez 1 ressource au choix.",
-      "effects/activate Gagnez 2 ressource au choix.",
-      "effects/activate Gagnez 3 ressource au choix.",
-      "effects/activate Gagnez 2 ressource au choix.",
+      'effect_description_raid',
+      'effect_description_looting',
+      'effect_description_plundering',
+      'effect_description_pillaging',
     ],
     upgrades: [
       [ { cost: { sword: 2 }, nextSide: 2 } ],
@@ -6221,9 +6221,9 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "Vaut -5 pour chaque case non effects/check . effects/passive Ne peut pas être détruit, à moins que Lord Nimrod n'ai été détruit. effects/activate Défaussez Lord Nimrod et dépensez les ressources d'une case pour inscrire effects/check , une fois complétées, ->.",
+      'effect_description_handsome_rival',
       '',
-      "effects/activate Choisissez une Personne en jeu et gagnez les ressources qui correspondent à sa production.",
+      'effect_description_noble_ally',
       '',
     ],
     upgrades: [
@@ -6273,10 +6273,10 @@ export const allCards: GameCard[] = [
       [ emptyResource ],
     ],
     effects: [
-      "Vaut la fame de l'étape Etats Vassaux. effects/passive Dépensez resources/sword resources/sword resources/sword resources/sword resources/sword pour enlever 1 resources/sword du coup d'amélioration. Toutes les étapes ont la même valeur que l'étape finale.",
-      "Vaut la fame de l'étape Etats Vassaux. effects/passive Dépensez resources/sword resources/sword resources/sword resources/sword resources/sword pour enlever 1 resources/sword du coup d'amélioration.",
-      "effects/activate Réinitialisez cette carte.",
-      "Vaut la fame de l'étape Etats Vassaux. effects/passive Dépensez resources/sword resources/sword resources/sword resources/sword resources/sword pour enlever 1 resources/sword du coup d'amélioration. effects/passive Lorsque vous l'améliorez, ajoutez 20 resources/fame à l'étape finale (max 9x).",
+      'effect_description_bordering_lands',
+      'effect_description_occupation',
+      'effect_description_vassal_states',
+      'effect_description_unruly_towns',
     ],
     upgrades: [
       [ { cost: { sword: 12 }, nextSide: 2 } ],
@@ -6315,10 +6315,10 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "Jouez 1 manche durant laquelle la production de toutes les cartes alliées ont +1 resources/coin , puis ->.",
-      "Jouez 1 manche durant laquelle une carte de votre choix reste en jeu à chaque tour, puis ->.",
-      "Jouez 1 manche. Puis, pour chaque effects/check sur Soulèvement, vous devez barrer 1 production sur 1 carte. Après quoi, détruisez cette extension.",
-      "Jouez 1 manche durant laquelle vous devez inscrire 1 effects/check à chaque fois qu'une Personne est jouée alors qu'une autre Personne est déjà en jeu, puis ->.",
+      'effect_description_prosperity_expansion',
+      'effect_description_hoarding',
+      'effect_description_royal_decree',
+      'effect_description_uprising',
     ],
     upgrades: [
       [ {cost: { }, nextSide: 2} ],
@@ -6367,10 +6367,10 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "Jouez 1 manche durant laquelle vous pouvez gagner resources/coin resources/coin resources/coin une fois par tour, puis ->.",
-      "Jouez 1 manche. effects/time Défaussez 2 Bâtiments pour ajouter une resources/coin à un Terrain en jeu, puis ->.",
-      "Jouez 1 manche. Puis, détruisez cette extension avec 1 carte avec une production d' resources/coin .",
-      "Jouez 1 manche durant laquelle les Terrains produisent de l' resources/coin peuvent produire des resources/tradegood à la place, puis ->.",
+      'effect_description_the_water_mill_expansion',
+      'effect_description_efficient_farming',
+      'effect_description_obsolete_farms',
+      'effect_description_surplus',
     ],
     upgrades: [
       [ {cost: { }, nextSide: 2} ],
@@ -6409,10 +6409,10 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "Jouez 1 manche durant laquelle tous les Terrains restent en jeu, puis ->.",
-      "Jouez 1 manche, puis ->. effects/forced Lorsqu'une Personne est jouée, inscrivez 1 effects/check ou défaussez 2 cartes alliées. Une fois complétée, défaussez toute votre pioche.",
-      "Jouez 1 manche durant laquelle vous pouvez dépenser autant d' resources/sword que vous le souhaitez pour les mettre sur cette carte. Après la manche, ajoutez autant de resources/fame (max 100) à un Terrain. Puis détruisez cette extension.",
-      "Jouez 1 manche. effects/forced Fin du Tour: Si vous n'avez aucune resources/sword , enlevez 1 production d'1 carte en jeu. effects/forced Fin de Manche: Ajoutez une ressource (non- resources/fame ) au choix à une carte alliée, puis ->.",
+      'effect_description_border_dispute_expansion',
+      'effect_description_espionage',
+      'effect_description_resistance',
+      'effect_description_attack',
     ],
     upgrades: [
       [ {cost: { }, nextSide: 2} ],

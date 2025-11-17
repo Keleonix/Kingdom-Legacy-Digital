@@ -401,20 +401,24 @@ function CardPreviewPopup({
           {/* Front Up (Side 1) */}
           <div ref={cardRefs.frontUp} className="border rounded p-2 max-w-[200px]" style={getBackgroundStyle(card, 0)}>
             <div className="font-semibold text-sm mb-1">{t('frontUp')}</div>
-            {t(card.name[0] as TranslationKeys) ? (
+            {card.name[0] ? (
               <>
-                <div className="text-xs font-bold mb-1 border-t">{t(card.name[0] as TranslationKeys)}</div>
-                <div className="text-[10px] text-gray-700 mb-1">{t(card.type[0] as TranslationKeys)}</div>
+                <div className="text-xs font-bold mb-1 border-t">
+                  {card.GetName(t, 0)}
+                </div>
+                <div className="text-[10px] text-gray-700 mb-1">
+                  {card.GetType(t, 0)}
+                </div>
                 <div className="text-[10px] mb-1">
                   {renderSideOptions(card.resources[0], 0)}
                 </div>
-                {t(card.effects[0] as TranslationKeys) && (
+                {card.effects[0] && (
                   <div className="text-[9px] mt-1 border-t pt-2">
-                    {renderEffectText(card.effects[0])}
+                    {renderEffectText(card.GetEffect(t, 0))}
                   </div>
                 )}
-                {/* Upgrades for Side 1 */}
-                {card.upgrades[0] && card.upgrades[0].length > 0 && (
+                {/* Upgrades */}
+                {card.upgrades[0]?.length > 0 && (
                   <div className="mt-2 border-t pt-2">
                     <div className="text-[9px] font-semibold mb-1">{t('upgrades')}:</div>
                     {card.upgrades[0].map((upg, idx) => (
@@ -436,20 +440,24 @@ function CardPreviewPopup({
           {/* Back Up (Side 3) */}
           <div ref={cardRefs.backUp} className="border rounded p-2 max-w-[200px]" style={getBackgroundStyle(card, 2)}>
             <div className="font-semibold text-sm mb-1">{t('backUp')}</div>
-            {t(card.name[2] as TranslationKeys) ? (
+            {card.name[2] ? (
               <>
-                <div className="text-xs font-bold mb-1 border-t">{t(card.name[2] as TranslationKeys)}</div>
-                <div className="text-[10px] text-gray-700 mb-1">{t(card.type[2] as TranslationKeys)}</div>
+                <div className="text-xs font-bold mb-1 border-t">
+                  {card.GetName(t, 2)}
+                </div>
+                <div className="text-[10px] text-gray-700 mb-1">
+                  {card.GetType(t, 2)}
+                </div>
                 <div className="text-[10px] mb-1">
                   {renderSideOptions(card.resources[2], 2)}
                 </div>
-                {t(card.effects[2] as TranslationKeys) && (
+                {card.effects[2] && (
                   <div className="text-[9px] mt-1 border-t pt-2">
-                    {renderEffectText(card.effects[2])}
+                    {renderEffectText(card.GetEffect(t, 2))}
                   </div>
                 )}
-                {/* Upgrades for Side 3 */}
-                {card.upgrades[2] && card.upgrades[2].length > 0 && (
+                {/* Upgrades */}
+                {card.upgrades[2]?.length > 0 && (
                   <div className="mt-2 border-t pt-2">
                     <div className="text-[9px] font-semibold mb-1">{t('upgrades')}:</div>
                     {card.upgrades[2].map((upg, idx) => (
@@ -471,20 +479,24 @@ function CardPreviewPopup({
           {/* Front Down (Side 2) */}
           <div ref={cardRefs.frontDown} className="border rounded p-2 max-w-[200px]" style={getBackgroundStyle(card, 1)}>
             <div className="font-semibold text-sm mb-1">{t('frontDown')}</div>
-            {t(card.name[1] as TranslationKeys) ? (
+            {card.name[1] ? (
               <>
-                <div className="text-xs font-bold mb-1 border-t">{t(card.name[1] as TranslationKeys)}</div>
-                <div className="text-[10px] text-gray-700 mb-1">{t(card.type[1] as TranslationKeys)}</div>
+                <div className="text-xs font-bold mb-1 border-t">
+                  {card.GetName(t, 1)}
+                </div>
+                <div className="text-[10px] text-gray-700 mb-1">
+                  {card.GetType(t, 1)}
+                </div>
                 <div className="text-[10px] mb-1">
                   {renderSideOptions(card.resources[1], 1)}
                 </div>
-                {t(card.effects[1] as TranslationKeys) && (
+                {card.effects[1] && (
                   <div className="text-[9px] mt-1 border-t pt-2">
-                    {renderEffectText(card.effects[1])}
+                    {renderEffectText(card.GetEffect(t, 1))}
                   </div>
                 )}
-                {/* Upgrades for Side 2 */}
-                {card.upgrades[1] && card.upgrades[1].length > 0 && (
+                {/* Upgrades */}
+                {card.upgrades[1]?.length > 0 && (
                   <div className="mt-2 border-t pt-2">
                     <div className="text-[9px] font-semibold mb-1">{t('upgrades')}:</div>
                     {card.upgrades[1].map((upg, idx) => (
@@ -506,20 +518,24 @@ function CardPreviewPopup({
           {/* Back Down (Side 4) */}
           <div ref={cardRefs.backDown} className="border rounded p-2 max-w-[200px]" style={getBackgroundStyle(card, 3)}>
             <div className="font-semibold text-sm mb-1">{t('backDown')}</div>
-            {t(card.name[3] as TranslationKeys) ? (
+            {card.name[3] ? (
               <>
-                <div className="text-xs font-bold mb-1 border-t">{t(card.name[3] as TranslationKeys)}</div>
-                <div className="text-[10px] text-gray-700 mb-1">{t(card.type[3] as TranslationKeys)}</div>
+                <div className="text-xs font-bold mb-1 border-t">
+                  {card.GetName(t, 3)}
+                </div>
+                <div className="text-[10px] text-gray-700 mb-1">
+                  {card.GetType(t, 3)}
+                </div>
                 <div className="text-[10px] mb-1">
                   {renderSideOptions(card.resources[3], 3)}
                 </div>
-                {t(card.effects[3] as TranslationKeys) && (
+                {card.effects[3] && (
                   <div className="text-[9px] mt-1 border-t pt-2">
-                    {renderEffectText(card.effects[3])}
+                    {renderEffectText(card.GetEffect(t, 3))}
                   </div>
                 )}
-                {/* Upgrades for Side 3 */}
-                {card.upgrades[3] && card.upgrades[3].length > 0 && (
+                {/* Upgrades */}
+                {card.upgrades[3]?.length > 0 && (
                   <div className="mt-2 border-t pt-2">
                     <div className="text-[9px] font-semibold mb-1">{t('upgrades')}:</div>
                     {card.upgrades[3].map((upg, idx) => (
@@ -888,7 +904,7 @@ function CardView({
         >
         <CardContent className="text-center p-2 overflow-hidden">
           {card.GetType(t).includes(t('permanent')) && <img src={"effects/permanent.png"} alt={t('permanentZone')} title={t('permanentZone')} className="w-49 h-2" />}
-          {card.choice && (card.currentSide == 1 || card.currentSide == 3) && <img src={"effects/choice.png"} alt={t('choice')} title={t('choice')} className="w-49 h-2" />}
+          {card.choice && (card.currentSide == 1 || card.currentSide == 3) && <button><img src={"effects/choice.png"} alt={t('choice')} title={t('choice')} className="w-49 h-2" /></button>}
           <div>
             <p className="font-bold text-sm line-clamp-2">
               {card.id >= 0 ? card.id : ""} {" | "} {name} {" | "} {type}
@@ -1358,7 +1374,7 @@ function CardPopup({
                 variant={localCard.currentSide === 4 ? "default" : "secondary"}
                 onClick={() => setSide(4)}
               >
-                {t('up')}
+                {t('down')}
               </Button>
             </div>
           </div>
@@ -3121,7 +3137,7 @@ export default function Game() {
       setDeck(prev => prev.map(c => {
         if (c.id === id) {
           const updated = cloneGameCard(c);
-          updated.effects[updated.currentSide - 1] += " " + effectText;
+          updated.effects[updated.currentSide - 1] += " - " + effectText;
           return updated;
         }
         return c;
@@ -3130,7 +3146,7 @@ export default function Game() {
       setPlayArea(prev => prev.map(c => {
         if (c.id === id) {
           const updated = cloneGameCard(c);
-          updated.effects[updated.currentSide - 1] += " " + effectText;
+          updated.effects[updated.currentSide - 1] += " - " + effectText;
           return updated;
         }
         return c;
@@ -3139,7 +3155,7 @@ export default function Game() {
       setDiscard(prev => prev.map(c => {
         if (c.id === id) {
           const updated = cloneGameCard(c);
-          updated.effects[updated.currentSide - 1] += " " + effectText;
+          updated.effects[updated.currentSide - 1] += " - " + effectText;
           return updated;
         }
         return c;
@@ -3148,7 +3164,7 @@ export default function Game() {
       setPermanentZone(prev => prev.map(c => {
         if (c.id === id) {
           const updated = cloneGameCard(c);
-          updated.effects[updated.currentSide - 1] += " " + effectText;
+          updated.effects[updated.currentSide - 1] += " - " + effectText;
           return updated;
         }
         return c;
@@ -4411,7 +4427,16 @@ export default function Game() {
                     name={t('campaign')}
                     cards={campaignDeck.filter(card => availableDiscoverableCards.includes(card.id)).sort((a, b) => a.id -b.id)}
                     onDrop={() => {}}
-                    onTapAction={handleTapAction}
+                    onTapAction={(card) => {
+                      if (card.choice && (card.currentSide === 1 || card.currentSide === 3)) {
+                        const newSide = card.currentSide === 1 ? 3 : 1;
+                        const updatedCard = cloneGameCard(card);
+                        updatedCard.currentSide = newSide;
+                        replaceCardInZone(t('campaign'), card.id, updatedCard);
+                      } else {
+                        handleTapAction(card, t('campaign'));
+                      }
+                    }}
                     onRightClick={handleTapAction}
                     onExecuteCardEffect={async (card, zone) => {
                       if (card.GetType(t) === "Parchemin") {

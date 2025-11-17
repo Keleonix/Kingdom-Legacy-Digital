@@ -176,20 +176,36 @@ export class GameCard {
     return this.resources[this.currentSide - 1] ?? [{ ...emptyResource }];
   }
 
-  GetEffect(t: (key: TranslationKeys) => string): string {
-    return t(this.effects[this.currentSide - 1] as TranslationKeys) ?? "";
+  GetEffect(t: (key: TranslationKeys) => string, sideIndex?: number): string {
+    const rawEffects = sideIndex ? this.effects[sideIndex] : this.effects[this.currentSide - 1];
+    if (!rawEffects) return "";
+    
+    const translateSingle = (singleEffect: string): string => {
+      const normalized = singleEffect.trim();
+      
+      try {
+        return t(normalized as TranslationKeys);
+      } catch {
+        return singleEffect;
+      }
+    };
+    
+    return rawEffects.split(" - ")
+      .map(effect => translateSingle(effect))
+      .join(" - ");
   }
 
-  GetName(t: (key: TranslationKeys) => string): string {
-    return t(this.name[this.currentSide - 1] as TranslationKeys);
+  GetName(t: (key: TranslationKeys) => string, sideIndex?: number): string {
+    const side = sideIndex ? sideIndex : this.currentSide - 1;
+    return t(this.name[side] as TranslationKeys);
   }
 
-  GetType(t: (key: TranslationKeys) => string): string {
-    const rawType = this.type[this.currentSide - 1];
+  GetType(t: (key: TranslationKeys) => string, sideIndex?: number): string {
+    const rawType = sideIndex ? this.type[sideIndex] : this.type[this.currentSide - 1];
     if (!rawType) return "";
     
     const translateSingle = (singleType: string): string => {
-      const normalized = singleType.trim().toLowerCase();
+      const normalized = singleType.trim();
       
       try {
         return t(normalized as TranslationKeys);

@@ -265,7 +265,7 @@ function resolveDescription(
 export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> = {
   1: {
     2: [{ // Plaines
-      description: (t) => t('cardEffect_Plains'),
+      description: (t) => t('effect_description_plains'),
       timing: "onClick",
       execute: async function(ctx)  {
         const selectedCards = await ctx.selectCardsFromZone(
@@ -295,7 +295,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   2: {
     2: [{ // Plaines
-      description: (t) => t('cardEffect_Plains'),
+      description: (t) => t('effect_description_plains'),
       timing: "onClick",
       execute: async function(ctx)  {
         const selectedCards = await ctx.selectCardsFromZone(
@@ -325,7 +325,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   3: {
     2: [{ // Plaines
-      description: (t) => t('cardEffect_Plains'),
+      description: (t) => t('effect_description_plains'),
       timing: "onClick",
       execute: async function(ctx)  {
         const selectedCards = await ctx.selectCardsFromZone(
@@ -355,7 +355,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   4: {
     2: [{ // Plaines
-      description: (t) => t('cardEffect_Plains'),
+      description: (t) => t('effect_description_plains'),
       timing: "onClick",
       execute: async function(ctx)  {
         const selectedCards = await ctx.selectCardsFromZone(
