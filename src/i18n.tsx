@@ -10,7 +10,7 @@ export type TranslationKeys =
   | 'newTurn' | 'pass' | 'advance' | 'endRound' | 'shuffleDeck' | 'noCost' | 'emptyCheckbox'
   | 'emptySide' | 'card' | 'none' | 'cardNames' | 'autoSelected' | 'side' | 'selectUpgradeRemoveCost'
   | 'noUpgradeAvailable' | 'selectAnUpgrade' | 'selectAResource' | 'failedToSave' | 'failedToLoad'
-  | 'select' | 'id' | 'preview' | 'endGame' | 'seeDeck'
+  | 'select' | 'id' | 'preview' | 'endGame' | 'seeDeck' | 'seeDiscard'
   
   // Cards Elements
   | 'frontUp' | 'frontDown' | 'backUp' | 'backDown'
@@ -460,6 +460,7 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     preview: 'Prévisualiser',
     endGame: "Fin du Jeu",
     seeDeck: 'Voir le Deck',
+    seeDiscard: 'Voir la Défausse',
     
     // Cards Elements
     frontUp: 'Recto Haut',
@@ -883,10 +884,10 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     effect_description_jungle: "effects/activate Dépensez resources/coin pour gagner resources/wood .",
     effect_description_huge_trees: "effects/activate Dépensez resources/coin pour gagner resources/wood resources/wood .",
     effect_description_explorers: "effects/activate Découvrez un nouveau territoire (71/72/73/74), puis -> Back Down.",
-    effect_description_field_worker: "effects/activate Choisissez un Terrain en jeu. Gagnez les ressources qui correspondent à sa production.",
+    effect_description_field_worker: "effects/activate Choisissez un Terrain en jeu, gagnez les ressources qui correspondent à sa production.",
     effect_description_servant: "effects/activate Gagnez resources/coin / resources/wood / resources/stone .",
     effect_description_bandit: "Peut être -> par un Missionaire. effects/forced Carte Jouée : Bloque 1 carte avec production d' resources/coin . effects/activate Dépensez resources/sword pour vaincre ( effects/destroy ) et gagner 2 ressources au choix.",
-    effect_description_worker: "effects/activate Choisissez un Bâtiment en jeu. Gagnez les ressources qui correspondent à sa production.",
+    effect_description_worker: "effects/activate Choisissez un Bâtiment en jeu, gagnez les ressources qui correspondent à sa production.",
     effect_description_chapel: "effects/activate Dépensez  resources/coin resources/coin resources/coin pour découvrir un Missionaire (103).",
     effect_description_cathedral: "effects/passive Cette carte produit +1 resources/coin pour chaque Personne en jeu.",
     effect_description_church: "effects/activate Dépensez resources/coin resources/coin resources/coin resources/coin pour découvrir un Prêtre (104).",
@@ -900,7 +901,7 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     effect_description_grand_army: "effects/time Dépensez les resources/sword (10, 10, 12, 12, 15) pour cocher la case de gauche à droite.",
     effect_description_treasure: "effects/time dépensez les resources/coin (1 à 12, incrément de 1) pour cocher la case de gauche à droite, à la dernière carte, -> Back Up.",
     effect_description_extended_treasure: "effects/time dépensez les resources/coin (13 à 17, incrément de 1) pour cocher la case de gauche à droite.",
-    effect_description_export: "Dépensez des resources/tradegood pour atteindre des paliers, 10: Ajoutez resources/coin / resources/wood / resources/stone sur un Terrain, 20: Un Personnage gagne \" effects/passive Reste en jeu.\", 30: Découvrez Adoubement (80), 40: Ajoutez resources/metal / resources/sword / resources/tradegood sur 1 Bâtiment, 55: Ajoutez resources/wood / resources/stone / resources/metal / resources/sword sur une carte, 75: Ajoutez resources/fame x5 sur une carte, 100: -> Back Up. effects/passive Dépensez des resources/tradegood .",
+    effect_description_export: "Dépensez des resources/tradegood pour atteindre des paliers, 10: Ajoutez resources/coin / resources/wood / resources/stone sur un Terrain, 20: Un Personnage gagne \" effects/passive Reste en jeu\", 30: Découvrez Adoubement (80), 40: Ajoutez resources/metal / resources/sword / resources/tradegood sur 1 Bâtiment, 55: Ajoutez resources/wood / resources/stone / resources/metal / resources/sword sur une carte, 75: Ajoutez resources/fame x5 sur une carte, 100: -> Back Up. effects/passive Dépensez des resources/tradegood .",
     effect_description_mass_export: "Dépensez des resources/tradegood pour atteindre des paliers, 25: Ajoutez resources/fame sur deux Terrains, 50: Ajoutez resources/fame x5 sur une Personne, 75: Découvrez Visite Royale (107), 100: Ajoutez resources/fame x5 sur un Bâtiment, 150: effects/check une autre carte Permanente, 200: effects/check toutes les autres cartes Permanentes au choix, 250: Découvrez Relations Commerciales (117). effects/passive Dépensez des resources/tradegood .",
     effect_description_volcanic_eruption: "effects/forced Tant qu'elle est en jeu, détruisez le prochain Terrain que vous jouez; lorsque vous le faite, -> Back Up.",
     effect_description_young_forest: "effects/time Ajoutez 1 effects/check dans l'ordre et à *: Ajoutez resources/wood à la production de cette carte.",
@@ -914,7 +915,7 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     effect_description_observatory: "effects/time Découvrez l'Astronome (95).",
     effect_description_lab: "effects/time Découvrez l'Alchimiste (96).",
     effect_description_engineer: "effects/activate Détruisez l'une des cartes suivantes: Cabane de Bûcheron - découvrez (100). Grange - découvrez (101). Bâteau de pêche - découvrez (102).",
-    effect_description_trebuchet: "effects/destroy Vainquez un ennemi (défausse, en jeu ou permanent). Puis marquez effects/check la case suivante de la carte Armée.",
+    effect_description_trebuchet: "effects/destroy Vainquez un ennemi (défausse, en jeu ou permanent), puis marquez effects/check la case suivante de la carte Armée.",
     effect_description_inventor: "Vaut 5 resources/fame par effects/check .",
     effect_description_inspired_inventor: "Vaut la fame de l'Inventrice. effects/activate réinitialisez et ajoutez 1 effects/check . Découvrez une invention (97/98/99) ou gagnez une ressource de votre choix pour chaque effects/check . Vaut 5 resources/fame par effects/check .",
     effect_description_mercenary: "effects/activate Dépensez resources/coin resources/coin pour ajouter 1 ou deux effects/check .",
@@ -1162,6 +1163,7 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     preview: 'Preview',
     endGame: "End Game",
     seeDeck: 'See Deck',
+    seeDiscard: 'See Discard',
 
     // Cards Elements
     frontUp: 'Front Up',

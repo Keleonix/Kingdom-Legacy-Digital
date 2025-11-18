@@ -8,6 +8,19 @@ import { allCards } from "./cards";
 import { getCardEffects, type GameContext, type CardEffect, cardEffectsRegistry, getCardFameValue, getCardUpgradeAdditionalCost, getCardSelectionValue } from "./cardEffects";
 import { useTranslation, type Language, LanguageSelector, type TranslationKeys } from './i18n';
 
+const cardHighlightStyle = `
+  @keyframes cardPulse {
+    0%, 100% { 
+      transform: scale(1);
+      box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+    }
+    50% { 
+      transform: scale(1.05);
+      box-shadow: 0 0 20px 10px rgba(59, 130, 246, 0.4);
+    }
+  }
+`;
+
 // deep-clone preserving prototype/methods
 function cloneGameCard(src: GameCard): GameCard {
   const out = new GameCard({});
@@ -375,7 +388,7 @@ function CardPreviewPopup({
     }
     
     if (elements.length === 0) {
-      return <span className="text-[8px] text-gray-500">Free</span>;
+      return <span className="text-[8px] text-gray-500">{t('none')}</span>;
     }
     
     return <>{elements}</>;
@@ -655,6 +668,7 @@ function CardView({
   onExecuteCardEffect,
   gatherProductionBonus,
   interactable = true,
+  isHighlighted = false,
 }: {
   card: GameCard;
   fromZone: string;
@@ -666,6 +680,7 @@ function CardView({
   onExecuteCardEffect?: (card: GameCard, zone: string, timing: EffectTiming, effectId: number) => Promise<void>;
   gatherProductionBonus?: (card: GameCard, zone: string) => Partial<ResourceMap>;
   interactable?: boolean;
+  isHighlighted?: boolean;
 }) {
   const { t } = useTranslation();
   const ref = useRef<HTMLDivElement | null>(null);
@@ -865,6 +880,16 @@ function CardView({
     );
   }
 
+  useEffect(() => {
+    const styleElement = document.createElement('style');
+    styleElement.textContent = cardHighlightStyle;
+    document.head.appendChild(styleElement);
+    
+    return () => {
+      document.head.removeChild(styleElement);
+    };
+  }, []);
+
   const currentSideIdx = (card.currentSide || 1) - 1;
   const sideCheckboxes = card.checkboxes?.[currentSideIdx] ?? [];
 
@@ -892,9 +917,13 @@ function CardView({
           if (!interactable) return;
           if (onTapAction) onTapAction(card, fromZone);
         }}
-        style={getBackgroundStyle(card, currentSideIdx)}
+        style={{
+          ...getBackgroundStyle(card, currentSideIdx),
+          animation: isHighlighted ? 'cardPulse 0.6s ease-in-out' : undefined,
+        }}
         className={`w-49 h-70 m-2 flex flex-col items-center justify-between border-2 shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 
-          ${!interactable ? "opacity-60 cursor-not-allowed" : "cursor-pointer hover:border-blue-400"}`}
+          ${!interactable ? "opacity-60 cursor-not-allowed" : "cursor-pointer hover:border-blue-400"}
+          ${isHighlighted ? "ring-4 ring-blue-400 border-blue-500" : ""}`}
         >
         <CardContent className="text-center p-2 overflow-hidden">
           {card.GetType(t).includes(t('permanent')) && <img src={"effects/permanent.png"} alt={t('permanentZone')} title={t('permanentZone')} className="w-49 h-2" />}
@@ -1066,8 +1095,8 @@ function CardView({
           <div className="border rounded p-2" style={getBackgroundStyle(card, upgradePreviewSide - 1)}>
             {card.name[upgradePreviewSide - 1] ? (
               <>
-                <div className="text-sm font-bold mb-1">{card.name[upgradePreviewSide - 1]}</div>
-                <div className="text-xs text-gray-700 mb-2">{card.type[upgradePreviewSide - 1]}</div>
+                <div className="text-sm font-bold mb-1">{t(card.name[upgradePreviewSide - 1] as TranslationKeys)}</div>
+                <div className="text-xs text-gray-700 mb-2">{t(card.type[upgradePreviewSide - 1] as TranslationKeys)}</div>
                 
                 {/* Resources */}
                 <div className="text-xs mb-2">
@@ -1077,7 +1106,7 @@ function CardView({
                 {/* Effects */}
                 {card.effects[upgradePreviewSide - 1] && (
                   <div className="text-[10px] mt-2 border-t pt-2">
-                    {renderEffectText(card.effects[upgradePreviewSide - 1])}
+                    {renderEffectText(t(card.effects[upgradePreviewSide - 1] as TranslationKeys))}
                   </div>
                 )}
               </>
@@ -1107,6 +1136,7 @@ function Zone({
   showAll = true,
   interactable = true,
   onTapAction,
+  highlightedCardId,
 }: {
   name: string;
   cards: GameCard[];
@@ -1120,6 +1150,7 @@ function Zone({
   showAll?: boolean;
   interactable?: boolean;
   onTapAction?: (card: GameCard, zone: string) => void;
+  highlightedCardId?: number | null;
 }) {
   const { t } = useTranslation();
   const ref = useRef<HTMLDivElement | null>(null);
@@ -1178,6 +1209,7 @@ if (name === t('playArea') || name === t('blocked')) {
               onCardUpdate={onCardUpdate}
               onExecuteCardEffect={onExecuteCardEffect}
               gatherProductionBonus={gatherProductionBonus}
+              isHighlighted={highlightedCardId === c.id}
             />
           ))
         ) : (
@@ -1548,6 +1580,7 @@ function CardSelectionPopup({
   requiredCount,
   optionalCount,
   searchType,
+  triggeringCard,
   onConfirm,
   onCancel,
 }: {
@@ -1557,6 +1590,7 @@ function CardSelectionPopup({
   requiredCount: number;
   optionalCount?: number;
   searchType?: string;
+  triggeringCard?: GameCard;
   onConfirm: (selectedCards: GameCard[]) => void;
   onCancel: () => void;
 }) {
@@ -1655,6 +1689,21 @@ function CardSelectionPopup({
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[80]">
       <div className="bg-white p-4 rounded-xl space-y-4 max-w-4xl max-h-[80vh] overflow-hidden flex flex-col">
+        {/* Show triggering card if provided */}
+        {triggeringCard && (
+          <div className="border-b pb-3">
+            <h3 className="text-sm font-semibold mb-2">{triggeringCard ? triggeringCard.GetName(t) : ""}:</h3>
+            <div className="flex justify-center">
+              <CardView
+                card={triggeringCard}
+                fromZone={zone}
+                onRightClick={() => {}}
+                interactable={false}
+              />
+            </div>
+          </div>
+        )}
+        
         <h2 className="font-bold">{displayMessage}</h2>
         
         <div className="flex-1 overflow-y-auto p-2 border rounded">
@@ -2257,6 +2306,7 @@ export default function Game() {
     requiredCount: number;
     optionalCount?: number;
     searchType?: string;
+    triggeringCard?: GameCard;
     resolve: (selectedCards: GameCard[]) => void;
   } | null>(null);
 
@@ -2326,6 +2376,8 @@ export default function Game() {
   const [onUpgradeCostConfirm, setOnUpgradeCostConfirm] = useState<
     ((upgradeIndex: number, resourceKey: keyof ResourceMap) => void) | null
   >(null);
+
+  const [highlightedCardId, setHighlightedCardId] = useState<number | null>(null);
 
   // ----------- immediate refs & setters (à ajouter près des useState) -----------
   const deckRef = useRef<GameCard[]>([]);
@@ -2841,7 +2893,8 @@ export default function Game() {
     zone: string,
     effectDescription: string,
     requiredCount: number,
-    optionalCount?: number
+    triggeringCard?: GameCard,
+    optionalCount?: number,
   ): Promise<GameCard[]> => {
     return new Promise((resolve) => {
       const filteredCards = filterZone(zone, filter);
@@ -2865,6 +2918,7 @@ export default function Game() {
         requiredCount: adjustedCount,
         optionalCount: optionalCount,
         searchType: searchType,
+        triggeringCard: triggeringCard,
         resolve,
       });
     });
@@ -3353,7 +3407,6 @@ export default function Game() {
     cardsForTrigger?: GameCard[],
     effectIndex?: number
   ) => {
-
     const effects = getCardEffects(card.id, card.currentSide);
 
     if (effects.length === 0) return;
@@ -3420,18 +3473,40 @@ export default function Game() {
         }
       }
 
+      const shouldHighlight = (zone === t('playArea') || zone === t('permanentZone')) && 
+                            eff.timing !== 'onClick';
+      
+      if (shouldHighlight) {
+        setHighlightedCardId(card.id);
+        await new Promise(resolve => setTimeout(resolve, 600));
+        setHighlightedCardId(null);
+      }
+
       if (await eff.execute(context)) {
         dropToDiscard({ id: card.id, fromZone: zone });
       }
       return;
     }
 
-    for (const effect of effects) {
-      if (effect.timing === timing) {
-        if (await effect.execute(context)) {
-          dropToDiscard({ id: card.id, fromZone: zone });
-          break;
-        }
+    const matchingEffects = effects.filter(effect => effect.timing === timing);
+    
+    if (matchingEffects.length === 0) {
+      return; // Pas d'effet à exécuter, pas d'animation
+    }
+
+    const shouldHighlight = (zone === t('playArea') || zone === t('permanentZone')) && 
+                          timing !== 'onClick';
+    
+    if (shouldHighlight) {
+      setHighlightedCardId(card.id);
+      await new Promise(resolve => setTimeout(resolve, 600));
+      setHighlightedCardId(null);
+    }
+
+    for (const effect of matchingEffects) {
+      if (await effect.execute(context)) {
+        dropToDiscard({ id: card.id, fromZone: zone });
+        break;
       }
     }
   };
@@ -4055,6 +4130,7 @@ export default function Game() {
                 onRightClick={(c, zone) => setPopupCard({ originZone: zone, originalId: c.id, editable: cloneGameCard(c) })}
                 onTapAction={handleTapAction}
               />
+              <Button disabled={deck.length === 0} onClick={() => setShowDeck(true)}className="mt-2">{t('seeDeck')}</Button>
             </div>
 
             {/* Discard */}
@@ -4067,7 +4143,7 @@ export default function Game() {
                 showAll={false}
                 onTapAction={handleTapAction}
               />
-              <Button disabled={discard.length === 0} onClick={() => setShowDiscard(true)}>See discard</Button>
+              <Button disabled={discard.length === 0} onClick={() => setShowDiscard(true)}>{t('seeDiscard')}</Button>
             </div>
 
             {/* Permanent zone */}
@@ -4081,6 +4157,7 @@ export default function Game() {
                 onCardUpdate={handleCardUpdate}
                 onExecuteCardEffect={(card, zone, timing, effectId) => handleExecuteCardEffect(card, zone, timing, undefined, effectId)}
                 interactable={true}
+                highlightedCardId={highlightedCardId}
               />
             </div>
 
@@ -4155,6 +4232,7 @@ export default function Game() {
               onGainResources={handleGainResources}
               onExecuteCardEffect={(card, zone, timing, effectIndex) => handleExecuteCardEffect(card, zone, timing, undefined, effectIndex)}
               gatherProductionBonus={gatherProductionBonus}
+              highlightedCardId={highlightedCardId}
             />
           </div>
 
@@ -4479,11 +4557,11 @@ export default function Game() {
         {showDeck && (
           <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-2">
             <div className="bg-white p-4 rounded-xl space-y-4 w-full h-full max-w-[300vw] max-h-[300vh] overflow-hidden flex flex-col">
-              <h2 className="font-bold">{t('deck')}</h2>
+              <h2 className="font-bold text-xl">{t('deck')}</h2>
               <div className="flex flex-col lg:flex-row gap-4 flex-1 min-h-0">
                 <div className="flex-1 overflow-y-auto p-2 border rounded">
                   <div className="grid grid-cols-6 gap-2">
-                    {deck.map((c) => (
+                    {[...deck].sort((a, b) => a.id - b.id).map((c) => (
                       <CardView
                         key={`modal-${c.id}-${c.currentSide}-${Math.random()}`}
                         card={c}

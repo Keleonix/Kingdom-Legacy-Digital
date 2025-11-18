@@ -872,9 +872,9 @@ export const allCards: GameCard[] = [
     ],
     upgrades: [
       [{ cost: { stone: 1, wood: 1, metal: 2 }, nextSide: 2 },
-        { cost: { stone: 3 }, nextSide: 4 }
+        { cost: { stone: 3 }, nextSide: 3 }
       ],
-      [{ cost: { coin: 2, metal: 2 }, nextSide: 3 }],
+      [{ cost: { coin: 2, metal: 2 }, nextSide: 4 }],
       [],
       [],
     ],
