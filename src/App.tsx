@@ -7,6 +7,7 @@ import { emptyResource, GameCard, RESOURCE_KEYS, EFFECT_KEYWORDS, TYPE_COLORS, t
 import { allCards } from "./cards";
 import { getCardEffects, type GameContext, type CardEffect, cardEffectsRegistry, getCardFameValue, getCardUpgradeAdditionalCost, getCardSelectionValue } from "./cardEffects";
 import { useTranslation, type Language, LanguageSelector, type TranslationKeys } from './i18n';
+import { createPortal } from 'react-dom';
 
 const cardHighlightStyle = `
   @keyframes cardPulse {
@@ -1069,12 +1070,13 @@ function CardView({
       </Card>
 
       {/* --- PREVIEW POPUP --- */}
-      {showPreview && (
+      {showPreview && createPortal(
         <CardPreviewPopup 
           card={card} 
           position={previewPosition} 
           previewRef={previewRef} 
-        />
+        />,
+        document.body
       )}
       {/* --- UPGRADE PREVIEW POPUP --- */}
       {showUpgradePreview && upgradePreviewSide !== null && (
@@ -1171,52 +1173,112 @@ function Zone({
     displayCards = [cards[cards.length - 1]];
   }
 
-// --- Layout rules ---
-let containerClass = "grid gap-2";
-let gridTemplate: string | undefined;
+  // --- Layout rules ---
+  let containerClass = "grid gap-2";
+  let gridTemplate: string | undefined;
+  let isPermanentZone = false;
 
-if (name === t('playArea') || name === t('blocked')) {
-  // Mobile-friendly flex row with wrap
-  containerClass = "flex flex-wrap gap-2 justify-start items-start";
-} else if (name === t('permanentZone')) {
-  // Permanent zone: 3 cards per row grid layout
-  containerClass = "grid gap-2";
-  gridTemplate = "repeat(3, minmax(200px, 1fr))";
-} else {
-  // Default: responsive grid for mobile
-  const cols = Math.min(6, displayCards.length || 1);
-  gridTemplate = `repeat(${cols}, minmax(200px, 1fr))`;
-}
+  if (name === t('playArea') || name === t('blocked')) {
+    // Mobile-friendly flex row with wrap
+    containerClass = "flex flex-wrap gap-2 justify-start items-start";
+  } else if (name === t('permanentZone')) {
+    // Permanent zone: overlapping cards layout
+    containerClass = "relative flex justify-start items-start";
+    isPermanentZone = true;
+  } else {
+    // Default: responsive grid for mobile
+    const cols = Math.min(6, displayCards.length || 1);
+    gridTemplate = `repeat(${cols}, minmax(220px, 1fr))`;
+  }
+
+  // Calculate offset for overlapping cards in permanent zone (max 6 per line)
+  const getCardStyle = (index: number): React.CSSProperties => {
+    if (!isPermanentZone) return {};
+    
+    // Maximum 6 cards per line, each offset by 120px (showing more of each card)
+    const cardsPerLine = 6;
+    const offsetX = 90;
+    const offsetY = 290;
+    const lineIndex = Math.floor(index / cardsPerLine);
+    const positionInLine = index % cardsPerLine;
+    
+    return {
+      position: 'absolute',
+      left: `${positionInLine * offsetX}px`,
+      top: `${lineIndex * offsetY}px`,
+      zIndex: index,
+      transition: 'all 0.3s ease',
+    };
+  };
+
+  // Calculate container dimensions for permanent zone
+  const getContainerStyle = (): React.CSSProperties => {
+    if (!isPermanentZone) return {};
+    
+    const offsetPerCard = 80;
+    const offsetY = 290;
+    const fixedWidth = 220 + (5 * offsetPerCard);
+    const totalLines = Math.ceil(displayCards.length / 6);
+    const totalHeight = totalLines * offsetY;
+    
+    return {
+      width: `${fixedWidth}px`,
+      minHeight: `${totalHeight}px`,
+    };
+  };
 
   return (
     <div ref={ref} className="p-4 border-2 rounded-xl min-h-[130px] shadow-lg bg-gradient-to-br from-gray-50 to-gray-100 hover:shadow-xl transition-shadow duration-300">
       <h2 className="text-xl font-bold mb-3 text-gray-800">{name}</h2>
       <div
         className={containerClass}
-        style={gridTemplate ? { gridTemplateColumns: gridTemplate, alignItems: "start" } : {}}
+        style={
+          isPermanentZone 
+            ? getContainerStyle()
+            : gridTemplate 
+              ? { gridTemplateColumns: gridTemplate, alignItems: "start" } 
+              : {}
+        }
       >
-        {displayCards.length > 0 ? (
-          displayCards.map((c) => (
-            <CardView
-              key={`${name}-${c.id}-${c.currentSide}`}
-              card={c}
-              fromZone={name}
-              onRightClick={onRightClick}
-              interactable={interactable}
-              onTapAction={onTapAction}
-              onUpgrade={onUpgrade}
-              onGainResources={onGainResources}
-              onCardUpdate={onCardUpdate}
-              onExecuteCardEffect={onExecuteCardEffect}
-              gatherProductionBonus={gatherProductionBonus}
-              isHighlighted={highlightedCardId === c.id}
-            />
-          ))
-        ) : (
-          <Card className="w-49 h-70 m-2 flex items-center justify-center border bg-gray-100">
-            <CardContent className="text-center text-gray-400">{t('none')}</CardContent>
-          </Card>
-        )}
+      {displayCards.length > 0 ? (
+        displayCards.map((c, index) => (
+          <div
+            key={`${name}-${c.id}-${c.currentSide}`}
+            style={getCardStyle(index)}
+            className={isPermanentZone ? "group" : ""}
+            onMouseEnter={(e) => {
+              if (isPermanentZone) {
+                e.currentTarget.style.zIndex = '1000';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (isPermanentZone) {
+                e.currentTarget.style.zIndex = String(index);
+              }
+            }}
+          >
+            <div className={isPermanentZone ? "group-hover:scale-105 transition-transform duration-300" : ""}>
+              <CardView
+                card={c}
+                fromZone={name}
+                onRightClick={onRightClick}
+                interactable={interactable}
+                onTapAction={onTapAction}
+                onUpgrade={onUpgrade}
+                onGainResources={onGainResources}
+                onCardUpdate={onCardUpdate}
+                onExecuteCardEffect={onExecuteCardEffect}
+                gatherProductionBonus={gatherProductionBonus}
+                isHighlighted={highlightedCardId === c.id}
+              />
+            </div>
+          </div>
+        ))
+      ) : (
+        <Card className="w-49 h-70 m-2 flex items-center justify-center border bg-gray-100">
+          <CardContent className="text-center text-gray-400">{t('none')}</CardContent>
+        </Card>
+      )}
       </div>
     </div>
   );
@@ -2450,10 +2512,6 @@ export default function Game() {
   // -------------------
   // Game Phases
   // -------------------
-  const updateResource = (key: keyof ResourceMap, delta: number) => {
-    setResources((r) => ({ ...r, [key]: r[key] + delta }));
-  };
-
   const checkPlayRestrictions = (): boolean => {
     const allActiveCards = [...playArea];
     
@@ -4125,9 +4183,10 @@ export default function Game() {
             <div className="min-w-[200px]">
               <Zone
                 name={t('deck')}
-                cards={deck.slice(0, 1)}
+                cards={deck}
                 onDrop={(p) => dropToDeck(p)}
                 onRightClick={(c, zone) => setPopupCard({ originZone: zone, originalId: c.id, editable: cloneGameCard(c) })}
+                showAll={false}
                 onTapAction={handleTapAction}
               />
               <Button disabled={deck.length === 0} onClick={() => setShowDeck(true)}className="mt-2">{t('seeDeck')}</Button>
@@ -4143,11 +4202,11 @@ export default function Game() {
                 showAll={false}
                 onTapAction={handleTapAction}
               />
-              <Button disabled={discard.length === 0} onClick={() => setShowDiscard(true)}>{t('seeDiscard')}</Button>
+              <Button disabled={discard.length === 0} onClick={() => setShowDiscard(true)}className="mt-2">{t('seeDiscard')}</Button>
             </div>
 
             {/* Permanent zone */}
-            <div className="flex flex-col lg:flex-row gap-4">
+            <div className="min-w-[750px]">
               <Zone
                 name={t('permanentZone')}
                 cards={permanentZone}
@@ -4268,20 +4327,12 @@ export default function Game() {
         </div>
 
         {/* Resource Pool */}
-        <div className="bg-white/80 backdrop-blur-sm p-2 rounded-xl shadow-lg border-2 border-gray-200">
+        <div className="bg-white/80 backdrop-blur-sm p-2 rounded-xl shadow-lg border-2 border-gray-200 max-w-[700px]">
           <div className="grid grid-cols-7 gap-2 max-w-[1400px]">
             {RESOURCE_KEYS.map((key) => (
               <div key={key} className="flex items-center gap-1 p-1 bg-gradient-to-br from-white to-gray-50 rounded-lg shadow-sm border border-gray-200">
                 <img src={resourceIconPath(key)} alt={key} title={key} className="w-5 h-5 flex-shrink-0" />
                 <div className="flex items-center gap-1">
-                  <Button 
-                    size="sm" 
-                    onClick={() => updateResource(key, -1)} 
-                    hidden={key === "fame"}
-                    className="h-6 w-6 p-0 text-xs"
-                  >
-                    -
-                  </Button>
                   <input
                     type="number"
                     className="w-10 text-center border rounded text-xs py-0.5"
@@ -4289,14 +4340,6 @@ export default function Game() {
                     onChange={(e) => setResources((r) => ({ ...r, [key]: parseInt(e.target.value || "0", 10) || 0 }))}
                     disabled={key === "fame"}
                   />
-                  <Button 
-                    size="sm" 
-                    onClick={() => updateResource(key, 1)} 
-                    hidden={key === "fame"}
-                    className="h-6 w-6 p-0 text-xs"
-                  >
-                    +
-                  </Button>
                 </div>
               </div>
             ))}
