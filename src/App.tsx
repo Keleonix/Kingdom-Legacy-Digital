@@ -398,7 +398,7 @@ function CardPreviewPopup({
   return (
     <div 
       ref={previewRef}
-      className="fixed z-50 p-3 border-2 rounded-lg bg-white shadow-2xl pointer-events-none"
+      className="fixed z-9999 p-3 border-2 rounded-lg bg-white shadow-2xl pointer-events-none"
       style={{
         top: `${position.top}px`,
         left: `${position.left}px`,
@@ -922,7 +922,7 @@ function CardView({
           ...getBackgroundStyle(card, currentSideIdx),
           animation: isHighlighted ? 'cardPulse 0.6s ease-in-out' : undefined,
         }}
-        className={`w-49 h-70 m-2 flex flex-col items-center justify-between border-2 shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 
+        className={`w-49 h-70 m-0 flex flex-col items-center justify-between border-2 shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 
           ${!interactable ? "opacity-60 cursor-not-allowed" : "cursor-pointer hover:border-blue-400"}
           ${isHighlighted ? "ring-4 ring-blue-400 border-blue-500" : ""}`}
         >
@@ -1079,10 +1079,10 @@ function CardView({
         document.body
       )}
       {/* --- UPGRADE PREVIEW POPUP --- */}
-      {showUpgradePreview && upgradePreviewSide !== null && (
+      {showUpgradePreview && upgradePreviewSide !== null && createPortal(
         <div 
           ref={upgradePreviewRef}
-          className="fixed z-[60] p-3 border-2 rounded-lg bg-white shadow-2xl pointer-events-none"
+          className="fixed z-[9999] p-3 border-2 rounded-lg bg-white shadow-2xl pointer-events-none"
           style={{
             top: `${upgradePreviewPosition.top}px`,
             left: `${upgradePreviewPosition.left}px`,
@@ -1116,7 +1116,8 @@ function CardView({
               <div className="text-sm text-gray-400 italic text-center py-4">{t('emptySide')}</div>
             )}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
@@ -1177,54 +1178,100 @@ function Zone({
   let containerClass = "grid gap-2";
   let gridTemplate: string | undefined;
   let isPermanentZone = false;
+  let isBlockedZone = false;
+  let isPlayArea = false;
 
-  if (name === t('playArea') || name === t('blocked')) {
-    // Mobile-friendly flex row with wrap
-    containerClass = "flex flex-wrap gap-2 justify-start items-start";
+  if (name === t('playArea')) {
+    containerClass = "relative flex justify-start items-start";
+    isPlayArea = true;
   } else if (name === t('permanentZone')) {
-    // Permanent zone: overlapping cards layout
     containerClass = "relative flex justify-start items-start";
     isPermanentZone = true;
+  } else if (name === t('blocked')) {
+    containerClass = "relative flex justify-start items-start";
+    isBlockedZone = true;
+  }
+  else if (name === t('deck')) {
+    if (!showAll && cards.length > 0) {
+      displayCards = [cards[0]];
+    }
   } else {
-    // Default: responsive grid for mobile
     const cols = Math.min(6, displayCards.length || 1);
     gridTemplate = `repeat(${cols}, minmax(220px, 1fr))`;
   }
 
   // Calculate offset for overlapping cards in permanent zone (max 6 per line)
   const getCardStyle = (index: number): React.CSSProperties => {
-    if (!isPermanentZone) return {};
+    if (!isPermanentZone && !isBlockedZone && !isPlayArea) return {};
     
-    // Maximum 6 cards per line, each offset by 120px (showing more of each card)
-    const cardsPerLine = 6;
-    const offsetX = 90;
-    const offsetY = 290;
-    const lineIndex = Math.floor(index / cardsPerLine);
-    const positionInLine = index % cardsPerLine;
+    if (isPermanentZone || isBlockedZone) {
+      const cardsPerLine = isBlockedZone ? 3 : 6;
+      const offsetX = 90;
+      const offsetY = 290;
+      const lineIndex = Math.floor(index / cardsPerLine);
+      const positionInLine = index % cardsPerLine;
+      
+      return {
+        position: 'absolute',
+        left: `${positionInLine * offsetX}px`,
+        top: `${lineIndex * offsetY}px`,
+        zIndex: index,
+        transition: 'all 0.3s ease',
+      };
+    }
     
-    return {
-      position: 'absolute',
-      left: `${positionInLine * offsetX}px`,
-      top: `${lineIndex * offsetY}px`,
-      zIndex: index,
-      transition: 'all 0.3s ease',
-    };
+    if (isPlayArea) {
+      const cardsPerLine = 6;
+      const cardWidth = 196;
+      const gap = 8;
+      const lineIndex = Math.floor(index / cardsPerLine);
+      const positionInLine = index % cardsPerLine;
+      
+      return {
+        position: 'absolute',
+        left: `${positionInLine * (cardWidth + gap)}px`,
+        top: `${lineIndex * 310}px`,
+        zIndex: index,
+        transition: 'all 0.3s ease',
+      };
+    }
+    
+    return {};
   };
 
   // Calculate container dimensions for permanent zone
   const getContainerStyle = (): React.CSSProperties => {
-    if (!isPermanentZone) return {};
+    if (!isPermanentZone && !isBlockedZone && !isPlayArea) return {};
     
-    const offsetPerCard = 80;
-    const offsetY = 290;
-    const fixedWidth = 220 + (5 * offsetPerCard);
-    const totalLines = Math.ceil(displayCards.length / 6);
-    const totalHeight = totalLines * offsetY;
+    if (isPermanentZone || isBlockedZone) {
+      const offsetPerCard = 80;
+      const offsetY = 290;
+      const cardsPerLine = isBlockedZone ? 3 : 6;
+      const fixedWidth = 220 + ((cardsPerLine - 1) * offsetPerCard);
+      const totalLines = Math.ceil(displayCards.length / cardsPerLine);
+      const totalHeight = totalLines * offsetY;
+      
+      return {
+        width: `${fixedWidth}px`,
+        minHeight: `${totalHeight}px`,
+      };
+    }
     
-    return {
-      width: `${fixedWidth}px`,
-      minHeight: `${totalHeight}px`,
-    };
+    if (isPlayArea) {
+      const cardsPerLine = 6;
+      const cardWidth = 196;
+      const gap = 8;
+      const fixedWidth = (cardsPerLine * cardWidth) + ((cardsPerLine - 1) * gap);
+      const totalLines = Math.ceil(displayCards.length / cardsPerLine);
+      const totalHeight = totalLines * 310; // Hauteur carte + gap
+      
+      return {
+        width: `${fixedWidth}px`,
+        minHeight: `${totalHeight}px`,
+      };
+    }
+    
+    return {};
   };
 
   return (
@@ -1233,7 +1280,7 @@ function Zone({
       <div
         className={containerClass}
         style={
-          isPermanentZone 
+          isPermanentZone || isBlockedZone || isPlayArea
             ? getContainerStyle()
             : gridTemplate 
               ? { gridTemplateColumns: gridTemplate, alignItems: "start" } 
@@ -1245,19 +1292,19 @@ function Zone({
           <div
             key={`${name}-${c.id}-${c.currentSide}`}
             style={getCardStyle(index)}
-            className={isPermanentZone ? "group" : ""}
+            className={(isPermanentZone || isBlockedZone || isPlayArea) ? "group" : ""}
             onMouseEnter={(e) => {
-              if (isPermanentZone) {
+              if (isPermanentZone || isBlockedZone || isPlayArea) {
                 e.currentTarget.style.zIndex = '1000';
               }
             }}
             onMouseLeave={(e) => {
-              if (isPermanentZone) {
+              if (isPermanentZone || isBlockedZone || isPlayArea) {
                 e.currentTarget.style.zIndex = String(index);
               }
             }}
           >
-            <div className={isPermanentZone ? "group-hover:scale-105 transition-transform duration-300" : ""}>
+            <div className={(isPermanentZone || isBlockedZone || isPlayArea) ? "group-hover:scale-105 transition-transform duration-300" : ""}>
               <CardView
                 card={c}
                 fromZone={name}
@@ -1750,12 +1797,13 @@ function CardSelectionPopup({
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[80]">
-      <div className="bg-white p-4 rounded-xl space-y-4 max-w-4xl max-h-[80vh] overflow-hidden flex flex-col">
-        {/* Show triggering card if provided */}
-        {triggeringCard && (
-          <div className="border-b pb-3">
-            <h3 className="text-sm font-semibold mb-2">{triggeringCard ? triggeringCard.GetName(t) : ""}:</h3>
-            <div className="flex justify-center">
+      <div className="bg-white p-4 rounded-xl max-w-5xl max-h-[80vh] overflow-hidden flex flex-col">
+        <h2 className="font-bold mb-3">{displayMessage}</h2>
+
+        <div className="flex flex-1 gap-4 overflow-hidden">
+          {triggeringCard && (
+            <div className="w-[220px] flex-shrink-0 border rounded p-3 flex flex-col items-center">
+            <h3 className="text-sm font-semibold mb-2 text-center">{t('triggeredCard')}</h3>
               <CardView
                 card={triggeringCard}
                 fromZone={zone}
@@ -1763,60 +1811,59 @@ function CardSelectionPopup({
                 interactable={false}
               />
             </div>
-          </div>
-        )}
-        
-        <h2 className="font-bold">{displayMessage}</h2>
-        
-        <div className="flex-1 overflow-y-auto p-2 border rounded">
-          <div className="grid grid-cols-3 gap-2">
-            {cards.map((card) => {
-              const isSelected = selectedCards.some(c => c.id === card.id);
-              const cardValue = getCardSelectionValue(card, searchType || "");
-              
-              return (
-                <div
-                  key={`select-${card.id}-${card.currentSide}`}
-                  ref={(el) => {
-                    if (el) cardRefs.current.set(card.id, el);
-                  }}
-                  className={`cursor-pointer transition-all relative ${
-                    isSelected 
-                      ? "ring-4 ring-blue-500 scale-105" 
-                      : "hover:ring-2 hover:ring-gray-300"
-                  }`}
-                  onMouseEnter={() => setHoveredCard(card)}
-                  onMouseLeave={() => setHoveredCard(null)}
-                >
-                  {/* Badge pour afficher la valeur si > 1 */}
-                  {cardValue > 1 && (
-                    <div className="absolute top-2 right-2 z-20 bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold text-sm">
-                      {cardValue}
-                    </div>
-                  )}
-                  
-                  <div 
-                    className="absolute inset-0 z-10"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleCard(card);
+          )}
+
+          <div className="flex-1 overflow-y-auto p-2 border rounded">
+            <h3 className="text-sm font-semibold mb-2 text-center">{t('cardsList')}</h3>
+            <div className="grid grid-cols-3 gap-2">
+              {cards.map((card) => {
+                const isSelected = selectedCards.some(c => c.id === card.id);
+                const cardValue = getCardSelectionValue(card, searchType || "");
+                
+                return (
+                  <div
+                    key={`select-${card.id}-${card.currentSide}`}
+                    ref={(el) => {
+                      if (el) cardRefs.current.set(card.id, el);
                     }}
-                  />
-                  <div style={{ pointerEvents: 'none' }}>
-                    <CardView
-                      card={card}
-                      fromZone={zone}
-                      onRightClick={() => {}}
-                      interactable={false}
+                    className={`cursor-pointer transition-all relative ${
+                      isSelected 
+                        ? "ring-4 ring-blue-500 scale-105" 
+                        : "hover:ring-2 hover:ring-gray-300"
+                    }`}
+                    onMouseEnter={() => setHoveredCard(card)}
+                    onMouseLeave={() => setHoveredCard(null)}
+                  >
+                    {cardValue > 1 && (
+                      <div className="absolute top-2 right-2 z-20 bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold text-sm">
+                        {cardValue}
+                      </div>
+                    )}
+                    
+                    <div 
+                      className="absolute inset-0 z-10"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleCard(card);
+                      }}
                     />
+                    <div style={{ pointerEvents: 'none' }}>
+                      <CardView
+                        card={card}
+                        fromZone={zone}
+                        onRightClick={() => {}}
+                        interactable={false}
+                      />
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </div>
 
-        <div className="flex justify-between items-center pt-2 border-t">
+        {/* Footer */}
+        <div className="flex justify-between items-center pt-2 mt-3 border-t">
           <span className="text-sm text-gray-600">
             Valeur: {selectedValue} / {optionalCount ? `${requiredCount}-${maxCount}` : requiredCount}
           </span>
@@ -1832,16 +1879,16 @@ function CardSelectionPopup({
             </Button>
           </div>
         </div>
-      </div>
 
-      {/* Preview popup */}
-      {hoveredCard && (
-        <CardPreviewPopup 
-          card={hoveredCard} 
-          position={previewPosition} 
-          previewRef={previewRef} 
-        />
-      )}
+        {/* Preview popup */}
+        {hoveredCard && (
+          <CardPreviewPopup 
+            card={hoveredCard} 
+            position={previewPosition} 
+            previewRef={previewRef} 
+          />
+        )}
+      </div>
     </div>
   );
 }
@@ -2501,11 +2548,11 @@ export default function Game() {
   function setTemporaryCardListImmediate(next: React.SetStateAction<GameCard[]>) {
     if (typeof next === "function") {
       const v = (next as (prev: GameCard[]) => GameCard[])(temporaryCardListRef.current);
-      temporaryCardListRef.current = v;
-      setTemporaryCardList(v);
+      temporaryCardListRef.current =  [...temporaryCardListRef.current, ...v];
+      setTemporaryCardList((prev) => [...prev, ...v]);
     } else {
-      temporaryCardListRef.current = next as GameCard[];
-      setTemporaryCardList(next as GameCard[]);
+      temporaryCardListRef.current = [...temporaryCardListRef.current, ...next];
+      setTemporaryCardList((prev) => [...prev, ...next]);
     }
   }
 
@@ -2774,6 +2821,7 @@ export default function Game() {
       setBlockedZoneImmediate([]);
       setDiscardImmediate([]);
       setTemporaryCardListImmediate([]);
+      temporaryCardListRef.current = [];
       
       await handleEffectsEndOfRound(endOfRoundCardList);
 
@@ -2820,6 +2868,7 @@ export default function Game() {
       }
       
       setTemporaryCardListImmediate([]);
+      temporaryCardListRef.current = [];
     }
   };
 
@@ -4162,7 +4211,7 @@ export default function Game() {
     <DndProvider backend={HTML5Backend}>
       <div className="p-4 space-y-4 min-h-screen">
         <div className="flex justify-between items-start">
-          <div className="flex gap-4">
+          <div className="flex gap-4 max-h-[450px]">
             {/* Deck */}
             <div className="min-w-[200px]">
               <Zone
@@ -4201,18 +4250,6 @@ export default function Game() {
                 onExecuteCardEffect={(card, zone, timing, effectId) => handleExecuteCardEffect(card, zone, timing, undefined, effectId)}
                 interactable={true}
                 highlightedCardId={highlightedCardId}
-              />
-            </div>
-
-            {/* Destroy */}
-            <div className="min-w-[200px]">
-              <Zone
-                name={t('destroy')}
-                cards={[]}
-                onDrop={(p) => dropToDestroy(p)}
-                onRightClick={() => {}}
-                onTapAction={undefined}
-                onCardUpdate={undefined}
               />
             </div>
 
@@ -4262,8 +4299,8 @@ export default function Game() {
         </div>
 
         {/* Play Area */}
-        <div className="flex flex-col lg:flex-row gap-4 min-w-[1400px]">
-          <div className="flex-1 min-w-[1200px]">
+        <div className="flex flex-col lg:flex-row gap-4 max-w-[1300px]">
+          <div className="flex-1 max-w-[1300px]">
             <Zone
               name={t('playArea')}
               cards={playArea}
@@ -4280,7 +4317,7 @@ export default function Game() {
           </div>
 
           {/* Blocked zone */}
-          <div className="w-full lg:w-120 min-w-[120px]">
+          <div className="w-full lg:w-[450px] min-w-[450px]">
             <Zone
               name={t('blocked')}
               cards={blockedZone}
@@ -4295,38 +4332,41 @@ export default function Game() {
           </div>
         </div>
 
-        {/* Action Buttons (with Shuffle next to End Round) */}
-        <div className="space-x-2">
-          <Button onClick={drawNewTurn} disabled={deck.length === 0}>{t('newTurn')}</Button>
-          <Button onClick={() => discardEndTurn(false)} disabled={deck.length === 0 || turnEndFlag}>{t('pass')}</Button>
-          <Button onClick={advance} disabled={turnEndFlag || isPlayBlocked || deck.length === 0}>{t('advance')}</Button>
-          {/* Conditionnal controls */}
-          <Button disabled={deck.length > 0} className="bg-red-600 hover:bg-red-500 text-white" onClick={handleEndRound}>{t('endRound')}</Button>
-          {/* Manual actions */}
-          <Button onClick={shuffleDeck} className="bg-blue-600 hover:bg-blue-500 text-white" hidden={true}>{"Shuffle Deck"}</Button>
-          {/* Hidden controls */}
-          {/* <Button hidden={campaignDeck.some(card => card.id === 95) && campaignDeck.some(card => card.id === 110)} className="bg-green-600 hover:bg-green-500 text-white" onClick={handleTopDiscardToBottom}>Top Discard to Bottom Deck</Button> */}
-          {/* <Button hidden={campaignDeck.some(card => card.id === 98)} className="bg-green-600 hover:bg-green-500 text-white" onClick={handleShuffle15Rand}>Shuffle 15 Rand</Button> */}
-          <Button hidden={hasEndedBaseGame || campaignDeck.some(card => card.id === 70)} disabled={deck.length > 0} className="bg-red-600 hover:bg-red-500 text-white" onClick={handleEndBaseGame}>{t('endGame')}</Button>
-        </div>
+        {/* Action Buttons et Resource Pool côte à côte */}
+        <div className="flex gap-4 items-start">
+          {/* Action Buttons à gauche */}
+          <div className="flex flex-wrap gap-2">
+            <Button onClick={drawNewTurn} disabled={deck.length === 0}>{t('newTurn')}</Button>
+            <Button onClick={() => discardEndTurn(false)} disabled={deck.length === 0 || turnEndFlag}>{t('pass')}</Button>
+            <Button onClick={advance} disabled={turnEndFlag || isPlayBlocked || deck.length === 0}>{t('advance')}</Button>
+            {/* Conditionnal controls */}
+            <Button disabled={deck.length > 0} className="bg-red-600 hover:bg-red-500 text-white" onClick={handleEndRound}>{t('endRound')}</Button>
+            {/* Manual actions */}
+            <Button onClick={shuffleDeck} className="bg-blue-600 hover:bg-blue-500 text-white" hidden={true}>{"Shuffle Deck"}</Button>
+            {/* Hidden controls */}
+            {/* <Button hidden={campaignDeck.some(card => card.id === 95) && campaignDeck.some(card => card.id === 110)} className="bg-green-600 hover:bg-green-500 text-white" onClick={handleTopDiscardToBottom}>Top Discard to Bottom Deck</Button> */}
+            {/* <Button hidden={campaignDeck.some(card => card.id === 98)} className="bg-green-600 hover:bg-green-500 text-white" onClick={handleShuffle15Rand}>Shuffle 15 Rand</Button> */}
+            <Button hidden={hasEndedBaseGame || campaignDeck.some(card => card.id === 70)} disabled={deck.length > 0} className="bg-red-600 hover:bg-red-500 text-white" onClick={handleEndBaseGame}>{t('endGame')}</Button>
+          </div>
 
-        {/* Resource Pool */}
-        <div className="bg-white/80 backdrop-blur-sm p-2 rounded-xl shadow-lg border-2 border-gray-200 max-w-[700px]">
-          <div className="grid grid-cols-7 gap-2 max-w-[1400px]">
-            {RESOURCE_KEYS.map((key) => (
-              <div key={key} className="flex items-center gap-1 p-1 bg-gradient-to-br from-white to-gray-50 rounded-lg shadow-sm border border-gray-200">
-                <img src={resourceIconPath(key)} alt={key} title={key} className="w-5 h-5 flex-shrink-0" />
-                <div className="flex items-center gap-1">
-                  <input
-                    type="number"
-                    className="w-10 text-center border rounded text-xs py-0.5"
-                    value={resources[key]}
-                    onChange={(e) => setResources((r) => ({ ...r, [key]: parseInt(e.target.value || "0", 10) || 0 }))}
-                    disabled={key === "fame"}
-                  />
+          {/* Resource Pool à droite */}
+          <div className="bg-white/80 backdrop-blur-sm p-2 rounded-xl shadow-lg border-2 border-gray-200 flex-shrink-0">
+            <div className="grid grid-cols-7 gap-2">
+              {RESOURCE_KEYS.map((key) => (
+                <div key={key} className="flex items-center gap-1 p-1 bg-gradient-to-br from-white to-gray-50 rounded-lg shadow-sm border border-gray-200">
+                  <img src={resourceIconPath(key)} alt={key} title={key} className="w-5 h-5 flex-shrink-0" />
+                  <div className="flex items-center gap-1">
+                    <input
+                      type="number"
+                      className="w-10 text-center border rounded text-xs py-0.5"
+                      value={resources[key]}
+                      onChange={(e) => setResources((r) => ({ ...r, [key]: parseInt(e.target.value || "0", 10) || 0 }))}
+                      disabled={key === "fame"}
+                    />
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
 
@@ -4514,7 +4554,7 @@ export default function Game() {
                   </div>
                 </div>
                 <div className="lg:min-w-[220px]">
-                  <Zone name={t('playArea')} cards={playArea.slice(-1)} onDrop={(p) => dropToPlayArea(p)} onRightClick={(c, zone) => setPopupCard({ originZone: zone, originalId: c.id, editable: cloneGameCard(c) })} onTapAction={handleTapAction} />
+                  <Zone name={t('playArea')} cards={playArea} onDrop={(p) => dropToPlayArea(p)} onRightClick={(c, zone) => setPopupCard({ originZone: zone, originalId: c.id, editable: cloneGameCard(c) })} onTapAction={handleTapAction} />
                 </div>
               </div>
 
@@ -4656,17 +4696,16 @@ export default function Game() {
         <CardSelectionPopup
           cards={cardSelectionPopup.cards}
           effectDescription={cardSelectionPopup.effectDescription}
+          zone={cardSelectionPopup.zone}
           requiredCount={cardSelectionPopup.requiredCount}
           optionalCount={cardSelectionPopup.optionalCount}
-          onConfirm={(selectedCards) => {
-            cardSelectionPopup.resolve(selectedCards);
+          searchType={cardSelectionPopup.searchType}
+          triggeringCard={cardSelectionPopup.triggeringCard}
+          onConfirm={(selected) => {
+            cardSelectionPopup.resolve(selected);
             setCardSelectionPopup(null);
           }}
-          onCancel={() => {
-            cardSelectionPopup.resolve([]);
-            setCardSelectionPopup(null);
-          }}
-          zone={cardSelectionPopup.zone}
+          onCancel={() => setCardSelectionPopup(null)}
         />
       )}
 

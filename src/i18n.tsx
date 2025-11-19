@@ -10,7 +10,7 @@ export type TranslationKeys =
   | 'newTurn' | 'pass' | 'advance' | 'endRound' | 'shuffleDeck' | 'noCost' | 'emptyCheckbox'
   | 'emptySide' | 'card' | 'none' | 'cardNames' | 'autoSelected' | 'side' | 'selectUpgradeRemoveCost'
   | 'noUpgradeAvailable' | 'selectAnUpgrade' | 'selectAResource' | 'failedToSave' | 'failedToLoad'
-  | 'select' | 'id' | 'preview' | 'endGame' | 'seeDeck' | 'seeDiscard'
+  | 'select' | 'id' | 'preview' | 'endGame' | 'seeDeck' | 'seeDiscard' | 'cardsList' | 'triggeredCard'
   
   // Cards Elements
   | 'frontUp' | 'frontDown' | 'backUp' | 'backDown'
@@ -438,7 +438,7 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     reset: 'Réinitialiser',
     newTurn: 'Nouveau Tour',
     pass: 'Passer',
-    advance: 'Avancer',
+    advance: 'Progresser',
     endRound: 'Fin de Round',
     shuffleDeck: 'Mélanger la Pioche',
     noCost: "Pas de coût",
@@ -461,6 +461,8 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     endGame: "Fin du Jeu",
     seeDeck: 'Voir le Deck',
     seeDiscard: 'Voir la Défausse',
+    cardsList: 'Liste des Cartes',
+    triggeredCard: 'Carte Déclenchée',
     
     // Cards Elements
     frontUp: 'Recto Haut',
@@ -1164,6 +1166,8 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     endGame: "End Game",
     seeDeck: 'See Deck',
     seeDiscard: 'See Discard',
+    cardsList: 'Cards List',
+    triggeredCard: 'Triggered Card',
 
     // Cards Elements
     frontUp: 'Front Up',
