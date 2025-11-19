@@ -2400,10 +2400,10 @@ export default function Game() {
   } | null>(null);
 
   const [stringChoicePopup, setStringChoicePopup] = useState<{
-  description: string;
-  choices: string[];
-  resolve: (choice: string) => void;
-} | null>(null);
+    description: string;
+    choices: string[];
+    resolve: (choice: string) => void;
+  } | null>(null);
 
   const [pendingPlayedCards, setPendingPlayedCards] = useState<GameCard[]>([]);
 
@@ -2805,7 +2805,7 @@ export default function Game() {
         
         if (isStillBlocked) {
           blockedToKeep.push(blockedCard);
-        } else {
+        } else if(!blockedCard.GetType(t).includes(t('scroll'))) {
           blockedToDiscard.push(blockedCard);
         }
       });
@@ -2940,9 +2940,20 @@ export default function Game() {
     return filteredCards;
   };
 
+  const cleanResourceOption = (option: Partial<ResourceMap>): Partial<ResourceMap> => {
+    return Object.fromEntries(
+      Object.entries(option).filter(([key, value]) => 
+        key !== 'fame' && value !== undefined && value > 0
+      )
+    ) as Partial<ResourceMap>;
+  };
+
   const selectResourceChoice = (options: Array<Partial<ResourceMap>>): Promise<Partial<ResourceMap> | null> => {
     return new Promise((resolve) => {
-      setResourceChoicePopup({ options, resolve });
+      const cleanedOptions = options
+        .map(cleanResourceOption)
+        .filter(option => Object.keys(option).length > 0);
+      setResourceChoicePopup({ options: cleanedOptions, resolve });
     });
   };
 
@@ -3704,33 +3715,6 @@ export default function Game() {
       return arr;
     });
   };
-
-  // const handleShuffle15Rand = () => {
-  //   if (discard.length === 0) return;
-    
-  //   const randomCards: GameCard[] = [];
-  //   const availableCards = [...discard];
-    
-  //   const numCardsToTake = Math.min(15, availableCards.length);
-    
-  //   for (let i = 0; i < numCardsToTake; i++) {
-  //     const randomIndex = Math.floor(Math.random() * availableCards.length);
-  //     randomCards.push(availableCards[randomIndex]);
-  //     availableCards.splice(randomIndex, 1);
-  //   }
-    
-  //   setDeck(prev => [...prev, ...randomCards]);
-  //   setDiscard(prev => prev.filter(card => !randomCards.includes(card)));
-  // };
-
-  // const handleTopDiscardToBottom = () => {
-  //   if (discard.length === 0) return;
-
-  //   const card = discard[discard.length - 1];
-
-  //   setDeck(prev => [...prev, card]);
-  //   discard.pop();
-  // }
 
   const getCardZone = (id: number): string => {
     if (deck.some(c => c.id === id)) return t('deck');
