@@ -838,7 +838,7 @@ function CardView({
       <div className="flex flex-col gap-1">
         {before && (
           <div 
-            className="text-sm overflow-hidden" 
+            className="text-sm overflow-auto" 
             style={{
               display: '-webkit-box',
               WebkitLineClamp: 5,
@@ -926,7 +926,7 @@ function CardView({
           ${!interactable ? "opacity-60 cursor-not-allowed" : "cursor-pointer hover:border-blue-400"}
           ${isHighlighted ? "ring-4 ring-blue-400 border-blue-500" : ""}`}
         >
-        <CardContent className="text-center p-2 overflow-hidden">
+        <CardContent className="text-center p-2 overflow-auto">
           {card.GetType(t).includes(t('permanent')) && <img src={"effects/permanent.png"} alt={t('permanentZone')} title={t('permanentZone')} className="w-49 h-2" />}
           {card.choice && (card.currentSide == 1 || card.currentSide == 3) && <button><img src={"effects/choice.png"} alt={t('choice')} title={t('choice')} className="w-49 h-2" /></button>}
           <div>
@@ -1797,10 +1797,10 @@ function CardSelectionPopup({
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[80]">
-      <div className="bg-white p-4 rounded-xl max-w-5xl max-h-[80vh] overflow-hidden flex flex-col">
+      <div className="bg-white p-4 rounded-xl max-w-5xl max-h-[80vh] overflow-auto flex flex-col">
         <h2 className="font-bold mb-3">{displayMessage}</h2>
 
-        <div className="flex flex-1 gap-4 overflow-hidden">
+        <div className="flex flex-1 gap-4 overflow-auto">
           {triggeringCard && (
             <div className="w-[220px] flex-shrink-0 border rounded p-3 flex flex-col items-center">
             <h3 className="text-sm font-semibold mb-2 text-center">{t('triggeredCard')}</h3>
@@ -3609,7 +3609,7 @@ export default function Game() {
     const matchingEffects = effects.filter(effect => effect.timing === timing);
     
     if (matchingEffects.length === 0) {
-      return; // Pas d'effet à exécuter, pas d'animation
+      return;
     }
 
     const shouldHighlight = (zone === t('playArea') || zone === t('permanentZone')) && 
@@ -3841,13 +3841,13 @@ export default function Game() {
   // -------------------
   // Tap actions (pop up, upgrade, resources, etc...)
   // -------------------
-  const handleTapAction = (card: GameCard, zone: string) => {
+  /*const handleTapAction = (card: GameCard, zone: string) => {
     setPopupCard({ 
       originZone: zone, 
       originalId: card.id, 
       editable: cloneGameCard(card) 
     });
-  };
+  };*/
 
   const handleUpgrade = async (card: GameCard, upg: Upgrade, zone: string) => {
     if (checkUpgradeRestrictions()) {
@@ -4218,9 +4218,9 @@ export default function Game() {
                 name={t('deck')}
                 cards={deck}
                 onDrop={(p) => dropToDeck(p)}
-                onRightClick={(c, zone) => setPopupCard({ originZone: zone, originalId: c.id, editable: cloneGameCard(c) })}
+                onRightClick={() => {}}
                 showAll={false}
-                onTapAction={handleTapAction}
+                /*onTapAction={handleTapAction}*/
               />
               <Button disabled={deck.length === 0} onClick={() => setShowDeck(true)}className="mt-2">{t('seeDeck')}</Button>
             </div>
@@ -4231,9 +4231,9 @@ export default function Game() {
                 name={t('discard')}
                 cards={discard}
                 onDrop={(p) => dropToDiscard(p)}
-                onRightClick={(c, zone) => setPopupCard({ originZone: zone, originalId: c.id, editable: cloneGameCard(c) })}
+                onRightClick={() => {}}
                 showAll={false}
-                onTapAction={handleTapAction}
+                /*onTapAction={handleTapAction}*/
               />
               <Button disabled={discard.length === 0} onClick={() => setShowDiscard(true)}className="mt-2">{t('seeDiscard')}</Button>
             </div>
@@ -4244,8 +4244,8 @@ export default function Game() {
                 name={t('permanentZone')}
                 cards={permanentZone}
                 onDrop={(p) => dropToPermanent(p)}
-                onRightClick={(c, zone) => setPopupCard({ originZone: zone, originalId: c.id, editable: cloneGameCard(c) })}
-                onTapAction={handleTapAction}
+                onRightClick={() => {}}
+                /*onTapAction={handleTapAction}*/
                 onCardUpdate={handleCardUpdate}
                 onExecuteCardEffect={(card, zone, timing, effectId) => handleExecuteCardEffect(card, zone, timing, undefined, effectId)}
                 interactable={true}
@@ -4305,8 +4305,8 @@ export default function Game() {
               name={t('playArea')}
               cards={playArea}
               onDrop={(p) => dropToPlayArea(p)}
-              onRightClick={(c, zone) => setPopupCard({ originZone: zone, originalId: c.id, editable: cloneGameCard(c) })}
-              onTapAction={handleTapAction}
+              onRightClick={() => {}}
+              /*onTapAction={handleTapAction}*/
               onCardUpdate={handleCardUpdate}
               onUpgrade={handleUpgrade}
               onGainResources={handleGainResources}
@@ -4322,8 +4322,8 @@ export default function Game() {
               name={t('blocked')}
               cards={blockedZone}
               onDrop={(p) => dropToBlocked(p)}
-              onRightClick={(c, zone) => setPopupCard({ originZone: zone, originalId: c.id, editable: cloneGameCard(c) })}
-              onTapAction={handleTapAction}
+              onRightClick={() => {}}
+              /*onTapAction={handleTapAction}*/
               onCardUpdate={handleCardUpdate}
               onUpgrade={handleUpgrade}
               onGainResources={handleGainResources}
@@ -4368,6 +4368,9 @@ export default function Game() {
               ))}
             </div>
           </div>
+
+          {/* Infos */}
+          <div className="mt-auto ml-auto">Kingdom Legacy - Digital by Keleonix | v0.8.0</div>
         </div>
 
         {/* Settings Modal */}
@@ -4523,10 +4526,10 @@ export default function Game() {
                   name={t('campaign')}
                   cards={[campaignPreview]}
                   onDrop={(p) => dropToCampaign(p)}
-                  onTapAction={handleTapAction}
-                  onRightClick={(c, zone) => setPopupCard({ originZone: zone, originalId: c.id, editable: cloneGameCard(c) })}
+                  /*onTapAction={handleTapAction}*/
+                  onRightClick={() => {}}
                 />
-                <Zone name={t('discard')} cards={discard.slice(-1)} onDrop={(p) => {dropToDiscard(p); setCampaignPreview(null);}} onTapAction={handleTapAction} onRightClick={(c, zone) => setPopupCard({ originZone: zone, originalId: c.id, editable: cloneGameCard(c) })} showAll={true} />
+                <Zone name={t('discard')} cards={discard.slice(-1)} onDrop={(p) => {dropToDiscard(p); setCampaignPreview(null);}} /*onTapAction={handleTapAction}*/ onRightClick={() => {}} showAll={true} />
                 <Zone name={t('destroy')} cards={[]} onDrop={(p) => {dropToDestroy(p); setCampaignPreview(null);}} onRightClick={() => {}} />
               </div>
               <Button onClick={() => setCampaignPreview(null)}>{t('close')}</Button>
@@ -4537,7 +4540,7 @@ export default function Game() {
         {/* Full Discard Modal */}
         {showDiscard && (
           <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-2">
-            <div className="bg-white p-4 rounded-xl space-y-4 w-full h-full max-w-[300vw] max-h-[300vh] overflow-hidden flex flex-col">
+            <div className="bg-white p-4 rounded-xl space-y-4 w-full h-full max-w-[300vw] max-h-[300vh] overflow-auto flex flex-col">
               <h2 className="font-bold text-xl">{t('discard')}</h2>
               <div className="flex flex-col lg:flex-row gap-4 flex-1 min-h-0">
                 <div className="flex-1 overflow-y-auto p-2 border rounded">
@@ -4547,14 +4550,14 @@ export default function Game() {
                         key={`modal-${c.id}-${c.currentSide}-${Math.random()}`}
                         card={c}
                         fromZone={t('discard')}
-                        onRightClick={(x, zone) => setPopupCard({ originZone: zone, originalId: x.id, editable: cloneGameCard(x) })}
-                        onTapAction={handleTapAction}
+                        onRightClick={() => {}}
+                        /*onTapAction={handleTapAction}*/
                       />
                     ))}
                   </div>
                 </div>
                 <div className="lg:min-w-[220px]">
-                  <Zone name={t('playArea')} cards={playArea} onDrop={(p) => dropToPlayArea(p)} onRightClick={(c, zone) => setPopupCard({ originZone: zone, originalId: c.id, editable: cloneGameCard(c) })} onTapAction={handleTapAction} />
+                  <Zone name={t('playArea')} cards={playArea} onDrop={(p) => dropToPlayArea(p)} onRightClick={() => {}} /*onTapAction={handleTapAction}*/ />
                 </div>
               </div>
 
@@ -4585,10 +4588,10 @@ export default function Game() {
                         updatedCard.currentSide = newSide;
                         replaceCardInZone(t('campaign'), card.id, updatedCard);
                       } else {
-                        handleTapAction(card, t('campaign'));
+                        /*handleTapAction(card, t('campaign'));*/
                       }
                     }}
-                    onRightClick={handleTapAction}
+                    onRightClick={() => {}}
                     onExecuteCardEffect={async (card, zone) => {
                       if (card.GetType(t) === "Parchemin") {
                         return handleExecuteCardEffect(card, zone, "onClick");
@@ -4600,7 +4603,7 @@ export default function Game() {
 
                 <div className="flex-1 flex-col lg:flex-row gap-4 max-w-[230px]">
                   <p className="font-bold">{t('deck')}</p>
-                  <Zone name={t('deck')} cards={deck.slice(0, 1)} onDrop={(p) => dropToDeck(p)} onTapAction={handleTapAction} onRightClick={handleTapAction} />
+                  <Zone name={t('deck')} cards={deck.slice(0, 1)} onDrop={(p) => dropToDeck(p)} /*onTapAction={handleTapAction}*/ onRightClick={() => {}} />
                   {<Button onClick={() => setShowDeck(true)}>{t('seeDeck')}</Button>}
                 </div>
               </div>
@@ -4623,7 +4626,7 @@ export default function Game() {
         {/* Full Deck Modal */}
         {showDeck && (
           <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-2">
-            <div className="bg-white p-4 rounded-xl space-y-4 w-full h-full max-w-[300vw] max-h-[300vh] overflow-hidden flex flex-col">
+            <div className="bg-white p-4 rounded-xl space-y-4 w-full h-full max-w-[300vw] max-h-[300vh] overflow-auto flex flex-col">
               <h2 className="font-bold text-xl">{t('deck')}</h2>
               <div className="flex flex-col lg:flex-row gap-4 flex-1 min-h-0">
                 <div className="flex-1 overflow-y-auto p-2 border rounded">
@@ -4633,8 +4636,8 @@ export default function Game() {
                         key={`modal-${c.id}-${c.currentSide}-${Math.random()}`}
                         card={c}
                         fromZone={t('deck')}
-                        onRightClick={(x, zone) => setPopupCard({ originZone: zone, originalId: x.id, editable: cloneGameCard(x) })}
-                        onTapAction={handleTapAction}
+                        onRightClick={() => {}}
+                        /*onTapAction={handleTapAction}*/
                       />
                     ))}
                   </div>

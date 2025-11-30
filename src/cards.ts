@@ -10,9 +10,9 @@ export const allCards: GameCard[] = [
       [],
     ],
     effects: [
-      "Assurez-vous d'avoir bien lu les règles avant de commencer à jouer (Settings -> Guide)! Retenez bien les Règles d'Or (voir -> Back Up). Après les avoirs lues, effects/destroy .",
+      "Assurez-vous d'avoir bien lu les règles avant de commencer à jouer (Settings -> Guide)! Retenez bien les Règles d'Or. effects/passive -> Règles d'Or .",
       '',
-      "1. Ne jamais changer le côté d'une carte sans qu'un effet ne vous le permette. 2. Vous pouvez regarder vos cartes mais pas celles du deck de campagne avant d'y avoir été invité. 3. Au début de chaque manche (sauf 1ère), découvrez 2 cartes suivantes depuis le deck de campagne. 4. Une carte dont le côté change est toujours immédiatement défaussée. 5. Améliorer une carte met fin à votre tour.",
+      "1) Ne jamais changer le côté d'une carte sans qu'un effet ne vous le permette, 2) Vous pouvez regarder vos cartes mais pas celles du deck de campagne avant d'y avoir été invité, 3) Au début de chaque manche (sauf 1ère), découvrez 2 cartes suivantes depuis le deck de campagne, 4) Une carte dont le côté change est toujours immédiatement défaussée, 5) Améliorer une carte met fin à votre tour.",
       '',
     ],
     upgrades: [

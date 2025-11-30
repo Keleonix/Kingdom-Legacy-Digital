@@ -256,6 +256,24 @@ async function checkNextBoxApplyEffect(
 // Get Effects
 // -------------------
 export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> = {
+  0: {
+    1: [{ // Bienvue
+      description: (t) => t('none'),
+      timing: "onClick",
+      execute: async function(ctx)  {
+        ctx.upgradeCard(ctx.card, 3);
+        return false;
+      }
+    }],
+    3: [{ // Règles d'Or
+        description: (t) => t('none'),
+        timing: "onClick",
+        execute: async function (ctx) {
+          ctx.deleteCardInZone(ctx.t('blocked'), ctx.card.id);
+          return false;
+        }
+    }],
+  },
   1: {
     2: [{ // Plaines
       description: (t) => t('effect_description_plains'),
