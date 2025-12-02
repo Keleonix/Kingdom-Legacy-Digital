@@ -859,11 +859,13 @@ function CardView({
       <div className="flex flex-col gap-1">
         {before && (
           <div 
-            className="text-sm overflow-auto" 
+            className="text-sm overflow-auto overscroll-contain" 
             style={{
               display: '-webkit-box',
               WebkitLineClamp: 5,
-              WebkitBoxOrient: 'vertical'
+              WebkitBoxOrient: 'vertical',
+              WebkitOverflowScrolling: 'touch',
+              touchAction: 'pan-y'
             }}
           >
             {renderEffectText(before)}
@@ -2537,6 +2539,10 @@ export default function Game() {
     onCancel?: () => void;
   } | null>(null);
 
+  const [debugMode, setDebugMode] = useState(false);
+  const [clickCount, setClickCount] = useState(0);
+  const clickTimerRef = useRef<NodeJS.Timeout | null>(null);
+
   // ----------- immediate refs & setters (à ajouter près des useState) -----------
   const deckRef = useRef<GameCard[]>([]);
   const playAreaRef = useRef<GameCard[]>([]);
@@ -2604,6 +2610,28 @@ export default function Game() {
       setTemporaryCardList((prev) => [...prev, ...next]);
     }
   }
+
+  const handleDebugClick = () => {
+    const newCount = clickCount + 1;
+    setClickCount(newCount);
+
+    if (clickTimerRef.current) {
+      clearTimeout(clickTimerRef.current);
+    }
+
+    if (newCount >= 5) {
+      setDebugMode(!debugMode);
+      setClickCount(0);
+      setConfirmationPopup({
+        message: `Debug mode ${!debugMode ? 'enabled' : 'disabled'}`,
+        onConfirm: () => setConfirmationPopup(null)
+      });
+    } else {
+      clickTimerRef.current = setTimeout(() => {
+        setClickCount(0);
+      }, 2000);
+    }
+  };
 
   // -------------------
   // Game Phases
@@ -3890,13 +3918,13 @@ export default function Game() {
   // -------------------
   // Tap actions (pop up, upgrade, resources, etc...)
   // -------------------
-  /*const handleTapAction = (card: GameCard, zone: string) => {
+  const handleTapAction = (card: GameCard, zone: string) => {
     setPopupCard({ 
       originZone: zone, 
       originalId: card.id, 
       editable: cloneGameCard(card) 
     });
-  };*/
+  };
 
   const handleUpgrade = async (card: GameCard, upg: Upgrade, zone: string) => {
     if (checkUpgradeRestrictions()) {
@@ -4283,14 +4311,26 @@ export default function Game() {
   }, [language]);
 
   useEffect(() => {
+    document.documentElement.style.background = "linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)";
+    document.documentElement.style.backgroundAttachment = "fixed";
+    
     document.body.style.background = "linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)";
     document.body.style.backgroundAttachment = "fixed";
     document.body.style.minHeight = "100vh";
     
+    // Empêcher le overscroll blanc sur iOS
+    document.body.style.overscrollBehavior = "none";
+    document.documentElement.style.overscrollBehavior = "none";
+    
     return () => {
+      document.documentElement.style.background = "";
+      document.documentElement.style.backgroundAttachment = "";
+      document.documentElement.style.overscrollBehavior = "";
+      
       document.body.style.background = "";
       document.body.style.backgroundAttachment = "";
       document.body.style.minHeight = "";
+      document.body.style.overscrollBehavior = "";
     };
   }, [])
 
@@ -4307,7 +4347,7 @@ export default function Game() {
                 onDrop={(p) => dropToDeck(p)}
                 onRightClick={() => {}}
                 showAll={false}
-                /*onTapAction={handleTapAction}*/
+                onTapAction={debugMode ? handleTapAction : undefined}
               />
               <Button disabled={deck.length === 0} onClick={() => setShowDeck(true)}className="mt-2">{t('seeDeck')}</Button>
             </div>
@@ -4320,7 +4360,7 @@ export default function Game() {
                 onDrop={(p) => dropToDiscard(p)}
                 onRightClick={() => {}}
                 showAll={false}
-                /*onTapAction={handleTapAction}*/
+                onTapAction={debugMode ? handleTapAction : undefined}
               />
               <Button disabled={discard.length === 0} onClick={() => setShowDiscard(true)}className="mt-2">{t('seeDiscard')}</Button>
             </div>
@@ -4332,7 +4372,7 @@ export default function Game() {
                 cards={permanentZone}
                 onDrop={(p) => dropToPermanent(p)}
                 onRightClick={() => {}}
-                /*onTapAction={handleTapAction}*/
+                onTapAction={debugMode ? handleTapAction : undefined}
                 onCardUpdate={handleCardUpdate}
                 onExecuteCardEffect={(card, zone, timing, effectId) => handleExecuteCardEffect(card, zone, timing, undefined, effectId)}
                 interactable={true}
@@ -4385,7 +4425,7 @@ export default function Game() {
           </div>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-4 max-w-[1300px]">
+        <div className="flex flex-col flex-row gap-4 max-w-[1300px]">
           {/* Play Area */}
           <div className="flex-1 max-w-[1300px]">
             <Zone
@@ -4393,7 +4433,7 @@ export default function Game() {
               cards={playArea}
               onDrop={(p) => dropToPlayArea(p)}
               onRightClick={() => {}}
-              /*onTapAction={handleTapAction}*/
+              onTapAction={debugMode ? handleTapAction : undefined}
               onCardUpdate={handleCardUpdate}
               onUpgrade={handleUpgrade}
               onGainResources={handleGainResources}
@@ -4404,7 +4444,7 @@ export default function Game() {
           </div>
 
           {/* Blocked zone */}
-          <div className="w-full lg:w-[450px] min-w-[450px]">
+          <div className="w-full w-[450px] min-w-[450px]">
             <Zone
               name={t('blocked')}
               cards={blockedZone}
@@ -4424,10 +4464,10 @@ export default function Game() {
           </div>
         </div>
 
-        {/* Action Buttons, Resource Pool et Infos sur une seule ligne */}
-        <div className="flex gap-4 items-center justify-between">
+        {/* Action Buttons, Resource Pool et Infos sur une seune ligne */}
+        <div className="flex gap-4 items-center">
           {/* Action Buttons à gauche */}
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 flex-shrink-0">
             <Button onClick={drawNewTurn} disabled={deck.length === 0}>{t('newTurn')}</Button>
             <Button onClick={() => discardEndTurn(false)} disabled={deck.length === 0 || turnEndFlag}>{t('pass')}</Button>
             <Button onClick={advance} disabled={turnEndFlag || isPlayBlocked || deck.length === 0}>{t('advance')}</Button>
@@ -4456,9 +4496,12 @@ export default function Game() {
             </div>
           </div>
 
-          {/* Infos à droite */}
-          <div className="text-xs text-gray-700 whitespace-nowrap ml-auto">
-            Kingdom Legacy - Digital by Keleonix | v0.8.0
+          {/* Infos à droite - masquées sur mobile */}
+          <div 
+            onClick={handleDebugClick}
+            className="hidden md:block text-xs text-gray-700 whitespace-nowrap ml-auto flex-shrink-0 cursor-pointer select-none"
+          >
+            Kingdom Legacy - Digital by Keleonix | v0.8.0 {debugMode && '🐛'}
           </div>
         </div>
 
@@ -4615,10 +4658,10 @@ export default function Game() {
                   name={t('campaign')}
                   cards={[campaignPreview]}
                   onDrop={(p) => dropToCampaign(p)}
-                  /*onTapAction={handleTapAction}*/
+                  onTapAction={debugMode ? handleTapAction : undefined}
                   onRightClick={() => {}}
                 />
-                <Zone name={t('discard')} cards={discard.slice(-1)} onDrop={(p) => {dropToDiscard(p); setCampaignPreview(null);}} /*onTapAction={handleTapAction}*/ onRightClick={() => {}} showAll={true} />
+                <Zone name={t('discard')} cards={discard.slice(-1)} onDrop={(p) => {dropToDiscard(p); setCampaignPreview(null);}} onTapAction={debugMode ? handleTapAction : undefined} onRightClick={() => {}} showAll={true} />
                 <Zone name={t('destroy')} cards={[]} onDrop={(p) => {dropToDestroy(p); setCampaignPreview(null);}} onRightClick={() => {}} />
               </div>
               <Button onClick={() => setCampaignPreview(null)}>{t('close')}</Button>
@@ -4631,7 +4674,7 @@ export default function Game() {
           <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-2">
             <div className="bg-white p-4 rounded-xl space-y-4 w-full h-full max-w-[300vw] max-h-[300vh] overflow-auto flex flex-col">
               <h2 className="font-bold text-xl">{t('discard')}</h2>
-              <div className="flex flex-col lg:flex-row gap-4 flex-1 min-h-0">
+              <div className="flex flex-col flex-row gap-4 flex-1 min-h-0">
                 <div className="flex-1 overflow-y-auto p-2 border rounded">
                   <div className="grid grid-cols-6 gap-2">
                     {discard.map((c) => (
@@ -4640,13 +4683,13 @@ export default function Game() {
                         card={c}
                         fromZone={t('discard')}
                         onRightClick={() => {}}
-                        /*onTapAction={handleTapAction}*/
+                        onTapAction={debugMode ? handleTapAction : undefined}
                       />
                     ))}
                   </div>
                 </div>
-                <div className="lg:min-w-[220px]">
-                  <Zone name={t('playArea')} cards={playArea} onDrop={(p) => dropToPlayArea(p)} onRightClick={() => {}} /*onTapAction={handleTapAction}*/ />
+                <div className="min-w-[220px]">
+                  <Zone name={t('playArea')} cards={playArea} onDrop={(p) => dropToPlayArea(p)} onRightClick={() => {}} onTapAction={debugMode ? handleTapAction : undefined} />
                 </div>
               </div>
 
@@ -4690,9 +4733,9 @@ export default function Game() {
                   />
                 </div>
 
-                <div className="flex-1 flex-col lg:flex-row gap-4 max-w-[230px]">
+                <div className="flex-1 flex-col flex-row gap-4 max-w-[230px]">
                   <p className="font-bold">{t('deck')}</p>
-                  <Zone name={t('deck')} cards={deck.slice(0, 1)} onDrop={(p) => dropToDeck(p)} /*onTapAction={handleTapAction}*/ onRightClick={() => {}} />
+                  <Zone name={t('deck')} cards={deck.slice(0, 1)} onDrop={(p) => dropToDeck(p)} onTapAction={debugMode ? handleTapAction : undefined} onRightClick={() => {}} />
                   {<Button onClick={() => setShowDeck(true)}>{t('seeDeck')}</Button>}
                 </div>
               </div>
@@ -4717,7 +4760,7 @@ export default function Game() {
           <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-2">
             <div className="bg-white p-4 rounded-xl space-y-4 w-full h-full max-w-[300vw] max-h-[300vh] overflow-auto flex flex-col">
               <h2 className="font-bold text-xl">{t('deck')}</h2>
-              <div className="flex flex-col lg:flex-row gap-4 flex-1 min-h-0">
+              <div className="flex flex-col flex-row gap-4 flex-1 min-h-0">
                 <div className="flex-1 overflow-y-auto p-2 border rounded">
                   <div className="grid grid-cols-6 gap-2">
                     {[...deck].sort((a, b) => a.id - b.id).map((c) => (
@@ -4726,7 +4769,7 @@ export default function Game() {
                         card={c}
                         fromZone={t('deck')}
                         onRightClick={() => {}}
-                        /*onTapAction={handleTapAction}*/
+                        onTapAction={debugMode ? handleTapAction : undefined}
                       />
                     ))}
                   </div>
