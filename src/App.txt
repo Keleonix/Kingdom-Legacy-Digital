@@ -11,8 +11,6 @@ import { getCardEffects, type GameContext, type CardEffect, cardEffectsRegistry,
 import { useTranslation, type Language, LanguageSelector, type TranslationKeys } from './i18n';
 import { createPortal } from 'react-dom';
 
-const ZONE_MIN_HEIGHT = "290px";
-
 const HTML5toTouch = {
   backends: [
     {
@@ -1197,6 +1195,7 @@ function Zone({
 
   // --- Layout rules ---
   let containerClass = "grid gap-2";
+  let gridTemplate: string | undefined;
   let isPermanentZone = false;
   let isBlockedZone = false;
   let isPlayArea = false;
@@ -1215,6 +1214,9 @@ function Zone({
     if (!showAll && cards.length > 0) {
       displayCards = [cards[0]];
     }
+  } else {
+    const cols = Math.min(6, displayCards.length || 1);
+    gridTemplate = `repeat(${cols}, minmax(220px, 1fr))`;
   }
 
   // Calculate offset for overlapping cards in permanent zone (max 6 per line)
@@ -1258,18 +1260,19 @@ function Zone({
 
   // Calculate container dimensions for permanent zone
   const getContainerStyle = (): React.CSSProperties => {
+    if (!isPermanentZone && !isBlockedZone && !isPlayArea) return {};
+    
     if (isPermanentZone || isBlockedZone) {
+      const offsetPerCard = 80;
+      const offsetY = 290;
       const cardsPerLine = isBlockedZone ? 3 : 6;
-      const offsetX = 90;
-      const offsetY = 310;
-      const fixedWidth = 220 + ((cardsPerLine - 1) * offsetX);
-      const totalLines = Math.max(1, Math.ceil(displayCards.length / cardsPerLine));
+      const fixedWidth = 220 + ((cardsPerLine - 1) * offsetPerCard);
+      const totalLines = Math.ceil(displayCards.length / cardsPerLine);
       const totalHeight = totalLines * offsetY;
       
       return {
-        position: "relative",
         width: `${fixedWidth}px`,
-        height: `${totalHeight}px`,
+        minHeight: `${totalHeight}px`,
       };
     }
     
@@ -1278,34 +1281,31 @@ function Zone({
       const cardWidth = 196;
       const gap = 8;
       const fixedWidth = (cardsPerLine * cardWidth) + ((cardsPerLine - 1) * gap);
-      const totalLines = Math.max(1, Math.ceil(displayCards.length / cardsPerLine));
-      const totalHeight = totalLines * 310;
+      const totalLines = Math.ceil(displayCards.length / cardsPerLine);
+      const totalHeight = totalLines * 310; // Hauteur carte + gap
       
       return {
-        position: "relative",
         width: `${fixedWidth}px`,
-        height: `${totalHeight}px`,
+        minHeight: `${totalHeight}px`,
       };
     }
     
-    // Pour Deck/Discard et autres zones grid
-    const cardsPerLine = Math.min(6, displayCards.length || 1);
-    const fixedWidth = cardsPerLine * 220; // 220px par colonne (largeur d'une carte)
-    
-    return {
-      position: "relative",
-      height: ZONE_MIN_HEIGHT,
-      width: `${fixedWidth}px`,
-    };
+    return {};
   };
 
   return (
-  <div ref={ref} className="p-4 border-2 rounded-xl shadow-lg bg-gradient-to-br from-gray-50 to-gray-100 hover:shadow-xl transition-shadow duration-300">
-    <h2 className="text-xl font-bold mb-3 text-gray-800">{name}</h2>
-    <div
-      className={containerClass}
-      style={getContainerStyle()}
-    >
+    <div ref={ref} className="p-4 border-2 rounded-xl min-h-[130px] shadow-lg bg-gradient-to-br from-gray-50 to-gray-100 hover:shadow-xl transition-shadow duration-300">
+      <h2 className="text-xl font-bold mb-3 text-gray-800">{name}</h2>
+      <div
+        className={containerClass}
+        style={
+          isPermanentZone || isBlockedZone || isPlayArea
+            ? getContainerStyle()
+            : gridTemplate 
+              ? { gridTemplateColumns: gridTemplate, alignItems: "start" } 
+              : {}
+        }
+      >
       {displayCards.length > 0 ? (
         displayCards.map((c, index) => (
           <div
@@ -4298,7 +4298,7 @@ export default function Game() {
     <DndProvider backend={MultiBackend} options={HTML5toTouch}>
       <div className="p-4 space-y-4 min-h-screen">
         <div className="flex justify-between items-start">
-          <div className="flex gap-4">
+          <div className="flex gap-4 max-h-[450px]">
             {/* Deck */}
             <div className="min-w-[200px]">
               <Zone
@@ -4385,8 +4385,8 @@ export default function Game() {
           </div>
         </div>
 
+        {/* Play Area */}
         <div className="flex flex-col lg:flex-row gap-4 max-w-[1300px]">
-          {/* Play Area */}
           <div className="flex-1 max-w-[1300px]">
             <Zone
               name={t('playArea')}

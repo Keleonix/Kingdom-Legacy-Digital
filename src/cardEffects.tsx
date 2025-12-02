@@ -1467,29 +1467,33 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: (t) => t('none'),
       timing: "onClick",
       execute: async function (ctx) {
-        ctx.selectCardSides(ctx.card, 1, 0, async (selectedSides) => {
-          const resourcesCount = getResourcesCount(ctx.card.resources[selectedSides[0] - 1][0]);
-          if (selectedSides.length > 0 && ((selectedSides[0] !== 4 && resourcesCount <= 1) || (selectedSides[0] === 4 && resourcesCount <= 4))) {
-            const targetSide = selectedSides[0];
-            
-            const resourceChoice = await ctx.selectResourceChoice([
-              { coin: 1 }, { wood: 1 }, { stone: 1 }, { metal: 1 }, {sword: 1} 
-            ]);
-            
-            if (resourceChoice) {
-              ctx.card.resources[targetSide - 1].forEach(option => {
-                Object.entries(resourceChoice).forEach(([key, value]) => {
-                  option[key as keyof ResourceMap] = 
-                    (option[key as keyof ResourceMap] || 0) + value;
-                });
-              });
-            }
-            
-            await ctx.upgradeCard(ctx.card, 1);
-            ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
-            return true;
-          }
+        const selectedSides = await new Promise<number[]>((resolve) => {
+          ctx.selectCardSides(ctx.card, 1, 0, resolve);
         });
+        const resourcesCount = getResourcesCount(ctx.card.resources[selectedSides[0] - 1][0]);
+        if (selectedSides.length > 0 && ((selectedSides[0] !== 4 && resourcesCount <= 1) || (selectedSides[0] === 4 && resourcesCount <= 4))) {
+          const targetSide = selectedSides[0];
+          
+          const resourceChoice = await ctx.selectResourceChoice([
+            { coin: 1 }, { wood: 1 }, { stone: 1 }, { metal: 1 }, {sword: 1} 
+          ]);
+          
+          if (resourceChoice) {
+            ctx.card.resources[targetSide - 1].forEach(option => {
+              Object.entries(resourceChoice).forEach(([key, value]) => {
+                option[key as keyof ResourceMap] = 
+                  (option[key as keyof ResourceMap] || 0) + value;
+              });
+            });
+          }
+          else {
+            return false;
+          }
+          
+          ctx.handleCardUpdate(ctx.card, ctx.zone);
+          await ctx.upgradeCard(ctx.card, 1);
+          return true;
+        }
         return false;
       }
     }],
@@ -2435,6 +2439,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: (t) => t('effect_description_scribe'),
       timing: "endOfTurn",
       execute: async function (ctx) {
+        if (ctx.fetchCardsInZone((card) => card.id === ctx.card.id, ctx.t('playArea')).length === 0) return false;
         const selected = await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, ctx.t('playArea'), this.description(ctx.t), 0, ctx.fetchCardsInZone((c) => c.id === ctx.card.id, ctx.zone)[0], 2);
         if (selected.length > 0) {
           ctx.setTemporaryCardListImmediate(selected);
@@ -3494,8 +3499,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       timing: "endOfTurn",
       execute: async function (ctx) {
         const selected = await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id && card.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'), this.description(ctx.t), 0, ctx.fetchCardsInZone((c) => c.id === ctx.card.id, ctx.zone)[0], 1);
-        ctx.setTemporaryCardListImmediate(selected);
         if (selected.length > 0) {
+          ctx.setTemporaryCardListImmediate(selected);
           return true;
         }
         return false;
@@ -3506,8 +3511,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       timing: "endOfTurn",
       execute: async function (ctx) {
         const selected = await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id && card.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'), this.description(ctx.t), 0, ctx.fetchCardsInZone((c) => c.id === ctx.card.id, ctx.zone)[0], 2);
-        ctx.setTemporaryCardListImmediate(selected);
         if (selected.length > 0) {
+          ctx.setTemporaryCardListImmediate(selected);
           return true;
         }
         return false;
@@ -3518,8 +3523,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       timing: "endOfTurn",
       execute: async function (ctx) {
         const selected = await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, ctx.t('playArea'), this.description(ctx.t), 0, ctx.fetchCardsInZone((c) => c.id === ctx.card.id, ctx.zone)[0], 2);
-        ctx.setTemporaryCardListImmediate(selected);
         if (selected.length > 0) {
+          ctx.setTemporaryCardListImmediate(selected);
           return true;
         }
         return false;
@@ -3530,8 +3535,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       timing: "endOfTurn",
       execute: async function (ctx) {
         const selected = await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, ctx.t('playArea'), this.description(ctx.t), 0, ctx.fetchCardsInZone((c) => c.id === ctx.card.id, ctx.zone)[0], 1);
-        ctx.setTemporaryCardListImmediate(selected);
         if (selected.length > 0) {
+          ctx.setTemporaryCardListImmediate(selected);
           return true;
         }
         return false;
@@ -3660,9 +3665,10 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: (t) => t('effect_description_shrine'),
       timing: "endOfTurn",
       execute: async function (ctx) {
+        if (ctx.fetchCardsInZone((card) => card.id === ctx.card.id, ctx.t('playArea')).length === 0) return false;
         const selected = await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, ctx.t('playArea'), this.description(ctx.t), 0, ctx.fetchCardsInZone((c) => c.id === ctx.card.id, ctx.zone)[0], 1);
-        ctx.setTemporaryCardListImmediate(selected);
         if (selected.length > 0) {
+          ctx.setTemporaryCardListImmediate(selected);
           return true;
         }
         return false;
@@ -3672,9 +3678,10 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: (t) => t('effect_description_sanctuary'),
       timing: "endOfTurn",
       execute: async function (ctx) {
+        if (ctx.fetchCardsInZone((card) => card.id === ctx.card.id, ctx.t('playArea')).length === 0) return false;
         const selected = await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, ctx.t('playArea'), this.description(ctx.t), 0, ctx.fetchCardsInZone((c) => c.id === ctx.card.id, ctx.zone)[0], 2);
-        ctx.setTemporaryCardListImmediate(selected);
         if (selected.length > 0) {
+          ctx.setTemporaryCardListImmediate(selected);
           return true;
         }
         return false;
@@ -3684,9 +3691,10 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: (t) => t('effect_description_temple'),
       timing: "endOfTurn",
       execute: async function (ctx) {
+        if (ctx.fetchCardsInZone((card) => card.id === ctx.card.id, ctx.t('playArea')).length === 0) return false;
         const selected = await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, ctx.t('playArea'), this.description(ctx.t), 0, ctx.fetchCardsInZone((c) => c.id === ctx.card.id, ctx.zone)[0], 4);
-        ctx.setTemporaryCardListImmediate(selected);
         if (selected.length > 0) {
+          ctx.setTemporaryCardListImmediate(selected);
           return true;
         }
         return false;
@@ -3696,9 +3704,10 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: (t) => t('effect_description_oratory'),
       timing: "endOfTurn",
       execute: async function (ctx) {
+        if (ctx.fetchCardsInZone((card) => card.id === ctx.card.id, ctx.t('playArea')).length === 0) return false;
         const selected = await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, ctx.t('playArea'), this.description(ctx.t), 0, ctx.fetchCardsInZone((c) => c.id === ctx.card.id, ctx.zone)[0], 3);
-        ctx.setTemporaryCardListImmediate(selected);
         if (selected.length > 0) {
+          ctx.setTemporaryCardListImmediate(selected);
           return true;
         }
         return false;
@@ -3710,9 +3719,10 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: (t) => t('effect_description_shrine'),
       timing: "endOfTurn",
       execute: async function (ctx) {
+        if (ctx.fetchCardsInZone((card) => card.id === ctx.card.id, ctx.t('playArea')).length === 0) return false;
         const selected = await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, ctx.t('playArea'), this.description(ctx.t), 0, ctx.fetchCardsInZone((c) => c.id === ctx.card.id, ctx.zone)[0], 1);
-        ctx.setTemporaryCardListImmediate(selected);
         if (selected.length > 0) {
+          ctx.setTemporaryCardListImmediate(selected);
           return true;
         }
         return false;
@@ -3722,9 +3732,10 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: (t) => t('effect_description_sanctuary'),
       timing: "endOfTurn",
       execute: async function (ctx) {
+        if (ctx.fetchCardsInZone((card) => card.id === ctx.card.id, ctx.t('playArea')).length === 0) return false;
         const selected = await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, ctx.t('playArea'), this.description(ctx.t), 0, ctx.fetchCardsInZone((c) => c.id === ctx.card.id, ctx.zone)[0], 2);
-        ctx.setTemporaryCardListImmediate(selected);
         if (selected.length > 0) {
+          ctx.setTemporaryCardListImmediate(selected);
           return true;
         }
         return false;
@@ -3734,9 +3745,10 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: (t) => t('effect_description_temple'),
       timing: "endOfTurn",
       execute: async function (ctx) {
+        if (ctx.fetchCardsInZone((card) => card.id === ctx.card.id, ctx.t('playArea')).length === 0) return false;
         const selected = await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, ctx.t('playArea'), this.description(ctx.t), 0, ctx.fetchCardsInZone((c) => c.id === ctx.card.id, ctx.zone)[0], 4);
-        ctx.setTemporaryCardListImmediate(selected);
         if (selected.length > 0) {
+          ctx.setTemporaryCardListImmediate(selected);
           return true;
         }
         return false;
@@ -3746,9 +3758,10 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: (t) => t('effect_description_oratory'),
       timing: "endOfTurn",
       execute: async function (ctx) {
+        if (ctx.fetchCardsInZone((card) => card.id === ctx.card.id, ctx.t('playArea')).length === 0) return false;
         const selected = await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, ctx.t('playArea'), this.description(ctx.t), 0, ctx.fetchCardsInZone((c) => c.id === ctx.card.id, ctx.zone)[0], 3);
-        ctx.setTemporaryCardListImmediate(selected);
         if (selected.length > 0) {
+          ctx.setTemporaryCardListImmediate(selected);
           return true;
         }
         return false;
@@ -5595,9 +5608,10 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: (t) => t('effect_description_large_temple'),
       timing: "endOfTurn",
       execute: async function (ctx) {
+        if (ctx.fetchCardsInZone((card) => card.id === ctx.card.id, ctx.t('playArea')).length === 0) return false;
         const selected = await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, ctx.t('playArea'), this.description(ctx.t), 0, ctx.fetchCardsInZone((c) => c.id === ctx.card.id, ctx.zone)[0], 5);
-        ctx.setTemporaryCardListImmediate(selected);
         if (selected.length > 0) {
+          ctx.setTemporaryCardListImmediate(selected);
           return true;
         }
         return false;
@@ -5607,9 +5621,10 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: (t) => t('effect_description_ornate_temple'),
       timing: "endOfTurn",
       execute: async function (ctx) {
+        if (ctx.fetchCardsInZone((card) => card.id === ctx.card.id, ctx.t('playArea')).length === 0) return false;
         const selected = await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, ctx.t('playArea'), this.description(ctx.t), 0, ctx.fetchCardsInZone((c) => c.id === ctx.card.id, ctx.zone)[0], 5);
-        ctx.setTemporaryCardListImmediate(selected);
         if (selected.length > 0) {
+          ctx.setTemporaryCardListImmediate(selected);
           return true;
         }
         return false;
@@ -5620,6 +5635,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         description: (t) => t('effect_description_temple_of_light'),
         timing: "endOfTurn",
         execute: async function (ctx) {
+          if (ctx.fetchCardsInZone((card) => card.id === ctx.card.id, ctx.t('playArea')).length === 0) return false;
           const selected = await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, ctx.t('playArea'), this.description(ctx.t), 0, ctx.fetchCardsInZone((c) => c.id === ctx.card.id, ctx.zone)[0], 5);
           ctx.setTemporaryCardListImmediate(selected);
           if (selected.length > 0) {
@@ -5644,9 +5660,10 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: (t) => t('effect_description_legendary_temple'),
       timing: "endOfTurn",
       execute: async function (ctx) {
+        if (ctx.fetchCardsInZone((card) => card.id === ctx.card.id, ctx.t('playArea')).length === 0) return false;
         const selected = await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, ctx.t('playArea'), this.description(ctx.t), 0, ctx.fetchCardsInZone((c) => c.id === ctx.card.id, ctx.zone)[0], 5);
-        ctx.setTemporaryCardListImmediate(selected);
         if (selected.length > 0) {
+          ctx.setTemporaryCardListImmediate(selected);
           return true;
         }
         return false;
