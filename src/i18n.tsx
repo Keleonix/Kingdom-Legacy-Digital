@@ -5,12 +5,14 @@ export type Language = 'fr' | 'en';
 
 export type TranslationKeys = 
   // UI Elements
-  | 'deck' | 'discard' | 'playArea' | 'blocked' | 'permanentZone' | 'campaign' | 'destroy'
+  | 'deck' | 'discard' | 'playArea' | 'blocked' | 'permanentZone' | 'campaign' | 'destroy' | 'purged'
   | 'settings' | 'guide' | 'about' | 'close' | 'save' | 'continue' | 'reset'
   | 'newTurn' | 'pass' | 'advance' | 'endRound' | 'shuffleDeck' | 'noCost' | 'emptyCheckbox'
   | 'emptySide' | 'card' | 'none' | 'cardNames' | 'autoSelected' | 'side' | 'selectUpgradeRemoveCost'
   | 'noUpgradeAvailable' | 'selectAnUpgrade' | 'selectAResource' | 'failedToSave' | 'failedToLoad'
   | 'select' | 'id' | 'preview' | 'endGame' | 'seeDeck' | 'seeDiscard' | 'cardsList' | 'triggeredCard'
+  | 'selectCardToPurge' | 'chooseExpansion' | 'expansionCard' | 'expansionBlock' | 'scores' | 'baseGame'
+  | 'totalScore' | 'endExpansion' | 'seePurged'
   
   // Cards Elements
   | 'frontUp' | 'frontDown' | 'backUp' | 'backDown'
@@ -46,6 +48,9 @@ export type TranslationKeys =
   
   // Link words
   | 'and' | 'yes' | 'no'
+
+  // Expansions
+  | 'ridding_the_woods'
 
   // Cards Names
   | 'welcome' | 'golden_rules'
@@ -429,6 +434,7 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     permanentZone: 'Permanent',
     campaign: 'Campagne',
     destroy: 'Détruire',
+    purged: 'Purgées',
     settings: 'Paramètres',
     guide: 'Guide',
     about: 'À Propos',
@@ -463,6 +469,15 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     seeDiscard: 'Voir la Défausse',
     cardsList: 'Liste des Cartes',
     triggeredCard: 'Carte Déclenchée',
+    selectCardToPurge: 'Sélectionnez la Carte à Purger',
+    chooseExpansion: 'Choisissez une Extension',
+    expansionCard: 'Extension Carte',
+    expansionBlock: 'Extension Block',
+    scores: 'Scores',
+    baseGame: 'Jeu de Base',
+    totalScore: 'Score Total',
+    endExpansion: 'Fin d\'Extension',
+    seePurged: 'Voir les Purgées',
     
     // Cards Elements
     frontUp: 'Recto Haut',
@@ -553,6 +568,9 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     and: 'et',
     yes: 'Oui',
     no: 'Non',
+
+    // Expansions
+    ridding_the_woods: 'La Forêt des Brigands',
 
     // Cards Names
     welcome: "Bienvenue",
@@ -1134,6 +1152,7 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     permanentZone: 'Permanent',
     campaign: 'Campaign',
     destroy: 'Destroy',
+    purged: 'Purged',
     settings: 'Settings',
     guide: 'Guide',
     about: 'About',
@@ -1168,6 +1187,15 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     seeDiscard: 'See Discard',
     cardsList: 'Cards List',
     triggeredCard: 'Triggered Card',
+    selectCardToPurge: 'Select Card to Purge',
+    chooseExpansion: 'Choose Expansion',
+    expansionCard: 'Expansion Card',
+    expansionBlock: 'Expansion Block',
+    scores: 'Scores',
+    baseGame: 'Base Game',
+    totalScore: 'Total Score',
+    endExpansion: 'Expansion End',
+    seePurged: 'See Purged',
 
     // Cards Elements
     frontUp: 'Front Up',
@@ -1258,6 +1286,9 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     and: 'and',
     yes: 'Yes',
     no: 'No',
+
+    // Expansions
+    ridding_the_woods: 'Ridding the Woods',
 
     // Cards Names
     welcome: "Welcome",

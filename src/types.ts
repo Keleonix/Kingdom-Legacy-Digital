@@ -227,3 +227,43 @@ export class GameCard {
     return this.upgrades[index] ?? [];
   }
 }
+
+export type ExpansionType = 'card' | 'block';
+
+export interface ExpansionData {
+  id: string;
+  name: string;
+  type: ExpansionType;
+  iconPath: string;
+  
+  // Pour type 'card'
+  cardId?: number;
+  
+  // Pour type 'block'
+  campaignCardIds?: number[];
+  deckPurgeValue?: number;
+  focus?: Partial<ResourceMap>;
+  permanentPurgeValue?: number;
+}
+
+export interface GameScore {
+  baseGame: number;
+  expansions: {
+    [expansionId: string]: number;
+  };
+}
+
+export interface SavedGame {
+  deck: GameCard[];
+  campaignDeck: GameCard[];
+  playArea: GameCard[];
+  discard: GameCard[];
+  blockedZone: GameCard[];
+  permanentZone: GameCard[];
+  purgedCards: GameCard[];
+  resources: ResourceMap;
+  timestamp: number;
+  completedExpansions: string[];
+  currentExpansion: string | null;
+  scores: GameScore;
+}

@@ -5,11 +5,12 @@ import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { TouchBackend } from 'react-dnd-touch-backend';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { MouseTransition, TouchTransition, MultiBackend } from 'react-dnd-multi-backend';
-import { emptyResource, GameCard, RESOURCE_KEYS, EFFECT_KEYWORDS, TYPE_COLORS, type ResourceMap, type PopupPayload, type DropPayload, type Checkbox, type Upgrade, type EffectTiming } from "./types";
+import { emptyResource, GameCard, RESOURCE_KEYS, EFFECT_KEYWORDS, TYPE_COLORS, type ResourceMap, type PopupPayload, type DropPayload, type Checkbox, type Upgrade, type EffectTiming, type SavedGame, type GameScore } from "./types";
 import { allCards } from "./cards";
 import { getCardEffects, type GameContext, type CardEffect, cardEffectsRegistry, getCardFameValue, getCardUpgradeAdditionalCost, getCardSelectionValue } from "./cardEffects";
 import { useTranslation, type Language, LanguageSelector, type TranslationKeys } from './i18n';
 import { createPortal } from 'react-dom';
+import { EXPANSIONS } from "./expansions";
 
 const ZONE_MIN_HEIGHT = "290px";
 
@@ -1202,6 +1203,7 @@ function Zone({
   let isPermanentZone = false;
   let isBlockedZone = false;
   let isPlayArea = false;
+  let gridTemplate: string | undefined;
 
   if (name === t('playArea')) {
     containerClass = "relative flex justify-start items-start";
@@ -1218,13 +1220,17 @@ function Zone({
       displayCards = [cards[0]];
     }
   }
+  else {
+    const cols = Math.min(6, displayCards.length || 1);
+    gridTemplate = `repeat(${cols}, minmax(220px, 1fr))`;
+  }
 
   // Calculate offset for overlapping cards in permanent zone (max 6 per line)
   const getCardStyle = (index: number): React.CSSProperties => {
     if (!isPermanentZone && !isBlockedZone && !isPlayArea) return {};
     
     if (isPermanentZone || isBlockedZone) {
-      const cardsPerLine = isBlockedZone ? 3 : 6;
+      const cardsPerLine = isBlockedZone ? 3 : 9;
       const offsetX = 90;
       const offsetY = 290;
       const lineIndex = Math.floor(index / cardsPerLine);
@@ -1249,7 +1255,7 @@ function Zone({
       return {
         position: 'absolute',
         left: `${positionInLine * (cardWidth + gap)}px`,
-        top: `${lineIndex * 310}px`,
+        top: `${lineIndex * 300}px`,
         zIndex: index,
         transition: 'all 0.3s ease',
       };
@@ -1261,12 +1267,12 @@ function Zone({
   // Calculate container dimensions for permanent zone
   const getContainerStyle = (): React.CSSProperties => {
     if (isPermanentZone || isBlockedZone) {
-      const cardsPerLine = isBlockedZone ? 3 : 6;
+      const cardsPerLine = isBlockedZone ? 3 : 9;
       const offsetX = 90;
-      const offsetY = 310;
+      const offsetY = 290;
       const fixedWidth = 220 + ((cardsPerLine - 1) * offsetX);
       const totalLines = Math.max(1, Math.ceil(displayCards.length / cardsPerLine));
-      const totalHeight = totalLines * offsetY;
+      const totalHeight = totalLines * offsetY - 10;
       
       return {
         position: "relative",
@@ -1281,7 +1287,7 @@ function Zone({
       const gap = 8;
       const fixedWidth = (cardsPerLine * cardWidth) + ((cardsPerLine - 1) * gap);
       const totalLines = Math.max(1, Math.ceil(displayCards.length / cardsPerLine));
-      const totalHeight = totalLines * 310;
+      const totalHeight = totalLines * 310 - 10;
       
       return {
         position: "relative",
@@ -1306,7 +1312,11 @@ function Zone({
     <h2 className="text-xl font-bold mb-3 text-gray-800">{name}</h2>
     <div
       className={containerClass}
-      style={getContainerStyle()}
+      style={
+        isPermanentZone || isBlockedZone || isPlayArea || name.includes(t('deck')) || name.includes(t('discard'))
+          ? getContainerStyle()
+          : {gridTemplateColumns: gridTemplate, alignItems: "start" }
+      }
     >
       {displayCards.length > 0 ? (
         displayCards.map((c, index) => (
@@ -1814,13 +1824,13 @@ function CardSelectionPopup({
   const canConfirm = selectedValue >= requiredCount && selectedValue <= maxCount;
 
   const displayMessage = (() => {
-  const allCardsValue = cards.reduce((sum, c) => sum + getCardSelectionValue(c, searchType || ""), 0);
-  const autoSelected = allCardsValue <= maxCount;
-  
-  if (optionalCount) {
-    return `${effectDescription} (${requiredCount}-${maxCount} valeur${autoSelected ? t('autoSelected') : ''})`;
-  }
-    return `${effectDescription} (${requiredCount} valeur${autoSelected ? t('autoSelected') : ''})`;
+    const allCardsValue = cards.reduce((sum, c) => sum + getCardSelectionValue(c, searchType || ""), 0);
+    const autoSelected = allCardsValue <= maxCount;
+    
+    if (optionalCount) {
+      return `${effectDescription} (${requiredCount}-${maxCount} valeur${autoSelected ? t('autoSelected') : ''})`;
+    }
+      return `${effectDescription} (${requiredCount} valeur${autoSelected ? t('autoSelected') : ''})`;
   })();
 
   return (
@@ -1872,7 +1882,7 @@ function CardSelectionPopup({
                     {/* Zone clickable pour le choix */}
                     {canSwitch && (
                       <button
-                        className="absolute top-0 left-0 right-0 h-2 z-30 opacity-0 hover:opacity-100 transition-opacity cursor-pointer"
+                        className="absolute top-0 left-0 right-0 h-12 z-30 bg-transparent transition-colors cursor-pointer border-b-2 border-transparent"
                         onClick={(e) => {
                           e.stopPropagation();
                           const newSide = card.currentSide === 1 ? 3 : 1;
@@ -1883,9 +1893,16 @@ function CardSelectionPopup({
                           setLocalCards(prev => prev.map(c => c.id === card.id ? updatedCard : c));
                         }}
                         title={t('choice')}
-                      />
+                      >
+                        <img 
+                          src="effects/choice.png" 
+                          alt={t('choice')} 
+                          className="w-full h-full object-contain opacity-0 hover:opacity-100 transition-opacity"
+                        />
+                      </button>
                     )}
                     
+                    {/* Zone clickable pour la sélection */}
                     <div 
                       className="absolute inset-0 z-10"
                       onClick={(e) => {
@@ -1894,6 +1911,7 @@ function CardSelectionPopup({
                       }}
                     />
                     
+                    {/* La carte elle-même - pas d'interaction directe */}
                     <div style={{ pointerEvents: 'none' }}>
                       <CardView
                         card={card}
@@ -2429,6 +2447,7 @@ export default function Game() {
   const [popupCard, setPopupCard] = useState<PopupPayload | null>(null);
   const [showDiscard, setShowDiscard] = useState(false);
   const [showDeck, setShowDeck] = useState(false);
+  const [showPurged, setShowPurged] = useState(false);
   const [showEndRound, setShowEndRound] = useState(false);
   const [campaignPreview, setCampaignPreview] = useState<GameCard | null>(null);
   const [resources, setResources] = useState<ResourceMap>({ ...emptyResource });
@@ -2542,6 +2561,18 @@ export default function Game() {
   const [debugMode, setDebugMode] = useState(false);
   const [clickCount, setClickCount] = useState(0);
   const clickTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const [purgedCards, setPurgedCards] = useState<GameCard[]>([]);
+  const [completedExpansions, setCompletedExpansions] = useState<string[]>([]);
+  const [currentExpansion, setCurrentExpansion] = useState<string | null>(null);
+  const [scores, setScores] = useState<GameScore>({ 
+    baseGame: 0, 
+    expansions: {} 
+  });
+
+  // Flags
+  const [isChoosingExpansion, setIsChoosingExpansion] = useState(false);
+  const [showExpansionChoice, setShowExpansionChoice] = useState(false);
 
   // ----------- immediate refs & setters (à ajouter près des useState) -----------
   const deckRef = useRef<GameCard[]>([]);
@@ -2956,7 +2987,6 @@ export default function Game() {
 
   useEffect(() => {
     if (shouldComputeFame && deck.length > 0) {
-      // Compute total fame from deck
       let totalFame = 0;
 
       const cardList = [...deck, ...permanentZone];
@@ -2965,16 +2995,14 @@ export default function Game() {
         const currentSideIndex = card.currentSide - 1;
         const resourceMaps = card.resources[currentSideIndex] || [];
         
-        // Get max fame from resource maps for current side
         const maxFameFromResources = resourceMaps.reduce(
           (max, res) => Math.max(max, res.fame || 0),
           0
         );
         
-        // Check if card has special fame calculation
         const fameValueEffect = getCardFameValue(card.id, card.currentSide);
-          if (fameValueEffect.execute) {
-            const context: GameContext = {
+        if (fameValueEffect.execute) {
+          const context: GameContext = {
               card,
               zone: t('deck'),
               resources,
@@ -3019,19 +3047,93 @@ export default function Game() {
               addDiscoverableCard,
               t,
             };
-            
-            const specialFameValue = fameValueEffect.execute(context);
-            totalFame += specialFameValue;
-          }
-          totalFame += maxFameFromResources;
+          
+          const specialFameValue = fameValueEffect.execute(context);
+          totalFame += specialFameValue;
+        }
+        totalFame += maxFameFromResources;
       }
       
-      // Update fame resource
+      for (const card of purgedCards) {
+        const currentSideIndex = card.currentSide - 1;
+        const resourceMaps = card.resources[currentSideIndex] || [];
+        
+        const maxFameFromResources = resourceMaps.reduce(
+          (max, res) => Math.max(max, res.fame || 0),
+          0
+        );
+        
+        const fameValueEffect = getCardFameValue(card.id, card.currentSide);
+        if (fameValueEffect.execute) {
+          const context: GameContext = {
+              card,
+              zone: t('deck'),
+              resources,
+              filterZone,
+              setResources,
+              draw,
+              effectEndTurn,
+              dropToPlayArea,
+              dropToBlocked,
+              dropToDiscard,
+              dropToCampaign,
+              dropToPermanent,
+              setDeck: setDeckImmediate,
+              setPlayArea: setPlayAreaImmediate,
+              setDiscard: setDiscardImmediate,
+              setPermanentZone,
+              setCampaignDeck,
+              setTemporaryCardList,
+              setTemporaryCardListImmediate,
+              setBlockedZone,
+              deleteCardInZone,
+              replaceCardInZone,
+              mill,
+              openCheckboxPopup,
+              selectResourceChoice,
+              selectCardsFromZone,
+              selectCardsFromArray,
+              discoverCard,
+              boostProductivity,
+              registerEndRoundEffect,
+              addCardEffect,
+              fetchCardsInZone,
+              selectCardSides,
+              selectUpgradeCost,
+              selectTextInput,
+              selectStringChoice,
+              updateBlocks,
+              getBlockedBy,
+              getCardZone,
+              upgradeCard,
+              handleCardUpdate,
+              addDiscoverableCard,
+              t,
+            };
+          
+          const specialFameValue = fameValueEffect.execute(context);
+          totalFame += specialFameValue;
+        }
+        totalFame += maxFameFromResources;
+      }
+      
+      if (currentExpansion) {
+        setScores((prev) => ({
+          ...prev,
+          expansions: {
+            ...prev.expansions,
+            [currentExpansion]: totalFame
+          }
+        }));
+      } else {
+        setScores((prev) => ({ ...prev, baseGame: totalFame }));
+      }
+      
       setResources(prev => ({ ...prev, fame: totalFame }));
       setHasEndedBaseGame(true);
+      setIsChoosingExpansion(true);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [deck, shouldComputeFame]);
+  }, [deck, purgedCards, shouldComputeFame, currentExpansion]);
   
   const mill = (
     nbCards: number
@@ -3852,6 +3954,238 @@ export default function Game() {
     return "Deleted"; // TODO : May need to change
   };
 
+  const startPurgeProcess = async (
+    purgeType: 'deck' | 'permanent',
+    purgeValue: number,
+    focus?: Partial<ResourceMap>
+  ) => {
+    const sourceCards = purgeType === 'deck' 
+      ? deck
+      : permanentZone;
+    /* TODO: Implement focus */
+    focus;
+    if (purgeType === 'deck') {
+      let batch: GameCard[] = sourceCards.slice(0, purgeValue);;
+      let offset = 0;
+      while (batch.length === purgeValue) {
+        await performPurgeCycle(batch, purgeType, purgeValue, focus);
+        offset += purgeValue;
+        batch = sourceCards.slice(offset, offset + purgeValue);
+      }
+    }
+    else {
+      await performPurgeCycle(sourceCards, purgeType, purgeValue, focus);
+    }
+
+    // Trigger onPurge effects
+    for (const card of purgedCards) {
+      // Retirer de la zone source
+      if (purgeType === 'deck') {
+        setDeck(prev => prev.filter(c => c.id !== card.id));
+      } else {
+        setPermanentZone(prev => prev.filter(c => c.id !== card.id));
+      }
+      const effects = getCardEffects(card.id, card.currentSide);
+      for (const effect of effects) {
+        if (effect.timing === 'purged') {
+          const context: GameContext = {
+              card,
+              zone: purgeType === 'deck' ? t('deck') : t('permanentZone'),
+              resources,
+              filterZone,
+              setResources,
+              draw,
+              effectEndTurn,
+              dropToPlayArea,
+              dropToBlocked,
+              dropToDiscard,
+              dropToCampaign,
+              dropToPermanent,
+              setDeck: setDeckImmediate,
+              setPlayArea: setPlayAreaImmediate,
+              setDiscard: setDiscardImmediate,
+              setPermanentZone,
+              setCampaignDeck,
+              setTemporaryCardList,
+              setTemporaryCardListImmediate,
+              setBlockedZone,
+              deleteCardInZone,
+              replaceCardInZone,
+              mill,
+              openCheckboxPopup,
+              selectResourceChoice,
+              selectCardsFromZone,
+              selectCardsFromArray,
+              discoverCard,
+              boostProductivity,
+              registerEndRoundEffect,
+              addCardEffect,
+              fetchCardsInZone,
+              selectCardSides,
+              selectUpgradeCost,
+              selectTextInput,
+              selectStringChoice,
+              updateBlocks,
+              getBlockedBy,
+              getCardZone,
+              upgradeCard,
+              handleCardUpdate,
+              addDiscoverableCard,
+              t,
+            };
+          await effect.execute(context);
+        }
+      }
+    }
+  };
+
+  const performPurgeCycle = async (
+    batch: GameCard[],
+    purgeType: 'deck' | 'permanent',
+    purgeValue?: number,
+    focus?: Partial<ResourceMap>
+  ): Promise<void> => {
+    focus;
+    const purgeable = batch.filter(card => {
+      const effects = getCardEffects(card.id, card.currentSide);
+      const context: GameContext = {
+        card,
+        zone: purgeType === 'deck' ? t('deck') : t('permanentZone'),
+        resources,
+        filterZone,
+        setResources,
+        draw,
+        effectEndTurn,
+        dropToPlayArea,
+        dropToBlocked,
+        dropToDiscard,
+        dropToCampaign,
+        dropToPermanent,
+        setDeck: setDeckImmediate,
+        setPlayArea: setPlayAreaImmediate,
+        setDiscard: setDiscardImmediate,
+        setPermanentZone,
+        setCampaignDeck,
+        setTemporaryCardList,
+        setTemporaryCardListImmediate,
+        setBlockedZone,
+        deleteCardInZone,
+        replaceCardInZone,
+        mill,
+        openCheckboxPopup,
+        selectResourceChoice,
+        selectCardsFromZone,
+        selectCardsFromArray,
+        discoverCard,
+        boostProductivity,
+        registerEndRoundEffect,
+        addCardEffect,
+        fetchCardsInZone,
+        selectCardSides,
+        selectUpgradeCost,
+        selectTextInput,
+        selectStringChoice,
+        updateBlocks,
+        getBlockedBy,
+        getCardZone,
+        upgradeCard,
+        handleCardUpdate,
+        addDiscoverableCard,
+        t,
+      };
+      const cannotBePurged = effects.some(eff => 
+        (eff.timing === 'removed' || eff.timing === 'purged') && 
+        !eff.execute(context)
+      );
+      return !cannotBePurged;
+    });
+    
+    if (purgeable.length === 0) {
+      return;
+    }
+    
+    const selected = await selectCardsFromArray(
+      purgeable,
+      purgeType === 'deck' ? t('deck') : t('permanentZone'),
+      t('selectCardToPurge'),
+      purgeType === 'deck' ?
+        1 :
+        purgeValue?? 0
+    );
+    
+    if (selected.length > 0) {
+      setPurgedCards(prev => [...prev, cloneGameCard(selected[0])]);
+    }
+  };
+
+  const startExpansion = async (expansionId: string) => {
+    const expansion = EXPANSIONS.find(e => e.id === expansionId);
+    if (!expansion) return;
+    
+    setCurrentExpansion(expansionId);
+    setIsChoosingExpansion(false);
+    setShowExpansionChoice(false);
+    
+    // Clean-up
+    await discardEndTurn(true);
+
+    if (expansion.type === 'card') {
+      // Extension carte : ajouter la carte en zone permanente
+      const expansionCard = allCards.find(c => c.id === expansion.cardId);
+      if (expansionCard) {
+        setPermanentZone(prev => [...prev, cloneGameCard(expansionCard)]);
+      }
+    }
+    else if (expansion.type === 'block') {
+      
+      if (expansion.deckPurgeValue) {
+        await startPurgeProcess('deck', expansion.deckPurgeValue);
+      }
+      
+      if (expansion.permanentPurgeValue) {
+        await startPurgeProcess('permanent', expansion.permanentPurgeValue);
+      }
+
+      const newCampaignCards = expansion.campaignCardIds
+        ?.map(id => allCards.find(c => c.id === id))
+        .filter(Boolean)
+        .map(c => cloneGameCard(c!)) || [];
+      
+      setCampaignDeck(prev => [...prev, ...newCampaignCards].sort((a, b) => a.id - b.id));
+      
+      refreshDiscoverableCards();
+    }
+    
+    // Clean-up
+    await discardEndTurn(true);
+  };
+
+  const checkExpansionEnd = () => {
+    if (!currentExpansion) return false;
+    
+    const expansion = EXPANSIONS.find(e => e.id === currentExpansion);
+    if (!expansion || expansion.type !== 'block') return false;
+    
+    // Vérifier s'il reste des cartes discoverable de cette extension
+    const hasDiscoverable = campaignDeck.some(card => 
+      expansion.campaignCardIds?.includes(card.id) && card.discoverable
+    );
+    
+    return !hasDiscoverable;
+  };
+
+  // Dans handleEndBaseGame, ajoute :
+  const handleEndExpansion = async () => {
+    await discardEndTurn(true);
+    setShouldComputeFame(true);
+    
+    // Marquer l'extension comme complétée
+    if (currentExpansion) {
+      setCompletedExpansions(prev => [...prev, currentExpansion]);
+      setCurrentExpansion(null);
+    }
+  };
+
   // -------------------
   // Replace card in zone by id (used by popup apply)
   // -------------------
@@ -4192,15 +4526,19 @@ export default function Game() {
       });
       return;
     }
-    const payload = {
+    const payload: SavedGame = {
       deck,
       campaignDeck,
       playArea,
       discard,
       blockedZone,
       permanentZone,
+      purgedCards,
       resources,
       timestamp: Date.now(),
+      completedExpansions,
+      currentExpansion,
+      scores,
     };
     try {
       localStorage.setItem(`citysave:${name}`, JSON.stringify(payload));
@@ -4217,7 +4555,6 @@ export default function Game() {
     }
   };
 
-  // Modifier la fonction loadGame :
   const loadGame = (name: string) => {
     if (!name) {
       setConfirmationPopup({
@@ -4235,7 +4572,7 @@ export default function Game() {
         });
         return;
       }
-      const parsed = JSON.parse(raw);
+      const parsed: SavedGame = JSON.parse(raw);
       
       const reconstructCards = (cards: GameCard[]): GameCard[] => {
         return (cards || []).map(cardData => {
@@ -4251,7 +4588,12 @@ export default function Game() {
       setDiscard(reconstructCards(parsed.discard));
       setBlockedZone(reconstructCards(parsed.blockedZone));
       setPermanentZone(reconstructCards(parsed.permanentZone));
+      setPurgedCards(reconstructCards(parsed.purgedCards || []));
       setResources(parsed.resources || { ...emptyResource });
+      setCompletedExpansions(parsed.completedExpansions || []);
+      setCurrentExpansion(parsed.currentExpansion || null);
+      setScores(parsed.scores || { baseGame: 0, extensions: {} });
+      
       setShowSettings(false);
       setConfirmationPopup({
         message: t('loadSuccess') + ": " + name,
@@ -4381,7 +4723,7 @@ export default function Game() {
             </div>
 
             {/* Campaign Deck */}
-            <div className="w-[200px]">
+            <div className="w-[200px]" hidden={!debugMode}>
               <div className="w-[200px] bg-gradient-to-br from-purple-50 to-pink-50 p-3 rounded-xl shadow-lg border-2 border-purple-200">
                 <h2 className="text-sm font-bold mb-2 text-purple-800">{t('campaign')}</h2>
                 <div className="space-y-2">
@@ -4468,12 +4810,14 @@ export default function Game() {
         <div className="flex gap-4 items-center">
           {/* Action Buttons à gauche */}
           <div className="flex flex-wrap gap-2 flex-shrink-0">
-            <Button onClick={drawNewTurn} disabled={deck.length === 0}>{t('newTurn')}</Button>
-            <Button onClick={() => discardEndTurn(false)} disabled={deck.length === 0 || turnEndFlag}>{t('pass')}</Button>
-            <Button onClick={advance} disabled={turnEndFlag || isPlayBlocked || deck.length === 0}>{t('advance')}</Button>
+            <Button onClick={drawNewTurn} disabled={deck.length === 0 || isChoosingExpansion}>{t('newTurn')}</Button>
+            <Button onClick={() => discardEndTurn(false)} disabled={deck.length === 0 || isChoosingExpansion || turnEndFlag}>{t('pass')}</Button>
+            <Button onClick={advance} disabled={deck.length === 0 || isChoosingExpansion || turnEndFlag || isPlayBlocked}>{t('advance')}</Button>
             <Button disabled={deck.length > 0} className="bg-red-600 hover:bg-red-500 text-white" onClick={handleEndRound}>{t('endRound')}</Button>
+            <Button hidden={purgedCards.length === 0} onClick={() => setShowPurged(true)} className="bg-blue-600 hover:bg-blue-500 text-white">{t('seePurged')}</Button>
             <Button onClick={shuffleDeck} className="bg-blue-600 hover:bg-blue-500 text-white" hidden={true}>{"Shuffle Deck"}</Button>
-            <Button hidden={hasEndedBaseGame || campaignDeck.some(card => card.id === 70)} disabled={deck.length > 0} className="bg-red-600 hover:bg-red-500 text-white" onClick={handleEndBaseGame}>{t('endGame')}</Button>
+            <Button hidden={(hasEndedBaseGame || campaignDeck.some(card => card.id === 70)) || (currentExpansion !== null && !checkExpansionEnd())} disabled={deck.length !== 0} className="bg-red-600 hover:bg-red-500 text-white" onClick={currentExpansion ? handleEndExpansion : handleEndBaseGame}>{currentExpansion ? t('endExpansion') : t('endGame')}</Button>
+            <Button onClick={() => setShowExpansionChoice(true)} hidden={!isChoosingExpansion || completedExpansions.length >= 9} className="bg-purple-600 hover:bg-purple-500 text-white">{t('chooseExpansion')}</Button>
           </div>
 
           {/* Resource Pool au centre */}
@@ -4488,7 +4832,7 @@ export default function Game() {
                       className="w-10 text-center border rounded text-xs py-0.5"
                       value={resources[key]}
                       onChange={(e) => setResources((r) => ({ ...r, [key]: parseInt(e.target.value || "0", 10) || 0 }))}
-                      disabled={key === "fame"}
+                      disabled={key === "fame" || !debugMode}
                     />
                   </div>
                 </div>
@@ -4557,6 +4901,44 @@ export default function Game() {
                     </Button>
                     <Button onClick={() => { setShowAbout(true); setShowSettings(false); }}>{t('about')}</Button>
                   </div>
+                </div>
+                <div className="border-t pt-4 mt-4">
+                  <h3 className="font-bold mb-2">{t('scores')}</h3>
+                  
+                  {/* Score du jeu de base */}
+                  <div className="flex items-center gap-2 mb-2 p-2 bg-gray-50 rounded">
+                    <img src="seals/baseGame.png" alt="Base Game" className="w-8 h-8" />
+                    <span className="flex-1">{t('baseGame')}</span>
+                    <span className="font-bold text-lg">{scores.baseGame} {t('fame')}</span>
+                  </div>
+                  
+                  {/* Scores des extensions */}
+                  {Object.entries(scores.expansions).map(([expId, score]) => {
+                    const expansion = EXPANSIONS.find(e => e.id === expId);
+                    if (!expansion) return null;
+                    
+                    return (
+                      <div key={expId} className="flex items-center gap-2 mb-2 p-2 bg-purple-50 rounded">
+                        <img 
+                          src={'seals/' + expansion.iconPath}
+                          alt={t(expansion.name as TranslationKeys)} 
+                          className="w-8 h-8" 
+                        />
+                        <span className="flex-1">{t(expansion.name as TranslationKeys)}</span>
+                        <span className="font-bold text-lg">{score as number} {t('fame')}</span>
+                      </div>
+                    );
+                  })}
+                  
+                  {/* Score total */}
+                  {Object.keys(scores.expansions).length > 0 && (
+                    <div className="flex items-center gap-2 mt-4 p-3 bg-gradient-to-r from-yellow-100 to-yellow-200 rounded-lg border-2 border-yellow-400">
+                      <span className="flex-1 font-bold">{t('totalScore')}</span>
+                      <span className="font-bold text-2xl text-yellow-700">
+                        {scores.baseGame + Object.values(scores.expansions).reduce((a, b) => a + b, 0)} {t('fame')}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 <Button onClick={() => setShowSettings(false)}>{t('close')}</Button>
@@ -4719,8 +5101,8 @@ export default function Game() {
                         const updatedCard = cloneGameCard(card);
                         updatedCard.currentSide = newSide;
                         replaceCardInZone(t('campaign'), card.id, updatedCard);
-                      } else {
-                        /*handleTapAction(card, t('campaign'));*/
+                      } else if (debugMode) {
+                        handleTapAction(card, t('campaign'));
                       }
                     }}
                     onRightClick={() => {}}
@@ -4779,6 +5161,34 @@ export default function Game() {
 
               <div className="flex justify-end gap-2 pt-2 border-t">
                 <Button onClick={() => setShowDeck(false)}>{t('close')}</Button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Purged Modal */}
+        {showPurged && (
+          <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-2">
+            <div className="bg-white p-4 rounded-xl space-y-4 w-full h-full max-w-[300vw] max-h-[300vh] overflow-auto flex flex-col">
+              <h2 className="font-bold text-xl">{t('purged')}</h2>
+              <div className="flex flex-col flex-row gap-4 flex-1 min-h-0">
+                <div className="flex-1 overflow-y-auto p-2 border rounded">
+                  <div className="grid grid-cols-6 gap-2">
+                    {[...purgedCards].sort((a, b) => a.id - b.id).map((c) => (
+                      <CardView
+                        key={`modal-${c.id}-${c.currentSide}-${Math.random()}`}
+                        card={c}
+                        fromZone={t('purged')}
+                        onRightClick={() => {}}
+                        onTapAction={debugMode ? handleTapAction : undefined}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2 border-t">
+                <Button onClick={() => setShowPurged(false)}>{t('close')}</Button>
               </div>
             </div>
           </div>
@@ -4945,6 +5355,50 @@ export default function Game() {
               )}
               <Button onClick={confirmationPopup.onConfirm}>
                 {t('confirm')}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showExpansionChoice && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-xl space-y-4 max-w-2xl">
+            <h2 className="font-bold text-xl">{t('chooseExpansion')}</h2>
+            
+            <div className="grid grid-cols-3 gap-4">
+              {EXPANSIONS
+                .filter(exp => !completedExpansions.includes(exp.id))
+                .map(expansion => (
+                  <button
+                    key={expansion.id}
+                    onClick={() => startExpansion(expansion.id)}
+                    className="p-4 border-2 rounded-lg hover:border-purple-500 transition flex flex-col items-center gap-2"
+                  >
+                    <img 
+                      src={'seals/' + expansion.iconPath} 
+                      alt={t(expansion.name as TranslationKeys)}
+                      className="w-20 h-20"
+                    />
+                    <span className="font-medium text-sm">
+                      {t(expansion.name as TranslationKeys)}
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      {expansion.type === 'card' ? t('expansionCard') : t('expansionBlock')}
+                    </span>
+                    <span className="text-xs text-black-500" hidden={!expansion.deckPurgeValue}>
+                      {t('purged')} : {expansion.deckPurgeValue}
+                    </span>
+                    <span className="text-xs text-black-500" hidden={!expansion.focus}>
+                      {expansion.focus? "Focus: " : "" }
+                    </span>
+                  </button>// TODO: Focus
+                ))}
+            </div>
+            
+            <div className="flex justify-end">
+              <Button onClick={() => setShowExpansionChoice(false)}>
+                {t('close')}
               </Button>
             </div>
           </div>
