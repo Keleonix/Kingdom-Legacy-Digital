@@ -252,6 +252,22 @@ async function checkNextBoxApplyEffect(
   }
 }
 
+async function removeResourceFromCard(
+  card: GameCard,
+  removed: Partial<ResourceMap> | undefined
+) {
+  if (!removed) {
+    return;
+  }
+  for (const key in removed) {
+    const resourceKey = key as keyof ResourceMap;
+    const amount = removed[resourceKey] ?? 0;
+    for (const resourceMap of card.GetResources()) {
+      resourceMap[resourceKey] = Math.max(0, (resourceMap[resourceKey] ?? 0) - amount);
+    }
+  }
+}
+
 // -------------------
 // Get Effects
 // -------------------
@@ -6103,6 +6119,130 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           return false;
         }
       }
+    ],
+  },
+  136: {
+    1: [
+      { // Prospérité
+        description: (t) => t('effect_description_prosperity_expansion'),
+        timing: "modifyProduction",
+        productionModifier: {
+          filter: (card: GameCard) => !card.negative[card.currentSide - 1],
+          zones: (t) => [t('playArea')],
+          bonus: { coin: 1 }
+        },
+        execute: async function (ctx) {
+          if (ctx) {
+            return false;
+          }
+          return true;
+        }
+      },
+      {
+        description: (t) => t('none'),
+        timing: "endOfRound",
+        execute: async function (ctx) {
+          ctx.upgradeCard(ctx.card, 2);
+          return false;
+        }
+      },
+    ],
+    2: [
+      { // Engranger des réserves
+        description: (t) => t('effect_description_hoarding'),
+        timing: "endOfTurn",
+        execute: async function (ctx) {
+          if (ctx.fetchCardsInZone((card) => card.id === ctx.card.id, ctx.t('playArea')).length === 0) return false;
+          const selected = await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, ctx.t('playArea'), this.description(ctx.t), 0, ctx.fetchCardsInZone((c) => c.id === ctx.card.id, ctx.zone)[0], 1);
+          if (selected.length > 0) {
+            ctx.setTemporaryCardListImmediate(selected);
+            return true;
+          }
+          return false;
+        }
+      },
+      {
+        description: (t) => t('none'),
+        timing: "endOfRound",
+        execute: async function (ctx) {
+          ctx.upgradeCard(ctx.card, 4);
+          return false;
+        }
+      },
+    ],
+    3: [
+      { // Décret Royal
+        description: (t) => t('effect_description_royal_decree'),
+        timing: "endOfRound",
+        execute: async function (ctx) {
+          let checked = 0;
+          for(const box of ctx.card.checkboxes[3]) {
+            if(box.checked) {
+              checked += 1;
+            }
+          }
+          if (checked === 0) {
+            return false;
+          }
+          const selected = await ctx.selectCardsFromZone(
+            (card) => getResourcesCount(card.GetResources()[0]) !== 0, 
+            ctx.t('deck'), 
+            this.description(ctx.t), 
+            checked
+          );
+          
+          if (selected.length !== 0) {
+            for(const card of selected) {
+              const selectedResource = await ctx.selectResourceChoice(card.GetResources());
+              if (selectedResource) {
+                await removeResourceFromCard(card, selectedResource);
+                ctx.replaceCardInZone(ctx.t('deck'), card.id, card);
+              }
+            }
+          }
+          return false;
+        }
+      },
+      {
+        description: (t) => t('none'),
+        timing: "endOfRound",
+        execute: async function (ctx) {
+          ctx.deleteCardInZone(ctx.t('permanentZone'), ctx.card.id);
+          return false;
+        }
+      },
+    ],
+    4: [
+      { // Soulèvement
+        description: (t) => t('effect_description_uprising'),
+        timing: "otherCardPlayed",
+        execute: async function (ctx) {
+          const peopleInPlay = ctx.fetchCardsInZone(
+            (c) => c.GetType(ctx.t).includes(ctx.t('person')), 
+            ctx.t('playArea')
+          );
+          
+          const peoplePlayed = ctx.cardsForTrigger?.filter(
+            (c) => c.GetType(ctx.t).includes(ctx.t('person'))
+          ) || [];
+          
+          for (const playedPerson of peoplePlayed) {
+            if (peopleInPlay.length >= 2 && !peopleInPlay.includes(playedPerson)) {
+              await checkNextBox(ctx.card);
+            }
+          }
+          
+          return false;
+        }
+      },
+      {
+        description: (t) => t('none'),
+        timing: "endOfRound",
+        execute: async function (ctx) {
+          ctx.upgradeCard(ctx.card, 3);
+          return false;
+        }
+      },
     ],
   },
 };

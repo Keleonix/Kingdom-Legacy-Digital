@@ -2738,7 +2738,7 @@ export default function Game() {
           await handleExecuteCardEffect(card, t('playArea'), "played");
 
         }
-        for (const card of pendingPlayedCards) {
+        for (const card of [...playArea, ...permanentZone]) {
           await handleExecuteCardEffect(card, t('playArea'), "otherCardPlayed", pendingPlayedCards);
         }
         setPendingPlayedCards([]);
@@ -2826,7 +2826,7 @@ export default function Game() {
   };
 
   const handleEffectsEndOfTurn = async () => {
-    for(const card of playAreaRef.current) {
+    for(const card of [...playAreaRef.current, ...permanentZone]) {
       await handleExecuteCardEffect(card, t('playArea'), "endOfTurn");
     }
   }
@@ -2834,7 +2834,7 @@ export default function Game() {
   const gatherEffectsEndOfRound = async () => {
     const cardsWithEffects: Array<{ card: GameCard, effectIndex: number }> = [];
     
-    for (const card of playArea) {
+    for (const card of [...playAreaRef.current, ...permanentZone]) {
       const effects = getCardEffects(card.id, card.currentSide);
       effects.forEach((effect, index) => {
         if (effect.timing === "endOfRound") {
@@ -2851,7 +2851,10 @@ export default function Game() {
 
   const handleEffectsEndOfRound = async (cardsWithEffects: Array<{ card: GameCard, effectIndex: number }>) => {
     for (const { card, effectIndex } of cardsWithEffects) {
-      const realCard = deckRef.current.find(c => c.id === card.id);
+      let realCard = deckRef.current.find(c => c.id === card.id);
+      if (!realCard) {
+        realCard = permanentZone.find(c => c.id === card.id);
+      }
       if (realCard) {
         await handleExecuteCardEffect(realCard, t('deck'), "endOfRound", undefined, effectIndex);
       }
@@ -2983,6 +2986,7 @@ export default function Game() {
   const handleEndBaseGame = async () => {
     await discardEndTurn(true);
     setShouldComputeFame(true);
+    setIsChoosingExpansion(true);
   };
 
   useEffect(() => {
@@ -3132,6 +3136,7 @@ export default function Game() {
       setResources(prev => ({ ...prev, fame: totalFame }));
       setHasEndedBaseGame(true);
       setIsChoosingExpansion(true);
+      setShouldComputeFame(false);
     }
   }, [deck, purgedCards, shouldComputeFame, currentExpansion]);
   
@@ -3930,7 +3935,13 @@ export default function Game() {
 
     await resolveEndRoundEffects();
 
-    setShowEndRound(true);
+    if (checkExpansionEnd()) {
+      await handleEndExpansion();
+      return;
+    }
+    if (currentExpansion !== null) {
+      setShowEndRound(true);
+    }
   };
 
   const shuffleDeck = () => {
@@ -4122,22 +4133,19 @@ export default function Game() {
     const expansion = EXPANSIONS.find(e => e.id === expansionId);
     if (!expansion) return;
     
-    setCurrentExpansion(expansionId);
-    setIsChoosingExpansion(false);
     setShowExpansionChoice(false);
     
-    // Clean-up
     await discardEndTurn(true);
-
+    
+    setCurrentExpansion(expansionId);
+    
     if (expansion.type === 'card') {
-      // Extension carte : ajouter la carte en zone permanente
       const expansionCard = allCards.find(c => c.id === expansion.cardId);
       if (expansionCard) {
         setPermanentZone(prev => [...prev, cloneGameCard(expansionCard)]);
       }
     }
     else if (expansion.type === 'block') {
-      
       if (expansion.deckPurgeValue) {
         await startPurgeProcess('deck', expansion.deckPurgeValue);
       }
@@ -4156,22 +4164,30 @@ export default function Game() {
       refreshDiscoverableCards();
     }
     
-    // Clean-up
     await discardEndTurn(true);
+    
+    setIsChoosingExpansion(false);
   };
 
   const checkExpansionEnd = () => {
     if (!currentExpansion) return false;
     
     const expansion = EXPANSIONS.find(e => e.id === currentExpansion);
-    if (!expansion || expansion.type !== 'block') return false;
+    if (!expansion) return false;
     
-    // Vérifier s'il reste des cartes discoverable de cette extension
-    const hasDiscoverable = campaignDeck.some(card => 
-      expansion.campaignCardIds?.includes(card.id) && card.discoverable
-    );
+    if (expansion.type === 'block') {
+      const hasDiscoverable = campaignDeck.some(card => 
+        expansion.campaignCardIds?.includes(card.id) && card.discoverable
+      );
+      
+      return !hasDiscoverable;
+    } 
+    else if (expansion.type === 'card') {
+      const expansionCard = permanentZone.find(c => c.id === expansion.cardId);
+      return !expansionCard;
+    }
     
-    return !hasDiscoverable;
+    return false;
   };
 
   // Dans handleEndBaseGame, ajoute :
