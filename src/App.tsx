@@ -3138,6 +3138,7 @@ export default function Game() {
       setIsChoosingExpansion(true);
       setShouldComputeFame(false);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deck, purgedCards, shouldComputeFame, currentExpansion]);
   
   const mill = (
@@ -3656,6 +3657,11 @@ export default function Game() {
     return true;
   };
 
+  const getMaxDiscoverCount = (): number => {
+    const expansion = EXPANSIONS.find(e => e.id === currentExpansion);
+    return expansion?.discoverValue ?? 2;
+  };
+
   const addDiscoverableCard = (cardId: number, force?: boolean) => {
     if (!force) {
       force = false;
@@ -3666,8 +3672,8 @@ export default function Game() {
       
       const card = campaignDeck.find(c => c.id === cardId);
       if (!card) return prev;
-      
-      if (!force && prev.length >= 2) return prev;
+
+      if (!force && prev.length >= getMaxDiscoverCount()) return prev;
       
       if (prev.length === 0) {
         const firstCard = campaignDeck.find(c => c.id === prev[0]);
@@ -3676,7 +3682,17 @@ export default function Game() {
         }
       }
       
-      return [...prev, cardId].sort((a, b) => a - b);
+      if(force) {
+        return [...prev, cardId].sort((a, b) => a - b);
+      }
+      else {
+        const stop = availableDiscoverableCards.filter((id) => fetchCardsInZone((c) => c.id === id, t('campaign'))[0].GetName(t).includes(t('stop'))).length !== 0;
+        if (!stop) {
+          return [...prev, cardId].sort((a, b) => a - b);
+        }
+      }
+
+      return prev;
     });
   };
 
@@ -3695,11 +3711,11 @@ export default function Game() {
       setAvailableDiscoverableCards([firstCard.id]);
       return;
     }
-    const discoverableCards = allDiscoverable
-      .slice(0, 2)
-      .map(card => card.id);
-    
-    setAvailableDiscoverableCards(discoverableCards);
+    else {
+      setAvailableDiscoverableCards(allDiscoverable
+        .slice(0, getMaxDiscoverCount())
+        .map(card => card.id));
+    }
   };
 
   const handleExecuteCardEffect = async (
@@ -3939,7 +3955,8 @@ export default function Game() {
       await handleEndExpansion();
       return;
     }
-    if (currentExpansion !== null) {
+    const expansion = EXPANSIONS.find(e => e.id === currentExpansion);
+    if (expansion? !expansion.type.includes('card') : true) {
       setShowEndRound(true);
     }
   };
@@ -3974,6 +3991,7 @@ export default function Game() {
       ? deck
       : permanentZone;
     /* TODO: Implement focus */
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     focus;
     if (purgeType === 'deck') {
       let batch: GameCard[] = sourceCards.slice(0, purgeValue);;
@@ -4056,6 +4074,7 @@ export default function Game() {
     purgeValue?: number,
     focus?: Partial<ResourceMap>
   ): Promise<void> => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     focus;
     const purgeable = batch.filter(card => {
       const effects = getCardEffects(card.id, card.currentSide);
@@ -4161,6 +4180,7 @@ export default function Game() {
       
       setCampaignDeck(prev => [...prev, ...newCampaignCards].sort((a, b) => a.id - b.id));
       
+      // TODO: Might not work as expected
       refreshDiscoverableCards();
     }
     
@@ -4169,22 +4189,14 @@ export default function Game() {
     setIsChoosingExpansion(false);
   };
 
-  const checkExpansionEnd = () => {
+  const checkExpansionEnd = (): boolean => {
     if (!currentExpansion) return false;
     
     const expansion = EXPANSIONS.find(e => e.id === currentExpansion);
     if (!expansion) return false;
     
-    if (expansion.type === 'block') {
-      const hasDiscoverable = campaignDeck.some(card => 
-        expansion.campaignCardIds?.includes(card.id) && card.discoverable
-      );
-      
-      return !hasDiscoverable;
-    } 
     else if (expansion.type === 'card') {
-      const expansionCard = permanentZone.find(c => c.id === expansion.cardId);
-      return !expansionCard;
+      return !permanentZone.find(c => c.id === expansion.cardId);
     }
     
     return false;
@@ -4669,28 +4681,31 @@ export default function Game() {
   }, [language]);
 
   useEffect(() => {
+    const isMobile = window.innerWidth < 768 || /Android|iPad|iPhone/i.test(navigator.userAgent);
+    const attachment = isMobile ? "scroll" : "fixed";
+    
     document.documentElement.style.background = "linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)";
-    document.documentElement.style.backgroundAttachment = "fixed";
+    document.documentElement.style.backgroundAttachment = attachment;
+    document.documentElement.style.minHeight = "100vh";
     
     document.body.style.background = "linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)";
-    document.body.style.backgroundAttachment = "fixed";
+    document.body.style.backgroundAttachment = attachment;
     document.body.style.minHeight = "100vh";
-    
-    // Empêcher le overscroll blanc sur iOS
     document.body.style.overscrollBehavior = "none";
     document.documentElement.style.overscrollBehavior = "none";
     
     return () => {
       document.documentElement.style.background = "";
       document.documentElement.style.backgroundAttachment = "";
-      document.documentElement.style.overscrollBehavior = "";
+      document.documentElement.style.minHeight = "";
       
       document.body.style.background = "";
       document.body.style.backgroundAttachment = "";
       document.body.style.minHeight = "";
       document.body.style.overscrollBehavior = "";
+      document.documentElement.style.overscrollBehavior = "";
     };
-  }, [])
+  }, []);
 
   return (
     <DndProvider backend={MultiBackend} options={HTML5toTouch}>

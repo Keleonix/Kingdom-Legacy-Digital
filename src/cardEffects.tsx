@@ -6142,7 +6142,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         description: (t) => t('none'),
         timing: "endOfRound",
         execute: async function (ctx) {
-          ctx.upgradeCard(ctx.card, 2);
+          ctx.card.currentSide = 2;
           return false;
         }
       },
@@ -6152,8 +6152,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         description: (t) => t('effect_description_hoarding'),
         timing: "endOfTurn",
         execute: async function (ctx) {
-          if (ctx.fetchCardsInZone((card) => card.id === ctx.card.id, ctx.t('playArea')).length === 0) return false;
-          const selected = await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, ctx.t('playArea'), this.description(ctx.t), 0, ctx.fetchCardsInZone((c) => c.id === ctx.card.id, ctx.zone)[0], 1);
+          const selected = await ctx.selectCardsFromZone(() => true, ctx.t('playArea'), this.description(ctx.t), 0, ctx.fetchCardsInZone((c) => c.id === ctx.card.id, ctx.zone)[0], 1);
           if (selected.length > 0) {
             ctx.setTemporaryCardListImmediate(selected);
             return true;
@@ -6165,7 +6164,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         description: (t) => t('none'),
         timing: "endOfRound",
         execute: async function (ctx) {
-          ctx.upgradeCard(ctx.card, 4);
+          ctx.card.currentSide = 4;
           return false;
         }
       },
@@ -6239,7 +6238,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         description: (t) => t('none'),
         timing: "endOfRound",
         execute: async function (ctx) {
-          ctx.upgradeCard(ctx.card, 3);
+          ctx.card.currentSide = 3;
           return false;
         }
       },

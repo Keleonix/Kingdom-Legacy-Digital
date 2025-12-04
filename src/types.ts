@@ -244,6 +244,7 @@ export interface ExpansionData {
   deckPurgeValue?: number;
   focus?: Partial<ResourceMap>;
   permanentPurgeValue?: number;
+  discoverValue?: number;
 }
 
 export interface GameScore {

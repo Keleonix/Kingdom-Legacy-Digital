@@ -28,8 +28,9 @@ export const EXPANSIONS: ExpansionData[] = [
     type: 'block',
     iconPath: 'riddingTheWoods.png',
     campaignCardIds: new Array(30).fill(null).map((_, i) => i + 139),
-    deckPurgeValue: 4,
+    deckPurgeValue: 8,
     focus: {wood: 2},
     permanentPurgeValue: 2,
+    discoverValue: 5
   },
 ];
