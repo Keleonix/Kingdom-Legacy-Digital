@@ -5,7 +5,7 @@ import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { TouchBackend } from 'react-dnd-touch-backend';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { MouseTransition, TouchTransition, MultiBackend } from 'react-dnd-multi-backend';
-import { emptyResource, GameCard, RESOURCE_KEYS, EFFECT_KEYWORDS, TYPE_COLORS, type ResourceMap, type PopupPayload, type DropPayload, type Checkbox, type Upgrade, type EffectTiming, type SavedGame, type GameScore } from "./types";
+import { emptyResource, GameCard, RESOURCE_KEYS, EFFECT_KEYWORDS, TYPE_COLORS, type ResourceMap, type PopupPayload, type DropPayload, type Checkbox, type Upgrade, type EffectTiming, type SavedGame, type GameScore, type SortMode } from "./types";
 import { allCards } from "./cards";
 import { getCardEffects, type GameContext, type CardEffect, cardEffectsRegistry, getCardFameValue, getCardUpgradeAdditionalCost, getCardSelectionValue } from "./cardEffects";
 import { useTranslation, type Language, LanguageSelector, type TranslationKeys } from './i18n';
@@ -690,6 +690,7 @@ function CardView({
   onCardUpdate,
   onExecuteCardEffect,
   gatherProductionBonus,
+  gatherAdditionalProductionOptions,
   interactable = true,
   isHighlighted = false,
 }: {
@@ -702,6 +703,7 @@ function CardView({
   onCardUpdate?: (updatedCard: GameCard, zone: string) => void;
   onExecuteCardEffect?: (card: GameCard, zone: string, timing: EffectTiming, effectId: number) => Promise<void>;
   gatherProductionBonus?: (card: GameCard, zone: string) => Partial<ResourceMap>;
+  gatherAdditionalProductionOptions?: (card: GameCard, zone: string) => Array<Partial<ResourceMap>>;
   interactable?: boolean;
   isHighlighted?: boolean;
 }) {
@@ -950,7 +952,7 @@ function CardView({
           ${!interactable ? "opacity-60 cursor-not-allowed" : "cursor-pointer hover:border-blue-400"}
           ${isHighlighted ? "ring-4 ring-blue-400 border-blue-500" : ""}`}
         >
-        <CardContent className="text-center p-2 overflow-auto">
+        <CardContent className="text-center p-2 overflow-auto flex flex-col h-full w-full">
           {card.GetType(t).includes(t('permanent')) && <img src={"effects/permanent.png"} alt={t('permanentZone')} title={t('permanentZone')} className="w-49 h-2" />}
           {card.choice && (card.currentSide == 1 || card.currentSide == 3) && <button><img src={"effects/choice.png"} alt={t('choice')} title={t('choice')} className="w-49 h-2" /></button>}
           <div>
@@ -961,67 +963,102 @@ function CardView({
 
           {/* Normal (in-play) resources */}
           <div className="mt-2 flex flex-wrap justify-center gap-2 items-center">
-            {resOptions.map((opt, idx) => {
+            {(() => {
+              const baseOptions = resOptions;
               const productionBonus = gatherProductionBonus ? gatherProductionBonus(card, fromZone) : {};
               
-              const displayOpt = { ...opt };
-              Object.entries(productionBonus).forEach(([key, value]) => {
-                const resourceKey = key as keyof ResourceMap;
-                displayOpt[resourceKey] = (displayOpt[resourceKey] || 0) + (value || 0);
-              });
+              const additionalOptions = gatherAdditionalProductionOptions ? gatherAdditionalProductionOptions(card, fromZone) : [];
               
-              const icons = RESOURCE_KEYS.flatMap((k) => {
-                const baseCount = opt[k] ?? 0;
-                const bonusCount = productionBonus[k] ?? 0;
-                const totalCount = baseCount + bonusCount;
+              const allOptions = [...baseOptions, ...additionalOptions];
+              
+              return allOptions.map((opt, idx) => {
+                const displayOpt = { ...opt };
                 
-                if (totalCount === 0) return [];
+                if (idx < baseOptions.length && productionBonus) {
+                  Object.entries(productionBonus).forEach(([key, value]) => {
+                    const resourceKey = key as keyof ResourceMap;
+                    displayOpt[resourceKey] = (displayOpt[resourceKey] || 0) + (value || 0);
+                  });
+                }
                 
-                return [
-                  <div key={`${idx}-${k}`} className="flex items-center gap-1">
-                    <img src={resourceIconPath(k)} alt={k} title={`${k} x${totalCount}`} className="w-4 h-4" />
-                    {totalCount !== 1 && (
-                      <span className="text-xs">
-                        {baseCount > 0 && bonusCount > 0 ? (
-                          <>
-                            {baseCount}
-                            <span className="text-green-600 font-bold">+{bonusCount}</span>
-                          </>
-                        ) : (
-                          `x${totalCount}`
-                        )}
-                      </span>
-                    )}
+                const icons = RESOURCE_KEYS.flatMap((k) => {
+                  const baseCount = opt[k] ?? 0;
+                  const bonusCount = (idx < baseOptions.length && productionBonus) ? (productionBonus[k] ?? 0) : 0;
+                  const totalCount = baseCount + bonusCount;
+                  
+                  if (totalCount === 0) return [];
+                  
+                  return [
+                    <div key={`${idx}-${k}`} className="flex items-center gap-1">
+                      <img src={resourceIconPath(k)} alt={k} title={`${k} x${totalCount}`} className="w-4 h-4" />
+                      {totalCount !== 1 && (
+                        <span className="text-xs">
+                          {baseCount > 0 && bonusCount > 0 ? (
+                            <>
+                              {baseCount}
+                              <span className="text-green-600 font-bold">+{bonusCount}</span>
+                            </>
+                          ) : (
+                            `x${totalCount}`
+                          )}
+                        </span>
+                      )}
+                    </div>
+                  ];
+                });
+
+                if (icons.length === 0) return null;
+
+                return (
+                  <div key={idx} className="flex items-center gap-1">
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (!interactable || !onGainResources) return;
+                        onGainResources(card, displayOpt, fromZone);
+                      }}
+                      className="text-[10px] px-2 py-1 border rounded bg-white flex items-center hover:bg-gray-100 transition"
+                    >
+                      {icons}
+                    </button>
                   </div>
-                ];
-              });
-
-              if (icons.length === 0) return null;
-
-              return (
-                <div key={idx} className="flex items-center gap-1">
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      if (!interactable || !onGainResources) return;
-                      onGainResources(card, displayOpt, fromZone);
-                    }}
-                    className="text-[10px] px-2 py-1 border rounded bg-white flex items-center hover:bg-gray-100 transition"
-                  >
-                    {icons}
-                  </button>
-                </div>
-              );
-            }).filter(Boolean)}
+                );
+              }).filter(Boolean);
+            })()}
           </div>
 
           <div className="mt-2">
             {effect && <div className="mb-2 text-sm line-clamp-5">{renderEffect(effect)}</div>}
           </div>
 
-          {/* Upgrades */}
+          {/* Checkboxes - Fixed size and layout */}
           <div className="mt-2">
+            <div className="grid grid-cols-6 gap-1 justify-items-center">
+              {sideCheckboxes.map((box: Checkbox, idx: number) => (
+                <button
+                  key={idx}
+                  onClick={(ev) => {
+                    ev.stopPropagation();
+                    if (!interactable) return;
+                    if (onCardUpdate) {
+                      box.checked = !box.checked;
+                      onCardUpdate(card, fromZone);
+                    }
+                  }}
+                  className={`w-7 h-7 border rounded flex items-center justify-center p-1 text-[10px] ${
+                    box.checked ? "bg-green-100 border-green-400" : "bg-white border-gray-300"
+                  } hover:border-gray-400 transition-colors`}
+                  title={box.content || t('emptyCheckbox')}
+                >
+                  {renderCheckboxContent(box.content)}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Upgrades */}
+          <div className="mt-auto">
             <div className="flex gap-1 flex-wrap justify-center line-clamp-2">
               {currentUpgrades.map((upg, i) => (
                 <button
@@ -1061,31 +1098,6 @@ function CardView({
                     )}
                   </div>
                   <div className="text-[11px]">{"→ "}{sideLabel(upg.nextSide, t)}</div>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Checkboxes - Fixed size and layout */}
-          <div className="mt-2">
-            <div className="grid grid-cols-6 gap-1 justify-items-center">
-              {sideCheckboxes.map((box: Checkbox, idx: number) => (
-                <button
-                  key={idx}
-                  onClick={(ev) => {
-                    ev.stopPropagation();
-                    if (!interactable) return;
-                    if (onCardUpdate) {
-                      box.checked = !box.checked;
-                      onCardUpdate(card, fromZone);
-                    }
-                  }}
-                  className={`w-7 h-7 border rounded flex items-center justify-center p-1 text-[10px] ${
-                    box.checked ? "bg-green-100 border-green-400" : "bg-white border-gray-300"
-                  } hover:border-gray-400 transition-colors`}
-                  title={box.content || t('emptyCheckbox')}
-                >
-                  {renderCheckboxContent(box.content)}
                 </button>
               ))}
             </div>
@@ -1160,10 +1172,13 @@ function Zone({
   onCardUpdate,
   onExecuteCardEffect,
   gatherProductionBonus,
+  gatherAdditionalProductionOptions,
   showAll = true,
   interactable = true,
   onTapAction,
   highlightedCardId,
+  onReorderCards,
+  onZoneRef,
 }: {
   name: string;
   cards: GameCard[];
@@ -1174,29 +1189,61 @@ function Zone({
   onCardUpdate?: (updatedCard: GameCard, zone: string) => void;
   onExecuteCardEffect?: (card: GameCard, zone: string, timing: EffectTiming, effectId: number) => Promise<void>;
   gatherProductionBonus?: (card: GameCard, zone: string) => Partial<ResourceMap>;
+  gatherAdditionalProductionOptions?: (card: GameCard, zone: string) => Array<Partial<ResourceMap>>;
   showAll?: boolean;
   interactable?: boolean;
   onTapAction?: (card: GameCard, zone: string) => void;
   highlightedCardId?: number | null;
+  onReorderCards?: (cardIds: number[]) => void;
+  onZoneRef?: (el: HTMLDivElement | null) => void;
 }) {
   const { t } = useTranslation();
   const ref = useRef<HTMLDivElement | null>(null);
-  const [, drop] = useDrop(
-    () => ({
-      accept: "CARD",
-      drop: (item: { id: number; fromZone: string }) => {
-        onDrop({ id: item.id, fromZone: item.fromZone });
-      },
-      canDrop: () => interactable,
-    }),
-    [onDrop, interactable]
-  );
-  drop(ref);
+  const [clickCount, setClickCount] = useState(0);
+  const [sortMode, setSortMode] = useState<SortMode>(null);
+  const clickTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const [draggedOverIndex, setDraggedOverIndex] = useState<number | null>(null);
+
+  const sortableZones = [t('playArea'), t('permanentZone'), t('blocked')];
 
   let displayCards = cards;
   if (!showAll && cards.length > 0) {
     displayCards = [cards[cards.length - 1]];
   }
+
+  const [, drop] = useDrop(
+    () => ({
+      accept: "CARD",
+      drop: (item: { id: number; fromZone: string }) => {
+        if (item.fromZone !== name) {
+          onDrop(item);
+          return;
+        }
+        
+        const draggedCard = displayCards.find(c => c.id === item.id);
+        if (draggedCard && draggedOverIndex !== null) {
+          const newOrder = [...displayCards];
+          const draggedIdx = newOrder.findIndex(c => c.id === item.id);
+          newOrder.splice(draggedIdx, 1);
+          newOrder.splice(draggedOverIndex, 0, draggedCard);
+          onReorderCards?.(newOrder.map(c => c.id));
+        }
+        setDraggedOverIndex(null);
+      },
+      hover: (item: { id: number; fromZone: string }, monitor) => {
+        if (item.fromZone === name && ref.current) {
+          const hoverIndex = Math.floor(
+            (displayCards.length * monitor.getClientOffset()!.x) / ref.current.offsetWidth
+          );
+          setDraggedOverIndex(hoverIndex);
+        }
+      },
+      canDrop: () => interactable,
+    }),
+    [displayCards, draggedOverIndex, name, interactable, onDrop, onReorderCards]
+  );
+
+  drop(ref);
 
   // --- Layout rules ---
   let containerClass = "grid gap-2";
@@ -1307,22 +1354,81 @@ function Zone({
     };
   };
 
+  const handleZoneClick = () => {
+    if (!sortableZones.includes(name)) return;
+
+    const newCount = clickCount + 1;
+    setClickCount(newCount);
+
+    if (clickTimerRef.current) clearTimeout(clickTimerRef.current);
+
+    if (newCount === 3) {
+      // Appliquer le tri suivant
+      const modes: SortMode[] = ['byId', 'byType'];
+      const currentIndex = modes.indexOf(sortMode);
+      const nextMode = modes[(currentIndex + 1) % modes.length];
+      
+      applySorting(nextMode);
+      setSortMode(nextMode);
+      setClickCount(0);
+    } else {
+      // Réinitialiser après 800ms
+      clickTimerRef.current = setTimeout(() => {
+        setClickCount(0);
+      }, 800);
+    }
+  };
+
+  const applySorting = (mode: SortMode) => {
+    if (!mode) return;
+
+    const sorted = [...displayCards];
+
+    switch (mode) {
+      case 'byId':
+        sorted.sort((a, b) => a.id - b.id);
+        break;
+      case 'byType':
+        sorted.sort((a, b) => {
+          const typeA = a.GetType(t).split(' - ')[0].toLowerCase();
+          const typeB = b.GetType(t).split(' - ')[0].toLowerCase();
+          return typeA.localeCompare(typeB);
+        });
+        break;
+    }
+
+    onReorderCards?.(sorted.map(c => c.id));
+  };
+
   return (
-  <div ref={ref} className="p-4 border-2 rounded-xl shadow-lg bg-gradient-to-br from-gray-50 to-gray-100 hover:shadow-xl transition-shadow duration-300">
-    <h2 className="text-xl font-bold mb-3 text-gray-800">{name}</h2>
+  <div 
+    ref={(el) => {
+      ref.current = el;
+      if (onZoneRef && el) onZoneRef(el);
+    }}
+    className="p-4 border-2 rounded-xl shadow-lg bg-gradient-to-br from-gray-50 to-gray-100 hover:shadow-xl transition-shadow duration-300"
+    onClick={handleZoneClick}
+  >
+    <h2 className="text-xl font-bold mb-3 text-gray-800">
+      {name}
+    </h2>
     <div
       className={containerClass}
-      style={
+      style={{...(
         isPermanentZone || isBlockedZone || isPlayArea || name.includes(t('deck')) || name.includes(t('discard'))
           ? getContainerStyle()
           : {gridTemplateColumns: gridTemplate, alignItems: "start" }
-      }
+        ),
+        transition: 'all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)'}}
     >
       {displayCards.length > 0 ? (
         displayCards.map((c, index) => (
           <div
             key={`${name}-${c.id}-${c.currentSide}`}
-            style={getCardStyle(index)}
+            style={{
+                ...getCardStyle(index),
+                transition: 'all 0.3s ease-out',
+              }}
             className={(isPermanentZone || isBlockedZone || isPlayArea) ? "group" : ""}
             onMouseEnter={(e) => {
               if (isPermanentZone || isBlockedZone || isPlayArea) {
@@ -1347,6 +1453,7 @@ function Zone({
                 onCardUpdate={onCardUpdate}
                 onExecuteCardEffect={onExecuteCardEffect}
                 gatherProductionBonus={gatherProductionBonus}
+                gatherAdditionalProductionOptions={gatherAdditionalProductionOptions}
                 isHighlighted={highlightedCardId === c.id}
               />
             </div>
@@ -1823,14 +1930,35 @@ function CardSelectionPopup({
 
   const canConfirm = selectedValue >= requiredCount && selectedValue <= maxCount;
 
+  function renderEffectText(effect: string) {
+    return effect.split(/(\s+)/).map((part, idx) => {
+      if (/^\s+$/.test(part)) {
+        return <span key={idx}>{part}</span>;
+      }
+      if (part.startsWith("resources/") || part.startsWith("effects/")) {
+        return (
+          <img
+            key={idx}
+            src={part.concat(".png")}
+            alt={part}
+            className="inline w-4 h-4 mx-0.5"
+          />
+        );
+      }
+      return (
+        <span key={idx} className="inline">
+          {part}
+        </span>
+      );
+    });
+  }
+
   const displayMessage = (() => {
-    const allCardsValue = cards.reduce((sum, c) => sum + getCardSelectionValue(c, searchType || ""), 0);
-    const autoSelected = allCardsValue <= maxCount;
-    
-    if (optionalCount) {
-      return `${effectDescription} (${requiredCount}-${maxCount} valeur${autoSelected ? t('autoSelected') : ''})`;
-    }
-      return `${effectDescription} (${requiredCount} valeur${autoSelected ? t('autoSelected') : ''})`;
+    return (
+      <>
+        {renderEffectText(effectDescription)}{" "}
+      </>
+    );
   })();
 
   return (
@@ -1930,7 +2058,7 @@ function CardSelectionPopup({
         {/* Footer */}
         <div className="flex justify-between items-center pt-2 mt-3 border-t">
           <span className="text-sm text-gray-600">
-            Valeur: {selectedValue} / {optionalCount ? `${requiredCount}-${maxCount}` : requiredCount}
+            {selectedValue} / {optionalCount ? `${requiredCount}-${maxCount}` : requiredCount}
           </span>
           <div className="flex gap-2">
             <Button onClick={onCancel} variant="secondary" hidden={zone === t('campaign') || requiredCount !== 0}>
@@ -2496,6 +2624,8 @@ export default function Game() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const zoneRefsMap = useRef<Map<string, HTMLDivElement>>(new Map());
+
   const [showCheckboxPopup, setShowCheckboxPopup] = useState(false);
   const [checkboxPopupCard, setCheckboxPopupCard] = useState<GameCard | null>(null);
   const [checkboxRequiredCount, setCheckboxRequiredCount] = useState(1);
@@ -2524,6 +2654,7 @@ export default function Game() {
     forceResolve: boolean;
   }>>([]);
 
+  const [slidingCards, setSlidingCards] = useState<Map<number, { fromZone: string; toZone: string }>>(new Map());
   const [effectConfirmationPopup, setEffectConfirmationPopup] = useState<{
     description: string;
     onConfirm: () => void;
@@ -2551,6 +2682,7 @@ export default function Game() {
   >(null);
 
   const [highlightedCardId, setHighlightedCardId] = useState<number | null>(null);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   const [confirmationPopup, setConfirmationPopup] = useState<{
     message: string;
@@ -2570,6 +2702,8 @@ export default function Game() {
     expansions: {} 
   });
 
+  const [usedEffectsThisTurn, setUsedEffectsThisTurn] = useState<Map<string, number>>(new Map());
+
   // Flags
   const [isChoosingExpansion, setIsChoosingExpansion] = useState(false);
   const [showExpansionChoice, setShowExpansionChoice] = useState(false);
@@ -2579,6 +2713,7 @@ export default function Game() {
   const playAreaRef = useRef<GameCard[]>([]);
   const discardRef = useRef<GameCard[]>([]);
   const blockedZoneRef = useRef<GameCard[]>([]);
+  const permanentZoneRef = useRef<GameCard[]>([]);
   const temporaryCardListRef = useRef<GameCard[]>([]);
 
   // Keep refs in sync if other code uses setPlayArea / setDiscard directly
@@ -2586,6 +2721,7 @@ export default function Game() {
   useEffect(() => { playAreaRef.current = playArea; }, [playArea]);
   useEffect(() => { discardRef.current = discard; }, [discard]);
   useEffect(() => { blockedZoneRef.current = blockedZone; }, [blockedZone]);
+  useEffect(() => { permanentZoneRef.current = permanentZone; }, [permanentZone]);
 
   function setPlayAreaImmediate(next: React.SetStateAction<GameCard[]>) {
     if (typeof next === "function") {
@@ -2681,6 +2817,25 @@ export default function Game() {
     return false;
   };
 
+  const reorderCardsInZone = (zone: string, cardIds: number[]) => {
+    const reorderedCards = cardIds
+      .map(id => {
+        if (zone === t('playArea')) return playArea.find(c => c.id === id);
+        if (zone === t('permanentZone')) return permanentZone.find(c => c.id === id);
+        if (zone === t('blocked')) return blockedZone.find(c => c.id === id);
+        return null;
+      })
+      .filter((card): card is GameCard => card !== null);
+
+    if (zone === t('playArea')) {
+      setPlayAreaImmediate(reorderedCards);
+    } else if (zone === t('permanentZone')) {
+      setPermanentZone(reorderedCards);
+    } else if (zone === t('blocked')) {
+      setBlockedZoneImmediate(reorderedCards);
+    }
+  };
+
   const checkUpgradeRestrictions = (): boolean => {
     if (turnEndFlag) {
       return true;
@@ -2717,7 +2872,7 @@ export default function Game() {
     return effectText.startsWith("effects/time");
   };
 
-  const draw = (nbCards: number) => {
+  async function draw(nbCards: number) {
     if (checkPlayRestrictions()) {
       return;
     }
@@ -2726,6 +2881,7 @@ export default function Game() {
     const newCards = drawn.map(cloneGameCard);
     
     for (const card of drawn) {
+      await new Promise(resolve => setTimeout(resolve, 100));
       dropToPlayArea({id: card.id, fromZone: t('deck')});
     }
     setPendingPlayedCards(newCards);
@@ -2748,6 +2904,7 @@ export default function Game() {
   }, [pendingPlayedCards]);
 
   const drawNewTurn = async () => {
+    setIsAnimating(true);
     if (!turnEndFlag) {
       await discardEndTurn();
     }
@@ -2756,9 +2913,10 @@ export default function Game() {
       if ("fame" in prev) (reset as Partial<ResourceMap>).fame = (prev as Partial<ResourceMap>).fame;
       return reset;
     });
-    draw(4);
-
+    setUsedEffectsThisTurn(new Map());
+    await draw(4);
     setTurnEndFlag(false);
+    setIsAnimating(false);
   }
   
   const advance = async () => {
@@ -2811,6 +2969,8 @@ export default function Game() {
             upgradeCard,
             handleCardUpdate,
             addDiscoverableCard,
+            hasBeenUsedThisTurn,
+            markAsUsedThisTurn,
             t,
           };
           
@@ -2853,7 +3013,7 @@ export default function Game() {
     for (const { card, effectIndex } of cardsWithEffects) {
       let realCard = deckRef.current.find(c => c.id === card.id);
       if (!realCard) {
-        realCard = permanentZone.find(c => c.id === card.id);
+        realCard = permanentZoneRef.current.find(c => c.id === card.id);
       }
       if (realCard) {
         await handleExecuteCardEffect(realCard, t('deck'), "endOfRound", undefined, effectIndex);
@@ -2908,6 +3068,8 @@ export default function Game() {
           upgradeCard,
           handleCardUpdate,
           addDiscoverableCard,
+          hasBeenUsedThisTurn,
+          markAsUsedThisTurn,
           t,
         };
         
@@ -2933,6 +3095,8 @@ export default function Game() {
       setDiscardImmediate([]);
       setTemporaryCardListImmediate([]);
       temporaryCardListRef.current = [];
+
+      await new Promise(resolve => setTimeout(resolve, 100));
       
       await handleEffectsEndOfRound(endOfRoundCardList);
 
@@ -2971,7 +3135,17 @@ export default function Game() {
 
       setPlayAreaImmediate(cardsToKeep);
       setBlockedZoneImmediate(blockedToKeep);
-      setDiscardImmediate((d) => [...d, ...cardsToDiscard, ...blockedToDiscard]);
+      
+      const allToDiscard = [
+        ...cardsToDiscard.map(c => ({ card: c, zone: t('playArea') })),
+        ...blockedToDiscard.map(c => ({ card: c, zone: t('blocked') }))
+      ];
+
+      for (let i = 0; i < allToDiscard.length; i++) {
+        const { card, zone } = allToDiscard[i];
+        await new Promise(resolve => setTimeout(resolve, 100));
+        dropToDiscard({ id: card.id, fromZone: zone });
+      }
       
       const allDiscarded = [...cardsToDiscard, ...blockedToDiscard];
       if (allDiscarded.length > 0) {
@@ -3049,6 +3223,8 @@ export default function Game() {
               upgradeCard,
               handleCardUpdate,
               addDiscoverableCard,
+              hasBeenUsedThisTurn,
+              markAsUsedThisTurn,
               t,
             };
           
@@ -3112,6 +3288,8 @@ export default function Game() {
               upgradeCard,
               handleCardUpdate,
               addDiscoverableCard,
+              hasBeenUsedThisTurn,
+              markAsUsedThisTurn,
               t,
             };
           
@@ -3129,6 +3307,7 @@ export default function Game() {
             [currentExpansion]: totalFame
           }
         }));
+        setCurrentExpansion(null);
       } else {
         setScores((prev) => ({ ...prev, baseGame: totalFame }));
       }
@@ -3140,13 +3319,26 @@ export default function Game() {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deck, purgedCards, shouldComputeFame, currentExpansion]);
+
+  useEffect(() => {
+    if (currentExpansion && !isChoosingExpansion) {
+      const expansion = EXPANSIONS.find(e => e.id === currentExpansion);
+      if (expansion?.type === 'card') {
+        const cardStillExists = permanentZone.some(c => c.id === expansion.cardId);
+        if (!cardStillExists && deck.length === 0) {
+          handleEndExpansion();
+        }
+      }
+    }
+  }, [permanentZone, currentExpansion, deck.length, isChoosingExpansion]);
   
   const mill = (
     nbCards: number
   ): void => {
     const discarded = deck.slice(0, nbCards);
-    setDiscard((p) => [...p, ...discarded.map(cloneGameCard)]);
-    setDeck((d) => d.slice(nbCards));
+    for (const card of discarded) {
+      dropToDiscard({id: card.id, fromZone: t('deck')})
+    }
   }
 
   const filterZone = (
@@ -3165,7 +3357,7 @@ export default function Game() {
         filteredCards = deckRef.current.filter(filter);
         break;
       case t('permanentZone'):
-        filteredCards = permanentZone.filter(filter); // Celui-ci n'a pas de ref encore
+        filteredCards = permanentZoneRef.current.filter(filter); // Celui-ci n'a pas de ref encore
         break;
       case t('campaign'):
         filteredCards = campaignDeck.filter(filter);
@@ -3222,7 +3414,12 @@ export default function Game() {
         optionalCount: optionalCount,
         searchType: searchType,
         triggeringCard: triggeringCard,
-        resolve,
+        resolve: (selectedCards: GameCard[]) => {
+          setCardSelectionPopup(null);
+          setTimeout(() => {
+            resolve(selectedCards);
+          }, 50);
+        }
       });
     });
   };
@@ -3244,7 +3441,12 @@ export default function Game() {
         effectDescription: effectDescription,
         zone: zone,
         requiredCount: adjustedCount,
-        resolve
+        resolve: (selectedCards: GameCard[]) => {
+          setCardSelectionPopup(null);
+          setTimeout(() => {
+            resolve(selectedCards);
+          }, 50);
+        }
       });
     });
   };
@@ -3372,7 +3574,7 @@ export default function Game() {
     const modifiers: Array<{
       filter: (card: GameCard, t?: (key: TranslationKeys) => string) => boolean;
       zones: string[] | ((t: (key: TranslationKeys) => string) => string[]);
-      bonus: Partial<ResourceMap>;
+      bonus?: Partial<ResourceMap> | ((card: GameCard) => Partial<ResourceMap>); // <-- RENDRE OPTIONAL
       source: GameCard;
     }> = [];
     
@@ -3381,7 +3583,9 @@ export default function Game() {
       for (const effect of effects) {
         if (effect.timing === "modifyProduction" && effect.productionModifier) {
           modifiers.push({
-            ...effect.productionModifier,
+            filter: effect.productionModifier.filter,
+            zones: effect.productionModifier.zones,
+            bonus: effect.productionModifier.bonus,
             source: activeCard
           });
         }
@@ -3394,7 +3598,9 @@ export default function Game() {
         for (const effect of effects) {
           if (effect.timing === "modifyProduction" && effect.productionModifier) {
             modifiers.push({
-              ...effect.productionModifier,
+              filter: effect.productionModifier.filter,
+              zones: effect.productionModifier.zones,
+              bonus: effect.productionModifier.bonus,
               source: activeCard
             });
           }
@@ -3407,15 +3613,79 @@ export default function Game() {
         ? modifier.zones(t) 
         : modifier.zones;
       
-      if (resolvedZones.includes(zone) && modifier.filter(card, t)) {
-        Object.entries(modifier.bonus).forEach(([key, value]) => {
-          const resourceKey = key as keyof ResourceMap;
-          bonus[resourceKey] = (bonus[resourceKey] || 0) + (value as number);
-        });
+      if (resolvedZones.includes(zone) && modifier.filter(card, t) && modifier.bonus) {
+        const bonusToApply = typeof modifier.bonus === 'function'
+          ? modifier.bonus(card)
+          : modifier.bonus;
+        
+        if (bonusToApply) {
+          Object.entries(bonusToApply).forEach(([key, value]) => {
+            const resourceKey = key as keyof ResourceMap;
+            bonus[resourceKey] = (bonus[resourceKey] || 0) + (value as number);
+          });
+        }
       }
     }
     
     return bonus;
+  };
+
+  const gatherAdditionalProductionOptions = (card: GameCard, zone: string): Array<Partial<ResourceMap>> => {
+    const additionalOptions: Array<Partial<ResourceMap>> = [];
+    
+    if (zone !== t('playArea') && zone !== t('permanentZone')) {
+      return additionalOptions;
+    }
+    
+    const modifiers: Array<{
+      filter: (card: GameCard, t?: (key: TranslationKeys) => string) => boolean;
+      zones: string[] | ((t: (key: TranslationKeys) => string) => string[]);
+      addOptions?: (card: GameCard) => Array<Partial<ResourceMap>>;
+      source: GameCard;
+    }> = [];
+    
+    for (const activeCard of playArea) {
+      const effects = getCardEffects(activeCard.id, activeCard.currentSide);
+      for (const effect of effects) {
+        if (effect.timing === "modifyProduction" && effect.productionModifier?.addOptions) {
+          modifiers.push({
+            filter: effect.productionModifier.filter,
+            zones: effect.productionModifier.zones,
+            addOptions: effect.productionModifier.addOptions,
+            source: activeCard
+          });
+        }
+      }
+    }
+    
+    for (const activeCard of permanentZone) {
+      if (activeCard.GetType(t).includes(t('permanent'))) {
+        const effects = getCardEffects(activeCard.id, activeCard.currentSide);
+        for (const effect of effects) {
+          if (effect.timing === "modifyProduction" && effect.productionModifier?.addOptions) {
+            modifiers.push({
+              filter: effect.productionModifier.filter,
+              zones: effect.productionModifier.zones,
+              addOptions: effect.productionModifier.addOptions,
+              source: activeCard
+            });
+          }
+        }
+      }
+    }
+    
+    for (const modifier of modifiers) {
+      const resolvedZones = typeof modifier.zones === 'function' 
+        ? modifier.zones(t) 
+        : modifier.zones;
+      
+      if (resolvedZones.includes(zone) && modifier.filter(card, t) && modifier.addOptions) {
+        const newOptions = modifier.addOptions(card);
+        additionalOptions.push(...newOptions);
+      }
+    }
+    
+    return additionalOptions;
   };
 
   function openCheckboxPopup(card: GameCard, requiredCount: number, optionalCount: number, callback: (selected: Checkbox[]) => void) {
@@ -3643,6 +3913,8 @@ export default function Game() {
             upgradeCard,
             handleCardUpdate,
             addDiscoverableCard,
+            hasBeenUsedThisTurn,
+            markAsUsedThisTurn,
             t,
           };
           
@@ -3718,6 +3990,26 @@ export default function Game() {
     }
   };
 
+  const hasBeenUsedThisTurn = (cardId: number, effectIndex: number): number => {
+    const key = `${cardId}-${effectIndex}`;
+
+    return usedEffectsThisTurn.get(key) ?? 0;
+  };
+
+  const markAsUsedThisTurn = (cardId: number, effectIndex: number): void => {
+    const key = `${cardId}-${effectIndex}`;
+
+    setUsedEffectsThisTurn(prev => {
+      const safePrev = prev instanceof Map ? prev : new Map();
+      const newMap = new Map(safePrev);
+      const count = newMap.get(key) ?? 0;
+
+      newMap.set(key, count + 1);
+      return newMap;
+    });
+  };
+
+
   const handleExecuteCardEffect = async (
     card: GameCard,
     zone: string,
@@ -3773,11 +4065,17 @@ export default function Game() {
       upgradeCard,
       handleCardUpdate,
       addDiscoverableCard,
+      hasBeenUsedThisTurn,
+      markAsUsedThisTurn,
       t,
     };
 
     if (typeof effectIndex === "number" && effectIndex >= 0 && effectIndex < effects.length) {
       const eff = effects[effectIndex];
+
+      if (eff.usesPerTurn && eff.usesPerTurn <= hasBeenUsedThisTurn(card.id, effectIndex)) {
+        return;
+      }
       
       const effectText = card.effects[card.currentSide - 1];
       const { effects: parsedEffects } = parseEffects(effectText);
@@ -3802,6 +4100,10 @@ export default function Game() {
 
       if (await eff.execute(context)) {
         dropToDiscard({ id: card.id, fromZone: zone });
+      }
+      
+      if (eff.usesPerTurn) {
+        markAsUsedThisTurn(card.id, effectIndex);
       }
       return;
     }
@@ -3864,7 +4166,7 @@ export default function Game() {
     );
   };
 
-  const handleDropToZone = (toZone: string) => async (payload: DropPayload) => {
+  const handleDropToZone = (toZone: string) => async (payload: DropPayload): Promise<void> => {
     const { id, fromZone } = payload;
     if (fromZone === toZone) return;
 
@@ -3875,49 +4177,60 @@ export default function Game() {
       return;
     }
 
+    setSlidingCards(prev => new Map(prev).set(id, { fromZone, toZone }));
+
+    const delayBeforeAction = 300;
+    
+    await new Promise(resolve => setTimeout(resolve, delayBeforeAction));
+
     const removeById = (arr: GameCard[], removeId: number) =>
       arr.filter((c) => c.id !== removeId);
 
     const sourceCard = findCardInAllZones(id);
-    if (!sourceCard) return;
+    if (!sourceCard) {
+      setSlidingCards(prev => {
+        const map = new Map(prev);
+        map.delete(id);
+        return map;
+      });
+      return;
+    }
 
     const toAdd: GameCard = sourceCard;
 
-    if (fromZone === t('deck')) setDeck((d) => removeById(d, id));
+    if (fromZone === t('deck')) setDeckImmediate((d) => removeById(d, id));
     if (fromZone === t('playArea')) setPlayAreaImmediate((p) => removeById(p, id));
     if (fromZone === t('discard')) setDiscardImmediate((f) => removeById(f, id));
     if (fromZone === t('campaign')) {
       setCampaignDeck((g) => removeById(g, id));
       setAvailableDiscoverableCards(prev => prev.filter(cardId => cardId !== id));
     }
-    if (fromZone === t('blocked')) setBlockedZone((b) => removeById(b, id));
+    if (fromZone === t('blocked')) setBlockedZoneImmediate((b) => removeById(b, id));
     if (fromZone === t('permanentZone')) setPermanentZone((pe) => removeById(pe, id));
 
-    if (fetchCardsInZone((c) => c.id === id, fromZone)[0].GetType(t).includes(t('permanent'))) {
-      setPermanentZone((pe) => [...pe, toAdd]);
-      return;
-    }
-
-    if (toZone === t('deck')) {
-      setDeck((d) => [cloneGameCard(toAdd), ...d]);
-    }
-    if (toZone === t('discard')) {
-      setDiscard((f) => [...f, toAdd]);
-    }
-    if (toZone === t('blocked')) {
-      setBlockedZone((b) => [...b, toAdd]);
-    }
-    if (toZone === t('permanentZone')) {
+    if (fetchCardsInZone((c) => c.id === id, fromZone)[0]?.GetType(t).includes(t('permanent'))) {
       setPermanentZone((pe) => [...pe, toAdd]);
     }
-    if (toZone === t('playArea')) {
-      setPlayArea((p) => [...p, toAdd]);
-
-      setResources(() => emptyResource);
-
-      handleExecuteCardEffect(toAdd, t('playArea'), "played");
-      for (const card of playArea) {
-        handleExecuteCardEffect(card, t('playArea'), "otherCardPlayed", [toAdd]);
+    else {
+      if (toZone === t('deck')) {
+        setDeck((d) => [cloneGameCard(toAdd), ...d]);
+      }
+      if (toZone === t('discard')) {
+        setDiscard((f) => [...f, cloneGameCard(toAdd)]);
+      }
+      if (toZone === t('blocked')) {
+        setBlockedZone((b) => [...b, cloneGameCard(toAdd)]);
+      }
+      if (toZone === t('permanentZone')) {
+        setPermanentZone((pe) => [...pe, cloneGameCard(toAdd)]);
+      }
+      if (toZone === t('playArea')) {
+        setPlayArea((p) => [...p, cloneGameCard(toAdd)]);
+        setResources(() => emptyResource);
+        handleExecuteCardEffect(toAdd, t('playArea'), "played");
+        for (const card of playArea) {
+          handleExecuteCardEffect(card, t('playArea'), "otherCardPlayed", [cloneGameCard(toAdd)]);
+        }
       }
     }
 
@@ -3933,6 +4246,12 @@ export default function Game() {
         updateBlocks(id, null);
       }
     }
+    
+    setSlidingCards(prev => {
+      const map = new Map(prev);
+      map.delete(id);
+      return map;
+    });
   };
 
   const dropToDeck = handleDropToZone(t('deck'));
@@ -3948,8 +4267,9 @@ export default function Game() {
   // -------------------
   const handleEndRound = async () => {
     await discardEndTurn(true);
-
     await resolveEndRoundEffects();
+
+    await new Promise(resolve => setTimeout(resolve, 100));
 
     if (checkExpansionEnd()) {
       await handleEndExpansion();
@@ -4060,6 +4380,8 @@ export default function Game() {
               upgradeCard,
               handleCardUpdate,
               addDiscoverableCard,
+              hasBeenUsedThisTurn,
+              markAsUsedThisTurn,
               t,
             };
           await effect.execute(context);
@@ -4121,6 +4443,8 @@ export default function Game() {
         upgradeCard,
         handleCardUpdate,
         addDiscoverableCard,
+        hasBeenUsedThisTurn,
+        markAsUsedThisTurn,
         t,
       };
       const cannotBePurged = effects.some(eff => 
@@ -4196,7 +4520,7 @@ export default function Game() {
     if (!expansion) return false;
     
     else if (expansion.type === 'card') {
-      return !permanentZone.find(c => c.id === expansion.cardId);
+      return !permanentZoneRef.current.find(c => c.id === expansion.cardId);
     }
     
     return false;
@@ -4204,13 +4528,10 @@ export default function Game() {
 
   // Dans handleEndBaseGame, ajoute :
   const handleEndExpansion = async () => {
-    await discardEndTurn(true);
     setShouldComputeFame(true);
     
-    // Marquer l'extension comme complétée
     if (currentExpansion) {
       setCompletedExpansions(prev => [...prev, currentExpansion]);
-      setCurrentExpansion(null);
     }
   };
 
@@ -4349,6 +4670,8 @@ export default function Game() {
           upgradeCard,
           handleCardUpdate,
           addDiscoverableCard,
+          hasBeenUsedThisTurn,
+          markAsUsedThisTurn,
           t,
         };
         
@@ -4442,6 +4765,8 @@ export default function Game() {
             upgradeCard,
             handleCardUpdate,
             addDiscoverableCard,
+            hasBeenUsedThisTurn,
+            markAsUsedThisTurn,
             t,
           };
           
@@ -4528,6 +4853,8 @@ export default function Game() {
             upgradeCard,
             handleCardUpdate,
             addDiscoverableCard,
+            hasBeenUsedThisTurn,
+            markAsUsedThisTurn,
             t,
           };
           
@@ -4682,28 +5009,26 @@ export default function Game() {
 
   useEffect(() => {
     const isMobile = window.innerWidth < 768 || /Android|iPad|iPhone/i.test(navigator.userAgent);
-    const attachment = isMobile ? "scroll" : "fixed";
+    
+    const attachment = isMobile ? "fixed" : "fixed";
+    const bgSize = "cover";
+    const bgPosition = "center";
     
     document.documentElement.style.background = "linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)";
     document.documentElement.style.backgroundAttachment = attachment;
+    document.documentElement.style.backgroundSize = bgSize;
+    document.documentElement.style.backgroundPosition = bgPosition;
     document.documentElement.style.minHeight = "100vh";
+    document.documentElement.style.backgroundRepeat = "no-repeat";
     
-    document.body.style.background = "linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)";
-    document.body.style.backgroundAttachment = attachment;
+    document.body.style.background = "transparent";
+    document.body.style.backgroundAttachment = "unset";
     document.body.style.minHeight = "100vh";
-    document.body.style.overscrollBehavior = "none";
-    document.documentElement.style.overscrollBehavior = "none";
     
     return () => {
       document.documentElement.style.background = "";
-      document.documentElement.style.backgroundAttachment = "";
-      document.documentElement.style.minHeight = "";
-      
-      document.body.style.background = "";
-      document.body.style.backgroundAttachment = "";
-      document.body.style.minHeight = "";
-      document.body.style.overscrollBehavior = "";
-      document.documentElement.style.overscrollBehavior = "";
+      document.documentElement.style.backgroundSize = "";
+      document.documentElement.style.backgroundPosition = "";
     };
   }, []);
 
@@ -4721,6 +5046,7 @@ export default function Game() {
                 onRightClick={() => {}}
                 showAll={false}
                 onTapAction={debugMode ? handleTapAction : undefined}
+                onZoneRef={(el) => { if (el) zoneRefsMap.current.set(t('deck'), el);}}
               />
               <Button disabled={deck.length === 0} onClick={() => setShowDeck(true)}className="mt-2">{t('seeDeck')}</Button>
             </div>
@@ -4734,6 +5060,7 @@ export default function Game() {
                 onRightClick={() => {}}
                 showAll={false}
                 onTapAction={debugMode ? handleTapAction : undefined}
+                onZoneRef={(el) => { if (el) zoneRefsMap.current.set(t('discard'), el);}}
               />
               <Button disabled={discard.length === 0} onClick={() => setShowDiscard(true)}className="mt-2">{t('seeDiscard')}</Button>
             </div>
@@ -4750,6 +5077,8 @@ export default function Game() {
                 onExecuteCardEffect={(card, zone, timing, effectId) => handleExecuteCardEffect(card, zone, timing, undefined, effectId)}
                 interactable={true}
                 highlightedCardId={highlightedCardId}
+                onReorderCards={(cardIds) => reorderCardsInZone(t('permanentZone'), cardIds)}
+                onZoneRef={(el) => { if (el) zoneRefsMap.current.set(t('permanentZone'), el);}}
               />
             </div>
 
@@ -4812,7 +5141,10 @@ export default function Game() {
               onGainResources={handleGainResources}
               onExecuteCardEffect={(card, zone, timing, effectIndex) => handleExecuteCardEffect(card, zone, timing, undefined, effectIndex)}
               gatherProductionBonus={gatherProductionBonus}
+              gatherAdditionalProductionOptions={gatherAdditionalProductionOptions}
               highlightedCardId={highlightedCardId}
+              onReorderCards={(cardIds) => reorderCardsInZone(t('playArea'), cardIds)}
+              onZoneRef={(el) => { if (el) zoneRefsMap.current.set(t('playArea'), el);}}
             />
           </div>
 
@@ -4833,6 +5165,8 @@ export default function Game() {
                 return Promise.resolve();
               }}
               interactable={true}
+              onReorderCards={(cardIds) => reorderCardsInZone(t('blocked'), cardIds)}
+              onZoneRef={(el) => { if (el) zoneRefsMap.current.set(t('blocked'), el);}}
             />
           </div>
         </div>
@@ -4841,14 +5175,14 @@ export default function Game() {
         <div className="flex gap-4 items-center">
           {/* Action Buttons à gauche */}
           <div className="flex flex-wrap gap-2 flex-shrink-0">
-            <Button onClick={drawNewTurn} disabled={deck.length === 0 || isChoosingExpansion}>{t('newTurn')}</Button>
-            <Button onClick={() => discardEndTurn(false)} disabled={deck.length === 0 || isChoosingExpansion || turnEndFlag}>{t('pass')}</Button>
-            <Button onClick={advance} disabled={deck.length === 0 || isChoosingExpansion || turnEndFlag || isPlayBlocked}>{t('advance')}</Button>
-            <Button disabled={deck.length > 0} className="bg-red-600 hover:bg-red-500 text-white" onClick={handleEndRound}>{t('endRound')}</Button>
+            <Button onClick={drawNewTurn} disabled={deck.length === 0 || isChoosingExpansion || isAnimating}>{t('newTurn')}</Button>
+            <Button onClick={async () => { setIsAnimating(true); await discardEndTurn(false); setIsAnimating(false); }} disabled={deck.length === 0 || isChoosingExpansion || turnEndFlag || isAnimating}>{t('pass')}</Button>
+            <Button onClick={async () => { setIsAnimating(true); await advance(); setIsAnimating(false); }} disabled={deck.length === 0 || isChoosingExpansion || turnEndFlag || isPlayBlocked || isAnimating}>{t('advance')}</Button>
+            <Button disabled={deck.length !== 0 ||! hasEndedBaseGame} className="bg-red-600 hover:bg-red-500 text-white" onClick={handleEndRound}>{t('endRound')}</Button>
             <Button hidden={purgedCards.length === 0} onClick={() => setShowPurged(true)} className="bg-blue-600 hover:bg-blue-500 text-white">{t('seePurged')}</Button>
             <Button onClick={shuffleDeck} className="bg-blue-600 hover:bg-blue-500 text-white" hidden={true}>{"Shuffle Deck"}</Button>
-            <Button hidden={(hasEndedBaseGame || campaignDeck.some(card => card.id === 70)) || (currentExpansion !== null && !checkExpansionEnd())} disabled={deck.length !== 0} className="bg-red-600 hover:bg-red-500 text-white" onClick={currentExpansion ? handleEndExpansion : handleEndBaseGame}>{currentExpansion ? t('endExpansion') : t('endGame')}</Button>
-            <Button onClick={() => setShowExpansionChoice(true)} hidden={!isChoosingExpansion || completedExpansions.length >= 9} className="bg-purple-600 hover:bg-purple-500 text-white">{t('chooseExpansion')}</Button>
+            <Button hidden={(hasEndedBaseGame || campaignDeck.some(card => card.id === 70)) || (currentExpansion !== null && !checkExpansionEnd())} disabled={deck.length !== 0 || isAnimating} className="bg-red-600 hover:bg-red-500 text-white" onClick={currentExpansion ? handleEndExpansion : handleEndBaseGame}>{currentExpansion ? t('endExpansion') : t('endGame')}</Button>
+            <Button onClick={() => setShowExpansionChoice(true)} hidden={!isChoosingExpansion || completedExpansions.length >= 9} disabled={isAnimating} className="bg-purple-600 hover:bg-purple-500 text-white">{t('chooseExpansion')}</Button>
           </div>
 
           {/* Resource Pool au centre */}
@@ -4960,16 +5294,6 @@ export default function Game() {
                       </div>
                     );
                   })}
-                  
-                  {/* Score total */}
-                  {Object.keys(scores.expansions).length > 0 && (
-                    <div className="flex items-center gap-2 mt-4 p-3 bg-gradient-to-r from-yellow-100 to-yellow-200 rounded-lg border-2 border-yellow-400">
-                      <span className="flex-1 font-bold">{t('totalScore')}</span>
-                      <span className="font-bold text-2xl text-yellow-700">
-                        {scores.baseGame + Object.values(scores.expansions).reduce((a, b) => a + b, 0)} {t('fame')}
-                      </span>
-                    </div>
-                  )}
                 </div>
 
                 <Button onClick={() => setShowSettings(false)}>{t('close')}</Button>
@@ -5434,6 +5758,96 @@ export default function Game() {
             </div>
           </div>
         </div>
+      )}
+
+      {slidingCards.size > 0 && createPortal(
+        <svg
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            pointerEvents: 'none',
+            zIndex: 40,
+          }}
+        >
+          <defs>
+            <style>{`
+              @keyframes slideCard {
+                0% {
+                  opacity: 1;
+                  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+                }
+                100% {
+                  opacity: 0.3;
+                  filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.5));
+                }
+              }
+            `}</style>
+          </defs>
+          {Array.from(slidingCards.entries()).map(([cardId, { fromZone, toZone }], index) => {
+            const sourceZone = zoneRefsMap.current.get(fromZone);
+            const destZone = zoneRefsMap.current.get(toZone);
+            
+            if (!sourceZone || !destZone) return null;
+            
+            const sourceRect = sourceZone.getBoundingClientRect();
+            const destRect = destZone.getBoundingClientRect();
+            
+            const startX = sourceRect.left + sourceRect.width / 2 - 98;
+            const startY = sourceRect.top + sourceRect.height / 2 - 140;
+            
+            const endX = destRect.left + destRect.width / 2 - 98;
+            const endY = destRect.top + destRect.height / 2 - 140;
+            
+            const deltaX = endX - startX;
+            const deltaY = endY - startY;
+            
+            const card = findCardInAllZones(cardId);
+            if (!card) return null;
+            
+            const delayMs = index * 100;
+            
+            return (
+              <g key={cardId}>
+                <animateTransform
+                  attributeName="transform"
+                  type="translate"
+                  from={`0 0`}
+                  to={`${deltaX} ${deltaY}`}
+                  dur="0.3s"
+                  fill="remove"
+                  calcMode="spline"
+                  keySplines="0.25 0.46 0.45 0.94"
+                  begin={`${delayMs}ms`}
+                />
+                <foreignObject
+                  x={startX}
+                  y={startY}
+                  width="196"
+                  height="280"
+                  style={{
+                    filter: 'drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3))',
+                    animation: `slideCard ease-out forwards ${delayMs}ms`,
+                    borderRadius: '8px',
+                    overflow: 'hidden',
+                  }}
+                >
+                  <div style={{ pointerEvents: 'none' }}>
+                    <CardView
+                      card={card}
+                      fromZone={fromZone}
+                      onRightClick={() => {}}
+                      interactable={false}
+                    />
+                  </div>
+                </foreignObject>
+              </g>
+            );
+          })}
+        </svg>,
+        document.body
       )}
       </div>
     </DndProvider>

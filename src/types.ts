@@ -228,6 +228,8 @@ export class GameCard {
   }
 }
 
+export type SortMode = 'byId' | 'byType' | null;
+
 export type ExpansionType = 'card' | 'block';
 
 export interface ExpansionData {

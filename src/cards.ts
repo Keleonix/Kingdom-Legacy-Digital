@@ -5741,7 +5741,7 @@ export const allCards: GameCard[] = [
       [ {cost: { wood: 2, stone: 2, metal: 2 }, nextSide: 2} ],
       [ {cost: { stone: 3, metal: 3 }, nextSide: 4} ],
       [],
-      [ {cost: { stone: 4, metal: 4 }, nextSide: 2} ],
+      [ {cost: { stone: 4, metal: 4 }, nextSide: 3} ],
     ],
     currentSide: 1,
     type: ['building', 'building', 'building', 'building'],

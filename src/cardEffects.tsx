@@ -48,6 +48,8 @@ export type GameContext = {
   upgradeCard: (card: GameCard, nextSide: number) => Promise<boolean>;
   handleCardUpdate: (updatedCard: GameCard, zone: string) => void;
   addDiscoverableCard: (cardId: number, force?: boolean) => void;
+  hasBeenUsedThisTurn: (cardId: number, effectIndex: number) => number;
+  markAsUsedThisTurn: (cardId: number, effectIndex: number) => void;
   t: (key: TranslationKeys) => string;
 };
 
@@ -58,10 +60,12 @@ export type CardEffect = {
   requiresChoice?: boolean;
   choices?: string[];
   uses?: number;
+  usesPerTurn?: number;
   productionModifier?: {
-    filter: (card: GameCard, t?: (key: TranslationKeys) => string) => boolean;
+    filter: (card: GameCard, t: (key: TranslationKeys) => string) => boolean;
     zones: string[] | ((t: (key: TranslationKeys) => string) => string[]);
-    bonus: Partial<ResourceMap>;
+    bonus?: Partial<ResourceMap> | ((card: GameCard) => Partial<ResourceMap>);
+    addOptions?: (card: GameCard) => Array<Partial<ResourceMap>>;
   };
 };
 
@@ -6122,6 +6126,239 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     ],
   },
   136: {
+    1: [
+      { // Prospérité
+        description: (t) => t('effect_description_prosperity_expansion'),
+        timing: "modifyProduction",
+        productionModifier: {
+          filter: (card: GameCard) => !card.negative[card.currentSide - 1],
+          zones: (t) => [t('playArea')],
+          bonus: { coin: 1 }
+        },
+        execute: async function (ctx) {
+          if (ctx) {
+            return false;
+          }
+          return true;
+        }
+      },
+      {
+        description: (t) => t('none'),
+        timing: "endOfRound",
+        execute: async function (ctx) {
+          ctx.card.currentSide = 2;
+          return false;
+        }
+      },
+    ],
+    2: [
+      { // Engranger des réserves
+        description: (t) => t('effect_description_hoarding'),
+        timing: "endOfTurn",
+        execute: async function (ctx) {
+          const selected = await ctx.selectCardsFromZone(() => true, ctx.t('playArea'), this.description(ctx.t), 0, ctx.fetchCardsInZone((c) => c.id === ctx.card.id, ctx.zone)[0], 1);
+          if (selected.length > 0) {
+            ctx.setTemporaryCardListImmediate(selected);
+            return true;
+          }
+          return false;
+        }
+      },
+      {
+        description: (t) => t('none'),
+        timing: "endOfRound",
+        execute: async function (ctx) {
+          ctx.card.currentSide = 4;
+          return false;
+        }
+      },
+    ],
+    3: [
+      { // Décret Royal
+        description: (t) => t('effect_description_royal_decree'),
+        timing: "endOfRound",
+        execute: async function (ctx) {
+          let checked = 0;
+          for(const box of ctx.card.checkboxes[3]) {
+            if(box.checked) {
+              checked += 1;
+            }
+          }
+          if (checked === 0) {
+            return false;
+          }
+          const selected = await ctx.selectCardsFromZone(
+            (card) => getResourcesCount(card.GetResources()[0]) !== 0, 
+            ctx.t('deck'), 
+            this.description(ctx.t), 
+            checked
+          );
+          
+          if (selected.length !== 0) {
+            for(const card of selected) {
+              const selectedResource = await ctx.selectResourceChoice(card.GetResources());
+              if (selectedResource) {
+                await removeResourceFromCard(card, selectedResource);
+                ctx.replaceCardInZone(ctx.t('deck'), card.id, card);
+              }
+            }
+          }
+          return false;
+        }
+      },
+      {
+        description: (t) => t('none'),
+        timing: "endOfRound",
+        execute: async function (ctx) {
+          ctx.deleteCardInZone(ctx.t('permanentZone'), ctx.card.id);
+          return false;
+        }
+      },
+    ],
+    4: [
+      { // Soulèvement
+        description: (t) => t('effect_description_uprising'),
+        timing: "otherCardPlayed",
+        execute: async function (ctx) {
+          const peopleInPlay = ctx.fetchCardsInZone(
+            (c) => c.GetType(ctx.t).includes(ctx.t('person')), 
+            ctx.t('playArea')
+          );
+          
+          const peoplePlayed = ctx.cardsForTrigger?.filter(
+            (c) => c.GetType(ctx.t).includes(ctx.t('person'))
+          ) || [];
+          
+          for (const playedPerson of peoplePlayed) {
+            if (peopleInPlay.length >= 2 && !peopleInPlay.includes(playedPerson)) {
+              await checkNextBox(ctx.card);
+            }
+          }
+          
+          return false;
+        }
+      },
+      {
+        description: (t) => t('none'),
+        timing: "endOfRound",
+        execute: async function (ctx) {
+          ctx.card.currentSide = 3;
+          return false;
+        }
+      },
+    ],
+  },
+  137: {
+    1: [
+      { // Moulin à Eau
+        description: (t) => t('effect_description_the_water_mill_expansion'),
+        timing: "onClick",
+        usesPerTurn: 1,
+        execute: async (context) => {
+          context.setResources(prev => ({ 
+            ...prev, 
+            coin: (prev.coin || 0) + 3
+          }));
+          return false;
+        }
+      },
+      {
+        description: (t) => t('none'),
+        timing: "endOfRound",
+        execute: async function (ctx) {
+          ctx.card.currentSide = 2;
+          return false;
+        }
+      },
+    ],
+    2: [
+      { // Récoltes Productives
+        description: (t) => t('effect_description_efficient_farming'),
+        timing: "onClick",
+        execute: async function (ctx) {
+          const buildings = ctx.fetchCardsInZone((card) => card.GetType(ctx.t).includes(ctx.t('building')), ctx.t('playArea'));
+          const lands = ctx.fetchCardsInZone((card) => card.GetType(ctx.t).includes(ctx.t('land')), ctx.t('playArea'));
+          if (buildings.length < 2 && lands.length < 1) {
+            return false;
+          }
+          const selected = await ctx.selectCardsFromArray(buildings, ctx.t('playArea'), this.description(ctx.t), 2);
+          if (selected.length === 2) {
+            const land = (await ctx.selectCardsFromArray(lands, ctx.t('playArea'), this.description(ctx.t), 1))[0];
+            if (land) {
+              addResourceMapToCard(land, {coin: 1});
+              for (const building of selected) {
+                ctx.dropToDiscard({id: building.id, fromZone: ctx.t('playArea')});
+              }
+              ctx.effectEndTurn();
+            }
+          }
+          return false;
+        }
+      },
+      {
+        description: (t) => t('none'),
+        timing: "endOfRound",
+        execute: async function (ctx) {
+          ctx.card.currentSide = 4;
+          return false;
+        }
+      },
+    ],
+    3: [
+      { // Fermes Abandonnées
+        description: (t) => t('effect_description_obsolete_farms'),
+        timing: "endOfRound",
+        execute: async function (ctx) {
+          const card = (await ctx.selectCardsFromZone((c) => c.GetResources().some((map) => hasEnoughResources(map, {coin: 1})), ctx.t('deck'), this.description(ctx.t), 1, ctx.card))[0];
+          if (!card) {
+            return false;
+          }
+          ctx.deleteCardInZone(ctx.t('deck'), card.id);
+          ctx.deleteCardInZone(ctx.t('permanentZone'), ctx.card.id);
+          return false;
+        }
+      },
+    ],
+    4: [
+      { // Surplus
+        description: (t) => t('effect_description_surplus'),
+        timing: "modifyProduction",
+        productionModifier: {
+          filter: (card: GameCard, t) => {
+            return (card.GetResources().some((map) => (map.coin || 0) >= 1) && card.GetType(t).includes(t('land')));
+          },
+          zones: (t) => [t('playArea')],
+          addOptions: (card: GameCard) => {
+            const newOptions: Array<Partial<ResourceMap>> = [];
+            
+            for (const resourceMap of card.GetResources()) {
+              const coinAmount = resourceMap.coin || 0;
+              if (coinAmount > 0) {
+                const tradegoodOption: Partial<ResourceMap> = { ...resourceMap };
+                delete tradegoodOption.coin;
+                tradegoodOption.tradegood = (tradegoodOption.tradegood || 0) + coinAmount;
+                newOptions.push(tradegoodOption);
+              }
+            }
+            
+            return newOptions;
+          }
+        },
+        execute: async function () {
+          return false;
+        }
+      },
+      {
+        description: (t) => t('none'),
+        timing: "endOfRound",
+        execute: async function (ctx) {
+          ctx.card.currentSide = 3;
+          return false;
+        }
+      },
+    ],
+  },
+  138: {
     1: [
       { // Prospérité
         description: (t) => t('effect_description_prosperity_expansion'),
