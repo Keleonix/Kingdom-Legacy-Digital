@@ -12,7 +12,7 @@ export type TranslationKeys =
   | 'noUpgradeAvailable' | 'selectAnUpgrade' | 'selectAResource' | 'failedToSave' | 'failedToLoad'
   | 'select' | 'id' | 'preview' | 'endGame' | 'seeDeck' | 'seeDiscard' | 'cardsList' | 'triggeredCard'
   | 'selectCardToPurge' | 'chooseExpansion' | 'expansionCard' | 'expansionBlock' | 'scores' | 'baseGame'
-  | 'totalScore' | 'endExpansion' | 'seePurged'
+  | 'totalScore' | 'endExpansion' | 'seePurged' | 'add'
   
   // Cards Elements
   | 'frontUp' | 'frontDown' | 'backUp' | 'backDown'
@@ -478,6 +478,7 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     totalScore: 'Score Total',
     endExpansion: 'Fin d\'Extension',
     seePurged: 'Voir les Purgées',
+    add: 'Ajouter',
     
     // Cards Elements
     frontUp: 'Recto Haut',
@@ -934,10 +935,10 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     effect_description_scientist: "effects/passive Toutes les Personnes, Scientifique inclus, produisent +1 resources/coin .",
     effect_description_observatory: "effects/time Découvrez l'Astronome (95).",
     effect_description_lab: "effects/time Découvrez l'Alchimiste (96).",
-    effect_description_engineer: "effects/activate Détruisez l'une des cartes suivantes: Cabane de Bûcheron - découvrez (100). Grange - découvrez (101). Bâteau de pêche - découvrez (102).",
+    effect_description_engineer: "effects/activate Détruisez l'une des cartes suivantes: Cabane de Bûcheron - découvrez (100); Grange - découvrez (101); Bâteau de pêche - découvrez (102).",
     effect_description_trebuchet: "effects/destroy Vainquez un ennemi (défausse, en jeu ou permanent), puis marquez effects/check la case suivante de la carte Armée.",
     effect_description_inventor: "Vaut 5 resources/fame par effects/check .",
-    effect_description_inspired_inventor: "Vaut la fame de l'Inventrice. effects/activate réinitialisez et ajoutez 1 effects/check . Découvrez une invention (97/98/99) ou gagnez une ressource de votre choix pour chaque effects/check . Vaut 5 resources/fame par effects/check .",
+    effect_description_inspired_inventor: "Vaut la fame de l'Inventrice. effects/activate Réinitialisez et ajoutez 1 effects/check pour découvrir une invention (97/98/99) ou gagnez une ressource de votre choix pour chaque effects/check . Vaut 5 resources/fame par effects/check .",
     effect_description_mercenary: "effects/activate Dépensez resources/coin resources/coin pour ajouter 1 ou deux effects/check .",
     effect_description_sir__: "effects/time Dépensez resources/metal resources/metal resources/metal pour ajouter resources/sword sur cette carte ( effects/oneTime ). effects/time Dépensez resources/metal resources/metal resources/metal resources/metal pour ajouter resources/sword sur cette carte ( effects/oneTime ). ",
     effect_description_stop_3: "effects/activate Découvrez les cartes 38 à 42. Choisissez le côté des cartes Objectif.",
@@ -1011,7 +1012,7 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     effect_description_palace: "effects/optional Fin du Tour: Défaussez pour que 2 cartes restent en jeu.",
     effect_description_mansion: "effects/optional Fin du Tour: Défaussez pour que 1 carte reste en jeu.",
     effect_description_cooperation: "effects/activate Défaussez 2 Personnes pour gagner 3 ressources au choix puis ->.",
-    effect_description_favor: "effects/passive Stays in play. effects/activate Gain a resource of your choice, then ->.",
+    effect_description_favor: "effects/passive Reste en jeu. effects/activate Gagnez 1 ressource au choix, puis ->.",
     effect_description_aethan_estate_1: "effects/passive Lorsque vous purgez cette carte, vous pouvez annuler la purge de 1 autre carte.",
     effect_description_aethan_estate_2: "effects/passive Lorsque vous purgez cette carte, vous pouvez annuler la purge de 3 autres cartes.",
     effect_description_aethan_estate_3: "effects/passive Lorsque vous purgez cette carte, vous pouvez annuler la purge de 2 autres cartes.",
@@ -1092,7 +1093,7 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     effect_description_temple_of_light: "effects/optional Fin du Tour: Défaussez pour que 5 autre cartes restent en jeu. effects/time dépensez resources/tradegood resources/tradegood resources/tradegood resources/tradegood pour inscrire 1 effects/check .(Quand vous la purgez, cette carte vaut +10 resources/fame par effects/check .)",
     effect_description_legendary_temple: "effects/optional Fin du Tour: Défaussez pour que 5 autre cartes restent en jeu.",
     effect_description_mushrooms: "effects/passive Défaussez 1 Personne pour gagner resources/tradegood resources/tradegood .",
-    effect_description_excavation_site: "Vaut 7 par effects/check . effects/time Défaussez 1 Personne et dépensez resources/stone resources/stone resources/stone pour inscrire effects/check .",
+    effect_description_excavation_site: "Vaut 7 resources/fame par effects/check . effects/time Défaussez 1 Personne et dépensez resources/stone resources/stone resources/stone pour inscrire effects/check .",
     effect_description_hot_springs: "effects/optional Lorsque vous l'améliorez ajoutez 1 resources/coin à un Terrain en jeu.",
     effect_description_fountain: "effects/optional Lorsque vous l'améliorez boostez 1 carte en jeu.",
     effect_description_canals: "effects/optional Lorsque vous l'améliorez 1 Terrain gagne \" effects/passive Reste en jeu. \".",
@@ -1196,6 +1197,7 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     totalScore: 'Total Score',
     endExpansion: 'Expansion End',
     seePurged: 'See Purged',
+    add: 'Add',
 
     // Cards Elements
     frontUp: 'Front Up',
@@ -1652,10 +1654,10 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     effect_description_scientist: "effects/passive All People, Scientist included, produce +1 resources/coin .",
     effect_description_observatory: "effects/time Discover the Astronomer (95).",
     effect_description_lab: "effects/time Discover the Alchemist (96).",
-    effect_description_engineer: "effects/activate Destroy one of the following cards: Lumberjack - discover (100). Barn - discover (101). Fishing Boat - discover (102).",
+    effect_description_engineer: "effects/activate Destroy one of the following cards: Lumberjack - discover (100); Barn - discover (101); Fishing Boat - discover (102).",
     effect_description_trebuchet: "effects/destroy Defeat an enemy (discard, in play, or permanent), then mark effects/check the next box on the Army card.",
     effect_description_inventor: "Worth 5 resources/fame per effects/check .",
-    effect_description_inspired_inventor: "Worth the Inventor's fame. effects/activate Reset and add 1 effects/check . Discover an invention (97/98/99) or gain a resource of your choice for each effects/check . Worth 5 resources/fame per effects/check .",
+    effect_description_inspired_inventor: "Worth the Inventor's fame. effects/activate Reset and add 1 effects/check to discover an invention (97/98/99) or gain a resource of your choice for each effects/check . Worth 5 resources/fame per effects/check .",
     effect_description_mercenary: "effects/activate Spend resources/coin resources/coin to add 1 or two effects/check .",
     effect_description_sir__: "effects/time Spend resources/metal resources/metal resources/metal to add resources/sword to this card ( effects/oneTime ). effects/time Spend resources/metal resources/metal resources/metal resources/metal to add resources/sword to this card ( effects/oneTime ). ",
     effect_description_stop_3: "effects/activate Discover cards 38 to 42. Choose the side of the Goal cards.",
@@ -1810,7 +1812,7 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     effect_description_temple_of_light: "effects/optional End of Turn : Discard so that 5 other cards stay in play. effects/time Spend resources/tradegood resources/tradegood resources/tradegood resources/tradegood to add 1 effects/check .(When purging this card, this card is wirth +10 resources/fame per effects/check .)",
     effect_description_legendary_temple: "effects/optional End of Turn : Discard so that 5 other cards stay in play.",
     effect_description_mushrooms: "effects/passive Discard 1 Person to gain resources/tradegood resources/tradegood .",
-    effect_description_excavation_site: "Worth 7 per effects/check . effects/time Discard 1 Person and spend resources/stone resources/stone resources/stone to mark effects/check .",
+    effect_description_excavation_site: "Worth 7 resources/fame per effects/check . effects/time Discard 1 Person and spend resources/stone resources/stone resources/stone to mark effects/check .",
     effect_description_hot_springs: "effects/optional When you upgrade it add 1 resources/coin to a Land in play.",
     effect_description_fountain: "effects/optional When you upgrade it boost 1 card in play.",
     effect_description_canals: "effects/optional When you upgrade it 1 Land gains \"effects/passive Stays in play. \".",
@@ -1877,6 +1879,12 @@ export const I18nProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [language, setLanguage] = useState<Language>('fr');
   
   const t = (key: TranslationKeys): string => {
+    if (key.includes('[+]')) {
+      const keys = key.split('[+]').map(k => k.trim());
+      const translatedParts = keys.map(k => translations[language][k as TranslationKeys] || k);
+      return translatedParts.join('. ');
+    }
+    
     return translations[language][key] || key;
   };
   

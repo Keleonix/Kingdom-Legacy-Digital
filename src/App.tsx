@@ -858,6 +858,11 @@ function CardView({
     const { before, effects } = parseEffects(raw);
     const cardEffects = getCardEffects(card.id, card.currentSide);
 
+    const visibleEffects = effects.filter((_, parsedIdx) => {
+      const effect = cardEffects[parsedIdx];
+      return !(effect?.unusable === true);
+    });
+
     return (
       <div className="flex flex-col gap-1">
         {before && (
@@ -875,20 +880,19 @@ function CardView({
           </div>
         )}
 
-        {effects.map((effObj, parsedIdx) => {
-          // L'index dans cardEffects correspond directement à parsedIdx
-          // car les deux tableaux sont construits dans le même ordre
-          const effect = cardEffects[parsedIdx];
+        {visibleEffects.map((effObj, displayIdx) => {
+          const originalIdx = effects.indexOf(effObj);
+          const effect = cardEffects[originalIdx];
           const isClickable = effect && effect.timing === "onClick";
 
           if (isClickable) {
             return (
               <button
-                key={parsedIdx}
+                key={displayIdx}
                 onClick={async (e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  await onExecuteCardEffect?.(card, fromZone, "onClick", parsedIdx);
+                  await onExecuteCardEffect?.(card, fromZone, "onClick", originalIdx);
                 }}
                 className="text-[10px] px-2 py-1 border rounded transition text-left w-full bg-blue-50 hover:bg-blue-100 border-blue-300"
               >
@@ -897,7 +901,7 @@ function CardView({
             );
           } else {
             return (
-              <div key={parsedIdx} className="text-[10px] px-2 py-1">
+              <div key={displayIdx} className="text-[10px] px-2 py-1">
                 {renderEffectText(effObj.text)}
               </div>
             );
@@ -1362,7 +1366,7 @@ function Zone({
 
     if (clickTimerRef.current) clearTimeout(clickTimerRef.current);
 
-    if (newCount === 3) {
+    if (newCount === 2) {
       // Appliquer le tri suivant
       const modes: SortMode[] = ['byId', 'byType'];
       const currentIndex = modes.indexOf(sortMode);
@@ -1980,7 +1984,6 @@ function CardSelectionPopup({
           )}
 
           <div className="flex-1 overflow-y-auto p-2 border rounded">
-            <h3 className="text-sm font-semibold mb-2 text-center">{t('cardsList')}</h3>
             <div className="grid grid-cols-3 gap-2">
               {localCards.map((card) => {
                 const isSelected = selectedCards.some(c => c.id === card.id);
@@ -2646,8 +2649,6 @@ export default function Game() {
     resolve: (choice: string) => void;
   } | null>(null);
 
-  const [pendingPlayedCards, setPendingPlayedCards] = useState<GameCard[]>([]);
-
   const [pendingEndRoundEffects, setPendingEndRoundEffects] = useState<Array<{
     description: string;
     effect: () => Promise<void>;
@@ -2878,30 +2879,12 @@ export default function Game() {
     }
 
     const drawn = deck.slice(0, nbCards);
-    const newCards = drawn.map(cloneGameCard);
     
     for (const card of drawn) {
       await new Promise(resolve => setTimeout(resolve, 100));
       dropToPlayArea({id: card.id, fromZone: t('deck')});
     }
-    setPendingPlayedCards(newCards);
   };
-
-  useEffect(() => {
-    if (pendingPlayedCards.length > 0) {
-      (async () => {
-        for (const card of pendingPlayedCards) {
-          await handleExecuteCardEffect(card, t('playArea'), "played");
-
-        }
-        for (const card of [...playArea, ...permanentZone]) {
-          await handleExecuteCardEffect(card, t('playArea'), "otherCardPlayed", pendingPlayedCards);
-        }
-        setPendingPlayedCards([]);
-      })();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pendingPlayedCards]);
 
   const drawNewTurn = async () => {
     setIsAnimating(true);
@@ -3090,6 +3073,9 @@ export default function Game() {
       const endOfRoundCardList = await gatherEffectsEndOfRound();
       
       setDeckImmediate((d) => [...d, ...playAreaRef.current, ...blockedZoneRef.current, ...discardRef.current]);
+
+      await new Promise(resolve => setTimeout(resolve, 300));
+
       setPlayAreaImmediate([]);
       setBlockedZoneImmediate([]);
       setDiscardImmediate([]);
@@ -3132,9 +3118,6 @@ export default function Game() {
           blockedToDiscard.push(blockedCard);
         }
       });
-
-      setPlayAreaImmediate(cardsToKeep);
-      setBlockedZoneImmediate(blockedToKeep);
       
       const allToDiscard = [
         ...cardsToDiscard.map(c => ({ card: c, zone: t('playArea') })),
@@ -3146,6 +3129,10 @@ export default function Game() {
         await new Promise(resolve => setTimeout(resolve, 100));
         dropToDiscard({ id: card.id, fromZone: zone });
       }
+      await new Promise(resolve => setTimeout(resolve, 300));
+
+      setPlayAreaImmediate(cardsToKeep);
+      setBlockedZoneImmediate(blockedToKeep);
       
       const allDiscarded = [...cardsToDiscard, ...blockedToDiscard];
       if (allDiscarded.length > 0) {
@@ -3332,14 +3319,18 @@ export default function Game() {
     }
   }, [permanentZone, currentExpansion, deck.length, isChoosingExpansion]);
   
-  const mill = (
+  const mill = async (
     nbCards: number
-  ): void => {
-    const discarded = deck.slice(0, nbCards);
-    for (const card of discarded) {
-      dropToDiscard({id: card.id, fromZone: t('deck')})
+  ): Promise<void> => {
+    let count = 0;
+    for (const card of deckRef.current) {
+      if (count >= nbCards) {
+        return;
+      }
+      dropToDiscard({id: card.id, fromZone: t('deck')});
+      count += 1;
     }
-  }
+  };
 
   const filterZone = (
     zone: string,
@@ -3374,12 +3365,19 @@ export default function Game() {
     ) as Partial<ResourceMap>;
   };
 
-  const selectResourceChoice = (options: Array<Partial<ResourceMap>>): Promise<Partial<ResourceMap> | null> => {
+  const selectResourceChoice = (options: Array<Partial<ResourceMap>>, rawInput?: boolean): Promise<Partial<ResourceMap> | null> => {
     return new Promise((resolve) => {
-      const cleanedOptions = options
-        .map(cleanResourceOption)
-        .filter(option => Object.keys(option).length > 0);
-      setResourceChoicePopup({ options: cleanedOptions, resolve });
+      if (rawInput) {
+        const cleanedOptions = options
+          .filter(option => Object.keys(option).length > 0);
+        setResourceChoicePopup({ options: cleanedOptions, resolve });
+      }
+      else {
+        const cleanedOptions = options
+          .map(cleanResourceOption)
+          .filter(option => Object.keys(option).length > 0);
+        setResourceChoicePopup({ options: cleanedOptions, resolve });
+      }
     });
   };
 
@@ -3479,11 +3477,11 @@ export default function Game() {
               setCampaignDeck(prev => prev.filter(c => c.id !== card.id));
               if(zone) {
                 if(zone === t('deck')) {
-                  setDeck(prev => [...prev, cloneGameCard(card)]);
+                  dropToDeck({id: card.id, fromZone: t('campaign')});
                 }
               }
               else {
-                setDiscard(prev => [...prev, cloneGameCard(card)]);
+                  dropToDiscard({id: card.id, fromZone: t('campaign')});
               }
             }
             resolve(true);
@@ -3572,12 +3570,12 @@ export default function Game() {
     }
     
     const modifiers: Array<{
-      filter: (card: GameCard, t?: (key: TranslationKeys) => string) => boolean;
+      filter: (card: GameCard, t: (key: TranslationKeys) => string) => boolean;
       zones: string[] | ((t: (key: TranslationKeys) => string) => string[]);
-      bonus?: Partial<ResourceMap> | ((card: GameCard) => Partial<ResourceMap>); // <-- RENDRE OPTIONAL
+      bonus?: Partial<ResourceMap> | ((card: GameContext) => Partial<ResourceMap>);
       source: GameCard;
     }> = [];
-    
+
     for (const activeCard of playArea) {
       const effects = getCardEffects(activeCard.id, activeCard.currentSide);
       for (const effect of effects) {
@@ -3613,9 +3611,57 @@ export default function Game() {
         ? modifier.zones(t) 
         : modifier.zones;
       
+      const context: GameContext = {
+            card,
+            zone,
+            resources,
+            filterZone,
+            setResources,
+            draw,
+            effectEndTurn,
+            dropToPlayArea,
+            dropToBlocked,
+            dropToDiscard,
+            dropToCampaign,
+            dropToPermanent,
+            setDeck: setDeckImmediate,
+            setPlayArea: setPlayAreaImmediate,
+            setDiscard: setDiscardImmediate,
+            setPermanentZone,
+            setCampaignDeck,
+            setTemporaryCardList,
+            setTemporaryCardListImmediate,
+            setBlockedZone,
+            deleteCardInZone,
+            replaceCardInZone,
+            mill,
+            openCheckboxPopup,
+            selectResourceChoice,
+            selectCardsFromZone,
+            selectCardsFromArray,
+            discoverCard,
+            boostProductivity,
+            registerEndRoundEffect,
+            addCardEffect,
+            fetchCardsInZone,
+            selectCardSides,
+            selectUpgradeCost,
+            selectTextInput,
+            selectStringChoice,
+            updateBlocks,
+            getBlockedBy,
+            getCardZone,
+            upgradeCard,
+            handleCardUpdate,
+            addDiscoverableCard,
+            hasBeenUsedThisTurn,
+            markAsUsedThisTurn,
+            t,
+        };
+
       if (resolvedZones.includes(zone) && modifier.filter(card, t) && modifier.bonus) {
         const bonusToApply = typeof modifier.bonus === 'function'
-          ? modifier.bonus(card)
+          ? modifier.bonus(context)
           : modifier.bonus;
         
         if (bonusToApply) {
@@ -3638,7 +3684,7 @@ export default function Game() {
     }
     
     const modifiers: Array<{
-      filter: (card: GameCard, t?: (key: TranslationKeys) => string) => boolean;
+      filter: (card: GameCard, t: (key: TranslationKeys) => string) => boolean;
       zones: string[] | ((t: (key: TranslationKeys) => string) => string[]);
       addOptions?: (card: GameCard) => Array<Partial<ResourceMap>>;
       source: GameCard;
@@ -3752,42 +3798,32 @@ export default function Game() {
     
     cardEffectsRegistry[id][face].push(effect);
     
+    const updateCard = (c: GameCard) => {
+      if (c.id === id) {
+        const updated = cloneGameCard(c);
+        const currentEffect = updated.effects[updated.currentSide - 1];
+        
+        if (!currentEffect || currentEffect.trim() === '') {
+          updated.effects[updated.currentSide - 1] = effectText;
+        } else {
+          updated.effects[updated.currentSide - 1] = currentEffect + ' [+] ' + effectText;
+        }
+        
+        return updated;
+      }
+      return c;
+    };
+    
     if (zone === t('deck')) {
-      setDeck(prev => prev.map(c => {
-        if (c.id === id) {
-          const updated = cloneGameCard(c);
-          updated.effects[updated.currentSide - 1] += " - " + effectText;
-          return updated;
-        }
-        return c;
-      }));
+      setDeck(prev => prev.map(updateCard));
     } else if (zone === t('playArea')) {
-      setPlayArea(prev => prev.map(c => {
-        if (c.id === id) {
-          const updated = cloneGameCard(c);
-          updated.effects[updated.currentSide - 1] += " - " + effectText;
-          return updated;
-        }
-        return c;
-      }));
+      setPlayArea(prev => prev.map(updateCard));
     } else if (zone === t('discard')) {
-      setDiscard(prev => prev.map(c => {
-        if (c.id === id) {
-          const updated = cloneGameCard(c);
-          updated.effects[updated.currentSide - 1] += " - " + effectText;
-          return updated;
-        }
-        return c;
-      }));
+      setDiscard(prev => prev.map(updateCard));
     } else if (zone === t('permanentZone')) {
-      setPermanentZone(prev => prev.map(c => {
-        if (c.id === id) {
-          const updated = cloneGameCard(c);
-          updated.effects[updated.currentSide - 1] += " - " + effectText;
-          return updated;
-        }
-        return c;
-      }));
+      setPermanentZone(prev => prev.map(updateCard));
+    } else if (zone === t('blocked')) {
+      setBlockedZone(prev => prev.map(updateCard));
     }
   };
 
@@ -4078,7 +4114,7 @@ export default function Game() {
       }
       
       const effectText = card.effects[card.currentSide - 1];
-      const { effects: parsedEffects } = parseEffects(effectText);
+      const { effects: parsedEffects } = parseEffects(t(effectText as TranslationKeys));
       
       if (effectIndex < parsedEffects.length) {
         const currentEffectText = parsedEffects[effectIndex].text;
@@ -4099,7 +4135,7 @@ export default function Game() {
       }
 
       if (await eff.execute(context)) {
-        dropToDiscard({ id: card.id, fromZone: zone });
+        await dropToDiscard({ id: card.id, fromZone: zone });
       }
       
       if (eff.usesPerTurn) {
@@ -4125,7 +4161,7 @@ export default function Game() {
 
     for (const effect of matchingEffects) {
       if (await effect.execute(context)) {
-        dropToDiscard({ id: card.id, fromZone: zone });
+        await dropToDiscard({ id: card.id, fromZone: zone });
         break;
       }
     }
@@ -4173,7 +4209,8 @@ export default function Game() {
     if (toZone === t('playArea') && checkPlayRestrictions()) {
       return;
     }
-    if (fetchCardsInZone((c) => c.id === id, fromZone)[0].GetType(t).includes(t('scroll')) && toZone !== t('destroy')) {
+    const cardToCheck = fetchCardsInZone((c) => c.id === id, fromZone)[0];
+    if (cardToCheck && cardToCheck.GetType(t).includes(t('scroll')) && toZone !== t('destroy')) {
       return;
     }
 
@@ -4213,23 +4250,23 @@ export default function Game() {
     }
     else {
       if (toZone === t('deck')) {
-        setDeck((d) => [cloneGameCard(toAdd), ...d]);
+        setDeckImmediate((d) => [cloneGameCard(toAdd), ...d]);
       }
       if (toZone === t('discard')) {
-        setDiscard((f) => [...f, cloneGameCard(toAdd)]);
+        setDiscardImmediate((f) => [...f, cloneGameCard(toAdd)]);
       }
       if (toZone === t('blocked')) {
-        setBlockedZone((b) => [...b, cloneGameCard(toAdd)]);
+        setBlockedZoneImmediate((b) => [...b, cloneGameCard(toAdd)]);
       }
       if (toZone === t('permanentZone')) {
         setPermanentZone((pe) => [...pe, cloneGameCard(toAdd)]);
       }
       if (toZone === t('playArea')) {
-        setPlayArea((p) => [...p, cloneGameCard(toAdd)]);
+        setPlayAreaImmediate((p) => [...p, cloneGameCard(toAdd)]);
         setResources(() => emptyResource);
-        handleExecuteCardEffect(toAdd, t('playArea'), "played");
+        await handleExecuteCardEffect(toAdd, t('playArea'), "played");
         for (const card of playArea) {
-          handleExecuteCardEffect(card, t('playArea'), "otherCardPlayed", [cloneGameCard(toAdd)]);
+          await handleExecuteCardEffect(card, t('playArea'), "otherCardPlayed", [cloneGameCard(toAdd)]);
         }
       }
     }
@@ -4241,8 +4278,8 @@ export default function Game() {
     if ((toZone !== t('playArea') && toZone !== t('permanentZone')) && (fromZone === t('playArea') || fromZone === t('permanentZone'))) {
       const blockedIds = blockMap.get(id);
       if (blockedIds) {
-        setBlockedZone(prev => prev.filter(c => !blockedIds.includes(c.id)));
-        setPlayArea(prev => [...prev, ...blockedZone.filter(c => blockedIds.includes(c.id))]);
+        setBlockedZoneImmediate(prev => prev.filter(c => !blockedIds.includes(c.id)));
+        setPlayAreaImmediate(prev => [...prev, ...blockedZone.filter(c => blockedIds.includes(c.id))]);
         updateBlocks(id, null);
       }
     }
@@ -4254,13 +4291,13 @@ export default function Game() {
     });
   };
 
-  const dropToDeck = handleDropToZone(t('deck'));
-  const dropToPlayArea = handleDropToZone(t('playArea'));
-  const dropToDiscard = handleDropToZone(t('discard'));
-  const dropToCampaign = handleDropToZone(t('campaign'));
-  const dropToDestroy = handleDropToZone(t('destroy'));
-  const dropToBlocked = handleDropToZone(t('blocked'));
-  const dropToPermanent = handleDropToZone(t('permanentZone'));
+  const dropToDeck = (payload: DropPayload) => handleDropToZone(t('deck'))(payload);
+  const dropToPlayArea = (payload: DropPayload) => handleDropToZone(t('playArea'))(payload);
+  const dropToDiscard = (payload: DropPayload) => handleDropToZone(t('discard'))(payload);
+  const dropToCampaign = (payload: DropPayload) => handleDropToZone(t('campaign'))(payload);
+  const dropToDestroy = (payload: DropPayload) => handleDropToZone(t('destroy'))(payload);
+  const dropToBlocked = (payload: DropPayload) => handleDropToZone(t('blocked'))(payload);
+  const dropToPermanent = (payload: DropPayload) => handleDropToZone(t('permanentZone'))(payload);
 
   // -------------------
   // End Round / Shuffle
@@ -4277,6 +4314,7 @@ export default function Game() {
     }
     const expansion = EXPANSIONS.find(e => e.id === currentExpansion);
     if (expansion? !expansion.type.includes('card') : true) {
+      refreshDiscoverableCards();
       setShowEndRound(true);
     }
   };
@@ -4859,7 +4897,7 @@ export default function Game() {
           };
           
           if (await effect.execute(context)) {
-            dropToDiscard({id: card.id, fromZone: t('playArea')});
+            await dropToDiscard({id: card.id, fromZone: t('playArea')});
           }
         }
       }
@@ -5039,15 +5077,20 @@ export default function Game() {
           <div className="flex gap-4">
             {/* Deck */}
             <div className="min-w-[200px]">
-              <Zone
-                name={t('deck')}
-                cards={deck}
-                onDrop={(p) => dropToDeck(p)}
-                onRightClick={() => {}}
-                showAll={false}
-                onTapAction={debugMode ? handleTapAction : undefined}
-                onZoneRef={(el) => { if (el) zoneRefsMap.current.set(t('deck'), el);}}
-              />
+              <div className="relative">
+                <Zone
+                  name={t('deck')}
+                  cards={deck}
+                  onDrop={(p) => dropToDeck(p)}
+                  onRightClick={() => {}}
+                  showAll={false}
+                  onTapAction={debugMode ? handleTapAction : undefined}
+                  onZoneRef={(el) => { if (el) zoneRefsMap.current.set(t('deck'), el);}}
+                />
+                <span className="absolute top-5 right-5 text-sm text-gray-500">
+                  {deck.length}
+                </span>
+              </div>
               <Button disabled={deck.length === 0} onClick={() => setShowDeck(true)}className="mt-2">{t('seeDeck')}</Button>
             </div>
 
@@ -5178,9 +5221,8 @@ export default function Game() {
             <Button onClick={drawNewTurn} disabled={deck.length === 0 || isChoosingExpansion || isAnimating}>{t('newTurn')}</Button>
             <Button onClick={async () => { setIsAnimating(true); await discardEndTurn(false); setIsAnimating(false); }} disabled={deck.length === 0 || isChoosingExpansion || turnEndFlag || isAnimating}>{t('pass')}</Button>
             <Button onClick={async () => { setIsAnimating(true); await advance(); setIsAnimating(false); }} disabled={deck.length === 0 || isChoosingExpansion || turnEndFlag || isPlayBlocked || isAnimating}>{t('advance')}</Button>
-            <Button disabled={deck.length !== 0 ||! hasEndedBaseGame} className="bg-red-600 hover:bg-red-500 text-white" onClick={handleEndRound}>{t('endRound')}</Button>
+            <Button disabled={deck.length !== 0 || hasEndedBaseGame} className="bg-red-600 hover:bg-red-500 text-white" onClick={handleEndRound}>{t('endRound')}</Button>
             <Button hidden={purgedCards.length === 0} onClick={() => setShowPurged(true)} className="bg-blue-600 hover:bg-blue-500 text-white">{t('seePurged')}</Button>
-            <Button onClick={shuffleDeck} className="bg-blue-600 hover:bg-blue-500 text-white" hidden={true}>{"Shuffle Deck"}</Button>
             <Button hidden={(hasEndedBaseGame || campaignDeck.some(card => card.id === 70)) || (currentExpansion !== null && !checkExpansionEnd())} disabled={deck.length !== 0 || isAnimating} className="bg-red-600 hover:bg-red-500 text-white" onClick={currentExpansion ? handleEndExpansion : handleEndBaseGame}>{currentExpansion ? t('endExpansion') : t('endGame')}</Button>
             <Button onClick={() => setShowExpansionChoice(true)} hidden={!isChoosingExpansion || completedExpansions.length >= 9} disabled={isAnimating} className="bg-purple-600 hover:bg-purple-500 text-white">{t('chooseExpansion')}</Button>
           </div>
@@ -5442,7 +5484,6 @@ export default function Game() {
           <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
             <div className="bg-white p-4 rounded-xl space-y-4">
               <h2 className="font-bold">{t('endRound')}</h2>
-
               <div className="flex gap-4">
                 <div className="flex-1">
                   <p className="font-bold">{t('campaign')} {t('deck')}</p>
@@ -5476,17 +5517,25 @@ export default function Game() {
                   {<Button onClick={() => setShowDeck(true)}>{t('seeDeck')}</Button>}
                 </div>
               </div>
-
               <div className="flex justify-end gap-2 pt-2 border-t">
-                <Button
-                  onClick={() => {
-                    setShowEndRound(false);
+                <Button 
+                  disabled={availableDiscoverableCards.filter((id) => fetchCardsInZone((c) => c.id === id, t('campaign'))[0].GetType(t).includes(t('scroll'))).length !== 0}
+                  onClick={async () => {
+                    const cardsToAdd = campaignDeck.filter(card => 
+                      availableDiscoverableCards.includes(card.id)
+                    );
+                    
+                    for (const card of cardsToAdd) {
+                      dropToDeck({ id: card.id, fromZone: t('campaign') });
+                    }
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                    
                     shuffleDeck();
-                    refreshDiscoverableCards();
+                    setShowEndRound(false);
                   }}
-                  disabled={campaignDeck.filter(card => availableDiscoverableCards.includes(card.id)).length !== 0}
                 >
-                {t('close')}</Button>
+                  {t('add')}
+                </Button>
               </div>
             </div>
           </div>
