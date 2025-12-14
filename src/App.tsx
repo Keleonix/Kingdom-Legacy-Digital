@@ -2020,8 +2020,8 @@ function CardSelectionPopup({
                           const updatedCard = cloneGameCard(card);
                           updatedCard.currentSide = newSide;
                           
-                          // Met à jour localCards directement
                           setLocalCards(prev => prev.map(c => c.id === card.id ? updatedCard : c));
+                          setSelectedCards(prev => prev.map(c => c.id === card.id ? updatedCard : c));
                         }}
                         title={t('choice')}
                       >
@@ -3482,6 +3482,10 @@ export default function Game() {
               }
               else {
                   dropToDiscard({id: card.id, fromZone: t('campaign')});
+              }
+              const c = findCardInAllZones(card.id);
+              if (c) {
+                c.currentSide = card.currentSide;
               }
             }
             resolve(true);

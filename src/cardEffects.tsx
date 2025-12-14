@@ -2356,7 +2356,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           (card) => card.GetName(ctx.t).includes(ctx.t('wall')) || card.GetType(ctx.t).includes(ctx.t('knight')),
           ctx.t('discard'),
           this.description(ctx.t),
-          1
+          1,
+          ctx.card
         );
         const card = cards[0];
         if (card) {
@@ -2415,9 +2416,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         description: (t) => t('effect_description_witch'),
         timing: "onClick",
         execute: async function (ctx) {
-          const cards = ctx.fetchCardsInZone((card) => card.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'));
-          if (cards.length !== 0) {
-            const selected = await ctx.selectCardsFromArray(cards, ctx.t('playArea'), this.description(ctx.t), 3);
+          const selected = await ctx.selectCardsFromZone((card) => card.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'), this.description(ctx.t), 3, ctx.card);
             if(selected.length !== 0) {
               for (const card of selected) {
                 ctx.dropToDiscard({id: card.id, fromZone: ctx.t('playArea')})
@@ -2425,7 +2424,6 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
               await ctx.upgradeCard(ctx.card, 3);
               return true;
             }
-          }
           return false;
         }
       },
@@ -2459,10 +2457,9 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         description: (t) => t('effect_description_witch_cabin'),
         timing: "onClick",
         execute: async function (ctx) {
-          const cards = ctx.fetchCardsInZone((card) => card.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'));
-          if (cards.length > 0) {
-            const selected = await ctx.selectCardsFromArray(cards, ctx.t('playArea'), this.description(ctx.t), 1);
-            ctx.deleteCardInZone(ctx.t('playArea'), selected[0].id);
+          const card = (await ctx.selectCardsFromZone((card) => card.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'), this.description(ctx.t), 1, ctx.card))[0];
+          if (card) {
+            ctx.deleteCardInZone(ctx.t('playArea'), card.id);
             ctx.deleteCardInZone(ctx.t('playArea'), ctx.card.id);
           }
           return false;
@@ -2507,6 +2504,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           1
         )) {
           await ctx.upgradeCard(ctx.card, 1);
+          await ctx.dropToDiscard({id: ctx.card.id, fromZone: ctx.zone})
           ctx.effectEndTurn();
         }
         return false;
