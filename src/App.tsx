@@ -4269,7 +4269,7 @@ export default function Game() {
         setPlayAreaImmediate((p) => [...p, cloneGameCard(toAdd)]);
         setResources(() => emptyResource);
         await handleExecuteCardEffect(toAdd, t('playArea'), "played");
-        for (const card of playArea) {
+        for (const card of [...playArea, ...permanentZone]) {
           await handleExecuteCardEffect(card, t('playArea'), "otherCardPlayed", [cloneGameCard(toAdd)]);
         }
       }
@@ -4625,17 +4625,17 @@ export default function Game() {
 
   function fetchCardsInZone(filter: (card: GameCard) => boolean, zone: string): GameCard[] {
     if (zone === t('deck')) {
-      return deck.filter(filter);
+      return deckRef.current.filter(filter);
     } else if (zone === t('playArea')) {
-      return playArea.filter(filter);
+      return playAreaRef.current.filter(filter);
     } else if (zone === t('discard')) {
-      return discard.filter(filter);
+      return discardRef.current.filter(filter);
     } else if (zone === t('campaign')) {
       return campaignDeck.filter(filter);
     } else if (zone === t('blocked')) {
-      return blockedZone.filter(filter);
+      return blockedZoneRef.current.filter(filter);
     } else if (zone === t('permanentZone')) {
-      return permanentZone.filter(filter);
+      return permanentZoneRef.current.filter(filter);
     }
     return [];
   }
@@ -5225,7 +5225,7 @@ export default function Game() {
             <Button onClick={drawNewTurn} disabled={deck.length === 0 || isChoosingExpansion || isAnimating}>{t('newTurn')}</Button>
             <Button onClick={async () => { setIsAnimating(true); await discardEndTurn(false); setIsAnimating(false); }} disabled={deck.length === 0 || isChoosingExpansion || turnEndFlag || isAnimating}>{t('pass')}</Button>
             <Button onClick={async () => { setIsAnimating(true); await advance(); setIsAnimating(false); }} disabled={deck.length === 0 || isChoosingExpansion || turnEndFlag || isPlayBlocked || isAnimating}>{t('advance')}</Button>
-            <Button disabled={deck.length !== 0 || hasEndedBaseGame} className="bg-red-600 hover:bg-red-500 text-white" onClick={handleEndRound}>{t('endRound')}</Button>
+            <Button disabled={deck.length !== 0} className="bg-red-600 hover:bg-red-500 text-white" onClick={handleEndRound}>{t('endRound')}</Button>
             <Button hidden={purgedCards.length === 0} onClick={() => setShowPurged(true)} className="bg-blue-600 hover:bg-blue-500 text-white">{t('seePurged')}</Button>
             <Button hidden={(hasEndedBaseGame || campaignDeck.some(card => card.id === 70)) || (currentExpansion !== null && !checkExpansionEnd())} disabled={deck.length !== 0 || isAnimating} className="bg-red-600 hover:bg-red-500 text-white" onClick={currentExpansion ? handleEndExpansion : handleEndBaseGame}>{currentExpansion ? t('endExpansion') : t('endGame')}</Button>
             <Button onClick={() => setShowExpansionChoice(true)} hidden={!isChoosingExpansion || completedExpansions.length >= 9} disabled={isAnimating} className="bg-purple-600 hover:bg-purple-500 text-white">{t('chooseExpansion')}</Button>

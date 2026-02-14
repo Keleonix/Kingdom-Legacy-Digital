@@ -421,6 +421,8 @@ export type TranslationKeys =
   // String Choice
   | 'string_choice_health_potion'
   | 'string_choice_thriving_countryside'
+  | 'string_choice_discard_two_other_cards'
+  | 'string_choice_add_one_check'
   ;
 
 // Dictionnaire de traductions
@@ -1121,7 +1123,7 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     effect_description_surplus: "effects/passive Les Terrains qui produisent resources/coin peuvent produire des resources/tradegood à la place. effects/forced Fin de manche : Change pour Fermes Abandonnées.",
     effect_description_border_dispute_expansion: "Jouez 1 manche durant laquelle tous les Terrains restent en jeu, puis ->.",
     effect_description_espionage: "Jouez 1 manche, puis ->. effects/forced Lorsqu'une Personne est jouée, inscrivez 1 effects/check ou défaussez 2 cartes alliées. Une fois complétée, défaussez toute votre pioche.",
-    effect_description_resistance: "Jouez 1 manche durant laquelle vous pouvez dépenser autant d' resources/sword que vous le souhaitez pour les mettre sur cette carte. Après la manche, ajoutez autant de resources/fame (max 100) à un Terrain, puis détruisez cette extension.",
+    effect_description_resistance: "Jouez 1 manche. effects/optional Dépenser vos resources/sword et mettez-les sur cette carte. effects/forced Après la manche, ajoutez autant de resources/sword de cette carte en resources/fame (max 100) à un Terrain, puis détruisez cette extension.",
     effect_description_attack: "Jouez 1 manche. effects/forced Fin du Tour: Si vous n'avez aucune resources/sword , enlevez 1 production d'1 carte en jeu. effects/forced Fin de Manche: Ajoutez une ressource (non- resources/fame ) au choix à une carte alliée, puis ->.",
 
     // EoR Effects
@@ -1143,6 +1145,8 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     // String Choice
     string_choice_health_potion: "Défausser la Potion de Soin pour garder une Personne en jeu ?",
     string_choice_thriving_countryside: "Depuis la Zone de Jeu ou la Défausse?",
+    string_choice_discard_two_other_cards: "Défaussez 2 cartes?",
+    string_choice_add_one_check: "Ajoutez 1 check?"
   },
   en: {
     // UI Elements
@@ -1840,28 +1844,30 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     effect_description_surplus: "effects/passive Lands that produce resources/coin can instead produce resources/tradegood . effects/forced End of Round : Changes to Obsolete Farms.",
     effect_description_border_dispute_expansion: "Play 1 round during which all Lands stay in play, then ->.",
     effect_description_espionage: "Play 1 round, then ->. effects/forced When a Person is played, mark 1 effects/check or discard 2 friendly cards. Once completed, discard your entire deck.",
-    effect_description_resistance: "Play 1 round during which you can spend as many resources/sword as you want to put them on this card. After the round, add as many resources/fame (max 100) to a Land, then destroy this extension.",
+    effect_description_resistance: "Play 1 round. effects/optional Spend your resources/sword to put them on this card. effects/forced After the round, add as many resources/sword from this card as resources/fame (max 100) to a Land, then destroy this extension.",
     effect_description_attack: "Play 1 round. effects/forced End of Turn: If you have no resources/sword , remove 1 production from 1 card in play. effects/forced End of Round: Add a resource (non- resources/fame ) of your choice to a friendly card, then ->.",
 
     // EoR Effects
     eor_export_10: " (seuil 10): Add coin/wood/stone to 1 Land",
     eor_export_20: " (seuil 20): Add \"Stays in Play.\" to 1 Person.",
     eor_export_30: " (seuil 30): Discover  (80)",
-    eor_export_40: " (seuil 40): Ajoutez metal/sword/tradegood à 1 Bâtiment",
-    eor_export_55: " (seuil 55): Ajoutez wood/stone/metal/sword à 1 carte",
-    eor_export_75: " (seuil 75): Ajoutez fame x5 à 1 carte",
-    eor_export_100: " (seuil 100): Retournez la carte",
-    eor_mass_export_25: " (seuil 25): Ajoute 1 fame à 2 Terrains",
-    eor_mass_export_50: " (seuil 50): Ajoute 5 fame à 1 Personne",
-    eor_mass_export_75: " (seuil 75): Décrouvrez la Visite Royale (107)",
-    eor_mass_export_100: " (seuil 100): Ajoute 5 fame à 1 Bâtiment",
-    eor_mass_export_150: " (seuil 150): Check une carte Permanente",
-    eor_mass_export_200: " (seuil 200): Check toutes les cartes Permanentes souhaitées",
-    eor_mass_export_250: " (seuil 250): Découvrez les Relation Commerciales (117)",
+    eor_export_40: " (seuil 40): Add metal/sword/tradegood to 1 Building",
+    eor_export_55: " (seuil 55): Add wood/stone/metal/sword to 1 card",
+    eor_export_75: " (seuil 75): Add fame x5 to 1 card",
+    eor_export_100: " (seuil 100): Flip this carte",
+    eor_mass_export_25: " (seuil 25): Add 1 fame to 2 Lands",
+    eor_mass_export_50: " (seuil 50): Add 5 fame to 1 Person",
+    eor_mass_export_75: " (seuil 75): Discover Royal Visit (107)",
+    eor_mass_export_100: " (seuil 100): Add 5 fame to 1 Building",
+    eor_mass_export_150: " (seuil 150): Add a check to another Permanent card",
+    eor_mass_export_200: " (seuil 200): Add a check to all selected Permanent cards",
+    eor_mass_export_250: " (seuil 250): Discover Trade Relations (117)",
 
     // String Choice
     string_choice_health_potion: "Discard the Health Potion to keep a Person in play ?",
     string_choice_thriving_countryside: "From Play Area or Discard?",
+    string_choice_discard_two_other_cards: "Discard 2 cards?",
+    string_choice_add_one_check: "Add 1 check?"
   }
 };
 

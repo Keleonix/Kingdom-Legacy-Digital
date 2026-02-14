@@ -6204,7 +6204,6 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           const selected = await ctx.selectCardsFromZone(() => true, ctx.t('playArea'), this.description(ctx.t), 0, ctx.fetchCardsInZone((c) => c.id === ctx.card.id, ctx.zone)[0], 1);
           if (selected.length > 0) {
             ctx.setTemporaryCardListImmediate(selected);
-            return true;
           }
           return false;
         }
@@ -6405,19 +6404,12 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   138: {
     1: [
-      { // Prospérité
-        description: (t) => t('effect_description_prosperity_expansion'),
-        timing: "modifyProduction",
-        productionModifier: {
-          filter: (card: GameCard) => !card.negative[card.currentSide - 1],
-          zones: (t) => [t('playArea')],
-          bonus: { coin: 1 }
-        },
+      { // Border Dispute
+        description: (t) => t('effect_description_border_dispute_expansion'),
+        timing: "endOfTurn",
         execute: async function (ctx) {
-          if (ctx) {
-            return false;
-          }
-          return true;
+          ctx.setTemporaryCardListImmediate(ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('land')), ctx.zone));
+          return false;
         }
       },
       {
@@ -6430,14 +6422,33 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       },
     ],
     2: [
-      { // Engranger des réserves
-        description: (t) => t('effect_description_hoarding'),
-        timing: "endOfTurn",
+      { // Espionnage
+        description: (t) => t('effect_description_espionage'),
+        timing: "otherCardPlayed",
         execute: async function (ctx) {
-          const selected = await ctx.selectCardsFromZone(() => true, ctx.t('playArea'), this.description(ctx.t), 0, ctx.fetchCardsInZone((c) => c.id === ctx.card.id, ctx.zone)[0], 1);
-          if (selected.length > 0) {
-            ctx.setTemporaryCardListImmediate(selected);
-            return true;
+          let discarded: GameCard[] = [];
+          for(const card of ctx.cardsForTrigger ? ctx.cardsForTrigger : []) { // TODO : Problem with draw => cards trigger 'otherCardPlayed' not in synchronicity but one by one
+            if(card.GetType(ctx.t).includes(ctx.t('person'))) {
+              let choice = ctx.t('string_choice_discard_two_other_cards');
+              if(!getLastCheckboxChecked(ctx.card) && ctx.fetchCardsInZone(() => true, ctx.t('playArea')).length > discarded.length) {
+                choice = await ctx.selectStringChoice(ctx.t('effect_description_espionage'), [ctx.t('string_choice_discard_two_other_cards'), ctx.t('string_choice_add_one_check')]);
+              }
+              if(choice === ctx.t('string_choice_discard_two_other_cards')) {
+                const cards = await ctx.selectCardsFromZone((c) => !discarded.includes(c), ctx.zone, this.description(ctx.t), 2, ctx.card);
+                discarded = [...discarded, ...cards];
+              }
+              else {
+                await checkNextBox(ctx.card);
+                if(getLastCheckboxChecked(ctx.card)) {
+                  /* Mill Deck */
+                  ctx.mill(ctx.fetchCardsInZone(() => true, ctx.t('deck')).length);
+                }
+
+              }
+            }
+          }
+          for(const card of discarded) {
+            await ctx.dropToDiscard({id: card.id, fromZone: ctx.t('playArea')});
           }
           return false;
         }
@@ -6452,74 +6463,65 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       },
     ],
     3: [
-      { // Décret Royal
-        description: (t) => t('effect_description_royal_decree'),
-        timing: "endOfRound",
+      { // Resistance
+        description: (t) => t('effect_description_resistance'),
+        timing: "onClick",
         execute: async function (ctx) {
-          let checked = 0;
-          for(const box of ctx.card.checkboxes[3]) {
-            if(box.checked) {
-              checked += 1;
-            }
-          }
-          if (checked === 0) {
-            return false;
-          }
-          const selected = await ctx.selectCardsFromZone(
-            (card) => getResourcesCount(card.GetResources()[0]) !== 0, 
-            ctx.t('deck'), 
-            this.description(ctx.t), 
-            checked
-          );
-          
-          if (selected.length !== 0) {
-            for(const card of selected) {
-              const selectedResource = await ctx.selectResourceChoice(card.GetResources());
-              if (selectedResource) {
-                await removeResourceFromCard(card, selectedResource);
-                ctx.replaceCardInZone(ctx.t('deck'), card.id, card);
-              }
-            }
-          }
+          addResourceMapToCard(ctx.card, { sword: ctx.resources.sword });
+          ctx.setResources(prev => ({ ...prev, sword: 0 }));
           return false;
         }
       },
       {
-        description: (t) => t('none'),
+        description: (t) => t('effect_description_resistance'),
         timing: "endOfRound",
         execute: async function (ctx) {
+          const land = (await ctx.selectCardsFromZone((c) => c.GetType(ctx.t).includes(ctx.t('land')), ctx.t('deck'), this.description(ctx.t), 1, ctx.card))[0];
+          addResourceMapToCard(land, {fame: ((ctx.card.GetResources()[0].sword ?? 0) > 100 ? 100: ctx.card.GetResources()[0].sword)})
           ctx.deleteCardInZone(ctx.t('permanentZone'), ctx.card.id);
           return false;
         }
       },
     ],
     4: [
-      { // Soulèvement
-        description: (t) => t('effect_description_uprising'),
-        timing: "otherCardPlayed",
+      { // Attaque
+        description: (t) => t('effect_description_attack'),
+        timing: "endOfTurn",
         execute: async function (ctx) {
-          const peopleInPlay = ctx.fetchCardsInZone(
-            (c) => c.GetType(ctx.t).includes(ctx.t('person')), 
-            ctx.t('playArea')
-          );
-          
-          const peoplePlayed = ctx.cardsForTrigger?.filter(
-            (c) => c.GetType(ctx.t).includes(ctx.t('person'))
-          ) || [];
-          
-          for (const playedPerson of peoplePlayed) {
-            if (peopleInPlay.length >= 2 && !peopleInPlay.includes(playedPerson)) {
-              await checkNextBox(ctx.card);
+          let hasSword = false;
+          for(const card of (ctx.fetchCardsInZone(() => true, ctx.t('playArea')))) {
+            for(const resourceMap of card.GetResources()) {
+              if(resourceMap.sword) {
+                hasSword = true;
+                break;
+              }
+            }
+            if(hasSword) {
+              break;
             }
           }
-          
+          if(!hasSword) {
+            const card = (await ctx.selectCardsFromZone((c) => getResourcesCount(c.GetResources()[0]) !== 0, ctx.t('playArea'), this.description(ctx.t), 1, ctx.card))[0];
+            if(card) {
+              let resources: Partial<ResourceMap>|null = null;
+              while(resources === null) {
+                resources = (await ctx.selectResourceChoice(card.GetResources()));
+              }
+              resources = { coin: resources.coin ? 1 : 0, wood: resources.wood ? 1 : 0, stone: resources.stone ? 1 : 0,
+                            sword: resources.sword ? 1 : 0, metal: resources.metal ? 1 : 0, tradegood: resources.tradegood ? 1 : 0};
+              await removeResourceFromCard(card, resources);
+            }
+          }
           return false;
         }
       },
       {
-        description: (t) => t('none'),
+        description: (t) => t('effect_description_attack'),
         timing: "endOfRound",
         execute: async function (ctx) {
+          const card = (await ctx.selectCardsFromZone((c) => !c.negative[c.currentSide - 1], ctx.t('deck'), this.description(ctx.t), 1, ctx.card))[0];
+          let resource = (await ctx.selectResourceChoice([{ coin: 1}, {wood: 1}, {stone: 1}, {sword: 1}, {metal: 1}, {tradegood: 1 }])) ?? {};
+          await ctx.boostProductivity((c) => c.id === card.id, ctx.t('deck'), this.description(ctx.t), resource);
           ctx.card.currentSide = 3;
           return false;
         }
