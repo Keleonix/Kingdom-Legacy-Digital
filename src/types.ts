@@ -90,7 +90,7 @@ export type Upgrade = {
 };
 
 export type DropPayload = {
-  id: number;
+  id: number | number[];
   fromZone: string
 };
 

@@ -2847,7 +2847,7 @@ export const allCards: GameCard[] = [
       [],
     ],
     currentSide: 1,
-    type: ['enemy', '', 'person', ''],
+    type: ['enemy', '', 'person', 'person'],
     choice: false,
     checkboxes: [],
     negative: [true, false, false, false],

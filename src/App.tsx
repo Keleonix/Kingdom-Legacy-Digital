@@ -2879,11 +2879,9 @@ export default function Game() {
     }
 
     const drawn = deck.slice(0, nbCards);
+    const cardIds = drawn.map(c => c.id);
     
-    for (const card of drawn) {
-      await new Promise(resolve => setTimeout(resolve, 100));
-      dropToPlayArea({id: card.id, fromZone: t('deck')});
-    }
+    dropToPlayArea({id: cardIds, fromZone: t('deck')});
   };
 
   const drawNewTurn = async () => {
@@ -3862,7 +3860,11 @@ export default function Game() {
   };
 
   function updateBlocks(blocker: number, blockedCards: number[] | null) {
-    setBlockMap(prev => {
+    if(blockedCards === null) {
+      blockMap.delete(blocker);
+    }
+    else {
+      setBlockMap(prev => {
       const next = new Map(prev);
       if (blockedCards && blockedCards.length > 0) {
         const arr = next.get(blocker) ?? [];
@@ -3875,6 +3877,7 @@ export default function Game() {
       }
       return next;
     });
+    }
   }
 
   function getBlockedBy(blocker: number): GameCard[] {
@@ -4210,89 +4213,106 @@ export default function Game() {
     const { id, fromZone } = payload;
     if (fromZone === toZone) return;
 
-    if (toZone === t('playArea') && checkPlayRestrictions()) {
-      return;
-    }
-    const cardToCheck = fetchCardsInZone((c) => c.id === id, fromZone)[0];
-    if (cardToCheck && cardToCheck.GetType(t).includes(t('scroll')) && toZone !== t('destroy')) {
-      return;
-    }
+    const cardIds = Array.isArray(id) ? id : [id];
+    let cards: GameCard[] = [];
 
-    setSlidingCards(prev => new Map(prev).set(id, { fromZone, toZone }));
+    for(const id of cardIds) {
+      if (toZone === t('playArea') && checkPlayRestrictions()) {
+        return;
+      }
+      const cardToCheck = fetchCardsInZone((c) => c.id === id, fromZone)[0];
+      if (cardToCheck && cardToCheck.GetType(t).includes(t('scroll')) && toZone !== t('destroy')) {
+        return;
+      }
 
-    const delayBeforeAction = 300;
-    
-    await new Promise(resolve => setTimeout(resolve, delayBeforeAction));
+      setSlidingCards(prev => new Map(prev).set(id, { fromZone, toZone }));
 
-    const removeById = (arr: GameCard[], removeId: number) =>
-      arr.filter((c) => c.id !== removeId);
+      const delayBeforeAction = 100;
+      
+      await new Promise(resolve => setTimeout(resolve, delayBeforeAction));
 
-    const sourceCard = findCardInAllZones(id);
-    if (!sourceCard) {
+      const removeById = (arr: GameCard[], removeId: number) =>
+        arr.filter((c) => c.id !== removeId);
+
+      const sourceCard = findCardInAllZones(id, {
+        deck: deckRef.current, playArea: playAreaRef.current,
+        discard: discardRef.current, blockedZone: blockedZoneRef.current,
+        campaignDeck: campaignDeck, permanentZone: permanentZoneRef.current
+      });
+      if (!sourceCard) {
+        setSlidingCards(prev => {
+          const map = new Map(prev);
+          map.delete(id);
+          return map;
+        });
+        return;
+      }
+      cards.push(sourceCard);
+
+      const toAdd: GameCard = sourceCard;
+
+      if (fetchCardsInZone((c) => c.id === id, fromZone)[0]?.GetType(t).includes(t('permanent'))) {
+        setPermanentZone((pe) => [...pe, cloneGameCard(toAdd)]);
+      }
+      else {
+        if (toZone === t('deck')) {
+          setDeckImmediate((d) => [cloneGameCard(toAdd), ...d]);
+        }
+        if (toZone === t('discard')) {
+          setDiscardImmediate((f) => [...f, cloneGameCard(toAdd)]);
+        }
+        if (toZone === t('blocked')) {
+          setBlockedZoneImmediate((b) => [...b, cloneGameCard(toAdd)]);
+        }
+        if (toZone === t('permanentZone')) {
+          setPermanentZone((pe) => [...pe, cloneGameCard(toAdd)]);
+        }
+        if (toZone === t('playArea')) {
+          setPlayAreaImmediate((p) => [...p, cloneGameCard(toAdd)]);
+          setResources(() => emptyResource);
+        }
+      }
+
+      if (fromZone === t('deck')) setDeckImmediate((d) => removeById(d, id));
+      if (fromZone === t('playArea')) setPlayAreaImmediate((p) => removeById(p, id));
+      if (fromZone === t('discard')) setDiscardImmediate((f) => removeById(f, id));
+      if (fromZone === t('campaign')) {
+        setCampaignDeck((g) => removeById(g, id));
+        setAvailableDiscoverableCards(prev => prev.filter(cardId => cardId !== id));
+      }
+      if (fromZone === t('blocked')) setBlockedZoneImmediate((b) => removeById(b, id));
+      if (fromZone === t('permanentZone')) setPermanentZone((pe) => removeById(pe, id));
+
+      if ((toZone !== t('playArea') && toZone !== t('permanentZone')) && (fromZone === t('playArea') || fromZone === t('permanentZone'))) {
+        const blockedIds = blockMap.get(id);
+        if (blockedIds) {
+          setBlockedZoneImmediate(prev => prev.filter(c => !blockedIds.includes(c.id)));
+          setPlayAreaImmediate(prev => [...prev, ...blockedZone.filter(c => blockedIds.includes(c.id))]);
+          updateBlocks(id, null);
+        }
+      }
+      
       setSlidingCards(prev => {
         const map = new Map(prev);
         map.delete(id);
         return map;
       });
-      return;
     }
-
-    const toAdd: GameCard = sourceCard;
-
-    if (fromZone === t('deck')) setDeckImmediate((d) => removeById(d, id));
-    if (fromZone === t('playArea')) setPlayAreaImmediate((p) => removeById(p, id));
-    if (fromZone === t('discard')) setDiscardImmediate((f) => removeById(f, id));
-    if (fromZone === t('campaign')) {
-      setCampaignDeck((g) => removeById(g, id));
-      setAvailableDiscoverableCards(prev => prev.filter(cardId => cardId !== id));
-    }
-    if (fromZone === t('blocked')) setBlockedZoneImmediate((b) => removeById(b, id));
-    if (fromZone === t('permanentZone')) setPermanentZone((pe) => removeById(pe, id));
-
-    if (fetchCardsInZone((c) => c.id === id, fromZone)[0]?.GetType(t).includes(t('permanent'))) {
-      setPermanentZone((pe) => [...pe, toAdd]);
-    }
-    else {
-      if (toZone === t('deck')) {
-        setDeckImmediate((d) => [cloneGameCard(toAdd), ...d]);
+    if (toZone === t('playArea')) {
+      for (const card of cards) {
+        await handleExecuteCardEffect(card, t('playArea'), "played");
       }
-      if (toZone === t('discard')) {
-        setDiscardImmediate((f) => [...f, cloneGameCard(toAdd)]);
-      }
-      if (toZone === t('blocked')) {
-        setBlockedZoneImmediate((b) => [...b, cloneGameCard(toAdd)]);
-      }
-      if (toZone === t('permanentZone')) {
-        setPermanentZone((pe) => [...pe, cloneGameCard(toAdd)]);
-      }
-      if (toZone === t('playArea')) {
-        setPlayAreaImmediate((p) => [...p, cloneGameCard(toAdd)]);
-        setResources(() => emptyResource);
-        await handleExecuteCardEffect(toAdd, t('playArea'), "played");
-        for (const card of [...playArea, ...permanentZone]) {
-          await handleExecuteCardEffect(card, t('playArea'), "otherCardPlayed", [cloneGameCard(toAdd)]);
+      for (const card of [...playAreaRef.current, ...permanentZoneRef.current]) {
+        if(playAreaRef.current.includes(card) || (permanentZoneRef.current.includes(card) && card.GetType(t).includes(t('permanent')))) {
+          await handleExecuteCardEffect(card, t('playArea'), "otherCardPlayed", cards);
         }
       }
     }
-
     if (toZone === t('discard') && (fromZone === t('playArea') || fromZone === t('blocked'))) {
-      await triggerOnCardDiscarded(fetchCardsInZone((card) => card.id === id, fromZone));
-    }
-
-    if ((toZone !== t('playArea') && toZone !== t('permanentZone')) && (fromZone === t('playArea') || fromZone === t('permanentZone'))) {
-      const blockedIds = blockMap.get(id);
-      if (blockedIds) {
-        setBlockedZoneImmediate(prev => prev.filter(c => !blockedIds.includes(c.id)));
-        setPlayAreaImmediate(prev => [...prev, ...blockedZone.filter(c => blockedIds.includes(c.id))]);
-        updateBlocks(id, null);
+      for (const card of cards) {
+        await triggerOnCardDiscarded(fetchCardsInZone((c) => c.id === card.id, t('discard')));
       }
     }
-    
-    setSlidingCards(prev => {
-      const map = new Map(prev);
-      map.delete(id);
-      return map;
-    });
   };
 
   const dropToDeck = (payload: DropPayload) => handleDropToZone(t('deck'))(payload);
@@ -4740,12 +4760,9 @@ export default function Game() {
     const upgraded = cloneGameCard(card);
 
     if (zone === t('playArea') && await upgradeCard(upgraded, upg.nextSide)) {
-      // Remove from play area
-      setPlayAreaImmediate((prev) => prev.filter((c) => c.id !== card.id));
-      // Add upgraded card to discard
-      setDiscardImmediate((prev) => [...prev, upgraded]);
+      replaceCardInZone(zone, card.id, upgraded);
+      await dropToDiscard({id: upgraded.id, fromZone: t('playArea')});
     } else {
-      // Default behavior: just replace in the same zone
       replaceCardInZone(zone, card.id, upgraded);
     }
 
@@ -5523,7 +5540,7 @@ export default function Game() {
               </div>
               <div className="flex justify-end gap-2 pt-2 border-t">
                 <Button 
-                  disabled={availableDiscoverableCards.filter((id) => fetchCardsInZone((c) => c.id === id, t('campaign'))[0].GetType(t).includes(t('scroll'))).length !== 0}
+                  disabled={availableDiscoverableCards.filter((id) => fetchCardsInZone((c) => c.id === id, t('campaign'))[0]?.GetType(t).includes(t('scroll'))).length !== 0}
                   onClick={async () => {
                     const cardsToAdd = campaignDeck.filter(card => 
                       availableDiscoverableCards.includes(card.id)

@@ -12,7 +12,7 @@ export type TranslationKeys =
   | 'noUpgradeAvailable' | 'selectAnUpgrade' | 'selectAResource' | 'failedToSave' | 'failedToLoad'
   | 'select' | 'id' | 'preview' | 'endGame' | 'seeDeck' | 'seeDiscard' | 'cardsList' | 'triggeredCard'
   | 'selectCardToPurge' | 'chooseExpansion' | 'expansionCard' | 'expansionBlock' | 'scores' | 'baseGame'
-  | 'totalScore' | 'endExpansion' | 'seePurged' | 'add'
+  | 'totalScore' | 'endExpansion' | 'seePurged' | 'add' | 'top' | 'bottom'
   
   // Cards Elements
   | 'frontUp' | 'frontDown' | 'backUp' | 'backDown'
@@ -419,6 +419,7 @@ export type TranslationKeys =
   | 'eor_mass_export_250'
 
   // String Choice
+  | 'string_choice_top_or_bottom'
   | 'string_choice_health_potion'
   | 'string_choice_thriving_countryside'
   | 'string_choice_discard_two_other_cards'
@@ -481,6 +482,8 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     endExpansion: 'Fin d\'Extension',
     seePurged: 'Voir les Purgées',
     add: 'Ajouter',
+    top: 'Dessus',
+    bottom: 'Dessous',
     
     // Cards Elements
     frontUp: 'Recto Haut',
@@ -985,7 +988,7 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     effect_description_lord_nimrod: "effects/time Découvrez un Raid (133) et un Rival (134). effects/activate Ajoutez 1 effects/check .",
     effect_description_plague: "effects/passive Reste en jeu. effects/forced Fin de Manche: Détruisez 2 Personnes de votre royaume, puis -> (Verso Haut).",
     effect_description_enemy_soldier: "effects/forced Carte Jouée: Bloque 1 Bâtiment/Terrain en jeu. effects/passive : Reste en jeu. effects/forced Fin de Manche: Détruisez la carte bloquée. effects/activate Dépensez resources/sword resources/sword pour vaincre ( effects/destroy ).",
-    effect_description_assassin: "effects/forced Détruisez la prochaine Personne que vous jouez. Lorsque vous le faites, ->. effects/activate Dépensez resources/sword resources/sword resources/sword pour vaincre (->).",
+    effect_description_assassin: "effects/forced Détruisez la prochaine Personne que vous jouez, lorsque vous le faites, ->. effects/activate Dépensez resources/sword resources/sword resources/sword pour vaincre (->).",
     effect_description_city_fire: "effects/passive Reste en jeu. effects/forced Fin de Manche: Détruisez 1 Bâtiment de votre royaume, puis -> (Verso Haut).",
     effect_description_lost_civilization: "effects/activate Défaussez 6 cartes alliées pour découvrir un Artefact (108).",
     effect_description_skilled_bandit: "Peut être -> par un Missionaire. effects/forced Carte jouée: Bloque 3 cartes avec une production. effects/activate Dépensez resources/sword resources/sword resources/sword pour vaincre ( effects/destroy ) et gagner 3 ressources au choix.",
@@ -1143,6 +1146,7 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     eor_mass_export_250: " (seuil 250): Découvrez les Relation Commerciales (117)",
 
     // String Choice
+    string_choice_top_or_bottom: "Dessus ou dessous?",
     string_choice_health_potion: "Défausser la Potion de Soin pour garder une Personne en jeu ?",
     string_choice_thriving_countryside: "Depuis la Zone de Jeu ou la Défausse?",
     string_choice_discard_two_other_cards: "Défaussez 2 cartes?",
@@ -1202,6 +1206,8 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     endExpansion: 'Expansion End',
     seePurged: 'See Purged',
     add: 'Add',
+    top: 'Top',
+    bottom: 'Bottom',
 
     // Cards Elements
     frontUp: 'Front Up',
@@ -1706,7 +1712,7 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     effect_description_lord_nimrod: "effects/time Discover a Raid (133) and a Rival (134). effects/activate Add 1 effects/check .",
     effect_description_plague: "effects/passive Stays in play. effects/forced End of Round: Destroy 2 People from your kingdom, then -> (Back Front).",
     effect_description_enemy_soldier: "effects/forced Card Played: Block 1 Building/Land in play. effects/passive : Stays in play. effects/forced End of Round: Destroy the blocked card. effects/activate Spend resources/sword resources/sword to defeat ( effects/destroy ).",
-    effect_description_assassin: "effects/forced Destroy the next Person you play. When you do, ->. effects/activate Spend resources/sword resources/sword resources/sword to defeat (->).",
+    effect_description_assassin: "effects/forced Destroy the next Person you play, when you do, ->. effects/activate Spend resources/sword resources/sword resources/sword to defeat (->).",
     effect_description_city_fire: "effects/passive Stays in play. effects/forced End of Round: Destroy 1 Building from your kingdom, then -> (Back Up).",
     effect_description_lost_civilization: "effects/activate Discard 6 friendly cards to discover an Artifact (108).",
     effect_description_skilled_bandit: "Can be -> by a Missionary. effects/forced Card played: Block 3 cards with production. effects/activate Spend resources/sword resources/sword resources/sword to defeat ( effects/destroy ) and gain 3 resources of your choice.",
@@ -1864,6 +1870,7 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     eor_mass_export_250: " (seuil 250): Discover Trade Relations (117)",
 
     // String Choice
+    string_choice_top_or_bottom: "Top or Bottom?",
     string_choice_health_potion: "Discard the Health Potion to keep a Person in play ?",
     string_choice_thriving_countryside: "From Play Area or Discard?",
     string_choice_discard_two_other_cards: "Discard 2 cards?",
