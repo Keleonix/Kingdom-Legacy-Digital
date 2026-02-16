@@ -10,22 +10,22 @@ It provides an **interactive card game interface** built with **React, TypeScrip
 
 - **Interactive Card Zones**
   - Deck, Discard, Play Area, Blocked, Permanent, Campaign, and Destroy zones.
-  - Drag & Drop support between zones.
-  - Mobile-friendly tap actions for editing and upgrading cards.
+  - Mobile-friendly tap actions for interactions.
+  - (Debug) Drag & Drop support between zones.
 
 - **Card Editor & Popups**
-  - Inspect and edit any card (resources, effects, upgrades, checkboxes).
   - Preview both front/back sides of cards.
   - Upgrade cards with resource costs.
-  - Manage checkboxes (e.g., resources, markers, or progress).
+  - (Debug)Inspect and edit any card (resources, effects, upgrades, checkboxes).
+  - (Debug) Manage checkboxes (e.g., resources, markers, or progress).
 
 - **Resource Pool Management**
   - Track resources dynamically.
-  - Increment/decrement with buttons or enter values directly.
+  - (Debug) Increment/decrement with buttons or enter values directly.
 
 - **Game Flow Tools**
   - Start new turns, draw cards, discard, shuffle, and end rounds.
-  - Special campaign features: preview campaign deck, shuffle subsets, move top discard to deck.
+  - (Debug) Preview campaign deck, shuffle subsets, move top discard to deck.
 
 - **Save & Load**
   - Save your game progress (by “Kingdom name”) to local storage.
@@ -74,12 +74,11 @@ Then open [http://localhost:5173](http://localhost:5173) in your browser.
 
 ## Usage
 
-- Drag cards between zones to play, discard, or block them.
-- Tap a card (on mobile) or right-click (on desktop) to open the Card Editor.
-- Use checkboxes for tracking progress or conditions.
-- Manage resources via the pool at the bottom.
-- Save/Load kingdoms via the Settings modal.
 - Follow the rules from the official rulebook: [Full Rules (PDF)](https://fryxgames.se/wp-content/uploads/2023/12/FK-Rules-Small.pdf)
+- Left click on productions/effects/upgrades to activate diverse effects.
+- Select choices on pop-ups
+- Play until end of base game and select extensions.
+- Save/Load kingdoms via the Settings modal.
 
 ## Project Structure
 
@@ -87,10 +86,14 @@ Then open [http://localhost:5173](http://localhost:5173) in your browser.
      ├── App.tsx        # Main game implementation
      ├── types.ts       # GameCard class, types, constants (resources, effects, etc.)
      ├── cards.ts       # Card definitions
-     └── components/    # UI components (buttons, cards)
+     ├── components.ts  # UI components (buttons, cards)
+     ├── expansions.ts  # Expansions data
+     └── i18n.ts        # Text data
     public/
      ├── effects/       # Effect icons
-     └── resources/     # Resource icons
+     ├── languages/     # Country flags
+     ├── resources/     # Resource icons
+     └── seals/         # Extension seals
 
 ## Credits
 
@@ -111,3 +114,4 @@ All rights to the original **Kingdom Legacy** game, rules, and artwork remain wi
 - Some cards with optional selection are mandatories instead.
 - Card id 73 Front Bottom doesn't count as 2 people for card fetches/upgrade costs.
 - Card id 81 is not implemented as purge doesn't exist yet
+- Cards don't look at bonus production (bandit (14) for example, won't see the scientist as a valid source) => Refactoring needed on getResources from context rather than cards for actual value checks

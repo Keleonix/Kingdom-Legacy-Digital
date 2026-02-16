@@ -954,8 +954,18 @@ function CardView({
         }}
         className={`w-49 h-70 m-0 flex flex-col items-center justify-between border-2 shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 
           ${!interactable ? "opacity-60 cursor-not-allowed" : "cursor-pointer hover:border-blue-400"}
-          ${isHighlighted ? "ring-4 ring-blue-400 border-blue-500" : ""}`}
-        >
+          ${isHighlighted ? "ring-4 ring-4 ring-blue-400 border-blue-500" : ""}`}
+      >
+        {/* Pixel art bottom right */}
+        <div className="absolute bottom-2 left-2 w-8 h-8">
+          <img 
+            src={`/badges/${card.name[card.currentSide - 1]}.png`}
+            alt={`${card.name[card.currentSide - 1]}`}
+            className="w-full h-full object-contain"
+            style={{ imageRendering: 'pixelated' }}
+          />
+        </div>
+
         <CardContent className="text-center p-2 overflow-auto flex flex-col h-full w-full">
           {card.GetType(t).includes(t('permanent')) && <img src={"effects/permanent.png"} alt={t('permanentZone')} title={t('permanentZone')} className="w-49 h-2" />}
           {card.choice && (card.currentSide == 1 || card.currentSide == 3) && <button><img src={"effects/choice.png"} alt={t('choice')} title={t('choice')} className="w-49 h-2" /></button>}
@@ -2821,7 +2831,7 @@ export default function Game() {
   // Game Phases
   // -------------------
   const checkPlayRestrictions = (): boolean => {
-    const allActiveCards = [...playArea];
+    const allActiveCards = [...playAreaRef.current];
     
     for (const card of allActiveCards) {
       const effects = getCardEffects(card.id, card.currentSide);
@@ -2858,7 +2868,7 @@ export default function Game() {
       return true;
     }
 
-    const allActiveCards = [...playArea];
+    const allActiveCards = [...playAreaRef.current];
     
     for (const card of allActiveCards) {
       const effects = getCardEffects(card.id, card.currentSide);
@@ -2872,7 +2882,7 @@ export default function Game() {
   };
 
   const checkTimeEffectRestrictions = (): boolean => {
-    const allActiveCards = [...playArea];
+    const allActiveCards = [...playAreaRef.current];
     
     for (const card of allActiveCards) {
       const effects = getCardEffects(card.id, card.currentSide);
@@ -5381,32 +5391,14 @@ export default function Game() {
           </div>
         )}
 
-        {/* Guide Modal */}
+        {/* About Modal */}
         {showAbout && (
           <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
             <div className="bg-white p-4 rounded-xl space-y-4 max-w-2xl">
-              <h2 className="font-bold">About</h2>
-              <div className="text-sm">
-                <p className="font-bold">Original Board Game:</p><br/>
-                <p className="font-bold">Kingdom Legacy</p><br/>
-                <p>Game Design: Jonathan Fryxelius</p>
-                <p>Assistant Design: FryxGames</p>
-                <p>Art Director: Jonathan Fryxelius</p>
-                <p>Designer Thanks: Benjamin, Daniel, Abram, Thomas, Kezia, and Stina, for eagerly testing all new ideas through all iterations.</p><br/>
-                <p>Special thanks to the ultimate King; may your Kingdom come!</p><br/>
-                <p className="font-bold">Publisher:</p>
-                <p>Intrafin Toys & Games Distribution</p>
-                <p>(Official distributor of Kingdom Legacy and other titles across Europe.)</p><br/>
-                <p className="font-bold">Digital Fan Adaptation:</p>
-                <p>This digital version of Kingdom Legacy is a non-commercial fan project, created with admiration for the original design. It was made to make the game easier to learn, share, and play online.</p>
-                <p>Digitalization Team:</p>
-                <p>Project Lead / Developer: Keleonix</p>
-                <p>Digital Art / Assets Adaptation: Freepik, Smashicons</p>
-                <p>Playtesters / Feedback: Keleonix</p><br/>
-                <p className="font-bold">Disclaimer:</p>
-                <p>This is an unofficial fan project and is not affiliated with, endorsed by, or sponsored by FryxGames, Intrafin, or Jonathan Fryxelius. All rights to the original game, rules, and artwork remain with their respective copyright holders.</p>
+              <h2 className="font-bold">{t('about')}</h2>
+              <div className="text-sm whitespace-pre-line">
+                {t('aboutContent')}
               </div>
-
               <div className="flex justify-end gap-2">
                 <Button onClick={() => setShowAbout(false)}>{t('close')}</Button>
               </div>
@@ -5418,7 +5410,7 @@ export default function Game() {
         {showGuide && (
           <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
             <div className="bg-white p-4 rounded-xl space-y-4 max-w-2xl">
-              <h2 className="font-bold">Guide & Controls</h2>
+              <h2 className="font-bold">{t('guideTitle')}</h2>
               <div className="text-sm">
                 <a 
                   target="_blank" 
@@ -5426,27 +5418,10 @@ export default function Game() {
                   href="https://fryxgames.se/wp-content/uploads/2023/12/FK-Rules-Small.pdf"
                   className="text-blue-600 hover:text-blue-800 underline"
                 >
-                  <p>Before reading the controls, please read the full rules.</p>
+                  <p>{t('guideRulesLink')}</p>
                 </a>
-                <ul className="list-disc pl-5">
-                  <li>Tap a card to open the editor where you can:</li>
-                  <ul className="list-disc pl-5">
-                    <li>Edit resources/options per side</li>
-                    <li>Add / remove checkboxes for each side; each checkbox can contain '*' or multiple resource icons (comma-separated), or be blank</li>
-                    <li>Choose which checkbox index is the "selected" one (used for tap action)</li>
-                  </ul>
-                  <li>Tap a card's checkbox to use check it.</li>
-                  <li>Tap a card's upgrade to upgrade it.</li>
-                  <li>Drag cards between zones.</li>
-                  <li>Use Settings:</li>
-                  <ul className="list-disc pl-5">
-                    <li>Reset to fully reset the game (extra confirmation required).</li>
-                    <li>Save your current Kingdom's progress.</li>
-                    <li>Continue a saved Kingdom's game.</li>
-                  </ul>
-                </ul>
+                <div dangerouslySetInnerHTML={{ __html: t('guideContent') }} />
               </div>
-
               <div className="flex justify-end gap-2">
                 <Button onClick={() => setShowGuide(false)}>{t('close')}</Button>
               </div>

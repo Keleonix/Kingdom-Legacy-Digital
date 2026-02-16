@@ -12,7 +12,8 @@ export type TranslationKeys =
   | 'noUpgradeAvailable' | 'selectAnUpgrade' | 'selectAResource' | 'failedToSave' | 'failedToLoad'
   | 'select' | 'id' | 'preview' | 'endGame' | 'seeDeck' | 'seeDiscard' | 'cardsList' | 'triggeredCard'
   | 'selectCardToPurge' | 'chooseExpansion' | 'expansionCard' | 'expansionBlock' | 'scores' | 'baseGame'
-  | 'totalScore' | 'endExpansion' | 'seePurged' | 'add' | 'top' | 'bottom'
+  | 'totalScore' | 'endExpansion' | 'seePurged' | 'add' | 'top' | 'bottom' | 'aboutContent'
+  | 'guideTitle' | 'guideRulesLink' | 'guideContent'
   
   // Cards Elements
   | 'frontUp' | 'frontDown' | 'backUp' | 'backDown'
@@ -484,6 +485,44 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     add: 'Ajouter',
     top: 'Dessus',
     bottom: 'Dessous',
+    aboutContent: `Jeu de société original :
+
+Kingdom Legacy
+
+Conception du jeu : Jonathan Fryxelius
+Conception assistée : FryxGames
+Direction artistique : Jonathan Fryxelius
+Remerciements du concepteur : Benjamin, Daniel, Abram, Thomas, Kezia et Stina, pour avoir testé avec enthousiasme toutes les nouvelles idées à travers toutes les itérations.
+
+Remerciements spéciaux au Roi ultime ; que ton Royaume vienne !
+
+Éditeur :
+Intrafin Toys & Games Distribution
+(Distributeur officiel de Kingdom Legacy et d'autres titres en Europe.)
+
+Adaptation numérique par des fans :
+Cette version numérique de Kingdom Legacy est un projet de fan non commercial, créé avec admiration pour le design original. Il a été conçu pour faciliter l'apprentissage, le partage et le jeu en ligne.
+Équipe de numérisation :
+Chef de projet / Développeur : Keleonix
+Adaptation des arts / assets numériques : Freepik, Smashicons
+Testeurs / Retours : Keleonix
+
+Avertissement :
+Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou sponsorisé par FryxGames, Intrafin ou Jonathan Fryxelius. Tous les droits sur le jeu original, les règles et les illustrations restent la propriété de leurs détenteurs respectifs.`,
+  
+  guideRulesLink: "Avant de lire les contrôles, veuillez lire les règles complètes.",
+  guideContent: `<ul class="list-disc pl-5">
+    <li>Cliquez sur la production d'une carte pour la produire (hors fame).</li>
+    <li>Cliquez sur l'amélioration d'une carte pour l'améliorer.</li>
+    <li>Cliquez sur l'effet d'une carte pour l'activer.</li>
+    <li>Utilisez les paramètres :
+      <ul class="list-disc pl-5">
+        <li>Réinitialiser pour réinitialiser complètement le jeu (confirmation supplémentaire requise).</li>
+        <li>Sauvegarder la progression de votre Royaume actuel.</li>
+        <li>Continuer la partie d'un Royaume sauvegardé.</li>
+      </ul>
+    </li>
+  </ul>`,
     
     // Cards Elements
     frontUp: 'Recto Haut',
@@ -927,7 +966,7 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     effect_description_grand_army: "effects/time Dépensez les resources/sword (10, 10, 12, 12, 15) pour cocher la case de gauche à droite.",
     effect_description_treasure: "effects/time dépensez les resources/coin (1 à 12, incrément de 1) pour cocher la case de gauche à droite, à la dernière carte, -> Verso Haut.",
     effect_description_extended_treasure: "effects/time dépensez les resources/coin (13 à 17, incrément de 1) pour cocher la case de gauche à droite.",
-    effect_description_export: "Dépensez des resources/tradegood pour atteindre des paliers, 10: Ajoutez resources/coin / resources/wood / resources/stone sur un Terrain, 20: Un Personnage gagne \" effects/passive Reste en jeu\", 30: Découvrez Adoubement (80), 40: Ajoutez resources/metal / resources/sword / resources/tradegood sur 1 Bâtiment, 55: Ajoutez resources/wood / resources/stone / resources/metal / resources/sword sur une carte, 75: Ajoutez resources/fame x5 sur une carte, 100: -> Verso Haut. effects/passive Dépensez des resources/tradegood .",
+    effect_description_export: "Dépensez des resources/tradegood pour atteindre des paliers, 10: Ajoutez resources/coin / resources/wood / resources/stone sur un Terrain, 20: Un Personnage gagne \" effects/passive Reste en jeu\", 30: Découvrez Adoubement (86), 40: Ajoutez resources/metal / resources/sword / resources/tradegood sur 1 Bâtiment, 55: Ajoutez resources/wood / resources/stone / resources/metal / resources/sword sur une carte, 75: Ajoutez resources/fame x5 sur une carte, 100: -> Verso Haut. effects/passive Dépensez des resources/tradegood .",
     effect_description_mass_export: "Dépensez des resources/tradegood pour atteindre des paliers, 25: Ajoutez resources/fame sur deux Terrains, 50: Ajoutez resources/fame x5 sur une Personne, 75: Découvrez Visite Royale (107), 100: Ajoutez resources/fame x5 sur un Bâtiment, 150: effects/check une autre carte Permanente, 200: effects/check toutes les autres cartes Permanentes au choix, 250: Découvrez Relations Commerciales (117). effects/passive Dépensez des resources/tradegood .",
     effect_description_volcanic_eruption: "effects/forced Tant qu'elle est en jeu, détruisez le prochain Terrain que vous jouez; lorsque vous le faite, -> Verso Haut.",
     effect_description_young_forest: "effects/time Ajoutez 1 effects/check dans l'ordre et à *: Ajoutez resources/wood à la production de cette carte.",
@@ -1124,15 +1163,15 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     effect_description_efficient_farming: "effects/time Défaussez 2 Bâtiments pour ajouter une resources/coin à un Terrain en jeu. effects/forced Fin de manche : Change pour Surplus.",
     effect_description_obsolete_farms: "effects/forced Fin de manche : effects/destroy cette carte et effects/destroy 1 carte avec une production de resources/coin .",
     effect_description_surplus: "effects/passive Les Terrains qui produisent resources/coin peuvent produire des resources/tradegood à la place. effects/forced Fin de manche : Change pour Fermes Abandonnées.",
-    effect_description_border_dispute_expansion: "Jouez 1 manche durant laquelle tous les Terrains restent en jeu, puis ->.",
-    effect_description_espionage: "Jouez 1 manche, puis ->. effects/forced Lorsqu'une Personne est jouée, inscrivez 1 effects/check ou défaussez 2 cartes alliées. Une fois complétée, défaussez toute votre pioche.",
-    effect_description_resistance: "Jouez 1 manche. effects/optional Dépenser vos resources/sword et mettez-les sur cette carte. effects/forced Après la manche, ajoutez autant de resources/sword de cette carte en resources/fame (max 100) à un Terrain, puis détruisez cette extension.",
-    effect_description_attack: "Jouez 1 manche. effects/forced Fin du Tour: Si vous n'avez aucune resources/sword , enlevez 1 production d'1 carte en jeu. effects/forced Fin de Manche: Ajoutez une ressource (non- resources/fame ) au choix à une carte alliée, puis ->.",
+    effect_description_border_dispute_expansion: "effects/forced Fin du Tour: Les terrains restent en jeu. effects/forced Fin de manche : Change pour Espionnage.",
+    effect_description_espionage: "effects/forced Lorsqu'une Personne est jouée, inscrivez 1 effects/check ou défaussez 2 cartes alliées et une fois complétée, défaussez toute votre pioche. effects/forced Fin de manche : Change pour Attaque.",
+    effect_description_resistance: "effects/passive Dépenser vos resources/sword et mettez-les sur cette carte. effects/forced Fin de la Manche: Ajoutez autant de resources/sword de cette carte en resources/fame (max 100) à un Terrain, puis détruisez cette extension.",
+    effect_description_attack: "effects/forced Fin du Tour: Si vous n'avez aucune resources/sword , enlevez 1 production d'1 carte en jeu. effects/forced Fin de Manche: Ajoutez une ressource (non- resources/fame ) au choix à une carte alliée, puis change pour Résistance.",
 
     // EoR Effects
     eor_export_10: " (seuil 10): Ajoutez coin/wood/stone à 1 Terrain",
     eor_export_20: " (seuil 20): Ajoute \"Reste en Jeu\" à une personne",
-    eor_export_30: " (seuil 30): Découvre Adoubement (80)",
+    eor_export_30: " (seuil 30): Découvre Adoubement (86)",
     eor_export_40: " (seuil 40): Ajoutez metal/sword/tradegood à 1 Bâtiment",
     eor_export_55: " (seuil 55): Ajoutez wood/stone/metal/sword à 1 carte",
     eor_export_75: " (seuil 75): Ajoutez fame x5 à 1 carte",
@@ -1208,6 +1247,44 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     add: 'Add',
     top: 'Top',
     bottom: 'Bottom',
+    aboutContent: `Original Board Game:
+
+Kingdom Legacy
+
+Game Design: Jonathan Fryxelius
+Assistant Design: FryxGames
+Art Director: Jonathan Fryxelius
+Designer Thanks: Benjamin, Daniel, Abram, Thomas, Kezia, and Stina, for eagerly testing all new ideas through all iterations.
+
+Special thanks to the ultimate King; may your Kingdom come!
+
+Publisher:
+Intrafin Toys & Games Distribution
+(Official distributor of Kingdom Legacy and other titles across Europe.)
+
+Digital Fan Adaptation:
+This digital version of Kingdom Legacy is a non-commercial fan project, created with admiration for the original design. It was made to make the game easier to learn, share, and play online.
+Digitalization Team:
+Project Lead / Developer: Keleonix
+Digital Art / Assets Adaptation: Freepik, Smashicons
+Playtesters / Feedback: Keleonix
+
+Disclaimer:
+This is an unofficial fan project and is not affiliated with, endorsed by, or sponsored by FryxGames, Intrafin, or Jonathan Fryxelius. All rights to the original game, rules, and artwork remain with their respective copyright holders.`,
+  
+  guideRulesLink: 'Before reading the controls, please read the full rules.',
+  guideContent: `<ul class="list-disc pl-5">
+    <li>Tap a card's production to gain it (not fame).</li>
+    <li>Tap a card's upgrade to upgrade it.</li>
+    <li>Tap a card's effect to activate it.</li>
+    <li>Use Settings:
+      <ul class="list-disc pl-5">
+        <li>Reset to fully reset the game (extra confirmation required).</li>
+        <li>Save your current Kingdom's progress.</li>
+        <li>Continue a saved Kingdom's game.</li>
+      </ul>
+    </li>
+  </ul>`,
 
     // Cards Elements
     frontUp: 'Front Up',
@@ -1651,7 +1728,7 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     effect_description_grand_army: "effects/time Spend resources/sword (10, 10, 12, 12, 15) to check the box from left to right.",
     effect_description_treasure: "effects/time Spend resources/coin (1 to 12, increment of 1) to check the box from left to right, at the last card, -> Back Up.",
     effect_description_extended_treasure: "effects/time Spend resources/coin (13 to 17, increment of 1) to check the box from left to right.",
-    effect_description_export: "Spend resources/tradegood to reach tiers: 10: Add resources/coin / resources/wood / resources/stone to a Land, 20: A Person gains \"effects/passive Stays in play.\", 30: Discover Dubbing (80), 40: Add resources/metal / resources/sword / resources/tradegood to 1 Building, 55: Add resources/wood / resources/stone / resources/metal / resources/sword to a card, 75: Add resources/fame x5 to a card, 100: -> Back Up. effects/passive Spend resources/tradegood .",
+    effect_description_export: "Spend resources/tradegood to reach tiers: 10: Add resources/coin / resources/wood / resources/stone to a Land, 20: A Person gains \"effects/passive Stays in play.\", 30: Discover Dubbing (86), 40: Add resources/metal / resources/sword / resources/tradegood to 1 Building, 55: Add resources/wood / resources/stone / resources/metal / resources/sword to a card, 75: Add resources/fame x5 to a card, 100: -> Back Up. effects/passive Spend resources/tradegood .",
     effect_description_mass_export: "Spend resources/tradegood to reach tiers: 25: Add resources/fame to two Lands, 50: Add resources/fame x5 to a Person, 75: Discover Royal Visit (107), 100: Add resources/fame x5 to a Building, 150: effects/check another Permanent card, 200: effects/check all other Permanent cards of your choice, 250: Discover Trade Relations (117). effects/passive Spend resources/tradegood .",
     effect_description_volcanic_eruption: "effects/forced While in play, destroy the next Land you play; when you do, -> Back Up.",
     effect_description_young_forest: "effects/time Add 1 effects/check in order and at *: Add resources/wood to this card's production.",
@@ -1848,15 +1925,15 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     effect_description_efficient_farming: "effects/time Discard 2 Buildings to add resources/coin to a Land in play. effects/forced End of Round : Changes to Surplus.",
     effect_description_obsolete_farms: "effects/forced End of Round : effects/destroy this card and effects/destroy 1 card with resources/coin production.",
     effect_description_surplus: "effects/passive Lands that produce resources/coin can instead produce resources/tradegood . effects/forced End of Round : Changes to Obsolete Farms.",
-    effect_description_border_dispute_expansion: "Play 1 round during which all Lands stay in play, then ->.",
-    effect_description_espionage: "Play 1 round, then ->. effects/forced When a Person is played, mark 1 effects/check or discard 2 friendly cards. Once completed, discard your entire deck.",
-    effect_description_resistance: "Play 1 round. effects/optional Spend your resources/sword to put them on this card. effects/forced After the round, add as many resources/sword from this card as resources/fame (max 100) to a Land, then destroy this extension.",
-    effect_description_attack: "Play 1 round. effects/forced End of Turn: If you have no resources/sword , remove 1 production from 1 card in play. effects/forced End of Round: Add a resource (non- resources/fame ) of your choice to a friendly card, then ->.",
+    effect_description_border_dispute_expansion: "effects/forced End of Turn: Lands stay in play. effects/forced End of Round : Change to Espionage.",
+    effect_description_espionage: "effects/forced When a Person is played, mark 1 effects/check or discard 2 friendly cards and once completed, discard your entire deck. effects/forced : Change to Attack",
+    effect_description_resistance: "effects/passive Spend your resources/sword to put them on this card. effects/forced End of Round: Add as many resources/sword from this card as resources/fame (max 100) to a Land, then destroy this extension.",
+    effect_description_attack: "effects/forced End of Turn: If you have no resources/sword , remove 1 production from 1 card in play. effects/forced End of Round: Add a resource (non- resources/fame ) of your choice to a friendly card, then change to Resistance.",
 
     // EoR Effects
     eor_export_10: " (seuil 10): Add coin/wood/stone to 1 Land",
     eor_export_20: " (seuil 20): Add \"Stays in Play.\" to 1 Person.",
-    eor_export_30: " (seuil 30): Discover  (80)",
+    eor_export_30: " (seuil 30): Discover  (86)",
     eor_export_40: " (seuil 40): Add metal/sword/tradegood to 1 Building",
     eor_export_55: " (seuil 55): Add wood/stone/metal/sword to 1 card",
     eor_export_75: " (seuil 75): Add fame x5 to 1 card",

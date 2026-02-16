@@ -287,7 +287,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: (t) => t('none'),
       timing: "onClick",
       execute: async function(ctx)  {
-        ctx.upgradeCard(ctx.card, 3);
+        await ctx.upgradeCard(ctx.card, 3);
         return false;
       }
     }],
@@ -679,6 +679,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           1
         )) {
           await ctx.upgradeCard(ctx.card, 4);
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
           return true;
         }
         return false;
@@ -957,6 +958,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           1
           )) {
           await ctx.upgradeCard(ctx.card, 1);
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
           return true;
         }
         return false;
@@ -988,6 +990,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       execute: async function (ctx) {
         ctx.setResources(prev => ({ ...prev, wood: prev.wood + 3 }));
         await ctx.upgradeCard(ctx.card, 2);
+        ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
         return true;
       }
     }],
@@ -1072,7 +1075,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           await addResourceMapToCard(selected, { coin: 1 });
           /* Tempo to let popup properly discard */
           await ctx.mill(0);
-          await ctx.boostProductivity((c) => c.id === selected.id, ctx.t('deck'), this.description(ctx.t), null)
+          await ctx.boostProductivity((c) => c.GetType(ctx.t).includes(ctx.t('building')), ctx.t('deck'), this.description(ctx.t), null)
           ctx.deleteCardInZone(ctx.zone, ctx.card.id);
           return false;
         }
@@ -1288,7 +1291,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                     ctx.t('export') + ctx.t('eor_export_30'),
                     async () => {
                       await ctx.discoverCard(
-                        (card) => [80].includes(card.id),
+                        (card) => [86].includes(card.id),
                         ctx.t('export') + ctx.t('eor_export_30'),
                         1,
                         0,
@@ -1481,8 +1484,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
         if(selectableCards.length !== 0) {
           ctx.deleteCardInZone(ctx.t('playArea'), (await ctx.selectCardsFromArray(selectableCards, ctx.t('playArea'), this.description(ctx.t), 1))[0].id);
-          const currCard = ctx.fetchCardsInZone((c) => c.id === ctx.card.id, ctx.t('playArea'))[0];
-          await ctx.upgradeCard(currCard, 3);
+          await ctx.upgradeCard(ctx.card, 3);
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
           return true;
         }
         return false;
@@ -1539,6 +1542,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           
           ctx.handleCardUpdate(ctx.card, ctx.zone);
           await ctx.upgradeCard(ctx.card, 1);
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
           return true;
         }
         return false;
@@ -1627,7 +1631,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: (t) => t('effect_description_observatory'),
       timing: "onClick",
       execute: async function (ctx) {
-        if (ctx.discoverCard((card) => card.id === 95, this.description(ctx.t), 1).valueOf()) {
+        if (await ctx.discoverCard((card) => card.id === 95, this.description(ctx.t), 1)) {
           ctx.effectEndTurn();
         }
         return false
@@ -1637,7 +1641,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: (t) => t('effect_description_lab'),
       timing: "onClick",
       execute: async function (ctx) {
-        if (ctx.discoverCard((card) => card.id === 96, this.description(ctx.t), 1).valueOf()) {
+        if (await ctx.discoverCard((card) => card.id === 96, this.description(ctx.t), 1)) {
           ctx.effectEndTurn();
         }
         return false
@@ -1734,6 +1738,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
               return next;
             });
             await ctx.upgradeCard(ctx.card, 1);
+            ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
             await checkNextBox(ctx.card);
             return true;
           }
@@ -1745,6 +1750,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             1
           )).valueOf()) {
             await ctx.upgradeCard(ctx.card, 1);
+            ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
             await checkNextBox(ctx.card);
             return true;
           }
@@ -2037,8 +2043,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       execute: async function (ctx) {
         await ctx.mill(3);
         await ctx.upgradeCard(ctx.card, 3);
-        /* Update card to take into account upgrade */
-        ctx.setPlayArea((p) => [...p.filter(c => c.id !== ctx.card.id), ctx.card]);
+        ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
         return true;
       }
     }],
@@ -2066,6 +2071,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         timing: "endOfTurn",
         execute: async function (ctx) {
           await ctx.upgradeCard(ctx.card, 1);
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
           return false;
         }
       }
@@ -2087,6 +2093,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         if (ctx.resources.sword >= 3) {
           ctx.setResources(prev => ({ ...prev, sword: prev.sword - 3}));
           await ctx.upgradeCard(ctx.card, 3);
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
           return true;
         }
         return false;
@@ -2400,6 +2407,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           1
         )) {
           await ctx.upgradeCard(ctx.card, 1);
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
           return true;
         }
         return false;
@@ -2429,6 +2437,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                 ctx.dropToDiscard({id: card.id, fromZone: ctx.t('playArea')})
               }
               await ctx.upgradeCard(ctx.card, 3);
+              ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
               return true;
             }
           return false;
@@ -2444,6 +2453,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             .map(item => item.id);
           await ctx.discoverCard((card) => result.includes(card.id), this.description(ctx.t), 2);
           await ctx.upgradeCard(ctx.card, 3);
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
           return false;
         }
       }
@@ -2610,6 +2620,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             ctx.deleteCardInZone(ctx.t('deck'), card.id);
           }
           await ctx.upgradeCard(ctx.card, 3);
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
           return false;
         }
       },
@@ -2679,6 +2690,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if(selectableCards.length !== 0) {
             ctx.deleteCardInZone(ctx.t('playArea'), (await ctx.selectCardsFromArray(selectableCards, ctx.t('playArea'), this.description(ctx.t), 1))[0].id);
             await ctx.upgradeCard(ctx.card, 3);
+            ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
             return true;
           }
           return false;
@@ -2691,6 +2703,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (ctx.resources.sword >= 3) {
             ctx.setResources(prev => ({ ...prev, sword: prev.sword - 3 }));
             await ctx.upgradeCard(ctx.card, 3);
+            ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
             return true;
           }
           return false;
@@ -2771,6 +2784,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             ctx.deleteCardInZone(ctx.t('deck'), card.id);
           }
           await ctx.upgradeCard(ctx.card, 3);
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
           return false;
         }
       },
@@ -2933,6 +2947,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (ctx.resources.sword >= 5) {
             ctx.setResources(prev => ({ ...prev, sword: prev.sword - 5}));
             await ctx.upgradeCard(ctx.card, 3);
+            ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
             return true;
           }
           return false;
@@ -3135,6 +3150,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             ctx.deleteCardInZone(ctx.t('deck'), card.id);
           }
           await ctx.upgradeCard(ctx.card, 3);
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
           return false;
         }
       }
@@ -3208,6 +3224,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           const selected = await ctx.selectCardsFromZone((card) => card.GetType(ctx.t).includes(ctx.t('person')) && card.id !== ctx.card.id, ctx.t('playArea'), this.description(ctx.t), 0, ctx.fetchCardsInZone((c) => c.id === ctx.card.id, ctx.zone)[0], 2);
           if (selected.length !== 2) {
             await ctx.upgradeCard(ctx.card, 2);
+            ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
           }
           return false;
         }
@@ -3439,6 +3456,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       execute: async function (ctx) {
         ctx.setResources(prev => ({ ...prev, wood: prev.wood + 3 }));
         await ctx.upgradeCard(ctx.card, 2);
+        ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
         return true;
       }
     }],
@@ -3650,6 +3668,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
               ctx.dropToDiscard({id: card.id, fromZone: ctx.t('playArea')});
             }
             await ctx.upgradeCard(ctx.card, 3);
+            ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
             return true;
           }
         return false;
@@ -3681,6 +3700,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if(choice) {
             applyChoice(ctx, choice);
             await ctx.upgradeCard(ctx.card, 1);
+            ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
             return true;
           }
         return false;
@@ -3856,6 +3876,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           await addResourceMapToCard(card, {coin: 1, sword: 1});
           card.type[card.currentSide - 1] += ' - knight';
           await ctx.upgradeCard(ctx.card, 3);
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
           return false;
         }
       }
@@ -4010,7 +4031,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       execute: async function (ctx) {
         await checkNextBox(ctx.card);
         if (getLastCheckboxChecked(ctx.card)) {
-          await ctx.upgradeCard(ctx.card, 4)
+          await ctx.upgradeCard(ctx.card, 4);
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
         }
         return true;
       }
@@ -4114,7 +4136,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
         if (ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked)) {
           await ctx.upgradeCard(ctx.card, 3);
-          ctx.dropToDiscard({id: ctx.card.id, fromZone: ctx.t('permanentZone')})
+          await ctx.dropToDiscard({id: ctx.card.id, fromZone: ctx.t('permanentZone')})
         }
         return false;
       }
@@ -4328,6 +4350,12 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             ctx.setDeck(prev => [...selected, ...prev]);
           }
           ctx.setPlayArea(prev => prev.filter((card) => !selected.includes(card)));
+          for(const card of selected) {
+            const cardsToUnblock = ctx.getBlockedBy(card.id);
+            ctx.setBlockedZone(prev => prev.filter(c => !cardsToUnblock.includes(c)));
+            ctx.setPlayArea(prev => [...prev, ...cardsToUnblock]);
+            ctx.updateBlocks(card.id, null);
+          }
           return true;
         }
         return false;
@@ -4348,6 +4376,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (side !== 1) {
             ctx.setResources(prev => ({ ...prev, coin: prev.coin - 2 }));
             await ctx.upgradeCard(ctx.card, side);
+            ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
             return true;
           }
         }
@@ -4360,6 +4389,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       execute: async function (ctx) {
         ctx.setResources(prev => ({ ...prev, sword: prev.sword + 3 }));
         await ctx.upgradeCard(ctx.card, 1);
+        ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
         return true;
       }
     }],
@@ -4369,6 +4399,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       execute: async function (ctx) {
         ctx.setResources(prev => ({ ...prev, tradegood: prev.tradegood + 5 }));
         await ctx.upgradeCard(ctx.card, 1);
+        ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
         return true;
       }
     }],
@@ -4406,6 +4437,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         if (selected && selected.length > 0) {
           ctx.dropToPlayArea({id: selected[0].id, fromZone: ctx.t('discard')});
           await ctx.upgradeCard(ctx.card, 1);
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
           return true;
         }
         
@@ -4623,7 +4655,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         const allChecked = ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked);
         if (allChecked) {
           await ctx.upgradeCard(ctx.card, 4);
-          ctx.dropToPermanent({id: ctx.card.id, fromZone: ctx.zone});
+          await ctx.dropToPermanent({id: ctx.card.id, fromZone: ctx.zone});
           return false;
         }
         return true;
@@ -4657,7 +4689,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             return false;
           }
           await ctx.upgradeCard(card, 3);
-          ctx.dropToDiscard({id: card.id, fromZone: ctx.t('playArea')});
+          await ctx.dropToDiscard({id: card.id, fromZone: ctx.t('playArea')});
           ctx.setResources(prev => ({ ...prev, coin: prev.coin - 3 }));
           return true;
         }
@@ -4686,6 +4718,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: (t) => t('effect_description_priest'),
       timing: "onClick",
       execute: async function (ctx) {
+        let effectSuccessfull = false;
         const cards = ctx.fetchCardsInZone((card) => card.GetUpgrades().length !== 0 && card.id !== ctx.card.id, ctx.t('playArea'));
         if (ctx.resources.coin >= 2 && cards.length !== 0) {
           const card = (await ctx.selectCardsFromArray(cards, ctx.t('playArea'), this.description(ctx.t), 1))[0];
@@ -4700,7 +4733,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                   const resourceKey = key as keyof ResourceMap;
                   const amount = upgrade.cost[resourceKey] ?? 0;
                   if (ctx.resources[resourceKey] < amount) {
-                    return false;
+                    return effectSuccessfull;
                   }
                 }
 
@@ -4725,6 +4758,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                   await ctx.upgradeCard(card, upgrade.nextSide);
                   ctx.replaceCardInZone(ctx.t('playArea'), card.id, card);
                   await ctx.dropToDiscard({id: card.id, fromZone: ctx.t('playArea')});
+                  effectSuccessfull = true;
+                  return effectSuccessfull;
                 }
               }
               resolve();
@@ -4732,13 +4767,14 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           });
 
         }
-        return false;
+        return effectSuccessfull;
       }
     }],
     3: [{ // Cardinal
       description: (t) => t('effect_description_cardinal'),
       timing: "onClick",
       execute: async function (ctx) {
+        let effectSuccessfull = false;
         const cards = ctx.fetchCardsInZone((card) => card.GetUpgrades().length !== 0 && card.id !== ctx.card.id, ctx.t('playArea'));
         if (cards.length !== 0) {
           const card = (await ctx.selectCardsFromArray(cards, ctx.t('playArea'), this.description(ctx.t), 1))[0];
@@ -4753,7 +4789,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                   const resourceKey = key as keyof ResourceMap;
                   const amount = upgrade.cost[resourceKey] ?? 0;
                   if (ctx.resources[resourceKey] < amount) {
-                    return false;
+                    return effectSuccessfull;
                   }
                 }
 
@@ -4777,6 +4813,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                   await ctx.upgradeCard(card, upgrade.nextSide);
                   ctx.replaceCardInZone(ctx.t('playArea'), card.id, card);
                   await ctx.dropToDiscard({id: card.id, fromZone: ctx.t('playArea')});
+                  effectSuccessfull = true;
+                  return effectSuccessfull;
                 }
               }
               resolve();
@@ -4784,7 +4822,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           });
 
         }
-        return false;
+        return effectSuccessfull;
       }
     }],
   },
@@ -4842,7 +4880,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
 
         if (success) {
           await ctx.upgradeCard(ctx.card, 1);
-          ctx.dropToCampaign({ id: cardId, fromZone: ctx.zone });
+          await ctx.dropToCampaign({ id: cardId, fromZone: ctx.zone });
           const forgottenCard = ctx.fetchCardsInZone((card) => card.id === cardId, "Campaign Deck");
           if (forgottenCard.length === 0) {
             ctx.setCampaignDeck((prev) => [...prev, ctx.card]);
@@ -5011,6 +5049,10 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           else {
             ctx.setDiscard((prev) => prev.filter((c) => c.id !== card.id));
           }
+          const cardsToUnblock = ctx.getBlockedBy(card.id);
+          ctx.setBlockedZone(prev => prev.filter(c => !cardsToUnblock.includes(c)));
+          ctx.setPlayArea(prev => [...prev, ...cardsToUnblock]);
+          ctx.updateBlocks(card.id, null);
           return true;
         }
         return false;
@@ -5024,6 +5066,11 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         if (card) {
           ctx.setDeck((prev) => [...prev, card]);
           ctx.setPlayArea((prev) => prev.filter((c) => c.id !== card.id));
+          
+          const cardsToUnblock = ctx.getBlockedBy(card.id);
+          ctx.setBlockedZone(prev => prev.filter(c => !cardsToUnblock.includes(c)));
+          ctx.setPlayArea(prev => [...prev, ...cardsToUnblock]);
+          ctx.updateBlocks(card.id, null);
           return true;
         }
         return false;
@@ -5259,6 +5306,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           });
 
           await ctx.upgradeCard(ctx.card, 2);
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
           ctx.effectEndTurn();
         }
         return false;
@@ -5283,6 +5331,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           });
 
           await ctx.upgradeCard(ctx.card, 4);
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
           ctx.effectEndTurn();
         }
         return false;
@@ -5311,6 +5360,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             if (choice) {
               addResourceMapToCard(card, choice);
               await ctx.upgradeCard(ctx.card, 3);
+              ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
               ctx.effectEndTurn();
               this.uses += 1;
             }
@@ -5338,6 +5388,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             if (choice) {
               addResourceMapToCard(card, choice);
               await ctx.upgradeCard(ctx.card, 3);
+              ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
               ctx.effectEndTurn();
             }
           }
@@ -5436,6 +5487,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           applyResourceMapDelta(ctx.setResources, choice2);
           applyResourceMapDelta(ctx.setResources, choice3);
           await ctx.upgradeCard(ctx.card, 2);
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
           return true;
         }
         return false;
@@ -5480,6 +5532,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           applyResourceMapDelta(ctx.setResources, choice2);
           applyResourceMapDelta(ctx.setResources, choice3);
           await ctx.upgradeCard(ctx.card, 4);
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
           return true;
         }
         return false;
@@ -5543,6 +5596,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           applyResourceMapDelta(ctx.setResources, choice2);
           applyResourceMapDelta(ctx.setResources, choice3);
           await ctx.upgradeCard(ctx.card, 3);
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
           return true;
         }
         return false;
