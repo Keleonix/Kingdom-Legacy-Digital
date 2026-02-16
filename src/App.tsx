@@ -2297,9 +2297,10 @@ const CardSideSelectionPopup: React.FC<{
 // -------------------
 const UpgradeCostSelectionPopup: React.FC<{
   card: GameCard;
+  selectResource: boolean;
   onConfirm: (upgradeIndex: number, resourceKey: keyof ResourceMap) => void;
   onCancel: () => void;
-}> = ({ card, onConfirm, onCancel }) => {
+}> = ({ card, selectResource, onConfirm, onCancel }) => {
   const { t } = useTranslation();
   const [selectedUpgradeIndex, setSelectedUpgradeIndex] = useState<number | null>(null);
   const [selectedResourceKey, setSelectedResourceKey] = useState<keyof ResourceMap | null>(null);
@@ -2354,11 +2355,20 @@ const UpgradeCostSelectionPopup: React.FC<{
                       <span className="text-xs text-gray-400">{t('noCost')}</span>
                     )}
                   </div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {upg.otherCost ? (
+                        <span className="flex items-center gap-1 text-xs">
+                          {upg.otherCost}
+                        </span>
+                    ): (
+                      <span className="text-xs text-gray-400"></span>
+                    )}
+                  </div>
                 </button>
               ))}
             </div>
 
-            {selectedUpgradeIndex !== null && currentUpgrades[selectedUpgradeIndex].cost && (
+            {selectResource && selectedUpgradeIndex !== null && currentUpgrades[selectedUpgradeIndex].cost && (
               <div className="flex flex-col gap-2 mb-4">
                 <h3 className="text-sm font-medium">2. {t('selectAResource')} :</h3>
                 <div className="grid grid-cols-3 gap-2">
@@ -2400,13 +2410,19 @@ const UpgradeCostSelectionPopup: React.FC<{
           </button>
           <button
             onClick={() => {
-              if (selectedUpgradeIndex !== null && selectedResourceKey !== null) {
-                onConfirm(selectedUpgradeIndex, selectedResourceKey);
+              if (selectedUpgradeIndex !== null) {
+                const resourceKey = selectResource && selectedResourceKey !== null 
+                  ? selectedResourceKey 
+                  : 'coin' as keyof ResourceMap;
+                onConfirm(selectedUpgradeIndex, resourceKey);
               }
             }}
-            disabled={selectedUpgradeIndex === null || selectedResourceKey === null}
+            disabled={
+              selectedUpgradeIndex === null || 
+              (selectResource && selectedResourceKey === null)
+            }
             className={`px-3 py-1 rounded ${
-              selectedUpgradeIndex !== null && selectedResourceKey !== null
+              selectedUpgradeIndex !== null && (!selectResource || selectedResourceKey !== null)
                 ? "bg-blue-500 hover:bg-blue-600 text-white"
                 : "bg-gray-300 text-gray-500 cursor-not-allowed"
             }`}
@@ -2677,7 +2693,7 @@ export default function Game() {
   }, [playArea, permanentZone]);
 
   const [showUpgradeCostPopup, setShowUpgradeCostPopup] = useState(false);
-  const [upgradeCostPopupCard, setUpgradeCostPopupCard] = useState<GameCard | null>(null);
+  const [upgradeCostPopupCard, setUpgradeCostPopupCard] = useState<{card: GameCard, selectResource: boolean} | null>(null);
   const [onUpgradeCostConfirm, setOnUpgradeCostConfirm] = useState<
     ((upgradeIndex: number, resourceKey: keyof ResourceMap) => void) | null
   >(null);
@@ -3839,8 +3855,8 @@ export default function Game() {
     setShowCardSidePopup(true);
   }
 
-  function selectUpgradeCost(card: GameCard, callback: (upgradeIndex: number, resourceKey: keyof ResourceMap) => void) {
-    setUpgradeCostPopupCard(card);
+  function selectUpgradeCost(card: GameCard, selectResource: boolean, callback: (upgradeIndex: number, resourceKey: keyof ResourceMap) => void) {
+    setUpgradeCostPopupCard({card, selectResource});
     setOnUpgradeCostConfirm(() => (upgradeIndex: number, resourceKey: keyof ResourceMap) => {
       callback(upgradeIndex, resourceKey);
     });
@@ -5729,7 +5745,8 @@ export default function Game() {
 
       {showUpgradeCostPopup && upgradeCostPopupCard && onUpgradeCostConfirm && (
         <UpgradeCostSelectionPopup
-          card={upgradeCostPopupCard}
+          card={upgradeCostPopupCard.card}
+          selectResource={upgradeCostPopupCard.selectResource}
           onConfirm={(upgradeIndex, resourceKey) => {
             onUpgradeCostConfirm(upgradeIndex, resourceKey);
             setShowUpgradeCostPopup(false);

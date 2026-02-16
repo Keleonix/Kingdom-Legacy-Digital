@@ -1,5 +1,5 @@
 import type { TranslationKeys } from "./i18n";
-import { GameCard, type ResourceMap, type DropPayload, type EffectTiming, type Checkbox, RESOURCE_KEYS, emptyResource } from "./types";
+import { GameCard, type ResourceMap, type DropPayload, type EffectTiming, type Checkbox, RESOURCE_KEYS, emptyResource, type Upgrade } from "./types";
 
 // -------------------
 // Types
@@ -39,7 +39,7 @@ export type GameContext = {
   addCardEffect: (id: number, face: number, zone: string, effect: CardEffect, effectText: string) => void;
   fetchCardsInZone: (filter: (card: GameCard) => boolean, zone: string) => GameCard[];
   selectCardSides: (card: GameCard, requiredCount: number, optionalCount: number, callback: (selectedSides: number[]) => void) => void;
-  selectUpgradeCost: (card: GameCard, callback: (upgradeIndex: number, resourceKey: keyof ResourceMap) => void) => void;
+  selectUpgradeCost: (card: GameCard, selectResource: boolean, callback: (upgradeIndex: number, resourceKey: keyof ResourceMap) => void) => void;
   selectTextInput: (description: string, required: boolean) => Promise<string | null>;
   selectStringChoice: (description: string, choices: string[]) => Promise<string>;
   updateBlocks: (blocker: number, blocked: number[] | null) => void;
@@ -3374,7 +3374,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         const selectedCard = cards[0];
         
         await new Promise<void>((resolve) => {
-          ctx.selectUpgradeCost(selectedCard, (upgradeIndex, resourceKey) => {
+          ctx.selectUpgradeCost(selectedCard, true, (upgradeIndex, resourceKey) => {
             const upgrade = selectedCard.upgrades[selectedCard.currentSide - 1][upgradeIndex];
             if (upgrade.cost && upgrade.cost[resourceKey]) {
               upgrade.cost[resourceKey] = Math.max(0, upgrade.cost[resourceKey] - 1);
@@ -4689,42 +4689,48 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         const cards = ctx.fetchCardsInZone((card) => card.GetUpgrades().length !== 0 && card.id !== ctx.card.id, ctx.t('playArea'));
         if (ctx.resources.coin >= 2 && cards.length !== 0) {
           const card = (await ctx.selectCardsFromArray(cards, ctx.t('playArea'), this.description(ctx.t), 1))[0];
-          const upgradeCosts = card.GetUpgrades().map((up) => up.cost?? {});
           
-          const selectedUpgrade = (await ctx.selectResourceChoice(upgradeCosts));
+          await new Promise<void>((resolve) => {
+            ctx.selectUpgradeCost(card, false, async (upgradeIndex) => {
+              const upgrade: Upgrade = card.upgrades[card.currentSide - 1][upgradeIndex];
+              let upgradeable = true;
+              upgrade.cost = upgrade.cost ? upgrade.cost : {};
+              if (ctx.resources['coin'] >= (upgrade.cost['coin'] ?? 0) + 2) {
+                for (const key in upgrade.cost) {
+                  const resourceKey = key as keyof ResourceMap;
+                  const amount = upgrade.cost[resourceKey] ?? 0;
+                  if (ctx.resources[resourceKey] < amount) {
+                    return false;
+                  }
+                }
 
-          if (selectedUpgrade === null) {
-            return false;
-          }
+                if (upgrade.otherCost) {
+                  const additionalCostEffect = getCardUpgradeAdditionalCost(card.id, card.currentSide);
+                  let cardToUpgradeCtx = ctx;
+                  cardToUpgradeCtx.card = card;
+                  upgradeable = await additionalCostEffect.execute(cardToUpgradeCtx);
+                }
+                if (upgradeable) {
+                  ctx.setResources(prev => ({
+                    ...prev,
+                    ...(upgrade.cost && Object.fromEntries(
+                      Object.entries(upgrade.cost).map(([key, value]) => [
+                        key, 
+                        prev[key as keyof ResourceMap] - value
+                      ])
+                    )),
+                    coin: prev.coin - (upgrade.cost?.coin ?? 0) - 2
+                  }));
 
-          for (const key in selectedUpgrade) {
-            const resourceKey = key as keyof ResourceMap;
-            const amount = selectedUpgrade[resourceKey] ?? 0;
-            if (ctx.resources[resourceKey] < amount) {
-              return false;
-            }
-          }
-
-          for (const key in selectedUpgrade) {
-            const resourceKey = key as keyof ResourceMap;
-            const amount = selectedUpgrade[resourceKey] ?? 0;
-            ctx.resources[resourceKey] -= amount;
-          }
-
-          const upgrades = card.GetUpgrades();
-          const upgradeIndex = upgradeCosts.findIndex(cost => {
-            if (cost === null && selectedUpgrade === null) return true;
-            if (cost === null || selectedUpgrade === null) return false;
-            return Object.keys(cost).length === Object.keys(selectedUpgrade).length &&
-                  Object.keys(cost).every(key => cost[key as keyof ResourceMap] === selectedUpgrade[key as keyof ResourceMap]);
+                  await ctx.upgradeCard(card, upgrade.nextSide);
+                  ctx.replaceCardInZone(ctx.t('playArea'), card.id, card);
+                  await ctx.dropToDiscard({id: card.id, fromZone: ctx.t('playArea')});
+                }
+              }
+              resolve();
+            });
           });
 
-          if (upgradeIndex !== -1) {
-            await ctx.upgradeCard(card, upgrades[upgradeIndex].nextSide);
-          }
-          ctx.dropToDiscard({id: card.id, fromZone: ctx.t('playArea')});
-          ctx.setResources(prev => ({ ...prev, coin: prev.coin - 2 }));
-          return true;
         }
         return false;
       }
@@ -4736,41 +4742,47 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         const cards = ctx.fetchCardsInZone((card) => card.GetUpgrades().length !== 0 && card.id !== ctx.card.id, ctx.t('playArea'));
         if (cards.length !== 0) {
           const card = (await ctx.selectCardsFromArray(cards, ctx.t('playArea'), this.description(ctx.t), 1))[0];
-          const upgradeCosts = card.GetUpgrades().map((up) => up.cost?? {});
           
-          const selectedUpgrade = (await ctx.selectResourceChoice(upgradeCosts));
+          await new Promise<void>((resolve) => {
+            ctx.selectUpgradeCost(card, false, async (upgradeIndex) => {
+              const upgrade: Upgrade = card.upgrades[card.currentSide - 1][upgradeIndex];
+              let upgradeable = true;
+              upgrade.cost = upgrade.cost ? upgrade.cost : {};
+              if (ctx.resources['coin'] >= (upgrade.cost['coin'] ?? 0)) {
+                for (const key in upgrade.cost) {
+                  const resourceKey = key as keyof ResourceMap;
+                  const amount = upgrade.cost[resourceKey] ?? 0;
+                  if (ctx.resources[resourceKey] < amount) {
+                    return false;
+                  }
+                }
 
-          if (selectedUpgrade === null) {
-            return false;
-          }
+                if (upgrade.otherCost) {
+                  const additionalCostEffect = getCardUpgradeAdditionalCost(card.id, card.currentSide);
+                  let cardToUpgradeCtx = ctx;
+                  cardToUpgradeCtx.card = card;
+                  upgradeable = await additionalCostEffect.execute(cardToUpgradeCtx);
+                }
+                if (upgradeable) {
+                  ctx.setResources(prev => ({
+                    ...prev,
+                    ...(upgrade.cost && Object.fromEntries(
+                      Object.entries(upgrade.cost).map(([key, value]) => [
+                        key, 
+                        prev[key as keyof ResourceMap] - value
+                      ])
+                    )),
+                  }));
 
-          for (const key in selectedUpgrade) {
-            const resourceKey = key as keyof ResourceMap;
-            const amount = selectedUpgrade[resourceKey] ?? 0;
-            if (ctx.resources[resourceKey] < amount) {
-              return false;
-            }
-          }
-
-          for (const key in selectedUpgrade) {
-            const resourceKey = key as keyof ResourceMap;
-            const amount = selectedUpgrade[resourceKey] ?? 0;
-            ctx.resources[resourceKey] -= amount;
-          }
-          
-          const upgrades = card.GetUpgrades();
-          const upgradeIndex = upgradeCosts.findIndex(cost => {
-            if (cost === null && selectedUpgrade === null) return true;
-            if (cost === null || selectedUpgrade === null) return false;
-            return Object.keys(cost).length === Object.keys(selectedUpgrade).length &&
-                  Object.keys(cost).every(key => cost[key as keyof ResourceMap] === selectedUpgrade[key as keyof ResourceMap]);
+                  await ctx.upgradeCard(card, upgrade.nextSide);
+                  ctx.replaceCardInZone(ctx.t('playArea'), card.id, card);
+                  await ctx.dropToDiscard({id: card.id, fromZone: ctx.t('playArea')});
+                }
+              }
+              resolve();
+            });
           });
 
-          if (upgradeIndex !== -1) {
-            await ctx.upgradeCard(card, upgrades[upgradeIndex].nextSide);
-          }
-          ctx.dropToDiscard({id: card.id, fromZone: ctx.t('playArea')});
-          return true;
         }
         return false;
       }
@@ -4856,7 +4868,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           return false;
         }
         
-        const resToPay = await ctx.selectResourceChoice([availableResources]);
+        const resToPay = await ctx.selectResourceChoice(Object.entries(availableResources).map(([key, value]) => ({[key]: (value >= 1 ? 1 : 0)})));
         if (!resToPay) {
           return false;
         }
@@ -4916,7 +4928,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         const selectedCard = cards[0];
         
         await new Promise<void>((resolve) => {
-          ctx.selectUpgradeCost(selectedCard, (upgradeIndex, resourceKey) => {
+          ctx.selectUpgradeCost(selectedCard, true, (upgradeIndex, resourceKey) => {
             const upgrade = selectedCard.upgrades[selectedCard.currentSide - 1][upgradeIndex];
             if (upgrade.cost && upgrade.cost[resourceKey]) {
               upgrade.cost[resourceKey] = Math.max(0, upgrade.cost[resourceKey] - 1);
@@ -5168,7 +5180,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         description: (t) => t('effect_description_aric_blackwood'),
         timing: "played",
         execute: async function (ctx) {
-          const card = (await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, ctx.t('playArea'), this.description(ctx.t), 1))[0];
+          const card = (await ctx.selectCardsFromZone(() => true, ctx.t('playArea'), this.description(ctx.t), 1))[0];
           if (card) {
             ctx.dropToDiscard({id: card.id, fromZone: ctx.t('playArea')});
           }
@@ -5235,25 +5247,17 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         const cards = ctx.fetchCardsInZone((card) => card.GetUpgrades().length !== 0 && card.id !== ctx.card.id && card.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'));
         if (cards.length !== 0) {
           const card = (await ctx.selectCardsFromArray(cards, ctx.t('playArea'), this.description(ctx.t), 1))[0];
-          const upgradeCosts = card.GetUpgrades().map((up) => up.cost?? {});
-          
-          const selectedUpgrade = (await ctx.selectResourceChoice(upgradeCosts));
 
-          if (selectedUpgrade === null) {
-            return false;
-          }
-
-          const upgrades = card.GetUpgrades();
-          const upgradeIndex = upgradeCosts.findIndex(cost => {
-            if (cost === null && selectedUpgrade === null) return true;
-            if (cost === null || selectedUpgrade === null) return false;
-            return Object.keys(cost).length === Object.keys(selectedUpgrade).length &&
-                  Object.keys(cost).every(key => cost[key as keyof ResourceMap] === selectedUpgrade[key as keyof ResourceMap]);
+          await new Promise<void>((resolve) => {
+            ctx.selectUpgradeCost(card, false, async (upgradeIndex) => {
+              const upgrade: Upgrade = card.upgrades[card.currentSide - 1][upgradeIndex];
+              await ctx.upgradeCard(card, upgrade.nextSide);
+              ctx.replaceCardInZone(ctx.t('playArea'), card.id, card);
+              await ctx.dropToDiscard({id: card.id, fromZone: ctx.t('playArea')});
+              resolve();
+            });
           });
 
-          if (upgradeIndex !== -1) {
-            await ctx.upgradeCard(card, upgrades[upgradeIndex].nextSide);
-          }
           await ctx.upgradeCard(ctx.card, 2);
           ctx.effectEndTurn();
         }
@@ -5267,25 +5271,17 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         const cards = ctx.fetchCardsInZone((card) => card.GetUpgrades().length !== 0 && card.id !== ctx.card.id && card.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'));
         if (cards.length !== 0) {
           const card = (await ctx.selectCardsFromArray(cards, ctx.t('playArea'), this.description(ctx.t), 1))[0];
-          const upgradeCosts = card.GetUpgrades().map((up) => up.cost?? {});
           
-          const selectedUpgrade = (await ctx.selectResourceChoice(upgradeCosts));
-
-          if (selectedUpgrade === null) {
-            return false;
-          }
-
-          const upgrades = card.GetUpgrades();
-          const upgradeIndex = upgradeCosts.findIndex(cost => {
-            if (cost === null && selectedUpgrade === null) return true;
-            if (cost === null || selectedUpgrade === null) return false;
-            return Object.keys(cost).length === Object.keys(selectedUpgrade).length &&
-                  Object.keys(cost).every(key => cost[key as keyof ResourceMap] === selectedUpgrade[key as keyof ResourceMap]);
+          await new Promise<void>((resolve) => {
+            ctx.selectUpgradeCost(card, false, async (upgradeIndex) => {
+              const upgrade: Upgrade = card.upgrades[card.currentSide - 1][upgradeIndex];
+              await ctx.upgradeCard(card, upgrade.nextSide);
+              ctx.replaceCardInZone(ctx.t('playArea'), card.id, card);
+              await ctx.dropToDiscard({id: card.id, fromZone: ctx.t('playArea')});
+              resolve();
+            });
           });
 
-          if (upgradeIndex !== -1) {
-            await ctx.upgradeCard(card, upgrades[upgradeIndex].nextSide);
-          }
           await ctx.upgradeCard(ctx.card, 4);
           ctx.effectEndTurn();
         }
@@ -5793,7 +5789,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       execute: async function (ctx) {
         const card = (await ctx.selectCardsFromZone((card) => card.GetType(ctx.t).includes(ctx.t('land')) && card.id !== ctx.card.id, ctx.t('playArea'), this.description(ctx.t), 1))[0];
         if (card) {
-          addResourceMapToCard(card, {coin: 1});
+          await addResourceMapToCard(card, {coin: 1});
+          ctx.replaceCardInZone(ctx.t('playArea'), card.id, card);
         }
         return false;
       }
@@ -5802,7 +5799,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: (t) => t('effect_description_fountain'),
       timing: "onUpgrade",
       execute: async function (ctx) {
-        ctx.boostProductivity((card) => card.id !== ctx.card.id, ctx.t('playArea'), this.description(ctx.t), null);
+        await ctx.boostProductivity((card) => card.id !== ctx.card.id, ctx.t('playArea'), this.description(ctx.t), null);
         return false;
       }
     }],
@@ -6055,9 +6052,10 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                 if (hasEnoughResources(ctx.resources, cbResources)) {
                   applyResourceMapDelta(ctx.setResources, cbResources, true);
                   await checkBoxes(ctx.card, boxes);
-                  ctx.dropToDiscard({ id: lord.id, fromZone: ctx.t('playArea') });
+                  await ctx.dropToDiscard({ id: lord.id, fromZone: ctx.t('playArea') });
                   if (ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked)) {
                     await ctx.upgradeCard(ctx.card, 3);
+                    ctx.replaceCardInZone(ctx.t('playArea'), ctx.card.id, ctx.card);
                   }
                   resolve(true);
                 }
@@ -6255,11 +6253,12 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           
           if (selected.length !== 0) {
             for(const card of selected) {
-              const selectedResource = await ctx.selectResourceChoice(card.GetResources());
-              if (selectedResource) {
-                await removeResourceFromCard(card, selectedResource);
-                ctx.replaceCardInZone(ctx.t('deck'), card.id, card);
+              let selectedResource = null;
+              while(selectedResource === null) {
+                selectedResource = await ctx.selectResourceChoice(card.GetResources());
               }
+              await removeResourceFromCard(card, selectedResource);
+              ctx.replaceCardInZone(ctx.t('deck'), card.id, card);
             }
           }
           return false;
@@ -6337,7 +6336,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         execute: async function (ctx) {
           const buildings = ctx.fetchCardsInZone((card) => card.GetType(ctx.t).includes(ctx.t('building')), ctx.t('playArea'));
           const lands = ctx.fetchCardsInZone((card) => card.GetType(ctx.t).includes(ctx.t('land')), ctx.t('playArea'));
-          if (buildings.length < 2 && lands.length < 1) {
+          if (buildings.length < 2 || lands.length < 1) {
             return false;
           }
           const selected = await ctx.selectCardsFromArray(buildings, ctx.t('playArea'), this.description(ctx.t), 2);
@@ -6346,7 +6345,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             if (land) {
               addResourceMapToCard(land, {coin: 1});
               for (const building of selected) {
-                ctx.dropToDiscard({id: building.id, fromZone: ctx.t('playArea')});
+                await ctx.dropToDiscard({id: building.id, fromZone: ctx.t('playArea')});
               }
               ctx.effectEndTurn();
             }
