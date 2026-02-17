@@ -2721,6 +2721,7 @@ export default function Game() {
   const blockedZoneRef = useRef<GameCard[]>([]);
   const permanentZoneRef = useRef<GameCard[]>([]);
   const temporaryCardListRef = useRef<GameCard[]>([]);
+  const purgedCardsRef = useRef<GameCard[]>([]);
 
   // Keep refs in sync if other code uses setPlayArea / setDiscard directly
   useEffect(() => { deckRef.current = deck; }, [deck]);
@@ -2728,6 +2729,7 @@ export default function Game() {
   useEffect(() => { discardRef.current = discard; }, [discard]);
   useEffect(() => { blockedZoneRef.current = blockedZone; }, [blockedZone]);
   useEffect(() => { permanentZoneRef.current = permanentZone; }, [permanentZone]);
+  useEffect(() => { purgedCardsRef.current = purgedCards; }, [purgedCards]);
 
   function setPlayAreaImmediate(next: React.SetStateAction<GameCard[]>) {
     if (typeof next === "function") {
@@ -2781,6 +2783,17 @@ export default function Game() {
     } else {
       temporaryCardListRef.current = [...temporaryCardListRef.current, ...next];
       setTemporaryCardList((prev) => [...prev, ...next]);
+    }
+  }
+
+  function setPurgedCardsImmediate(next: React.SetStateAction<GameCard[]>) {
+    if (typeof next === "function") {
+      const v = (next as (prev: GameCard[]) => GameCard[])(purgedCardsRef.current);
+      purgedCardsRef.current = v;
+      setPurgedCards(v);
+    } else {
+      purgedCardsRef.current = next as GameCard[];
+      setPurgedCards(next as GameCard[]);
     }
   }
 
@@ -2922,6 +2935,7 @@ export default function Game() {
             effectEndTurn,
             dropToPlayArea,
             dropToBlocked,
+            dropToDeck,
             dropToDiscard,
             dropToCampaign,
             dropToPermanent,
@@ -2933,6 +2947,7 @@ export default function Game() {
             setTemporaryCardList,
             setTemporaryCardListImmediate,
             setBlockedZone,
+            setPurgedCards: setPurgedCardsImmediate,
             deleteCardInZone,
             replaceCardInZone,
             mill,
@@ -3021,6 +3036,7 @@ export default function Game() {
           effectEndTurn,
           dropToPlayArea,
           dropToBlocked,
+          dropToDeck,
           dropToDiscard,
           dropToCampaign,
           dropToPermanent,
@@ -3032,6 +3048,7 @@ export default function Game() {
           setTemporaryCardList,
           setTemporaryCardListImmediate,
           setBlockedZone,
+          setPurgedCards: setPurgedCardsImmediate,
           deleteCardInZone,
           replaceCardInZone,
           mill,
@@ -3180,6 +3197,7 @@ export default function Game() {
               effectEndTurn,
               dropToPlayArea,
               dropToBlocked,
+              dropToDeck,
               dropToDiscard,
               dropToCampaign,
               dropToPermanent,
@@ -3191,6 +3209,7 @@ export default function Game() {
               setTemporaryCardList,
               setTemporaryCardListImmediate,
               setBlockedZone,
+              setPurgedCards: setPurgedCardsImmediate,
               deleteCardInZone,
               replaceCardInZone,
               mill,
@@ -3245,6 +3264,7 @@ export default function Game() {
               effectEndTurn,
               dropToPlayArea,
               dropToBlocked,
+              dropToDeck,
               dropToDiscard,
               dropToCampaign,
               dropToPermanent,
@@ -3256,6 +3276,7 @@ export default function Game() {
               setTemporaryCardList,
               setTemporaryCardListImmediate,
               setBlockedZone,
+              setPurgedCards: setPurgedCardsImmediate,
               deleteCardInZone,
               replaceCardInZone,
               mill,
@@ -3430,7 +3451,9 @@ export default function Game() {
     cards: GameCard[],
     zone: string,
     effectDescription: string,
-    requiredCount: number
+    requiredCount: number,
+    optionalCount?: number,
+    triggeringCard?: GameCard
   ): Promise<GameCard[]> => {
     return new Promise((resolve) => {
       if (cards.length === 0) {
@@ -3443,6 +3466,8 @@ export default function Game() {
         effectDescription: effectDescription,
         zone: zone,
         requiredCount: adjustedCount,
+        optionalCount: optionalCount,
+        triggeringCard: triggeringCard,
         resolve: (selectedCards: GameCard[]) => {
           setCardSelectionPopup(null);
           setTimeout(() => {
@@ -3457,6 +3482,7 @@ export default function Game() {
     filter: (card: GameCard) => boolean,
     effectDescription: string,
     requiredCount: number,
+    triggeringCard?: GameCard,
     optionalCount?: number,
     zone?: string
   ): Promise<boolean> => {
@@ -3475,6 +3501,7 @@ export default function Game() {
         zone: t('campaign'),
         requiredCount: adjustedCount,
         optionalCount: optionalCount,
+        triggeringCard: triggeringCard,
         resolve: (selectedCards: GameCard[] | null) => {
           if (selectedCards) {
             for(const card of selectedCards) {
@@ -3505,7 +3532,8 @@ export default function Game() {
     filter: (card: GameCard) => boolean,
     zone: string,
     effectDescription: string,
-    prodBoost: Partial<ResourceMap> | null
+    prodBoost: Partial<ResourceMap> | null,
+    triggeringCard?: GameCard
   ): Promise<boolean> => {
     return new Promise((resolve) => {
       const filteredCards = filterZone(zone, filter);
@@ -3520,6 +3548,7 @@ export default function Game() {
         effectDescription: effectDescription,
         zone: zone,
         requiredCount: 1,
+        triggeringCard: triggeringCard,
         resolve: async (cards: GameCard[] | null) => {
           if (cards && cards.length > 0) {
             const selectedCard = cards[0];
@@ -3629,6 +3658,7 @@ export default function Game() {
             effectEndTurn,
             dropToPlayArea,
             dropToBlocked,
+            dropToDeck,
             dropToDiscard,
             dropToCampaign,
             dropToPermanent,
@@ -3640,6 +3670,7 @@ export default function Game() {
             setTemporaryCardList,
             setTemporaryCardListImmediate,
             setBlockedZone,
+            setPurgedCards: setPurgedCardsImmediate,
             deleteCardInZone,
             replaceCardInZone,
             mill,
@@ -3929,6 +3960,7 @@ export default function Game() {
             effectEndTurn,
             dropToPlayArea,
             dropToBlocked,
+            dropToDeck,
             dropToDiscard,
             dropToCampaign,
             dropToPermanent,
@@ -3940,6 +3972,7 @@ export default function Game() {
             setTemporaryCardList,
             setTemporaryCardListImmediate,
             setBlockedZone,
+            setPurgedCards: setPurgedCardsImmediate,
             deleteCardInZone,
             replaceCardInZone,
             mill,
@@ -4081,6 +4114,7 @@ export default function Game() {
       effectEndTurn,
       dropToPlayArea,
       dropToBlocked,
+      dropToDeck,
       dropToDiscard,
       dropToCampaign,
       dropToPermanent,
@@ -4092,6 +4126,7 @@ export default function Game() {
       setTemporaryCardList,
       setTemporaryCardListImmediate,
       setBlockedZone,
+      setPurgedCards: setPurgedCardsImmediate,
       deleteCardInZone,
       replaceCardInZone,
       mill,
@@ -4381,27 +4416,27 @@ export default function Game() {
     /* TODO: Implement focus */
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     focus;
+
+    let purged: GameCard[] = [];
+
     if (purgeType === 'deck') {
       let batch: GameCard[] = sourceCards.slice(0, purgeValue);;
       let offset = 0;
       while (batch.length === purgeValue) {
-        await performPurgeCycle(batch, purgeType, purgeValue, focus);
+        const tmpPurged = await performPurgeCycle(batch, purgeType, purgeValue, focus);
+        purged = [...purged, ...tmpPurged];
         offset += purgeValue;
         batch = sourceCards.slice(offset, offset + purgeValue);
       }
     }
     else {
-      await performPurgeCycle(sourceCards, purgeType, purgeValue, focus);
+      purged = await performPurgeCycle(sourceCards, purgeType, purgeValue, focus);
     }
 
+    setPurgedCardsImmediate(prev => [...prev, ...purged]);
+
     // Trigger onPurge effects
-    for (const card of purgedCards) {
-      // Retirer de la zone source
-      if (purgeType === 'deck') {
-        setDeck(prev => prev.filter(c => c.id !== card.id));
-      } else {
-        setPermanentZone(prev => prev.filter(c => c.id !== card.id));
-      }
+    for (const card of purged) {
       const effects = getCardEffects(card.id, card.currentSide);
       for (const effect of effects) {
         if (effect.timing === 'purged') {
@@ -4409,12 +4444,14 @@ export default function Game() {
               card,
               zone: purgeType === 'deck' ? t('deck') : t('permanentZone'),
               resources,
+              cardsForTrigger: purgedCardsRef.current,
               filterZone,
               setResources,
               draw,
               effectEndTurn,
               dropToPlayArea,
               dropToBlocked,
+              dropToDeck,
               dropToDiscard,
               dropToCampaign,
               dropToPermanent,
@@ -4426,6 +4463,7 @@ export default function Game() {
               setTemporaryCardList,
               setTemporaryCardListImmediate,
               setBlockedZone,
+              setPurgedCards: setPurgedCardsImmediate,
               deleteCardInZone,
               replaceCardInZone,
               mill,
@@ -4456,6 +4494,16 @@ export default function Game() {
         }
       }
     }
+
+    // Finally remove cards
+    for (const card of purged) {
+      // Retirer de la zone source
+      if (purgeType === 'deck') {
+        setDeck(prev => prev.filter(c => c.id !== card.id));
+      } else {
+        setPermanentZone(prev => prev.filter(c => c.id !== card.id));
+      }
+    }
   };
 
   const performPurgeCycle = async (
@@ -4463,7 +4511,7 @@ export default function Game() {
     purgeType: 'deck' | 'permanent',
     purgeValue?: number,
     focus?: Partial<ResourceMap>
-  ): Promise<void> => {
+  ): Promise<GameCard[]> => {
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     focus;
     const purgeable = batch.filter(card => {
@@ -4478,6 +4526,7 @@ export default function Game() {
         effectEndTurn,
         dropToPlayArea,
         dropToBlocked,
+        dropToDeck,
         dropToDiscard,
         dropToCampaign,
         dropToPermanent,
@@ -4489,6 +4538,7 @@ export default function Game() {
         setTemporaryCardList,
         setTemporaryCardListImmediate,
         setBlockedZone,
+        setPurgedCards: setPurgedCardsImmediate,
         deleteCardInZone,
         replaceCardInZone,
         mill,
@@ -4515,7 +4565,7 @@ export default function Game() {
         markAsUsedThisTurn,
         t,
       };
-      const cannotBePurged = effects.some(eff => 
+      const cannotBePurged = effects.some(eff =>
         (eff.timing === 'removed' || eff.timing === 'purged') && 
         !eff.execute(context)
       );
@@ -4523,7 +4573,7 @@ export default function Game() {
     });
     
     if (purgeable.length === 0) {
-      return;
+      return [];
     }
     
     const selected = await selectCardsFromArray(
@@ -4536,8 +4586,10 @@ export default function Game() {
     );
     
     if (selected.length > 0) {
-      setPurgedCards(prev => [...prev, cloneGameCard(selected[0])]);
+      return selected;
     }
+    
+    return [];
   };
 
   const startExpansion = async (expansionId: string) => {
@@ -4705,6 +4757,7 @@ export default function Game() {
           effectEndTurn,
           dropToPlayArea,
           dropToBlocked,
+          dropToDeck,
           dropToDiscard,
           dropToCampaign,
           dropToPermanent,
@@ -4716,6 +4769,7 @@ export default function Game() {
           setTemporaryCardList,
           setTemporaryCardListImmediate,
           setBlockedZone,
+          setPurgedCards: setPurgedCardsImmediate,
           deleteCardInZone,
           replaceCardInZone,
           mill,
@@ -4797,6 +4851,7 @@ export default function Game() {
             effectEndTurn,
             dropToPlayArea,
             dropToBlocked,
+            dropToDeck,
             dropToDiscard,
             dropToCampaign,
             dropToPermanent,
@@ -4808,6 +4863,7 @@ export default function Game() {
             setTemporaryCardList,
             setTemporaryCardListImmediate,
             setBlockedZone,
+            setPurgedCards: setPurgedCardsImmediate,
             deleteCardInZone,
             replaceCardInZone,
             mill,
@@ -4885,6 +4941,7 @@ export default function Game() {
             effectEndTurn,
             dropToPlayArea,
             dropToBlocked,
+            dropToDeck,
             dropToDiscard,
             dropToCampaign,
             dropToPermanent,
@@ -4896,6 +4953,7 @@ export default function Game() {
             setTemporaryCardList,
             setTemporaryCardListImmediate,
             setBlockedZone,
+            setPurgedCards: setPurgedCardsImmediate,
             deleteCardInZone,
             replaceCardInZone,
             mill,
