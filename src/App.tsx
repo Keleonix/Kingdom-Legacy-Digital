@@ -269,6 +269,29 @@ function parseEffects(raw: string) {
   return { before, effects };
 }
 
+function renderEffectText(effect: string) {
+  return effect.split(/(\s+)/).map((part, idx) => {
+    if (/^\s+$/.test(part)) {
+      return <span key={idx}>{part}</span>;
+    }
+    if (part.startsWith("resources/") || part.startsWith("effects/")) {
+      return (
+        <img
+          key={idx}
+          src={part.concat(".png")}
+          alt={part}
+          className="inline w-4 h-4 mx-0.5"
+        />
+      );
+    }
+    return (
+      <span key={idx} className="inline">
+        {part}
+      </span>
+    );
+  });
+}
+
 // -------------------
 // Card Preview Popup Component
 // -------------------
@@ -360,29 +383,6 @@ function CardPreviewPopup({
     );
   }
 
-  function renderEffectText(effect: string) {
-    return effect.split(/(\s+)/).map((part, idx) => {
-      if (/^\s+$/.test(part)) {
-        return <span key={idx}>{part}</span>;
-      }
-      if (part.startsWith("resources/") || part.startsWith("effects/")) {
-        return (
-          <img
-            key={idx}
-            src={part.concat(".png")}
-            alt={part}
-            className="inline w-4 h-4 mx-0.5"
-          />
-        );
-      }
-      return (
-        <span key={idx} className="inline">
-          {part}
-        </span>
-      );
-    });
-  }
-
   function renderUpgradeCost(upg: Upgrade) {
     const elements = [];
     
@@ -446,6 +446,13 @@ function CardPreviewPopup({
                 <div className="text-[10px] mb-1">
                   {renderSideOptions(card.resources[0], 0)}
                 </div>
+                {/* Badge */}
+                <img
+                  src={`/badges/${card.name[0]}.png`}
+                  alt={' '}
+                  className="relative left-16 w-8 h-8 shrink-0 object-contain pointer-events-none"
+                  style={{ imageRendering: 'pixelated' }}
+                />
                 {card.effects[0] && (
                   <div className="text-[9px] mt-1 border-t pt-2">
                     {renderEffectText(card.GetEffect(t, 0))}
@@ -484,6 +491,13 @@ function CardPreviewPopup({
                 <div className="text-[10px] mb-1">
                   {renderSideOptions(card.resources[2], 2)}
                 </div>
+                {/* Badge */}
+                <img
+                  src={`/badges/${card.name[2]}.png`}
+                  alt={' '}
+                  className="relative left-16 w-8 h-8 shrink-0 object-contain pointer-events-none"
+                  style={{ imageRendering: 'pixelated' }}
+                />
                 {card.effects[2] && (
                   <div className="text-[9px] mt-1 border-t pt-2">
                     {renderEffectText(card.GetEffect(t, 2))}
@@ -522,6 +536,13 @@ function CardPreviewPopup({
                 <div className="text-[10px] mb-1">
                   {renderSideOptions(card.resources[1], 1)}
                 </div>
+                {/* Badge */}
+                <img
+                  src={`/badges/${card.name[1]}.png`}
+                  alt={' '}
+                  className="relative left-16 w-8 h-8 shrink-0 object-contain pointer-events-none"
+                  style={{ imageRendering: 'pixelated' }}
+                />
                 {card.effects[1] && (
                   <div className="text-[9px] mt-1 border-t pt-2">
                     {renderEffectText(card.GetEffect(t, 1))}
@@ -560,6 +581,13 @@ function CardPreviewPopup({
                 <div className="text-[10px] mb-1">
                   {renderSideOptions(card.resources[3], 3)}
                 </div>
+                {/* Badge */}
+                <img
+                  src={`/badges/${card.name[3]}.png`}
+                  alt={' '}
+                  className="relative left-16 w-8 h-8 shrink-0 object-contain pointer-events-none"
+                  style={{ imageRendering: 'pixelated' }}
+                />
                 {card.effects[3] && (
                   <div className="text-[9px] mt-1 border-t pt-2">
                     {renderEffectText(card.GetEffect(t, 3))}
@@ -829,31 +857,6 @@ function CardView({
     );
   }
 
-  function renderEffectText(effect: string) {
-    return effect.split(/(\s+)/).map((part, idx) => {
-      if (/^\s+$/.test(part)) {
-        return <span key={idx}>{part}</span>;
-      }
-
-      if (part.startsWith("resources/") || part.startsWith("effects/")) {
-        return (
-          <img
-            key={idx}
-            src={part.concat(".png")}
-            alt={part}
-            className="inline w-4 h-4 mx-0.5"
-          />
-        );
-      }
-
-      return (
-        <span key={idx} className="inline">
-          {part}
-        </span>
-      );
-    });
-  }
-
   function renderEffect(raw: string) {
     const { before, effects } = parseEffects(raw);
     const cardEffects = getCardEffects(card.id, card.currentSide);
@@ -960,7 +963,7 @@ function CardView({
         <div className="absolute bottom-2 left-2 w-8 h-8">
           <img 
             src={`/badges/${card.name[card.currentSide - 1]}.png`}
-            alt={`${card.name[card.currentSide - 1]}`}
+            alt={' '}
             className="w-full h-full object-contain"
             style={{ imageRendering: 'pixelated' }}
           />
@@ -1944,29 +1947,6 @@ function CardSelectionPopup({
 
   const canConfirm = selectedValue >= requiredCount && selectedValue <= maxCount;
 
-  function renderEffectText(effect: string) {
-    return effect.split(/(\s+)/).map((part, idx) => {
-      if (/^\s+$/.test(part)) {
-        return <span key={idx}>{part}</span>;
-      }
-      if (part.startsWith("resources/") || part.startsWith("effects/")) {
-        return (
-          <img
-            key={idx}
-            src={part.concat(".png")}
-            alt={part}
-            className="inline w-4 h-4 mx-0.5"
-          />
-        );
-      }
-      return (
-        <span key={idx} className="inline">
-          {part}
-        </span>
-      );
-    });
-  }
-
   const displayMessage = (() => {
     return (
       <>
@@ -2119,7 +2099,7 @@ function EffectConfirmationPopup({
         <h2 className="font-bold text-lg">{t('endOfRoundEffect')}</h2>
         
         <div className="text-sm py-4">
-          <p>{description}</p>
+          <p>{renderEffectText(description)}</p>
         </div>
 
         <div className="flex justify-end gap-3">
@@ -2461,7 +2441,7 @@ const TextInputPopup: React.FC<{
     <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex justify-center items-center">
       <div className="bg-white p-4 rounded shadow-lg max-w-md w-full">
         <h2 className="text-lg font-bold mb-2">
-          {description}
+          {renderEffectText(description)}
         </h2>
         
         <input
@@ -2519,7 +2499,7 @@ const StringChoicePopup: React.FC<{
     <div className="fixed inset-0 z-[90] bg-black bg-opacity-50 flex justify-center items-center">
       <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full">
         <h2 className="text-lg font-bold mb-4">
-          {description}
+          {renderEffectText(description)}
         </h2>
         
         <div className="space-y-2 mb-4">
@@ -2533,7 +2513,7 @@ const StringChoicePopup: React.FC<{
                   : "bg-white border-gray-300 hover:border-gray-400 hover:bg-gray-50"
               }`}
             >
-              {choice}
+              {renderEffectText(choice)}
             </button>
           ))}
         </div>
@@ -2699,7 +2679,6 @@ export default function Game() {
   const [isPlayBlocked, setIsPlayBlocked] = useState(false);
   useEffect(() => {
     setIsPlayBlocked(checkPlayRestrictions());
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [playArea, permanentZone]);
 
   const [showUpgradeCostPopup, setShowUpgradeCostPopup] = useState(false);
@@ -3341,6 +3320,7 @@ export default function Game() {
         }
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [permanentZone, currentExpansion, deck.length, isChoosingExpansion]);
   
   const mill = async (
@@ -4240,7 +4220,7 @@ export default function Game() {
     if (fromZone === toZone) return;
 
     const cardIds = Array.isArray(id) ? id : [id];
-    let cards: GameCard[] = [];
+    const cards: GameCard[] = [];
 
     for(const id of cardIds) {
       if (toZone === t('playArea') && checkPlayRestrictions()) {

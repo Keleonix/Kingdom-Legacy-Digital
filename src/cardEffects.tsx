@@ -1070,8 +1070,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         description: (t) => t('effect_description_fertile_soil_efficiency'),
         timing: "onClick",
         execute: async function (ctx) {
-          let selected: GameCard;
-          selected = (await ctx.selectCardsFromZone((c) => c.GetType(ctx.t) === ctx.t('land'), ctx.t('deck'), this.description(ctx.t), 1))[0];
+          const selected: GameCard = (await ctx.selectCardsFromZone((c) => c.GetType(ctx.t) === ctx.t('land'), ctx.t('deck'), this.description(ctx.t), 1))[0];
           await addResourceMapToCard(selected, { coin: 1 });
           /* Tempo to let popup properly discard */
           await ctx.mill(0);
@@ -1264,11 +1263,14 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                   ctx.registerEndRoundEffect(
                     ctx.t('export') + ctx.t('eor_export_10'),
                     async () => {
-                      const choice = await ctx.selectResourceChoice([
-                        { coin: 1 },  
-                        { wood: 1 },
-                        { stone: 1 }
-                      ]);
+                      let choice = null;
+                      while (choice === null) {
+                        choice = await ctx.selectResourceChoice([
+                          { coin: 1 },  
+                          { wood: 1 },
+                          { stone: 1 }
+                        ]);
+                      }
                       if(choice) {
                         await ctx.boostProductivity((card: GameCard) => (card.GetType(ctx.t) === ctx.t('land')), ctx.t('deck'), this.description(ctx.t), choice);
                       }
@@ -1305,11 +1307,14 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                   ctx.registerEndRoundEffect(
                     ctx.t('export') + ctx.t('eor_export_40'),
                     async () => {
-                      const choice = await ctx.selectResourceChoice([
-                        { metal: 1 },  
-                        { sword: 1 },
-                        { tradegood: 1 }
-                      ]);
+                      let choice = null;
+                      while (choice === null) {
+                        choice = await ctx.selectResourceChoice([
+                          { metal: 1 },  
+                          { sword: 1 },
+                          { tradegood: 1 }
+                        ]);
+                      }
                       if(choice) {
                         await ctx.boostProductivity((card: GameCard) => (card.GetType(ctx.t) === ctx.t('building')), ctx.t('deck'), this.description(ctx.t), choice);
                       }
@@ -1321,12 +1326,15 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                   ctx.registerEndRoundEffect(
                     ctx.t('export') + ctx.t('eor_export_55'),
                     async () => {
-                      const choice = await ctx.selectResourceChoice([
-                        { wood: 1 },  
-                        { stone: 1 },  
-                        { metal: 1 },  
-                        { sword: 1 },
-                      ]);
+                      let choice = null;
+                      while (choice === null) {
+                        choice = await ctx.selectResourceChoice([
+                          { wood: 1 },  
+                          { stone: 1 },  
+                          { metal: 1 },  
+                          { sword: 1 },
+                        ]);
+                      }
                       if(choice) {
                         await ctx.boostProductivity(() => (true), ctx.t('deck'), this.description(ctx.t), choice);
                       }
@@ -4739,7 +4747,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
 
                 if (upgrade.otherCost) {
                   const additionalCostEffect = getCardUpgradeAdditionalCost(card.id, card.currentSide);
-                  let cardToUpgradeCtx = ctx;
+                  const cardToUpgradeCtx = ctx;
                   cardToUpgradeCtx.card = card;
                   upgradeable = await additionalCostEffect.execute(cardToUpgradeCtx);
                 }
@@ -4795,7 +4803,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
 
                 if (upgrade.otherCost) {
                   const additionalCostEffect = getCardUpgradeAdditionalCost(card.id, card.currentSide);
-                  let cardToUpgradeCtx = ctx;
+                  const cardToUpgradeCtx = ctx;
                   cardToUpgradeCtx.card = card;
                   upgradeable = await additionalCostEffect.execute(cardToUpgradeCtx);
                 }
@@ -6588,7 +6596,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         timing: "endOfRound",
         execute: async function (ctx) {
           const card = (await ctx.selectCardsFromZone((c) => !c.negative[c.currentSide - 1], ctx.t('deck'), this.description(ctx.t), 1, ctx.card))[0];
-          let resource = (await ctx.selectResourceChoice([{ coin: 1}, {wood: 1}, {stone: 1}, {sword: 1}, {metal: 1}, {tradegood: 1 }])) ?? {};
+          const resource = (await ctx.selectResourceChoice([{ coin: 1}, {wood: 1}, {stone: 1}, {sword: 1}, {metal: 1}, {tradegood: 1 }])) ?? {};
           await ctx.boostProductivity((c) => c.id === card.id, ctx.t('deck'), this.description(ctx.t), resource);
           ctx.card.currentSide = 3;
           return false;
