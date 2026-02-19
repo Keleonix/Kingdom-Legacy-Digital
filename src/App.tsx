@@ -131,7 +131,7 @@ function getBackgroundStyle(card: GameCard, sideIdx: number) {
   return {};
 }
 
-function renderCheckboxContent(content: string | undefined) {
+function renderCheckboxContent(content: string | undefined, outOfBox?: boolean) {
   if (!content || content.trim() === "") return <span className="text-xs text-gray-400"></span>;
   if (content.trim() === "*") return <span className="font-bold text-sm">*</span>;
   
@@ -153,7 +153,7 @@ function renderCheckboxContent(content: string | undefined) {
 
   if (parsedResources.length === 0) {
     // Fallback: render as plain text
-    return (<span className="text-[9px] font-medium">{content}</span>);
+    return (<span className="text-[8px] font-bold">{content}</span>);
   }
 
   return (
@@ -163,10 +163,11 @@ function renderCheckboxContent(content: string | undefined) {
           <img 
             src={resourceIconPath(res.name as keyof ResourceMap)} 
             alt={res.name} 
-            className="w-4 h-4 flex-shrink-0" 
+            className="w-full h-full object-contain" 
+            style={{ marginBottom: res.count > 1 && !outOfBox ? '-8px' : undefined, marginLeft: outOfBox ? '-16px' : undefined }}
           />
           {res.count > 1 && (
-            <span className="text-[9px] font-medium">{res.count}</span>
+            <span className="relative text-xxs font-medium" style={{ marginLeft: !outOfBox ? '-10px' : '6px', marginTop: !outOfBox ? '-16px' : undefined }}>{res.count}</span>
           )}
         </div>
       ))}
@@ -269,7 +270,7 @@ function parseEffects(raw: string) {
   return { before, effects };
 }
 
-function renderEffectText(effect: string) {
+function renderEffectText(effect: string, t: (key: TranslationKeys) => string) {
   return effect.split(/(\s+)/).map((part, idx) => {
     if (/^\s+$/.test(part)) {
       return <span key={idx}>{part}</span>;
@@ -282,6 +283,13 @@ function renderEffectText(effect: string) {
           alt={part}
           className="inline w-4 h-4 mx-0.5"
         />
+      );
+    }
+    else if (part.startsWith("i18n/")) {
+      return (
+      <span className="inline">
+        {t(part.split("i18n/")[1] as TranslationKeys)}
+      </span>
       );
     }
     return (
@@ -428,14 +436,16 @@ function CardPreviewPopup({
         maxWidth: '450px'
       }}
     >
-      <div className="font-bold text-lg mb-3 text-center">{t('card')} #{card.id}</div>
-
+      {/* Card ID */}
+      <div className="absolute text-bold text-xs left-[48%] text-center mb-3" style={{top: `${arrowCoordinates.leftColumn.topCardBottom + 10}px`}}>
+        {card.id}
+      </div>
       <div className="relative">
         <div className="grid grid-cols-2 gap-3 max-w-[450px]">
           {/* Front Up (Side 1) - INDEX 0 */}
           <div ref={cardRefs.frontUp} className="border rounded p-2 max-w-[200px]" style={getBackgroundStyle(card, 0)}>
             {/* Badge */}
-            <div className="absolute left-24 top-9 w-8 h-8">
+            <div className="absolute left-24 top-2 w-8 h-8">
               <img
                 src={`/badges/${card.name[0]}.png`}
                 alt={' '}
@@ -443,10 +453,9 @@ function CardPreviewPopup({
                 style={{ imageRendering: 'pixelated' }}
               />
             </div>
-            <div className="font-semibold text-sm mb-1">{t('frontUp')}</div>
             {card.name[0] ? (
               <>
-                <div className="text-xs font-bold mb-1 border-t">
+                <div className="text-xs font-bold mb-1">
                   {card.GetName(t, 0)}
                 </div>
                 <div className="text-[10px] text-gray-700 mb-1">
@@ -457,7 +466,7 @@ function CardPreviewPopup({
                 </div>
                 {card.effects[0] && (
                   <div className="text-[9px] mt-1 border-t pt-2">
-                    {renderEffectText(card.GetEffect(t, 0))}
+                    {renderEffectText(card.GetEffect(t, 0), t)}
                   </div>
                 )}
                 {card.upgrades[0]?.length > 0 && (
@@ -482,7 +491,7 @@ function CardPreviewPopup({
           {/* Back Up (Side 3) - INDEX 2 */}
           <div ref={cardRefs.backUp} className="border rounded p-2 max-w-[200px]" style={getBackgroundStyle(card, 2)}>
             {/* Badge */}
-            <div className="absolute right-20 top-9 w-8 h-8">
+            <div className="absolute right-20 top-2 w-8 h-8">
               <img
                 src={`/badges/${card.name[2]}.png`}
                 alt={' '}
@@ -490,10 +499,9 @@ function CardPreviewPopup({
                 style={{ imageRendering: 'pixelated' }}
               />
             </div>
-            <div className="font-semibold text-sm mb-1">{t('backUp')}</div>
             {card.name[2] ? (
               <>
-                <div className="text-xs font-bold mb-1 border-t">
+                <div className="text-xs font-bold mb-1">
                   {card.GetName(t, 2)}
                 </div>
                 <div className="text-[10px] text-gray-700 mb-1">
@@ -504,7 +512,7 @@ function CardPreviewPopup({
                 </div>
                 {card.effects[2] && (
                   <div className="text-[9px] mt-1 border-t pt-2">
-                    {renderEffectText(card.GetEffect(t, 2))}
+                    {renderEffectText(card.GetEffect(t, 2), t)}
                   </div>
                 )}
                 {card.upgrades[2]?.length > 0 && (
@@ -529,7 +537,7 @@ function CardPreviewPopup({
           {/* Front Down (Side 2) - INDEX 1 */}
           <div ref={cardRefs.frontDown} className="border rounded p-2 max-w-[200px]" style={getBackgroundStyle(card, 1)}>
             {/* Badge */}
-            <div className="absolute left-24 top-60 w-8 h-8">
+            <div className="absolute left-24 w-8 h-8" style={{top: `${arrowCoordinates.leftColumn.topCardBottom + 20}px`}}>
               <img
                 src={`/badges/${card.name[1]}.png`}
                 alt={' '}
@@ -537,10 +545,9 @@ function CardPreviewPopup({
                 style={{ imageRendering: 'pixelated' }}
               />
             </div>
-            <div className="font-semibold text-sm mb-1">{t('frontDown')}</div>
             {card.name[1] ? (
               <>
-                <div className="text-xs font-bold mb-1 border-t">
+                <div className="text-xs font-bold mb-1">
                   {card.GetName(t, 1)}
                 </div>
                 <div className="text-[10px] text-gray-700 mb-1">
@@ -551,7 +558,7 @@ function CardPreviewPopup({
                 </div>
                 {card.effects[1] && (
                   <div className="text-[9px] mt-1 border-t pt-2">
-                    {renderEffectText(card.GetEffect(t, 1))}
+                    {renderEffectText(card.GetEffect(t, 1), t)}
                   </div>
                 )}
                 {card.upgrades[1]?.length > 0 && (
@@ -576,7 +583,7 @@ function CardPreviewPopup({
           {/* Back Down (Side 4) - INDEX 3 */}
           <div ref={cardRefs.backDown} className="border rounded p-2 max-w-[200px]" style={getBackgroundStyle(card, 3)}>
             {/* Badge */}
-            <div className="absolute right-20 top-60 w-8 h-8">
+            <div className="absolute right-20 w-8 h-8" style={{top: `${arrowCoordinates.rightColumn.topCardBottom + 20}px`}}>
               <img
                 src={`/badges/${card.name[3]}.png`}
                 alt={' '}
@@ -584,10 +591,9 @@ function CardPreviewPopup({
                 style={{ imageRendering: 'pixelated' }}
               />
             </div>
-            <div className="font-semibold text-sm mb-1">{t('backDown')}</div>
             {card.name[3] ? (
               <>
-                <div className="text-xs font-bold mb-1 border-t">
+                <div className="text-xs font-bold mb-1">
                   {card.GetName(t, 3)}
                 </div>
                 <div className="text-[10px] text-gray-700 mb-1">
@@ -598,7 +604,7 @@ function CardPreviewPopup({
                 </div>
                 {card.effects[3] && (
                   <div className="text-[9px] mt-1 border-t pt-2">
-                    {renderEffectText(card.GetEffect(t, 3))}
+                    {renderEffectText(card.GetEffect(t, 3), t)}
                   </div>
                 )}
                 {card.upgrades[3]?.length > 0 && (
@@ -878,7 +884,7 @@ function CardView({
       <div className="flex flex-col gap-1">
         {before && (
           <div 
-            className="text-sm overflow-auto overscroll-contain" 
+            className="text-[10px] italic overflow-auto overscroll-contain" 
             style={{
               display: '-webkit-box',
               WebkitLineClamp: 5,
@@ -887,7 +893,7 @@ function CardView({
               touchAction: 'pan-y'
             }}
           >
-            {renderEffectText(before)}
+            {renderEffectText(before, t)}
           </div>
         )}
 
@@ -907,13 +913,13 @@ function CardView({
                 }}
                 className="text-[10px] px-2 py-1 border rounded transition text-left w-full bg-blue-50 hover:bg-blue-100 border-blue-300"
               >
-                {renderEffectText(effObj.text)}
+                {renderEffectText(effObj.text, t)}
               </button>
             );
           } else {
             return (
               <div key={displayIdx} className="text-[10px] px-2 py-1">
-                {renderEffectText(effObj.text)}
+                {renderEffectText(effObj.text, t)}
               </div>
             );
           }
@@ -967,22 +973,19 @@ function CardView({
           ${!interactable ? "opacity-60 cursor-not-allowed" : "cursor-pointer hover:border-blue-400"}
           ${isHighlighted ? "ring-4 ring-4 ring-blue-400 border-blue-500" : ""}`}
       >
-        {/* Pixel art bottom right */}
-        <div className="absolute bottom-2 left-2 w-8 h-8">
-          <img 
-            src={`/badges/${card.name[card.currentSide - 1]}.png`}
-            alt={' '}
-            className="w-full h-full object-contain"
-            style={{ imageRendering: 'pixelated' }}
-          />
-        </div>
 
         <CardContent className="text-center p-2 overflow-auto flex flex-col h-full w-full">
           {card.GetType(t).includes(t('permanent')) && <img src={"effects/permanent.png"} alt={t('permanentZone')} title={t('permanentZone')} className="w-49 h-2" />}
-          {card.choice && (card.currentSide == 1 || card.currentSide == 3) && <button><img src={"effects/choice.png"} alt={t('choice')} title={t('choice')} className="w-49 h-2" /></button>}
+          {card.choice && fromZone === t('campaign') &&(card.currentSide == 1 || card.currentSide == 3) && <button><img src={"effects/choice.png"} alt={t('choice')} title={t('choice')} className="w-49 h-2" /></button>}
           <div>
-            <p className="font-bold text-sm line-clamp-2">
-              {card.id >= 0 ? card.id : ""} {" | "} {name} {" | "} {type}
+            <div className="absolute bottom-1 left-44 text-[8px]">{card.id > 0 ? card.id : ""}</div>
+          </div>
+          <div>
+            <p className="font-bold text-[16px] line-clamp-2 text-center">
+              {name}
+            </p>
+            <p className="font-bold text-[9px] line-clamp-2 text-center">
+              {type}
             </p>
           </div>
 
@@ -1059,7 +1062,7 @@ function CardView({
 
           {/* Checkboxes - Fixed size and layout */}
           <div className="mt-2">
-            <div className="grid grid-cols-6 gap-1 justify-items-center">
+            <div className="grid grid-cols-8 gap-1 justify-items-center">
               {sideCheckboxes.map((box: Checkbox, idx: number) => (
                 <button
                   key={idx}
@@ -1071,7 +1074,7 @@ function CardView({
                       onCardUpdate(card, fromZone);
                     }
                   }}
-                  className={`w-7 h-7 border rounded flex items-center justify-center p-1 text-[10px] ${
+                  className={`w-6 h-6 border rounded flex items-center justify-center p-1 text-[10px] ${
                     box.checked ? "bg-green-100 border-green-400" : "bg-white border-gray-300"
                   } hover:border-gray-400 transition-colors`}
                   title={box.content || t('emptyCheckbox')}
@@ -1128,6 +1131,15 @@ function CardView({
             </div>
           </div>
         </CardContent>
+        {/* Pixel art bottom left */}
+        <div className="relative bottom-1 right-19 w-8 h-8">
+          <img 
+            src={`/badges/${card.name[card.currentSide - 1]}.png`}
+            alt={' '}
+            className="w-full h-full object-contain"
+            style={{ imageRendering: 'pixelated' }}
+          />
+        </div>
       </Card>
 
       {/* --- PREVIEW POPUP --- */}
@@ -1151,10 +1163,6 @@ function CardView({
             maxWidth: '225px'
           }}
         >
-          <div className="font-bold text-center mb-2">
-            {sideLabel(upgradePreviewSide, t)}
-          </div>
-          
           <div className="border rounded p-2" style={getBackgroundStyle(card, upgradePreviewSide - 1)}>
             {card.name[upgradePreviewSide - 1] ? (
               <>
@@ -1167,9 +1175,9 @@ function CardView({
                 </div>
 
                 {/* Pixel art bottom right */}
-                <div className="absolute top-16 right-5 w-8 h-8">
+                <div className="absolute top-6 right-5 w-8 h-8">
                   <img 
-                    src={`/badges/${card.name[card.currentSide - 1]}.png`}
+                    src={`/badges/${card.name[upgradePreviewSide - 1]}.png`}
                     alt={' '}
                     className="relative right-align w-8 h-8 shrink-0 object-contain pointer-events-none"
                     style={{ imageRendering: 'pixelated' }}
@@ -1179,7 +1187,7 @@ function CardView({
                 {/* Effects */}
                 {card.effects[upgradePreviewSide - 1] && (
                   <div className="text-[10px] mt-2 border-t pt-2">
-                    {renderEffectText(t(card.effects[upgradePreviewSide - 1] as TranslationKeys))}
+                    {renderEffectText(t(card.effects[upgradePreviewSide - 1] as TranslationKeys), t)}
                   </div>
                 )}
               </>
@@ -1968,7 +1976,7 @@ function CardSelectionPopup({
   const displayMessage = (() => {
     return (
       <>
-        {renderEffectText(effectDescription)}{" "}
+        {renderEffectText(effectDescription, t)}{" "}
       </>
     );
   })();
@@ -2117,7 +2125,7 @@ function EffectConfirmationPopup({
         <h2 className="font-bold text-lg">{t('endOfRoundEffect')}</h2>
         
         <div className="text-sm py-4">
-          <p>{renderEffectText(description)}</p>
+          <p>{renderEffectText(description, t)}</p>
         </div>
 
         <div className="flex justify-end gap-3">
@@ -2188,7 +2196,7 @@ const CheckboxSelectionPopup: React.FC<{
                         !isSelected && selected.length >= requiredCount + optionalCount
                       }
                     />
-                    <span>{renderCheckboxContent(checkbox.content) ?? `Case ${i + 1}`}</span>
+                    <span className="p-3">{renderCheckboxContent(checkbox.content, true) ?? `Case ${i + 1}`}</span>
                   </label>
                 );
               })}
@@ -2459,7 +2467,7 @@ const TextInputPopup: React.FC<{
     <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex justify-center items-center">
       <div className="bg-white p-4 rounded shadow-lg max-w-md w-full">
         <h2 className="text-lg font-bold mb-2">
-          {renderEffectText(description)}
+          {renderEffectText(description, t)}
         </h2>
         
         <input
@@ -2517,7 +2525,7 @@ const StringChoicePopup: React.FC<{
     <div className="fixed inset-0 z-[90] bg-black bg-opacity-50 flex justify-center items-center">
       <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full">
         <h2 className="text-lg font-bold mb-4">
-          {renderEffectText(description)}
+          {renderEffectText(description, t)}
         </h2>
         
         <div className="space-y-2 mb-4">
@@ -2531,7 +2539,7 @@ const StringChoicePopup: React.FC<{
                   : "bg-white border-gray-300 hover:border-gray-400 hover:bg-gray-50"
               }`}
             >
-              {renderEffectText(choice)}
+              {renderEffectText(choice, t)}
             </button>
           ))}
         </div>
