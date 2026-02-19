@@ -434,6 +434,15 @@ function CardPreviewPopup({
         <div className="grid grid-cols-2 gap-3 max-w-[450px]">
           {/* Front Up (Side 1) - INDEX 0 */}
           <div ref={cardRefs.frontUp} className="border rounded p-2 max-w-[200px]" style={getBackgroundStyle(card, 0)}>
+            {/* Badge */}
+            <div className="absolute left-24 top-9 w-8 h-8">
+              <img
+                src={`/badges/${card.name[0]}.png`}
+                alt={' '}
+                className="relative left-16 w-8 h-8 shrink-0 object-contain pointer-events-none"
+                style={{ imageRendering: 'pixelated' }}
+              />
+            </div>
             <div className="font-semibold text-sm mb-1">{t('frontUp')}</div>
             {card.name[0] ? (
               <>
@@ -446,13 +455,6 @@ function CardPreviewPopup({
                 <div className="text-[10px] mb-1">
                   {renderSideOptions(card.resources[0], 0)}
                 </div>
-                {/* Badge */}
-                <img
-                  src={`/badges/${card.name[0]}.png`}
-                  alt={' '}
-                  className="relative left-16 w-8 h-8 shrink-0 object-contain pointer-events-none"
-                  style={{ imageRendering: 'pixelated' }}
-                />
                 {card.effects[0] && (
                   <div className="text-[9px] mt-1 border-t pt-2">
                     {renderEffectText(card.GetEffect(t, 0))}
@@ -463,7 +465,7 @@ function CardPreviewPopup({
                     <div className="text-[9px] font-semibold mb-1">{t('upgrades')}:</div>
                     {card.upgrades[0].map((upg, idx) => (
                       <div key={idx} className="text-[8px] mb-1 flex items-center gap-1 flex-wrap">
-                        <span className="text-blue-600">→ {sideLabel(upg.nextSide, t)}</span>
+                        <span className="text-blue-600">→ {t(card.name[upg.nextSide - 1] as TranslationKeys)}</span>
                         <span className="text-gray-600 flex items-center gap-1">
                           ({renderUpgradeCost(upg)})
                         </span>
@@ -479,6 +481,15 @@ function CardPreviewPopup({
 
           {/* Back Up (Side 3) - INDEX 2 */}
           <div ref={cardRefs.backUp} className="border rounded p-2 max-w-[200px]" style={getBackgroundStyle(card, 2)}>
+            {/* Badge */}
+            <div className="absolute right-20 top-9 w-8 h-8">
+              <img
+                src={`/badges/${card.name[2]}.png`}
+                alt={' '}
+                className="relative left-16 w-8 h-8 shrink-0 object-contain pointer-events-none"
+                style={{ imageRendering: 'pixelated' }}
+              />
+            </div>
             <div className="font-semibold text-sm mb-1">{t('backUp')}</div>
             {card.name[2] ? (
               <>
@@ -491,13 +502,6 @@ function CardPreviewPopup({
                 <div className="text-[10px] mb-1">
                   {renderSideOptions(card.resources[2], 2)}
                 </div>
-                {/* Badge */}
-                <img
-                  src={`/badges/${card.name[2]}.png`}
-                  alt={' '}
-                  className="relative left-16 w-8 h-8 shrink-0 object-contain pointer-events-none"
-                  style={{ imageRendering: 'pixelated' }}
-                />
                 {card.effects[2] && (
                   <div className="text-[9px] mt-1 border-t pt-2">
                     {renderEffectText(card.GetEffect(t, 2))}
@@ -508,7 +512,7 @@ function CardPreviewPopup({
                     <div className="text-[9px] font-semibold mb-1">{t('upgrades')}:</div>
                     {card.upgrades[2].map((upg, idx) => (
                       <div key={idx} className="text-[8px] mb-1 flex items-center gap-1 flex-wrap">
-                        <span className="text-blue-600">→ {sideLabel(upg.nextSide, t)}</span>
+                        <span className="text-blue-600">→ {t(card.name[upg.nextSide - 1] as TranslationKeys)}</span>
                         <span className="text-gray-600 flex items-center gap-1">
                           ({renderUpgradeCost(upg)})
                         </span>
@@ -524,6 +528,15 @@ function CardPreviewPopup({
 
           {/* Front Down (Side 2) - INDEX 1 */}
           <div ref={cardRefs.frontDown} className="border rounded p-2 max-w-[200px]" style={getBackgroundStyle(card, 1)}>
+            {/* Badge */}
+            <div className="absolute left-24 top-60 w-8 h-8">
+              <img
+                src={`/badges/${card.name[1]}.png`}
+                alt={' '}
+                className="relative left-16 w-8 h-8 shrink-0 object-contain pointer-events-none"
+                style={{ imageRendering: 'pixelated' }}
+              />
+            </div>
             <div className="font-semibold text-sm mb-1">{t('frontDown')}</div>
             {card.name[1] ? (
               <>
@@ -536,13 +549,6 @@ function CardPreviewPopup({
                 <div className="text-[10px] mb-1">
                   {renderSideOptions(card.resources[1], 1)}
                 </div>
-                {/* Badge */}
-                <img
-                  src={`/badges/${card.name[1]}.png`}
-                  alt={' '}
-                  className="relative left-16 w-8 h-8 shrink-0 object-contain pointer-events-none"
-                  style={{ imageRendering: 'pixelated' }}
-                />
                 {card.effects[1] && (
                   <div className="text-[9px] mt-1 border-t pt-2">
                     {renderEffectText(card.GetEffect(t, 1))}
@@ -553,7 +559,7 @@ function CardPreviewPopup({
                     <div className="text-[9px] font-semibold mb-1">{t('upgrades')}:</div>
                     {card.upgrades[1].map((upg, idx) => (
                       <div key={idx} className="text-[8px] mb-1 flex items-center gap-1 flex-wrap">
-                        <span className="text-blue-600">→ {sideLabel(upg.nextSide, t)}</span>
+                        <span className="text-blue-600">→ {t(card.name[upg.nextSide - 1] as TranslationKeys)}</span>
                         <span className="text-gray-600 flex items-center gap-1">
                           ({renderUpgradeCost(upg)})
                         </span>
@@ -569,6 +575,15 @@ function CardPreviewPopup({
 
           {/* Back Down (Side 4) - INDEX 3 */}
           <div ref={cardRefs.backDown} className="border rounded p-2 max-w-[200px]" style={getBackgroundStyle(card, 3)}>
+            {/* Badge */}
+            <div className="absolute right-20 top-60 w-8 h-8">
+              <img
+                src={`/badges/${card.name[3]}.png`}
+                alt={' '}
+                className="relative left-16 w-8 h-8 shrink-0 object-contain pointer-events-none"
+                style={{ imageRendering: 'pixelated' }}
+              />
+            </div>
             <div className="font-semibold text-sm mb-1">{t('backDown')}</div>
             {card.name[3] ? (
               <>
@@ -581,13 +596,6 @@ function CardPreviewPopup({
                 <div className="text-[10px] mb-1">
                   {renderSideOptions(card.resources[3], 3)}
                 </div>
-                {/* Badge */}
-                <img
-                  src={`/badges/${card.name[3]}.png`}
-                  alt={' '}
-                  className="relative left-16 w-8 h-8 shrink-0 object-contain pointer-events-none"
-                  style={{ imageRendering: 'pixelated' }}
-                />
                 {card.effects[3] && (
                   <div className="text-[9px] mt-1 border-t pt-2">
                     {renderEffectText(card.GetEffect(t, 3))}
@@ -598,7 +606,7 @@ function CardPreviewPopup({
                     <div className="text-[9px] font-semibold mb-1">{t('upgrades')}:</div>
                     {card.upgrades[3].map((upg, idx) => (
                       <div key={idx} className="text-[8px] mb-1 flex items-center gap-1 flex-wrap">
-                        <span className="text-blue-600">→ {sideLabel(upg.nextSide, t)}</span>
+                        <span className="text-blue-600">→ {t(card.name[upg.nextSide - 1] as TranslationKeys)}</span>
                         <span className="text-gray-600 flex items-center gap-1">
                           ({renderUpgradeCost(upg)})
                         </span>
@@ -1075,7 +1083,7 @@ function CardView({
           </div>
 
           {/* Upgrades */}
-          <div className="mt-auto">
+          <div className="mt-2">
             <div className="flex gap-1 flex-wrap justify-center line-clamp-2">
               {currentUpgrades.map((upg, i) => (
                 <button
@@ -1114,7 +1122,7 @@ function CardView({
                       <span className="text-[11px] italic">{upg.otherCost}</span>
                     )}
                   </div>
-                  <div className="text-[11px]">{"→ "}{sideLabel(upg.nextSide, t)}</div>
+                  <div className="text-[11px]">{"→ "}{t(card.name[upg.nextSide - 1] as TranslationKeys)}</div>
                 </button>
               ))}
             </div>
@@ -1156,6 +1164,16 @@ function CardView({
                 {/* Resources */}
                 <div className="text-xs mb-2">
                   {renderSideOptions(card.resources[upgradePreviewSide - 1], upgradePreviewSide - 1)}
+                </div>
+
+                {/* Pixel art bottom right */}
+                <div className="absolute top-16 right-5 w-8 h-8">
+                  <img 
+                    src={`/badges/${card.name[card.currentSide - 1]}.png`}
+                    alt={' '}
+                    className="relative right-align w-8 h-8 shrink-0 object-contain pointer-events-none"
+                    style={{ imageRendering: 'pixelated' }}
+                  />
                 </div>
                 
                 {/* Effects */}
@@ -2326,7 +2344,7 @@ const UpgradeCostSelectionPopup: React.FC<{
                   <div className="flex items-center gap-2 mb-1">
                     <span className="font-medium text-sm">{t('upgrades')} {idx + 1}</span>
                     <span className="text-xs text-gray-600">
-                      → {sideLabel(upg.nextSide, t)}
+                      → {t(card.name[upg.nextSide - 1] as TranslationKeys)}
                     </span>
                   </div>
                   <div className="flex items-center gap-2 flex-wrap">

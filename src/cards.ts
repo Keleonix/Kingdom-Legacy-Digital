@@ -1222,7 +1222,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 26,
-    name: ['treasure', '', 'extended_treseaure', ''],
+    name: ['treasure', '', 'extended_treasure', ''],
     resources: [
       [ emptyResource ],
       [ emptyResource ],

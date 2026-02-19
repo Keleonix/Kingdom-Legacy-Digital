@@ -71,7 +71,7 @@ export type TranslationKeys =
   | 'stop'
   | 'fertile_soil_efficiency'
   | 'army' | 'grand_army'
-  | 'treasure' | 'extended_treseaure'
+  | 'treasure' | 'extended_treasure'
   | 'export' | 'mass_export'
   | 'volcanic_eruption' | 'ashlands' | 'young_forest'
   | 'opportunist' | 'recruit' | 'labourer' | 'pretend_noble'
@@ -673,7 +673,7 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     army: "Armée",
     grand_army: "Grande Armée",
     treasure: "Trésor",
-    extended_treseaure: "Immense Trésor",
+    extended_treasure: "Immense Trésor",
     export: "Exportations",
     mass_export: "Exportations de Masse",
     volcanic_eruption: "Eruption Volcanique",
@@ -1435,7 +1435,7 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     army: "Army",
     grand_army: "Grand Army",
     treasure: "Treasure",
-    extended_treseaure: "Immense Treasure",
+    extended_treasure: "Immense Treasure",
     export: "Exports",
     mass_export: "Mass Exports",
     volcanic_eruption: "Volcanic Eruption",
