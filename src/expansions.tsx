@@ -1,4 +1,6 @@
-import { type ExpansionData } from './types';
+import { type ExpansionData, type ResourceMap } from './types';
+
+export const FOCUS_KEYS = ['coin', 'wood', 'stone', 'sword', 'metal', 'tradegood'] as (keyof Omit<ResourceMap, 'fame'>)[];
 
 export const EXPANSIONS: ExpansionData[] = [
   {

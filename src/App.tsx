@@ -10,7 +10,7 @@ import { allCards } from "./cards";
 import { getCardEffects, type GameContext, type CardEffect, cardEffectsRegistry, getCardFameValue, getCardUpgradeAdditionalCost, getCardSelectionValue } from "./cardEffects";
 import { useTranslation, type Language, LanguageSelector, type TranslationKeys } from './i18n';
 import { createPortal } from 'react-dom';
-import { EXPANSIONS } from "./expansions";
+import { EXPANSIONS, FOCUS_KEYS } from "./expansions";
 import { DEFAULT_TUTORIAL_STEPS, tutorial, TutorialOverlay } from "./tutorial";
 
 const ZONE_MIN_HEIGHT = "290px";
@@ -1975,7 +1975,14 @@ function CardSelectionPopup({
         return prev.filter(c => c.id !== card.id);
       } else {
         const cardValue = getCardSelectionValue(card, searchType || "");
-        if (selectedValue + cardValue <= maxCount) {
+        const wouldExceed = selectedValue + cardValue > maxCount;
+        
+        const otherSelectableCards = localCards.filter(c => 
+          c.id !== card.id && getCardSelectionValue(c, searchType || "") <= maxCount
+        );
+        const isOnlyOption = wouldExceed && otherSelectableCards.length === 0 && prev.length === 0;
+
+        if (!wouldExceed || (wouldExceed && cardValue > 1) || isOnlyOption) {
           return [...prev, card];
         }
       }
@@ -2013,7 +2020,12 @@ function CardSelectionPopup({
     }
   }, [hoveredCard]);
 
-  const canConfirm = selectedValue >= requiredCount && selectedValue <= maxCount;
+  const onlyCardExceedsMax = localCards.length === 1 && 
+    getCardSelectionValue(localCards[0], searchType || "") > maxCount;
+
+  const canConfirm = (selectedValue >= requiredCount && selectedValue <= maxCount)
+    || (onlyCardExceedsMax && selectedCards.length === 1)
+    || (selectedCards.length >= requiredCount && selectedCards.length <= maxCount);
 
   const displayMessage = (() => {
     return (
@@ -3504,19 +3516,13 @@ export default function Game() {
     requiredCount: number,
     triggeringCard?: GameCard,
     optionalCount?: number,
+    searchType?: string
   ): Promise<GameCard[]> => {
     return new Promise((resolve) => {
       const filteredCards = filterZone(zone, filter);
       if (filteredCards.length === 0) {
         resolve([]);
         return;
-      }
-      let searchType = "";
-      const typeKeywords = ['person', 'building', 'terrain', 'knight', 'dame', 'maritime', 'ship', 'event'];
-      const translatedPattern = typeKeywords.map(key => t(key as TranslationKeys)).join('|');
-      const typeMatch = effectDescription.match(new RegExp(`\\b(${translatedPattern})\\b`, 'i'));
-      if (typeMatch) {
-        searchType = typeMatch[1];
       }
       
       const adjustedCount = Math.min(requiredCount, filteredCards.length);
@@ -3544,7 +3550,8 @@ export default function Game() {
     effectDescription: string,
     requiredCount: number,
     optionalCount?: number,
-    triggeringCard?: GameCard
+    triggeringCard?: GameCard,
+    searchType?: string
   ): Promise<GameCard[]> => {
     return new Promise((resolve) => {
       if (cards.length === 0) {
@@ -3559,6 +3566,7 @@ export default function Game() {
         requiredCount: adjustedCount,
         optionalCount: optionalCount,
         triggeringCard: triggeringCard,
+        searchType: searchType,
         resolve: (selectedCards: GameCard[]) => {
           setCardSelectionPopup(null);
           setTimeout(() => {
@@ -4182,7 +4190,6 @@ export default function Game() {
     });
   };
 
-
   const handleExecuteCardEffect = async (
     card: GameCard,
     zone: string,
@@ -4508,9 +4515,6 @@ export default function Game() {
     const sourceCards = purgeType === 'deck' 
       ? deck
       : permanentZone;
-    /* TODO: Implement focus */
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    focus;
 
     let purged: GameCard[] = [];
 
@@ -4522,10 +4526,20 @@ export default function Game() {
         purged = [...purged, ...tmpPurged];
         offset += purgeValue;
         batch = sourceCards.slice(offset, offset + purgeValue);
+
+        if (focus) {
+          focus = Object.fromEntries(
+            FOCUS_KEYS.map((k) => [k, focus![k] ? focus![k]! - 1 : undefined])
+          ) as Partial<ResourceMap>;
+
+          if (FOCUS_KEYS.every((k) => !focus![k])) {
+            focus = undefined;
+          }
+        }
       }
     }
     else {
-      purged = await performPurgeCycle(sourceCards, purgeType, purgeValue, focus);
+      purged = await performPurgeCycle(sourceCards, purgeType, purgeValue);
     }
 
     setPurgedCardsImmediate(prev => [...prev, ...purged]);
@@ -4607,9 +4621,10 @@ export default function Game() {
     purgeValue?: number,
     focus?: Partial<ResourceMap>
   ): Promise<GameCard[]> => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    focus;
-    const purgeable = batch.filter(card => {
+    let purgeable = batch.filter(card => {
+      if (card.negative[card.currentSide - 1]) {
+        return false;
+      }
       const effects = getCardEffects(card.id, card.currentSide);
       const context: GameContext = {
         card,
@@ -4670,6 +4685,18 @@ export default function Game() {
     if (purgeable.length === 0) {
       return [];
     }
+
+    if (focus) {
+      const tmpPurgeable = purgeable;
+      purgeable = purgeable.filter((c) =>
+        c.GetResources().some((resMap) =>
+          FOCUS_KEYS.some((k) => focus[k] && (resMap[k] ?? 0) > 0)
+        )
+      );
+      if (purgeable.length === 0) {
+        purgeable = tmpPurgeable;
+      }
+    }
     
     const selected = await selectCardsFromArray(
       purgeable,
@@ -4705,7 +4732,7 @@ export default function Game() {
     }
     else if (expansion.type === 'block') {
       if (expansion.deckPurgeValue) {
-        await startPurgeProcess('deck', expansion.deckPurgeValue);
+        await startPurgeProcess('deck', expansion.deckPurgeValue, expansion.focus);
       }
       
       if (expansion.permanentPurgeValue) {
@@ -4719,7 +4746,7 @@ export default function Game() {
       
       setCampaignDeck(prev => [...prev, ...newCampaignCards].sort((a, b) => a.id - b.id));
       
-      // TODO: Might not work as expected
+      // TODO: Post v1.0 : Might not work as expected, test with ridding_the_woods
       refreshDiscoverableCards();
     }
     
@@ -5588,9 +5615,10 @@ export default function Game() {
                   onDrop={(p) => dropToCampaign(p)}
                   onTapAction={debugMode ? handleTapAction : undefined}
                   onRightClick={() => {}}
+                  debugMode={debugMode}
                 />
-                <Zone name={t('discard')} cards={discard.slice(-1)} onDrop={(p) => {dropToDiscard(p); setCampaignPreview(null);}} onTapAction={debugMode ? handleTapAction : undefined} onRightClick={() => {}} showAll={true} />
-                <Zone name={t('destroy')} cards={[]} onDrop={(p) => {dropToDestroy(p); setCampaignPreview(null);}} onRightClick={() => {}} />
+                <Zone name={t('discard')} cards={discard.slice(-1)} onDrop={(p) => {dropToDiscard(p); setCampaignPreview(null);}} onTapAction={debugMode ? handleTapAction : undefined} onRightClick={() => {}} showAll={true} debugMode={debugMode} />
+                <Zone name={t('destroy')} cards={[]} onDrop={(p) => {dropToDestroy(p); setCampaignPreview(null);}} onRightClick={() => {}} debugMode={debugMode} />
               </div>
               <Button onClick={() => setCampaignPreview(null)}>{t('close')}</Button>
             </div>
@@ -5617,7 +5645,7 @@ export default function Game() {
                   </div>
                 </div>
                 <div className="min-w-[220px]">
-                  <Zone name={t('playArea')} cards={playArea} onDrop={(p) => dropToPlayArea(p)} onRightClick={() => {}} onTapAction={debugMode ? handleTapAction : undefined} />
+                  <Zone name={t('playArea')} cards={playArea} onDrop={(p) => dropToPlayArea(p)} onRightClick={() => {}} onTapAction={debugMode ? handleTapAction : undefined} debugMode={debugMode} />
                 </div>
               </div>
 
@@ -5657,12 +5685,13 @@ export default function Game() {
                       }
                       return Promise.resolve();
                     }}
+                    debugMode={debugMode}
                   />
                 </div>
 
                 <div className="flex-1 flex-col flex-row gap-4 max-w-[230px]">
                   <p className="font-bold">{t('deck')}</p>
-                  <Zone name={t('deck')} cards={deck.slice(0, 1)} onDrop={(p) => dropToDeck(p)} onTapAction={debugMode ? handleTapAction : undefined} onRightClick={() => {}} />
+                  <Zone name={t('deck')} cards={deck.slice(0, 1)} onDrop={(p) => dropToDeck(p)} onTapAction={debugMode ? handleTapAction : undefined} onRightClick={() => {}} debugMode={debugMode} />
                   {<Button onClick={() => setShowDeck(true)}>{t('seeDeck')}</Button>}
                 </div>
               </div>
@@ -5709,7 +5738,7 @@ export default function Game() {
                     ))}
                   </div>
                 </div>
-                <Zone name={t('destroy')} cards={[]} onDrop={(p) => dropToDestroy(p)} onRightClick={() => {}} />
+                <Zone name={t('destroy')} cards={[]} onDrop={(p) => dropToDestroy(p)} onRightClick={() => {}} debugMode={debugMode} />
               </div>
 
               <div className="flex justify-end gap-2 pt-2 border-t">
@@ -5944,9 +5973,17 @@ export default function Game() {
                       {t('purged')} : {expansion.deckPurgeValue}
                     </span>
                     <span className="text-xs text-black-500" hidden={!expansion.focus}>
-                      {expansion.focus? "Focus: " : "" }
+                      {expansion.focus
+                        ? renderEffectText(
+                            "Focus: " + Object.entries(expansion.focus)
+                              .filter(([, v]) => v && v > 0)
+                              .map(([k, v]) => `resources/${k} x${v}`)
+                              .join(" "),
+                            t
+                          )
+                        : ""}
                     </span>
-                  </button>// TODO: Focus
+                  </button>
                 ))}
             </div>
             
