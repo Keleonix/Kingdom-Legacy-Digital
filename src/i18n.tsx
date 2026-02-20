@@ -5,7 +5,7 @@ export type Language = 'fr' | 'en';
 
 export type TranslationKeys = 
   // UI Elements
-  | 'deck' | 'discard' | 'playArea' | 'blocked' | 'permanentZone' | 'campaign' | 'destroy' | 'purged'
+  | 'deck' | 'discard' | 'playArea' | 'blocked' | 'permanentZone' | 'campaign' | 'destroy' | 'purged' | 'resourcePool' | 'actionButtons'
   | 'settings' | 'guide' | 'about' | 'close' | 'save' | 'continue' | 'reset'
   | 'newTurn' | 'pass' | 'advance' | 'endRound' | 'shuffleDeck' | 'noCost' | 'emptyCheckbox'
   | 'emptySide' | 'card' | 'none' | 'cardNames' | 'autoSelected' | 'side' | 'selectUpgradeRemoveCost'
@@ -29,6 +29,21 @@ export type TranslationKeys =
   
   // Resources
   | 'coin' | 'wood' | 'stone' | 'sword' | 'metal' | 'tradegood' | 'fame'
+
+  // Tutorial
+  | 'tutorialWelcomeTitle' | 'tutorialWelcomeText'
+  | 'tutorialGameTitle' | 'tutorialGameText'
+  | 'tutorialDeckTitle' | 'tutorialDeckText'
+  | 'tutorialDiscardTitle' | 'tutorialDiscardText'
+  | 'tutorialPermanentTitle' | 'tutorialPermanentText'
+  | 'tutorialPlayAreaTitle' | 'tutorialPlayAreaText'
+  | 'tutorialBlockedTitle' | 'tutorialBlockedText'
+  | 'tutorialActionButtonsTitle' | 'tutorialActionButtonsText'
+  | 'tutorialResourcePoolTitle' | 'tutorialResourcePoolText'
+  | 'tutorialCardTitle' | 'tutorialCardText'
+  | 'tutorialEffectsTitle' | 'tutorialEffectsText'
+  | 'tutorialReadyTitle' | 'tutorialReadyText'
+  | 'tutorialSkip' | 'tutorialPrevious' | 'tutorialNext' | 'tutorialFinish'
   
   // Actions & Messages
   | 'selectCards' | 'chooseResource' | 'discoverCard' | 'destroyCard'
@@ -54,7 +69,7 @@ export type TranslationKeys =
   | 'ridding_the_woods'
 
   // Cards Names
-  | 'welcome' | 'golden_rules'
+  | 'welcome'
   | 'wild_grass' | 'plains' | 'food_barns' | 'farmlands'
   | 'distant_mountain' | 'rocky_area' | 'shallow_mines' | 'quarry'
   | 'forest' | 'felled_forest' | 'sacred_well' | 'lumberjack'
@@ -170,6 +185,7 @@ export type TranslationKeys =
 
   // Cards Effects Descriptions
   | 'staysInPlay'
+  | 'effect_description_welcome'
   | 'effect_description_plains'
   | 'effect_description_rocky_area'
   | 'effect_description_shallow_mines'
@@ -439,6 +455,8 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     campaign: 'Campagne',
     destroy: 'Détruire',
     purged: 'Purgées',
+    resourcePool: 'Réserve de Resources',
+    actionButtons: 'Boutons d\'Action',
     settings: 'Paramètres',
     guide: 'Guide',
     about: 'À Propos',
@@ -569,6 +587,36 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     metal: 'Lingot',
     tradegood: 'Exportation',
     fame: 'Renommée',
+
+    // Tutorial
+    tutorialWelcomeTitle: "Bienvenue dans Kingdom Legacy !",
+    tutorialWelcomeText: "Ce tutoriel va vous guider à travers les différentes zones du plateau de jeu et vous expliquer comment fonctionnent les cartes. Cliquez sur « i18n/tutorialNext » pour commencer.",
+    tutorialGameTitle: "But du Jeu",
+    tutorialGameText: "Dans Kingdom Legacy, vous jouez pour créer le meilleur royaume. Pour cela, vous allez ajouter des cartes à votre deck et les améliorer pour leur faire gagner des points de renomée resources/fame . Au début de chaque manche (sauf la première), vous découvrirez 2 cartes à ajouter à votre deck. Votre renomée totale sera calculée à la fin de la partie, quand vous découvrirez la carte 70.",
+    tutorialDeckTitle: "La Pioche (Deck)",
+    tutorialDeckText: "C'est votre deck de cartes. Le chiffre indique le nombre de cartes restantes. Appuyez sur « i18n/seeDeck » pour consulter toutes vos cartes qui seront triées par ordre numéraire pour éviter de connaître l'ordre réel.",
+    tutorialDiscardTitle: "La Défausse",
+    tutorialDiscardText: "Les cartes défaussées arrivent ici (suite à un effet ou à la fin d'un tour). Vous pouvez les consulter en cliquant sur « i18n/seeDiscard ».",
+    tutorialPermanentTitle: "Zone Permanente",
+    tutorialPermanentText: "Les cartes permanentes ont un bandeau effects/permanent et restent visibles ici. Leurs effets peuvent être activés.",
+    tutorialPlayAreaTitle: "Zone de Jeu",
+    tutorialPlayAreaText: "Les cartes piochées sont jouées ici. Vous pouvez les améliorer, déclencher leurs effets ou les réordonner (les bouger ou cliquer 2 fois dans la zone pour les ordonner).",
+    tutorialBlockedTitle: "Zone de Blocage",
+    tutorialBlockedText: "Les cartes envoyées ici sont temporairement indisponibles. Leurs effets ne peuvent pas être utilisés et elles ne peuvent pas être améliorées. Si la carte qui les bloque quitte la zone de jeu, les cartes bloquées retournent en jeu, à part si il s'agit de la fin d'un tour.",
+    tutorialActionButtonsTitle: "Boutons d'Action",
+    tutorialActionButtonsText: "Gérez votre tour ici : « i18n/newTurn » pour défausser les cartes en jeu et piocher 4 cartes. « i18n/advance » pour piocher 2 nouvelles cartes, « i18n/endRound » quand votre pioche est vide pour terminer la manche.",
+    tutorialResourcePoolTitle: "Ressources",
+    tutorialResourcePoolText: "Voici votre réserve de ressources. Chaque icône représente un type de ressource. ATTENTION : Si une carte arrive en jeu, les ressources que vous conserviez seront détruites.",
+    tutorialCardTitle: "Cartes",
+    tutorialCardText: "Les cartes ont différents éléments, dont certains communs : Un nom, un type, une icone, un identifiant (id). Certaines cartes produisent des ressources ( resources/coin , resources/metal , resources/stone , resources/sword , resources/tradegood et resources/wood ). Ces ressources peuvent servir à améliorer vos cartes (ce qui terminera votre tour). Quand vous découvrez une carte avec effects/choice , vous pouvez cliquer sur le bandeau pour choisir son côté lorsque vous l'ajoutez à votre deck.",
+    tutorialEffectsTitle: "Effets",
+    tutorialEffectsText: "Les cartes ont des capacitées activables depuis la zone de jeu : effects/activate défausse la carte, effects/time met fin au tour, effects/passive peut être activé autant de fois que vous le voulez, effects/destroy détruit la carte et effects/oneTime peut être utilisé une seule fois. Les effets peuvent aussi se déclencher: effects/optional sont optionnels et effects/forced sont obligatoires.",
+    tutorialReadyTitle: "Vous êtes prêt !",
+    tutorialReadyText: "Vous connaissez maintenant tout ce dont vous aurez besoin ! Bonne chance dans votre royaume !",
+    tutorialSkip: 'Passer le tuto',
+    tutorialPrevious:'Précédent',
+    tutorialNext: 'Suivant →',
+    tutorialFinish: 'Terminer ✓',
     
     // Actions & Messages
     selectCards: 'Sélectionner des cartes',
@@ -619,7 +667,6 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
 
     // Cards Names
     welcome: "Bienvenue",
-    golden_rules: "Règles d'or",
     wild_grass: "Herbes Sauvages",
     plains: "Plaines",
     food_barns: "Grange",
@@ -935,6 +982,7 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
 
     // Cards Effects Descriptions
     staysInPlay: "effects/passive Reste en jeu.",
+    effect_description_welcome: "Les règles complètes sont disponibles dans Paramètres → Guide. effects/passive Lancer le Tutoriel.",
     effect_description_plains: "effects/activate Défaussez une carte alliée pour gagner resources/coin resources/coin .",
     effect_description_rocky_area: "effects/activate Dépensez resources/coin pour gagner resources/stone resources/stone .",
     effect_description_shallow_mines: "effects/destroy Découvrez une i18n/mine (84/85).",
@@ -1201,6 +1249,8 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     campaign: 'Campaign',
     destroy: 'Destroy',
     purged: 'Purged',
+    resourcePool: 'Resource Pool',
+    actionButtons: 'Action Buttons',
     settings: 'Settings',
     guide: 'Guide',
     about: 'About',
@@ -1332,6 +1382,36 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     tradegood: 'Trade Good',
     fame: 'Fame',
 
+    // Tutorial
+    tutorialWelcomeTitle: "Welcome to Kingdom Legacy !",
+    tutorialWelcomeText: "This tutorial will guide you through the different areas and present to you the different fonctionalities. Click on « i18n/tutorialNext » to start.",
+    tutorialGameTitle: "Goal of the Game",
+    tutorialGameText: "In Kingdom Legacy, your goal is to create the most famous Kingdom throughout the lands. To do this, you will add cards to your deck and upgrade them to make them gain fame resources/fame . At the start of each round (except the first one), you will discover 2 cards to add to your deck. Your fame will be computed at the end of the game, when you discover the card 70.",
+    tutorialDeckTitle: "Deck",
+    tutorialDeckText: "This is your deck of cards. Your remaining cards are represented by the small number. Click on « i18n/seeDeck » to review your deck, which will be shown numerically ordained to avoid giving you information.",
+    tutorialDiscardTitle: "Discard",
+    tutorialDiscardText: "Your discarded cards are put in this zone (discarded because of an effect or at the end of the turn). Click on « i18n/seeDiscard » to review your discard.",
+    tutorialPermanentTitle: "Permanent Zone",
+    tutorialPermanentText: "Permanent cards have the specific banner effects/permanent and stay visible here. Their effects can be activated normally.",
+    tutorialPlayAreaTitle: "Play Area",
+    tutorialPlayAreaText: "Drawn cards are put in this zone. You can upgrade them (will end the turn), activate their effect or reorder them (drag them or click 2 times in the zone).",
+    tutorialBlockedTitle: "Blocked Zone",
+    tutorialBlockedText: "Blocked cards are put in this zone and are temporarily unusable. Their effects cannot be used and they can't be upgraded. If the bloquing card leaves the Play Area, the blocked cards are put back in play, unless it is at the of of the turn.",
+    tutorialActionButtonsTitle: "Action Buttons",
+    tutorialActionButtonsText: "Manage your turn here : « i18n/newTurn » to discard your cards in play and draw 4 new cards. « i18n/advance » to draw 2 new card. « i18n/endRound » when your deck is empty to end the round.",
+    tutorialResourcePoolTitle: "Resources Pool",
+    tutorialResourcePoolText: "This is your Resources Pool. Each icon represent a type of resource and how much you currently hold. WARNING : If a card enters the Play Area, all held resources will be removed.",
+    tutorialCardTitle: "Cards",
+    tutorialCardText: "Cards are composed of different elements, some are common to all cards : A name, a type, an icon, an id. Some will produce resources ( resources/coin , resources/metal , resources/stone , resources/sword , resources/tradegood et resources/wood ). Those can be used to upgrade your cards (will end your turn). When you discover a card with effects/choice , you can click on the banner which side to add to your deck.",
+    tutorialEffectsTitle: "Effects",
+    tutorialEffectsText: "Cards may have effects that can be activated : effects/activate discard the card, effects/time end the turn, effects/passive can be activated multiple times, effects/destroy destroys the card and effects/oneTime can only be used one time. effects may also be triggered : effects/optional may be used et effects/forced must be used.",
+    tutorialReadyTitle: "You are ready !",
+    tutorialReadyText: "You now know everything you need to know ! Good luck in your Kingdom !",
+    tutorialSkip: 'Skip tuto',
+    tutorialPrevious:'Previous',
+    tutorialNext: 'Next →',
+    tutorialFinish: 'Finish ✓',
+
     // Actions & Messages
     selectCards: 'Select cards',
     chooseResource: 'Choose a resource',
@@ -1381,7 +1461,6 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
 
     // Cards Names
     welcome: "Welcome",
-    golden_rules: "Golden Rules",
     wild_grass: "Wild Grass",
     plains: "Plains",
     food_barns: "Food Barns",
@@ -1697,6 +1776,7 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
 
     // Cards Effects Descriptions
     staysInPlay: "effects/passive Stays in play.",
+    effect_description_welcome: "The full rules are accessible in Settings → Guide. effects/passive Launch Tutorial.",
     effect_description_plains: "effects/activate Discard a friendly card to gain resources/coin resources/coin .",
     effect_description_rocky_area: "effects/activate Spend resources/coin to gain resources/stone resources/stone .",
     effect_description_shallow_mines: "effects/destroy Discover a i18n/mine (84/85). ",

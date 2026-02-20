@@ -53,6 +53,7 @@ export type GameContext = {
   hasBeenUsedThisTurn: (cardId: number, effectIndex: number) => number;
   markAsUsedThisTurn: (cardId: number, effectIndex: number) => void;
   t: (key: TranslationKeys) => string;
+  startTutorial?: () => Promise<void>;
 };
 
 export type CardEffect = {
@@ -285,22 +286,18 @@ async function removeResourceFromCard(
 // -------------------
 export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> = {
   0: {
-    1: [{ // Bienvue
+    1: [{ // Bienvenue
       description: (t) => t('none'),
       timing: "onClick",
       execute: async function(ctx)  {
-        await ctx.upgradeCard(ctx.card, 3);
+        if (ctx.startTutorial) {
+          await ctx.dropToPlayArea({id: 41, fromZone: 'campaign'});
+          await ctx.startTutorial();
+          ctx.setPlayArea(() => []);
+        }
         return false;
       }
-    }],
-    3: [{ // Règles d'Or
-        description: (t) => t('none'),
-        timing: "onClick",
-        execute: async function (ctx) {
-          ctx.deleteCardInZone(ctx.t('blocked'), ctx.card.id);
-          return false;
-        }
-    }],
+    }]
   },
   1: {
     2: [{ // Plaines

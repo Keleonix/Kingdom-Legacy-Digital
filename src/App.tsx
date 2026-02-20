@@ -11,6 +11,7 @@ import { getCardEffects, type GameContext, type CardEffect, cardEffectsRegistry,
 import { useTranslation, type Language, LanguageSelector, type TranslationKeys } from './i18n';
 import { createPortal } from 'react-dom';
 import { EXPANSIONS } from "./expansions";
+import { DEFAULT_TUTORIAL_STEPS, tutorial, TutorialOverlay } from "./tutorial";
 
 const ZONE_MIN_HEIGHT = "290px";
 
@@ -270,26 +271,28 @@ function parseEffects(raw: string) {
   return { before, effects };
 }
 
-function renderEffectText(effect: string, t: (key: TranslationKeys) => string) {
-  return effect.split(/(\s+)/).map((part, idx) => {
+export function renderEffectText(effect: string, t: (key: TranslationKeys) => string) {
+  const parts = effect.split(/(\s+)/);
+  return parts.map((part, idx) => {
     if (/^\s+$/.test(part)) {
       return <span key={idx}>{part}</span>;
     }
     if (part.startsWith("resources/") || part.startsWith("effects/")) {
+      const isWide = part.includes('effects/choice') || part.includes('effects/permanent');
       return (
         <img
           key={idx}
           src={part.concat(".png")}
           alt={part}
-          className="inline w-4 h-4 mx-0.5"
+          className={`inline mx-0.5 ${isWide ? "w-20 h-2" : "w-4 h-4"}`}
         />
       );
     }
     else if (part.startsWith("i18n/")) {
       return (
-      <span className="inline">
-        {t(part.split("i18n/")[1] as TranslationKeys)}
-      </span>
+        <span key={idx} className="inline">
+          {t(part.split("i18n/")[1] as TranslationKeys)}
+        </span>
       );
     }
     return (
@@ -1046,9 +1049,27 @@ function CardView({
                         if (!interactable || !onGainResources) return;
                         onGainResources(card, displayOpt, fromZone);
                       }}
-                      className="text-[10px] px-2 py-1 border rounded bg-white flex items-center hover:bg-gray-100 transition"
+                      className="
+                        relative overflow-hidden
+                        text-[10px] px-2 py-1 rounded-md
+                        flex items-center gap-1.5
+                        border-blue-300
+                        bg-gradient-to-br from-slate-200 via-blue-200 to-slate-300
+                        text-slate-700
+                        shadow-blue-100
+                        hover:shadow-blue-200
+                        hover:from-slate-100 hover:via-blue-200 hover:to-slate-300
+                        hover:shadow-lg hover:shadow-blue-200
+                        hover:-translate-y-0.5
+                        active:translate-y-0 active:shadow-sm
+                        transition-all duration-150
+                      "
                     >
-                      {icons}
+                      {/* Brillance */}
+                      <span className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent pointer-events-none rounded-md" />
+                      <div className="relative flex items-center gap-1">
+                        {icons}
+                      </div>
                     </button>
                   </div>
                 );
@@ -1098,9 +1119,7 @@ function CardView({
                     onUpgrade(card, upg, fromZone);
                   }}
                   onMouseEnter={(e) => {
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     (window as any).lastMouseX = e.clientX;
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     (window as any).lastMouseY = e.clientY;
                     setUpgradePreviewSide(upg.nextSide);
                     setShowUpgradePreview(true);
@@ -1109,23 +1128,42 @@ function CardView({
                     setShowUpgradePreview(false);
                     setUpgradePreviewSide(null);
                   }}
-                  className="text-[10px] px-2 py-1 border rounded bg-white flex items-center hover:bg-gray-100 transition"
+                  className="
+                    relative overflow-hidden
+                    text-[10px] px-2 py-1 rounded-md
+                    flex items-center gap-1
+                    font-semibold tracking-wide
+                    border border-amber-400
+                    bg-gradient-to-br from-amber-300 via-yellow-400 to-amber-500
+                    text-amber-900
+                    shadow-md shadow-amber-200
+                    hover:from-amber-200 hover:via-yellow-300 hover:to-amber-400
+                    hover:shadow-lg hover:shadow-amber-300
+                    hover:-translate-y-0.5
+                    active:translate-y-0 active:shadow-sm
+                    transition-all duration-150
+                  "
                 >
-                  <div className="flex items-center gap-1">
+                  {/* Brillance */}
+                  <span className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent pointer-events-none rounded-md" />
+
+                  <div className="flex items-center gap-1 relative">
                     {upg.cost ? (
                       Object.entries(upg.cost).map(([k, v]) => (
-                        <span key={k} className="flex items-center gap-1 text-[11px]">
-                          <img src={resourceIconPath(k as keyof ResourceMap)} alt={k} className="w-3 h-3" />x{v}
+                        <span key={k} className="flex items-center gap-0.5">
+                          <img src={resourceIconPath(k as keyof ResourceMap)} alt={k} className="w-3 h-3" />
+                          <span>x{v}</span>
                         </span>
                       ))
                     ) : (
-                      <span className="text-[11px]">{t('noCost')}</span>
+                      <span>{t('noCost')}</span>
                     )}
                     {upg.otherCost && (
-                      <span className="text-[11px] italic">{upg.otherCost}</span>
+                      <span className="italic">{upg.otherCost}</span>
                     )}
                   </div>
-                  <div className="text-[11px]">{"→ "}{t(card.name[upg.nextSide - 1] as TranslationKeys)}</div>
+                  <span className="relative opacity-60">→</span>
+                  <span className="relative">{t(card.name[upg.nextSide - 1] as TranslationKeys)}</span>
                 </button>
               ))}
             </div>
@@ -1222,6 +1260,7 @@ function Zone({
   highlightedCardId,
   onReorderCards,
   onZoneRef,
+  debugMode,
 }: {
   name: string;
   cards: GameCard[];
@@ -1239,6 +1278,7 @@ function Zone({
   highlightedCardId?: number | null;
   onReorderCards?: (cardIds: number[]) => void;
   onZoneRef?: (el: HTMLDivElement | null) => void;
+  debugMode?: boolean;
 }) {
   const { t } = useTranslation();
   const ref = useRef<HTMLDivElement | null>(null);
@@ -1258,6 +1298,7 @@ function Zone({
     () => ({
       accept: "CARD",
       drop: (item: { id: number; fromZone: string }) => {
+        if (!debugMode) return;
         if (item.fromZone !== name) {
           onDrop(item);
           return;
@@ -1274,6 +1315,7 @@ function Zone({
         setDraggedOverIndex(null);
       },
       hover: (item: { id: number; fromZone: string }, monitor) => {
+        if (!debugMode) return;
         if (item.fromZone === name && ref.current) {
           const hoverIndex = Math.floor(
             (displayCards.length * monitor.getClientOffset()!.x) / ref.current.offsetWidth
@@ -1281,9 +1323,9 @@ function Zone({
           setDraggedOverIndex(hoverIndex);
         }
       },
-      canDrop: () => interactable,
+      canDrop: () => interactable && !!debugMode,
     }),
-    [displayCards, draggedOverIndex, name, interactable, onDrop, onReorderCards]
+    [displayCards, draggedOverIndex, name, interactable, onDrop, onReorderCards, debugMode]
   );
 
   drop(ref);
@@ -2740,6 +2782,29 @@ export default function Game() {
   const [isChoosingExpansion, setIsChoosingExpansion] = useState(false);
   const [showExpansionChoice, setShowExpansionChoice] = useState(false);
 
+  const ZONE_KEY_MAP = {
+    deck:          t("deck"),
+    discard:       t("discard"),
+    permanentZone: t("permanentZone"),
+    playArea:      t("playArea"),
+    blocked:       t("blocked"),
+    actionButtons: t("actionButtons"),
+    resourcePool:  t("resourcePool"),
+    campaign:      t("campaign"),
+  };
+
+  const {
+    isActive: isTutorialActive,
+    startTutorial,
+    stop: stopTutorial,
+    currentStep,
+    stepIndex,
+    totalSteps,
+    next: tutorialNext,
+    previous: tutorialPrev,
+    spotlightRect,
+  } = tutorial(zoneRefsMap, ZONE_KEY_MAP, DEFAULT_TUTORIAL_STEPS);
+
   // ----------- immediate refs & setters (à ajouter près des useState) -----------
   const deckRef = useRef<GameCard[]>([]);
   const playAreaRef = useRef<GameCard[]>([]);
@@ -4178,6 +4243,7 @@ export default function Game() {
       hasBeenUsedThisTurn,
       markAsUsedThisTurn,
       t,
+      startTutorial,
     };
 
     if (typeof effectIndex === "number" && effectIndex >= 0 && effectIndex < effects.length) {
@@ -4338,6 +4404,9 @@ export default function Game() {
           setPlayAreaImmediate((p) => [...p, cloneGameCard(toAdd)]);
           setResources(() => emptyResource);
         }
+        if (toZone === t('campaign')) {
+          setCampaignDeck((c) => [...c, cloneGameCard(toAdd)]);
+        }
       }
 
       if (fromZone === t('deck')) setDeckImmediate((d) => removeById(d, id));
@@ -4428,7 +4497,7 @@ export default function Game() {
     if (campaignDeck.some(c => c.id === id)) return t('campaign');
     if (blockedZone.some(c => c.id === id)) return t('blocked');
     if (permanentZone.some(c => c.id === id)) return t('permanentZone');
-    return "Deleted"; // TODO : May need to change
+    return "Deleted";
   };
 
   const startPurgeProcess = async (
@@ -5197,6 +5266,7 @@ export default function Game() {
                   showAll={false}
                   onTapAction={debugMode ? handleTapAction : undefined}
                   onZoneRef={(el) => { if (el) zoneRefsMap.current.set(t('deck'), el);}}
+                  debugMode={debugMode}
                 />
                 <span className="absolute top-5 right-5 text-sm text-gray-500">
                   {deck.length}
@@ -5215,6 +5285,7 @@ export default function Game() {
                 showAll={false}
                 onTapAction={debugMode ? handleTapAction : undefined}
                 onZoneRef={(el) => { if (el) zoneRefsMap.current.set(t('discard'), el);}}
+                debugMode={debugMode}
               />
               <Button disabled={discard.length === 0} onClick={() => setShowDiscard(true)}className="mt-2">{t('seeDiscard')}</Button>
             </div>
@@ -5233,6 +5304,7 @@ export default function Game() {
                 highlightedCardId={highlightedCardId}
                 onReorderCards={(cardIds) => reorderCardsInZone(t('permanentZone'), cardIds)}
                 onZoneRef={(el) => { if (el) zoneRefsMap.current.set(t('permanentZone'), el);}}
+                debugMode={debugMode}
               />
             </div>
 
@@ -5299,6 +5371,7 @@ export default function Game() {
               highlightedCardId={highlightedCardId}
               onReorderCards={(cardIds) => reorderCardsInZone(t('playArea'), cardIds)}
               onZoneRef={(el) => { if (el) zoneRefsMap.current.set(t('playArea'), el);}}
+              debugMode={debugMode}
             />
           </div>
 
@@ -5321,6 +5394,7 @@ export default function Game() {
               interactable={true}
               onReorderCards={(cardIds) => reorderCardsInZone(t('blocked'), cardIds)}
               onZoneRef={(el) => { if (el) zoneRefsMap.current.set(t('blocked'), el);}}
+              debugMode={debugMode}
             />
           </div>
         </div>
@@ -5328,9 +5402,8 @@ export default function Game() {
         {/* Action Buttons, Resource Pool et Infos sur une seune ligne */}
         <div className="flex gap-4 items-center">
           {/* Action Buttons à gauche */}
-          <div className="flex flex-wrap gap-2 flex-shrink-0">
+          <div className="flex flex-wrap gap-2 flex-shrink-0" ref={(el) => { if (el) zoneRefsMap.current.set(t('actionButtons'), el);}}>
             <Button onClick={drawNewTurn} disabled={deck.length === 0 || isChoosingExpansion || isAnimating}>{t('newTurn')}</Button>
-            <Button onClick={async () => { setIsAnimating(true); await discardEndTurn(false); setIsAnimating(false); }} disabled={deck.length === 0 || isChoosingExpansion || turnEndFlag || isAnimating}>{t('pass')}</Button>
             <Button onClick={async () => { setIsAnimating(true); await advance(); setIsAnimating(false); }} disabled={deck.length === 0 || isChoosingExpansion || turnEndFlag || isPlayBlocked || isAnimating}>{t('advance')}</Button>
             <Button disabled={deck.length !== 0} className="bg-red-600 hover:bg-red-500 text-white" onClick={handleEndRound}>{t('endRound')}</Button>
             <Button hidden={purgedCards.length === 0} onClick={() => setShowPurged(true)} className="bg-blue-600 hover:bg-blue-500 text-white">{t('seePurged')}</Button>
@@ -5339,7 +5412,7 @@ export default function Game() {
           </div>
 
           {/* Resource Pool au centre */}
-          <div className="bg-white/80 backdrop-blur-sm p-2 rounded-xl shadow-lg border-2 border-gray-200 flex-shrink-0">
+          <div className="bg-white/80 backdrop-blur-sm p-2 rounded-xl shadow-lg border-2 border-gray-200 flex-shrink-0" ref={(el) => { if (el) zoneRefsMap.current.set(t('resourcePool'), el);}}>
             <div className="grid grid-cols-7 gap-2">
               {RESOURCE_KEYS.map((key) => (
                 <div key={key} className="flex items-center gap-1 p-1 bg-gradient-to-br from-white to-gray-50 rounded-lg shadow-sm border border-gray-200">
@@ -5976,6 +6049,17 @@ export default function Game() {
         document.body
       )}
       </div>
+      <TutorialOverlay
+        isActive={isTutorialActive}
+        currentStep={currentStep}
+        stepIndex={stepIndex}
+        totalSteps={totalSteps}
+        spotlightRect={spotlightRect}
+        onNext={tutorialNext}
+        onPrevious={tutorialPrev}
+        onStop={stopTutorial}
+        t={t}
+      />
     </DndProvider>
   );
 }
