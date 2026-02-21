@@ -113,8 +113,8 @@ function getBackgroundStyle(card: GameCard, sideIdx: number) {
   // Les types sont maintenant en minuscules et correspondent aux clés de TYPE_COLORS
   const colors = types.map((t) => TYPE_COLORS[t] || TYPE_COLORS["default"]);
 
-  if (card.negative[card.currentSide - 1]) {
-    colors.push(TYPE_COLORS["enemy"]); // ← Utiliser la clé en anglais
+  if (card.negative[sideIdx]) {
+    colors.push(TYPE_COLORS["enemy"]);
   }
 
   if (colors.length === 0) {
@@ -454,6 +454,7 @@ function CardPreviewPopup({
                 alt={' '}
                 className="relative left-16 w-8 h-8 shrink-0 object-contain pointer-events-none"
                 style={{ imageRendering: 'pixelated' }}
+                onError={(e) => { e.currentTarget.style.display = 'none'; }}
               />
             </div>
             {card.name[0] ? (
@@ -487,7 +488,7 @@ function CardPreviewPopup({
                 )}
               </>
             ) : (
-              <div className="text-xs text-gray-400 italic">None</div>
+              <div className="text-xs text-gray-400 italic">{t('none')}</div>
             )}
           </div>
 
@@ -500,6 +501,7 @@ function CardPreviewPopup({
                 alt={' '}
                 className="relative left-16 w-8 h-8 shrink-0 object-contain pointer-events-none"
                 style={{ imageRendering: 'pixelated' }}
+                onError={(e) => { e.currentTarget.style.display = 'none'; }}
               />
             </div>
             {card.name[2] ? (
@@ -533,7 +535,7 @@ function CardPreviewPopup({
                 )}
               </>
             ) : (
-              <div className="text-xs text-gray-400 italic">None</div>
+              <div className="text-xs text-gray-400 italic">{t('none')}</div>
             )}
           </div>
 
@@ -546,6 +548,7 @@ function CardPreviewPopup({
                 alt={' '}
                 className="relative left-16 w-8 h-8 shrink-0 object-contain pointer-events-none"
                 style={{ imageRendering: 'pixelated' }}
+                onError={(e) => { e.currentTarget.style.display = 'none'; }}
               />
             </div>
             {card.name[1] ? (
@@ -579,7 +582,7 @@ function CardPreviewPopup({
                 )}
               </>
             ) : (
-              <div className="text-xs text-gray-400 italic">None</div>
+              <div className="text-xs text-gray-400 italic">{t('none')}</div>
             )}
           </div>
 
@@ -592,6 +595,7 @@ function CardPreviewPopup({
                 alt={' '}
                 className="relative left-16 w-8 h-8 shrink-0 object-contain pointer-events-none"
                 style={{ imageRendering: 'pixelated' }}
+                onError={(e) => { e.currentTarget.style.display = 'none'; }}
               />
             </div>
             {card.name[3] ? (
@@ -1176,6 +1180,7 @@ function CardView({
             alt={' '}
             className="w-full h-full object-contain"
             style={{ imageRendering: 'pixelated' }}
+            onError={(e) => { e.currentTarget.style.display = 'none'; }}
           />
         </div>
       </Card>
@@ -1219,6 +1224,7 @@ function CardView({
                     alt={' '}
                     className="relative right-align w-8 h-8 shrink-0 object-contain pointer-events-none"
                     style={{ imageRendering: 'pixelated' }}
+                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
                   />
                 </div>
                 

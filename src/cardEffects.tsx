@@ -5106,16 +5106,18 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         if (ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked)) {
           return false;
         }
-        const maxPeopleCount = ctx.fetchCardsInZone((card) => card.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea')).length;
+        const maxPeopleCount = ctx.fetchCardsInZone((card) => card.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea')).reduce((sum, c) => sum + getCardSelectionValue(c, 'person'), 0);
         if (maxPeopleCount === 0) {
           return false;
         }
-        const people = await ctx.selectCardsFromZone((card) => card.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'), this.description(ctx.t), 0, ctx.card, maxPeopleCount, 'person'); // TODO: Update for max VALUE and gain VALUE
+        const people = await ctx.selectCardsFromZone((card) => card.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'), this.description(ctx.t), 0, ctx.card, maxPeopleCount, 'person');
         if (people.length !== 0) {
+          let peopleValue = 0;
           for (const card of people) {
             ctx.dropToDiscard({id: card.id, fromZone: ctx.t('playArea')});
+            peopleValue += getCardSelectionValue(card, 'person');
           }
-          addResourceMapToCard(ctx.card, {fame: people.length});
+          addResourceMapToCard(ctx.card, {fame: peopleValue});
           await checkNextBox(ctx.card);
           return true;
         }
