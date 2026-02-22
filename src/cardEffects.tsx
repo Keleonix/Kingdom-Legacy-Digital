@@ -1613,10 +1613,10 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   31: {
     1: [{ // Entrepreneur
-      description: (t) => t('effect_description_etrepeneur'),
+      description: (t) => t('effect_description_entrepreneur'),
       timing: "onClick",
       execute: async function (ctx) {
-        if (await ctx.discoverCard((card) => card.id === 118, ctx.t('effect_description_etrepeneur'), 1, ctx.card)) {
+        if (await ctx.discoverCard((card) => card.id === 118, ctx.t('effect_description_entrepreneur'), 1, ctx.card)) {
           ctx.effectEndTurn();
         }
         return false;

@@ -1465,7 +1465,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 31,
-    name: ['etrepeneur', 'hotel', 'tavern', 'cozy_pub'],
+    name: ['entrepreneur', 'hotel', 'tavern', 'cozy_pub'],
     resources: [
       [ { tradegood: 1 } ],
       [ { coin: 1, tradegood: 1, fame: 2 } ],
@@ -1473,7 +1473,7 @@ export const allCards: GameCard[] = [
       [ { tradegood: 2, fame: 2 } ],
     ],
     effects: [
-      'effect_description_etrepeneur',
+      'effect_description_entrepreneur',
       'effect_description_hotel',
       'effect_description_tavern',
       'effect_description_cozy_pub',

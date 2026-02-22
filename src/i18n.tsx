@@ -90,7 +90,7 @@ export type TranslationKeys =
   | 'export' | 'mass_export'
   | 'volcanic_eruption' | 'ashlands' | 'young_forest'
   | 'opportunist' | 'recruit' | 'labourer' | 'pretend_noble'
-  | 'etrepeneur' | 'hotel' | 'tavern' | 'cozy_pub'
+  | 'entrepreneur' | 'hotel' | 'tavern' | 'cozy_pub'
   | 'scientist' | 'observatory' | 'lab'
   | 'engineer' | 'trebuchet'
   | 'inventor' | 'inspired_inventor'
@@ -223,7 +223,7 @@ export type TranslationKeys =
   | 'effect_description_young_forest'
   | 'effect_description_pretend_noble'
   | 'effect_description_stop_2'
-  | 'effect_description_etrepeneur'
+  | 'effect_description_entrepreneur'
   | 'effect_description_hotel'
   | 'effect_description_tavern'
   | 'effect_description_cozy_pub'
@@ -730,7 +730,7 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     recruit: "Recrue",
     labourer: "Artisan",
     pretend_noble: "Prétendu Noble",
-    etrepeneur: "Entrepreneur",
+    entrepreneur: "Entrepreneur",
     hotel: "Hôtel",
     tavern: "Taverne",
     cozy_pub: "Bar Confortable",
@@ -1020,7 +1020,7 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     effect_description_young_forest: "effects/time Ajoutez 1 effects/check dans l'ordre et à *: Ajoutez resources/wood à la production de cette carte.",
     effect_description_pretend_noble: "effects/activate Réinitialisez pour ajouter une resource de votre choix à la production de l'une des étapes de cette carte qui ne comporte pas encore de modification.",
     effect_description_stop_2: "effects/destroy Découvrez les cartes 31 à 34, choisissez-en 2 à découvrir et détruisez les 2 autres.",
-    effect_description_etrepeneur: "effects/time Découvrez l'Ecole (118).",
+    effect_description_entrepreneur: "effects/time Découvrez l'Ecole (118).",
     effect_description_hotel: "effects/activate Gagnez resources/coin par Personne en jeu.",
     effect_description_tavern: "effects/activate Découvrez les Quêtes (87).",
     effect_description_cozy_pub: "effects/activate Défaussez une Personne pour découvrir un Etranger (92).",
@@ -1524,7 +1524,7 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     recruit: "Recruit",
     labourer: "Labourer",
     pretend_noble: "Pretend Noble",
-    etrepeneur: "Entrepreneur",
+    entrepreneur: "Entrepreneur",
     hotel: "Hotel",
     tavern: "Tavern",
     cozy_pub: "Cozy Pub",
@@ -1814,7 +1814,7 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     effect_description_young_forest: "effects/time Add 1 effects/check in order and at *: Add resources/wood to this card's production.",
     effect_description_pretend_noble: "effects/activate Reset to add a resource of your choice to the production of one of this card's stages that has not yet been modified.",
     effect_description_stop_2: "effects/destroy Discover cards 31 to 34, choose 2 to discover and destroy the other 2.",
-    effect_description_etrepeneur: "effects/time Discover the School (118).",
+    effect_description_entrepreneur: "effects/time Discover the School (118).",
     effect_description_hotel: "effects/activate Gain resources/coin per Person in play.",
     effect_description_tavern: "effects/activate Discover the Quests (87).",
     effect_description_cozy_pub: "effects/activate Discard a Person to discover a Stranger (92).",
