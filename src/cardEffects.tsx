@@ -6700,6 +6700,19 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       },
     ],
   },
+  // Ridding the Woods
+  139: {
+    1: [{ // Bienvenue dans la Forêt des Brigands
+      description: (t) => t('none'),
+      timing: "onClick",
+      execute: async function(ctx)  {
+        if (ctx.startTutorial) {
+          await ctx.startTutorial();
+        }
+        return false;
+      }
+    }]
+  },
 };
 
 export const cardFameValueRegistry: Record<number, Record<number, CardFameValue>> = {

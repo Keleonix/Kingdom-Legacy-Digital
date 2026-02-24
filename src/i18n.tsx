@@ -25,7 +25,7 @@ export type TranslationKeys =
   | 'land' | 'building' | 'person' | 'knight' | 'lady' | 'seafaring'
   | 'ship' | 'event' | 'enemy' | 'permanent' | 'scroll' | 'choice'
   | 'potion' | 'item' | 'invention' | 'artefact' | 'livestock'
-  | 'horse'
+  | 'horse' | 'wagon'
   
   // Resources
   | 'coin' | 'wood' | 'stone' | 'sword' | 'metal' | 'tradegood' | 'fame'
@@ -44,6 +44,9 @@ export type TranslationKeys =
   | 'tutorialEffectsTitle' | 'tutorialEffectsText'
   | 'tutorialReadyTitle' | 'tutorialReadyText'
   | 'tutorialSkip' | 'tutorialPrevious' | 'tutorialNext' | 'tutorialFinish'
+
+  // Tutorial Expansions
+  | 'tutorialRiddingTheWoodsWelcomeTitle' | 'tutorialRiddingTheWoodsWelcomeText'
   
   // Actions & Messages
   | 'selectCards' | 'chooseResource' | 'discoverCard' | 'destroyCard'
@@ -182,6 +185,69 @@ export type TranslationKeys =
   | 'prosperity_expansion' | 'hoarding' | 'royal_decree' | 'uprising'
   | 'the_water_mill_expansion' | 'efficient_farming' | 'obsolete_farms' | 'surplus'
   | 'border_dispute_expansion' | 'espionage' | 'resistance' | 'attack'
+
+  // Ridding the Woods
+  | 'welcomeToRiddingTheWoods'
+  | 'aCertainLady'
+  | 'rogueLady'
+  | 'robbinLeader'
+  | 'sobbing'
+  | 'prisoner'
+  | 'robberForest'
+  | 'unsafeForest'
+  | 'peacefulForest'
+  | 'calmForest'
+  | 'terrifiedTown'
+  | 'uneasyTown'
+  | '_Town'
+  | 'guardedTown'
+  | 'hugeRobber'
+  | 'largeRobberCamp'
+  | 'smallRobberCamp'
+  | 'richForest'
+  | 'emptyCamp'
+  | 'fortGrounds'
+  | 'smallDungeon'
+  | 'largeDungeon'
+  | 'taxCollector'
+  | 'robberVeteran'
+  | 'archeryContest'
+  | 'baitAndTrap'
+  | 'lousyGuard'
+  | 'impatientGuard'
+  | 'braveKnight'
+  | 'guard'
+  | 'treasureWagon'
+  | 'powerfulPrince'
+  | 'prince_'
+  | 'denseForest'
+  | 'cliffyForest'
+  | 'robberSaboteur'
+  | 'rebelliousMonk'
+  | 'bardOfThePeople'
+  | 'obedientBard'
+  | 'rescuer'
+  | 'oldOakTree'
+  | 'stump'
+  | 'druidCamp'
+  | 'druidSanctuary'
+  | 'singingForest'
+  | 'secludedForest'
+  | 'hilltop'
+  | 'hillMonument'
+  | 'ceremony'
+  | 'hillMegalith'
+  | 'keeperOfSecrets'
+  | 'theChase'
+  | 'etherConnector'
+  | 'sheriff'
+  | 'fearedSheriff'
+  | 'treasury'
+  | 'famedTreasury'
+  | 'outpostConstruction'
+  | 'pallisade'
+  | 'walledOutpost'
+  | 'forestOutpost'
 
   // Cards Effects Descriptions
   | 'staysInPlay'
@@ -419,6 +485,68 @@ export type TranslationKeys =
   | 'effect_description_resistance'
   | 'effect_description_attack'
 
+  // Ridding the Woods
+  | 'effect_description_welcome_to_ridding_the_woods'
+  | 'effect_description_a_certain_lady'
+  | 'effect_description_rogue_lady'
+  | 'effect_description_robbin_leader'
+  | 'effect_description_sobbing'
+  | 'effect_description_bandit_ridding_the_woods'
+  | 'effect_description_prisoner'
+  | 'effect_description_robber_forest'
+  | 'effect_description_unsafe_forest'
+  | 'effect_description_terrified_town'
+  | 'effect_description_uneasy_town'
+  | 'effect_description___town'
+  | 'effect_description_guarded_town'
+  | 'effect_description_huge_robber'
+  | 'effect_description_large_robber_camp'
+  | 'effect_description_small_robber_camp'
+  | 'effect_description_small_dungeon'
+  | 'effect_description_large_dungeon'
+  | 'effect_description_tax_collector'
+  | 'effect_description_robber_veteran'
+  | 'effect_description_archery_contest'
+  | 'effect_description_bait_and_trap'
+  | 'effect_description_lousy_guard'
+  | 'effect_description_impatient_guard'
+  | 'effect_description_brave_knight'
+  | 'effect_description_treasure_wagon'
+  | 'effect_description_powerful_prince'
+  | 'effect_description_prince__'
+  | 'effect_description_robber_saboteur'
+  | 'effect_description_rebellious_monk'
+  | 'effect_description_bard_of_the_people'
+  | 'effect_description_obedient_bard'
+  | 'effect_description_rescuer'
+  | 'effect_description_old_oak_tree'
+  | 'effect_description_stump'
+  | 'effect_description_druid_camp'
+  | 'effect_description_druid_sanctuary'
+  | 'effect_description_secluded_forest'
+  | 'effect_description_ceremony'
+  | 'effect_description_hill_megalith'
+  | 'effect_description_keeper_of_secrets'
+  | 'effect_description_the_chase'
+  | 'effect_description_sheriff'
+  | 'effect_description_feared_sheriff'
+  | 'effect_description_treasury'
+  | 'effect_description_famed_treasury'
+  | 'effect_description_pallisade'
+  | 'effect_description_walled_outpost'
+  | 'effect_description_forest_outpost'
+
+  // Other costs
+  | 'other_cost_destroy_stone_bridge'
+  | 'other_cost_one_person'
+  | 'other_cost_two_people'
+  | 'other_cost_two_people_two_lands_two_buildings'
+  | 'other_cost_two_seafarings'
+
+  // Ridding the Woods
+
+  | 'other_cost_one_enemy'
+
   // EoR Effects
   | 'eor_export_10'
   | 'eor_export_20'
@@ -578,6 +706,7 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     artefact: 'Artefact',
     livestock: 'Elevage',
     horse: 'Cheval',
+    wagon: 'Chariot',
     
     // Resources
     coin: 'Or',
@@ -617,6 +746,10 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     tutorialPrevious:'Précédent',
     tutorialNext: 'Suivant →',
     tutorialFinish: 'Terminer ✓',
+
+    // Tutorial Expansions
+    tutorialRiddingTheWoodsWelcomeTitle: "La Forêt des Brigands",
+    tutorialRiddingTheWoodsWelcomeText: "Dans cette extension, vous découvrirez 5 cartes au lieu de 2 à chaque tour. La forêt regorge de ressources et comme vous vous en doutez, de bandits...",
     
     // Actions & Messages
     selectCards: 'Sélectionner des cartes',
@@ -980,6 +1113,69 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     resistance: "Résistance",
     attack: "Attaque",
 
+    // Ridding the Woods
+    welcomeToRiddingTheWoods: 'Bienvenue dans la Forêt des Brigands',
+    aCertainLady: 'Une Certaine Dame',
+    rogueLady: 'Maraudeuse',
+    robbinLeader: 'Roi des Voleurs',
+    sobbing: 'Pleurs',
+    prisoner: 'Prisonnier',
+    robberForest: 'Forêt des Voleurs',
+    unsafeForest: 'Forêt Dangereuse',
+    peacefulForest: 'Forêt Paisible',
+    calmForest: 'Forêt Apaisée',
+    terrifiedTown: 'Ville Terrorisée',
+    uneasyTown: 'Ville Tourmentée',
+    _Town: '_',
+    guardedTown: 'Ville aux Aguets',
+    hugeRobber: 'Voleur Immense',
+    largeRobberCamp: 'Grand Camp de Voleurs',
+    smallRobberCamp: 'Petit Camp de Voleurs',
+    richForest: 'Forêt Luxuriante',
+    emptyCamp: 'Camp Désert',
+    fortGrounds: 'Terres du Fort',
+    smallDungeon: 'Modeste Donjon',
+    largeDungeon: 'Vaste Donjon',
+    taxCollector: 'Percepteur des Impôts',
+    robberVeteran: 'Voleur Aguerri',
+    archeryContest: 'Tournois de Tir à l\'Arc',
+    baitAndTrap: 'Appâter et Piéger',
+    lousyGuard: 'Guarde Incompétent',
+    impatientGuard: 'Guarde Impatient',
+    braveKnight: 'Preux Chevalier',
+    guard: 'Guarde',
+    treasureWagon: 'Chariot à Trésors',
+    powerfulPrince: 'Puissant Prince',
+    prince_: 'Prince _',
+    denseForest: 'Forêt Dense',
+    cliffyForest: 'Forêt Escarpée',
+    robberSaboteur: 'Voleur Saboteur',
+    rebelliousMonk: 'Moine Rebelle',
+    bardOfThePeople: 'Barde du Peuple',
+    obedientBard: 'Barde Obéissant',
+    rescuer: 'Sauveur',
+    oldOakTree: 'Vieux Chêne',
+    stump: 'Souche',
+    druidCamp: 'Camp de Druides',
+    druidSanctuary: 'Sanctuaire Druidique',
+    singingForest: 'Forêt Chantante',
+    secludedForest: 'Forêt Reculée',
+    hilltop: 'Point Culminant',
+    hillMonument: 'Monument',
+    ceremony: 'Cérémonie',
+    hillMegalith: 'Mégalithe',
+    keeperOfSecrets: 'Le Gardien des Secrets',
+    theChase: 'Course Poursuite',
+    etherConnector: 'Connecteur d\'Ether',
+    sheriff: 'Shérif',
+    fearedSheriff: 'Shérif Redouté',
+    treasury: 'Trésor',
+    famedTreasury: 'Trésor Légendaire',
+    outpostConstruction: 'Construction d\'un Avant-Poste',
+    pallisade: 'Palissades',
+    walledOutpost: 'Muraille Avant-Poste',
+    forestOutpost: 'Avant-Poste Forestier',
+
     // Cards Effects Descriptions
     staysInPlay: "effects/passive Reste en jeu.",
     effect_description_welcome: "Les règles complètes sont disponibles dans Paramètres → Guide. effects/passive Lancer le Tutoriel.",
@@ -1152,7 +1348,7 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     effect_description_city_on_a_hill: "effects/activate Oubliez cette carte pour découvrir Camelot (106).",
     effect_description_large_town: "effects/activate Dépensez 1 ressource au choix pour gagner 1 ressource au choix.",
     effect_description_camelot: "effects/optional Fin du Tour: Si votre pioche est vide, inscrivez 1 effects/check . (Vaut 5 resources/fame par effects/check )",
-    thisCardIsIndestructible: "Cette carte ne peut pas être détruite.",
+    thisCardIsIndestructible: "Cette carte ne peut pas être détruite. L'effet de cet artefact magique reste à découvrir...",
     effect_description_grand_guild_hall: "effects/activate Défaussez le nombre de personne de votre choix pour gagner autant de resources/fame , puis inscrivez 1 effects/check .",
     effect_description_thriving_countryside: "effects/activate Choisissez une carte en jeu ou dans la défausse, placez-la sous la pioche.",
     effect_description_countryside: "effects/activate Remettez une carte en jeu sous la pioche.",
@@ -1215,6 +1411,68 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     effect_description_espionage: "effects/forced Lorsqu'une Personne est jouée, inscrivez 1 effects/check ou défaussez 2 cartes alliées et une fois complétée, défaussez toute votre pioche. effects/forced Fin de manche : Change pour Attaque.",
     effect_description_resistance: "effects/passive Dépenser vos resources/sword et mettez-les sur cette carte. effects/forced Fin de la Manche: Ajoutez autant de resources/sword de cette carte en resources/fame (max 100) à un Terrain, puis détruisez cette extension.",
     effect_description_attack: "effects/forced Fin du Tour: Si vous n'avez aucune resources/sword , enlevez 1 production d'1 carte en jeu. effects/forced Fin de Manche: Ajoutez une ressource (non- resources/fame ) au choix à une carte alliée, puis change pour Résistance.",
+
+    // Ridding the Woods
+    effect_description_welcome_to_ridding_the_woods: "Pendant cette extension, vous découvrirez 5 cartes pendant 5 manches. effects/passive Lancer le tutoriel.",
+    effect_description_a_certain_lady: "effects/forced Carte jouée: marquez un effects/check par Ennemi en jeu. effects/oneTime Le premier effet et celui-ci après avoir terminé cette extension.",
+    effect_description_rogue_lady: "effects/forced Carte jouée: Enlevez 1 resources/coin de la production d'une carte en jeu, si vous le faites, ajoutez 1 effects/check .",
+    effect_description_robbin_leader: "effects/passive Vous ne pouvez pas gagner de ressources autres que resources/sword . effects/activate Dépensez resources/sword resources/sword resources/sword pour vaincre (ajoutez 1 effects/check ) et une fois complétée, effects/destroy i18n/aCertainLady où qu'elle soit et puis →, si vous ne pouvez pas, effects/destroy cette carte.",
+    effect_description_sobbing: "Vaut -4 resources/fame si purgée. effects/forced Lorsque vous i18n/advance : Jouez 2 cartes supplémentaires.",
+    effect_description_bandit_ridding_the_woods: "Peut être → par un Missionaire. effects/forced Carte jouée: Défaussez toutes les cartes qui produisent de resources/wood . effects/time Dépensez resources/sword resources/sword resources/sword pour vaincre (→).",
+    effect_description_prisoner: "effects/forced Si 2 Ennemis sont en jeux, →. effects/passive Après avoir choisi les cartes lors d'une purge, vous pouvez ajouter 2 Prisonniers à cette purge.",
+    effect_description_robber_forest: "effects/forced Carte jouée: Jouez le Prince des Voleurs depuis la défausse.",
+    effect_description_unsafe_forest: "Vous devez avoir les ressources avant de vaincre l'Ennemi pour activer l'effet. effects/optional Lorsque vous vainquez un Ennemi, dépensez resources/coin resources/coin resources/coin resources/coin resources/sword resources/sword pour →.",
+    effect_description_terrified_town: "effects/forced Quand un Ennemi est joué: Défaussez 3 cartes alliées.",
+    effect_description_uneasy_town: "effects/forced Quand un Ennemi est joué: Défaussez 2 cartes alliées.",
+    effect_description___town: "effects/time Découvrez le Shérif (166).",
+    effect_description_guarded_town: "effects/activate Dépensez resources/wood resources/wood resources/wood resources/wood pour découvrir l'Avant-Poste (168).",
+    effect_description_huge_robber: "effects/passive Vous ne pouvez pas i18n/advance . effects/activate Défaussez 4 Personnes pour le vaincre (→).",
+    effect_description_large_robber_camp: "effects/passive Vous ne pouvez pas utiliser des resources/sword , sauf pour améliorer des cartes.",
+    effect_description_small_robber_camp: "effects/passive Vous ne pouvez pas utiliser des resources/sword , sauf pour améliorer des cartes.",
+    effect_description_small_dungeon: "effects/activate Défaussez des Prisonniers et mettez un effects/check par Prisonnier défaussé.",
+    effect_description_large_dungeon: "effects/passive Défaussez 1 Prisonnier pour ajouter 2 resources/fame à cette carte.",
+    effect_description_tax_collector: "Cette carte vaut -1 resources/fame par effects/check . effects/forced Mettez un effects/check quand vous produisez avec cette carte.",
+    effect_description_robber_veteran: "effects/forced Carte jouée: Défaussez toutes les cartes qui produisent de resources/coin . effects/activate Dépensez resources/sword resources/sword resources/sword resources/sword resources/sword pour vaincre (→).",
+    effect_description_archery_contest: "effects/activate Mettez 1 effects/check pour jouer 1 Ennemi depuis la défausse.",
+    effect_description_bait_and_trap: "effects/activate Si vous avez une Dame en jeu, jouez 1 Ennemi depuis la défausse, puis gagnez resources/sword resources/sword .",
+    effect_description_lousy_guard: "effects/forced Défaussez cette carte s'il n'y a pas d'Ennemi en jeu.",
+    effect_description_impatient_guard: "effects/forced Défaussez cette carte s'il n'y a pas d'Ennemi en jeu.",
+    effect_description_brave_knight: "effects/forced Carte jouée: Jouez un Ennemi depuis la défausse.",
+    effect_description_treasure_wagon: "Quand elle est purgée, cette carte vaut 5 resources/fame pour chaque production sur cette carte. effects/forced Carte jouée: Si un Ennemi est en jeu, enlevez une production de cette carte. effects/forced Quand un Ennemi est joué, enlevez une production de cette carte.",
+    effect_description_powerful_prince: "Les ressources sont perdues quand une nouvelle carte entre en jeu. effects/passive Dépensez resources/coin resources/coin resources/coin pour enlever 1 resources/coin du coût d'amléioration de cette carte. effects/forced Carte jouée: Gagnez 2 ressources au choix.",
+    effect_description_prince__: "Les ressources sont perdues quand une nouvelle carte entre en jeu. effects/forced Carte jouée: Gagnez 3 ressources au choix. effects/time Découvrez le Trésor (167).",
+    effect_description_robber_saboteur: "effects/forced Carte jouée: Enlevez 1 production d'1 Bâtiment en jeu. effects/time Dépensez resources/sword resources/sword resources/sword pour vaincre (→).",
+    effect_description_rebellious_monk: "effects/forced Carte jouée: Bloque 3 cartes alliées. effects/time Dépensez resources/tradegood resources/tradegood resources/tradegood resources/tradegood pour vaincre (→).",
+    effect_description_bard_of_the_people: "effects/forced Carte jouée: Jouez un Ennemi depuis la défausse.",
+    effect_description_obedient_bard: "Vaut 2 resources/fame par effects/check . effects/activate Mettez 1 effects/check pour jouer 1 Evénement depuis la défausse.",
+    effect_description_rescuer: "effects/forced Carte jouée: Jouez 1 Prisonnier depuis la défausse. effects/time Dépensez resources/metal resources/metal resources/metal pour vaincre (→).",
+    effect_description_old_oak_tree: "effects/forced Carte jouée: Jouez 1 Ennemi depuis la défausse. effects/activate Dépensez resources/metal resources/metal pour mettre effects/check .",
+    effect_description_stump: "effects/activate Mettez 1 effects/check .",
+    effect_description_druid_camp: "effects/forced Carte jouée: Défaussez toutes les cartes qui doivent rester en jeu.",
+    effect_description_druid_sanctuary: "effects/forced Carte jouée: Défaussez toutes les cartes qui doivent rester en jeu. effects/forced Carte améliorée: Ajoutez resources/tradegood à 2 cartes alliées en jeu.",
+    effect_description_secluded_forest: "effects/forced Carte jouée: Défaussez 1 carte qui doit rester en jeu.",
+    effect_description_ceremony: "effects/activate Défaussez 5 cartes alliées en jeu pour ajouter 5 resources/fame à l'une d'entre elles, puis → (Mégalithe).",
+    effect_description_hill_megalith: "effects/time Dépensez resources/tradegood resources/tradegood resources/tradegood resources/tradegood pour découvrir le Gardien des Secrets (165).",
+    effect_description_keeper_of_secrets: "effects/forced Carte jouée: Défaussez toutes les autres cartes en jeu, puis →.",
+    effect_description_the_chase: "effects/activate Défaussez 6 cartes alliées pour effects/check 1 le prochain '✓'. effects/forced Fin du tour: effects/check le prochain 'X'.",
+    effect_description_sheriff: "effects/passive Dépensez resources/tradegood resources/tradegood resources/tradegood pour enlever 1 resources/tradegood du coût d'amléioration de cette carte. effects/activate Défaussez 1 Terrain pour gagner 2 ressources au choix.",
+    effect_description_feared_sheriff: "effects/passive Défaussez 1 Terrain pour gagner 2 ressources au choix.",
+    effect_description_treasury: "effects/time dépensez les resources/coin (1 à 12, incrément de 1) pour effects/check suivant, à la dernière carte →.",
+    effect_description_famed_treasury: "effects/time dépensez les resources/coin (13 à 20, incrément de 1, puis 25 et 30) pour effects/check suivant.",
+    effect_description_pallisade: "effects/optional Fin du tour: Défaussez cette carte pour faire rester 2 Terrains en jeu.",
+    effect_description_walled_outpost: "Vaut +2 resources/fame pour chaque carte purgée avec celle-ci. effects/optional Fin du tour: Défaussez cette carte pour faire rester tous les Terrains en jeu.",
+    effect_description_forest_outpost: "effects/optional Fin du tour: Défaussez cette carte pour faire rester 3 Terrains en jeu.",
+
+    // Other costs
+    other_cost_destroy_stone_bridge: 'Détruisez le Pont de Pierre (12)',
+    other_cost_one_person: '1 Personne',
+    other_cost_two_people: '2 Personnes',
+    other_cost_two_people_two_lands_two_buildings: '2 Personnes, 2 Terrains, 2 Bâtiments',
+    other_cost_two_seafarings: '2 Maritimes',
+
+    // Ridding the Woods
+
+    other_cost_one_enemy: '1 Ennemi',
 
     // EoR Effects
     eor_export_10: " (seuil 10): Ajoutez resources/coin / resources/wood / resources/stone à 1 Terrain",
@@ -1372,6 +1630,7 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     artefact: 'Artefact',
     livestock: 'Livestock',
     horse: 'Horse',
+    wagon: 'Wagon',
 
     // Resources
     coin: 'Gold',
@@ -1411,6 +1670,10 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     tutorialPrevious:'Previous',
     tutorialNext: 'Next →',
     tutorialFinish: 'Finish ✓',
+
+    // Tutorial Expansions
+    tutorialRiddingTheWoodsWelcomeTitle: "Ridding the Woods",
+    tutorialRiddingTheWoodsWelcomeText: "In this expansion, you will discover 5 new cards every round instead 2. The forest holds a lot of resources and as you might have guessed, a famous bandit...",
 
     // Actions & Messages
     selectCards: 'Select cards',
@@ -1774,6 +2037,69 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     resistance: "Resistance",
     attack: "Attack",
 
+    // Ridding the Woods
+    welcomeToRiddingTheWoods: 'Welcome to Ridding the Woods',
+    aCertainLady: 'A Certain Lady',
+    rogueLady: 'Rogue Lady',
+    robbinLeader: 'Robbin\' Leader',
+    sobbing: 'Sobbing',
+    prisoner: 'Prisoner',
+    robberForest: 'Robber Forest',
+    unsafeForest: 'Unsafe Forest',
+    peacefulForest: 'Peaceful Forest',
+    calmForest: 'Calm Forest',
+    terrifiedTown: 'Terrified Town',
+    uneasyTown: 'Uneasy Town',
+    _Town: '_',
+    guardedTown: 'Guarded Town',
+    hugeRobber: 'Huge Robber',
+    largeRobberCamp: 'Large Robber Camp',
+    smallRobberCamp: 'Small Robber Camp',
+    richForest: 'Rich Forest',
+    emptyCamp: 'Empty Camp',
+    fortGrounds: 'Fort Grounds',
+    smallDungeon: 'Small Dungeon',
+    largeDungeon: 'Large Dungeon',
+    taxCollector: 'Tax Collector',
+    robberVeteran: 'Robber Veteran',
+    archeryContest: 'Archery Contest',
+    baitAndTrap: 'Bait and Trap',
+    lousyGuard: 'Lousy Guard',
+    impatientGuard: 'Impatient Guard',
+    braveKnight: 'Brave Knight',
+    guard: 'Guard',
+    treasureWagon: 'Treasure Wagon',
+    powerfulPrince: 'Powerful Prince',
+    prince_: 'Prince _',
+    denseForest: 'Dense Forest',
+    cliffyForest: 'Cliffy Forest',
+    robberSaboteur: 'Robber Saboteur',
+    rebelliousMonk: 'Rebellious Monk',
+    bardOfThePeople: 'Bard of the People',
+    obedientBard: 'Obedient Bard',
+    rescuer: 'Rescuer',
+    oldOakTree: 'Old Oak Tree',
+    stump: 'Stump',
+    druidCamp: 'Druid Camp',
+    druidSanctuary: 'Druid Sanctuary',
+    singingForest: 'Singing Forest',
+    secludedForest: 'Secluded Forest',
+    hilltop: 'Hilltop',
+    hillMonument: 'Hill Monument',
+    ceremony: 'Ceremony',
+    hillMegalith: 'Hill Megalith',
+    keeperOfSecrets: 'Keeper of Secrets',
+    theChase: 'The Chase',
+    etherConnector: 'Ether Connector',
+    sheriff: 'Sherif',
+    fearedSheriff: 'Feared Sheriff',
+    treasury: 'Treasury',
+    famedTreasury: 'Famed Treasury',
+    outpostConstruction: 'Outpost Construction',
+    pallisade: 'Pallisade',
+    walledOutpost: 'Walled Outpost',
+    forestOutpost: 'Forest Outpost',
+
     // Cards Effects Descriptions
     staysInPlay: "effects/passive Stays in play.",
     effect_description_welcome: "The full rules are accessible in Settings → Guide. effects/passive Launch Tutorial.",
@@ -1946,7 +2272,7 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     effect_description_city_on_a_hill: "effects/activate Forget this card to discover Camelot (106).",
     effect_description_large_town: "effects/activate Spend 1 resource of your choice to gain 1 resource of your choice.",
     effect_description_camelot: "effects/optional End of Turn: If your deck is empty, mark 1 effects/check . (Worth 5 resources/fame per effects/check )",
-    thisCardIsIndestructible: "This card cannot be destroyed.",
+    thisCardIsIndestructible: "This card cannot be destroyed. The effect of this magical artifact is yet to be discovered...",
     effect_description_grand_guild_hall: "effects/activate Discard any number of People to gain as many resources/fame , then mark 1 effects/check .",
     effect_description_thriving_countryside: "effects/activate Choose a card in play or in the discard, place it under the deck.",
     effect_description_countryside: "effects/activate Put a card in play under the deck.",
@@ -2009,6 +2335,68 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     effect_description_espionage: "effects/forced When a Person is played, mark 1 effects/check or discard 2 friendly cards and once completed, discard your entire deck. effects/forced : Change to Attack",
     effect_description_resistance: "effects/passive Spend your resources/sword to put them on this card. effects/forced End of Round: Add as many resources/sword from this card as resources/fame (max 100) to a Land, then destroy this extension.",
     effect_description_attack: "effects/forced End of Turn: If you have no resources/sword , remove 1 production from 1 card in play. effects/forced End of Round: Add a resource (non- resources/fame ) of your choice to a friendly card, then change to Resistance.",
+
+    // Ridding the Woods
+    effect_description_welcome_to_ridding_the_woods: "During this expansion, you will discover 5 cards during 5 rounds. effects/passive Launch Tutorial.",
+    effect_description_a_certain_lady: "effects/forced Card Played: add 1 effects/check for each Enemy in play. effects/oneTime The first effect and this one after finishing this expansion.",
+    effect_description_rogue_lady: "effects/forced Card PLayed: Remove 1 resources/coin from a production of a card in play, if you do, add 1 effects/check .",
+    effect_description_robbin_leader: "effects/passive You cannot gain any resource other than resources/sword . effects/activate Spend resources/sword resources/sword resources/sword to defeat (add 1 effects/check ) and once completed, effects/destroy i18n/aCertainLady wherever she is and then →, if you cannot, effects/destroy this card.",
+    effect_description_sobbing: "Worth -4 resources/fame when purged. effects/forced Whenver you i18n/advance : Play 2 additional cards.",
+    effect_description_bandit_ridding_the_woods: "May be → by a Missionary. effects/forced Card Played: Discard every card with a production of resources/wood . effects/time Spend resources/sword resources/sword resources/sword to defeat (→).",
+    effect_description_prisoner: "effects/forced If there are 2 Enemies in play, →. effects/passive After selecting cards for a purge, you can add up to 2 Prisoners to that purge.",
+    effect_description_robber_forest: "effects/forced Card Played: Play Robbin' Leader from the discard.",
+    effect_description_unsafe_forest: "you must first have the resources before defeating the Enemy to use this effect. effects/optional When you defeat an Enemy, spend resources/coin resources/coin resources/coin resources/coin resources/sword resources/sword to →.",
+    effect_description_terrified_town: "effects/forced When an Enemy is played: Discard 3 friendly cards.",
+    effect_description_uneasy_town: "effects/forced When an Enemy is played: Discard 2 friendly cards.",
+    effect_description___town: "effects/time Discover the Sheriff (166).",
+    effect_description_guarded_town: "effects/activate Spend resources/wood resources/wood resources/wood resources/wood to discover an Outpost (168).",
+    effect_description_huge_robber: "effects/passive You cannot i18n/advance . effects/activate Discard 4 People to defeat (→).",
+    effect_description_large_robber_camp: "effects/passive You may not use resources/sword , except to upgrade cards.",
+    effect_description_small_robber_camp: "effects/passive You may not use resources/sword , except to upgrade cards.",
+    effect_description_small_dungeon: "effects/activate Discard any Prisoners and put a effects/check for each Prisoner discarded this way.",
+    effect_description_large_dungeon: "effects/passive Discard 1 Prisoner to add 2 resources/fame to this card.",
+    effect_description_tax_collector: "This card is worth -1 resources/fame per effects/check . effects/forced Put an effects/check when you produce with this card.",
+    effect_description_robber_veteran: "effects/forced Card Played: Discard every card with a production of resources/coin . effects/activate Spend resources/sword resources/sword resources/sword resources/sword resources/sword to defeat (→).",
+    effect_description_archery_contest: "effects/activate Put 1 effects/check to play 1 Ennemi from the discard.",
+    effect_description_bait_and_trap: "effects/activate If you have Lady in play, play 1 Ennemi from the discard, then gain resources/sword resources/sword .",
+    effect_description_lousy_guard: "effects/forced Discard this card if there is no Enemy in play.",
+    effect_description_impatient_guard: "effects/forced Discard this card if there is no Enemy in play.",
+    effect_description_brave_knight: "effects/forced Card Played: Play 1 Enemy from the discard.",
+    effect_description_treasure_wagon: "When purged, this card is worth 5 resources/fame for each production on it. effects/forced Card Played: If an Enemy is in play, remove a production from this card. effects/forced When an Enemy is played, remove a production from this card.",
+    effect_description_powerful_prince: "Resources are lost when a new card enters play. effects/passive Spend resources/coin resources/coin resources/coin to remove 1 resources/coin from this card's upgrade cost. effects/forced Card Played: Gain any 2 resources.",
+    effect_description_prince__: "Resources are lost when a new card enters play. effects/forced Card Played: Gain any 3 resources. effects/time Discover the Treasury (167).",
+    effect_description_robber_saboteur: "effects/forced Carte jouée: Remove 1 production from 1 Building in play. effects/time Spend resources/sword resources/sword resources/sword to defeat (→).",
+    effect_description_rebellious_monk: "effects/forced Card Played: Blocks 3 friendly cards. effects/time Spend resources/tradegood resources/tradegood resources/tradegood resources/tradegood to defeat (→).",
+    effect_description_bard_of_the_people: "effects/forced Card Played: Play 1 Enemy from the discard.",
+    effect_description_obedient_bard: "Worth 2 resources/fame per effects/check . effects/activate Put 1 effects/check to play 1 Event from the discard.",
+    effect_description_rescuer: "effects/forced Card Played: Play 1 Prisoner from the discard. effects/time Spend resources/metal resources/metal resources/metal to defeat (→).",
+    effect_description_old_oak_tree: "effects/forced Card Played: Play 1 Enemy from the discard. effects/activate Spend resources/metal resources/metal to put 1 effects/check .",
+    effect_description_stump: "effects/activate Put 1 effects/check .",
+    effect_description_druid_camp: "effects/forced Card Played: Discard all cards that stay in play.",
+    effect_description_druid_sanctuary: "effects/forced Card Played: Discard all cards that stay in play. effects/forced Card Upgraded: Add resources/tradegood to 2 friendly cards in play.",
+    effect_description_secluded_forest: "effects/forced Card Played: Discard 1 card that stay in play.",
+    effect_description_ceremony: "effects/activate Discard 5 friendly cards from play to add 5 resources/fame to 1 of them, then → (Hill Megalith).",
+    effect_description_hill_megalith: "effects/time Spend resources/tradegood resources/tradegood resources/tradegood resources/tradegood to discover the Keeper of Secrets (165).",
+    effect_description_keeper_of_secrets: "effects/forced Card Played: Discard all cards in play, then →.",
+    effect_description_the_chase: "effects/activate Discard 6 friendly cards to effects/check 1 the next '✓'. effects/forced End of Turn: effects/check the next 'X'.",
+    effect_description_sheriff: "effects/passive Spend resources/tradegood resources/tradegood resources/tradegood to remove 1 resources/tradegood from this card's upgrade cost. effects/activate Discard 1 Land to gain any 2 resources.",
+    effect_description_feared_sheriff: "effects/passive Discard 1 land to gain any 2 resources.",
+    effect_description_treasury: "effects/time Spend resources/coin (1 to 12, increment of 1) to effects/check , after the last one →.",
+    effect_description_famed_treasury: "effects/time Spend resources/coin (13 to 20, increment of 1, then 25 and 30) to effects/check .",
+    effect_description_pallisade: "effects/optional End of Turn: Discard this card to make 2 Lands stay in play.",
+    effect_description_walled_outpost: "Worth +2 resources/fame for each other card purged with it. effects/optional End of Turn: Discard this card to make all Lands stay in play.",
+    effect_description_forest_outpost: "effects/optional End of Turn: Discard this card to make 3 Lands stay in play.",
+
+    // Other costs
+    other_cost_destroy_stone_bridge: 'Destroy the Stone Bridge (12)',
+    other_cost_one_person: '1 Person',
+    other_cost_two_people: '2 People',
+    other_cost_two_people_two_lands_two_buildings: '2 People, 2 Lands, 2 Buildings',
+    other_cost_two_seafarings: '2 Seafarings',
+
+    // Ridding the Woods
+
+    other_cost_one_enemy: '1 Enemy',
 
     // EoR Effects
     eor_export_10: " (seuil 10): Add resources/coin / resources/wood / resources/stone to 1 Land",

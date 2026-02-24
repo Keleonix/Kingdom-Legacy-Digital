@@ -1191,7 +1191,7 @@ export const allCards: GameCard[] = [
         {content: "fame x25", checked: false},
         {content: "fame x32", checked: false},
         {content: "fame x40", checked: false},
-        {content: "(135) ->", checked: false}
+        {content: "(135) →", checked: false}
       ],
       [],
       [
@@ -1256,7 +1256,7 @@ export const allCards: GameCard[] = [
         {content: "fame x25", checked: false},
         {content: "fame x32", checked: false},
         {content: "fame x40", checked: false},
-        {content: "->", checked: false},
+        {content: "→", checked: false},
       ],
       [],
       [
@@ -2304,7 +2304,7 @@ export const allCards: GameCard[] = [
       '',
     ],
     upgrades: [
-      [ {cost: {}, nextSide: 3, otherCost: "Détruisez le Pont de Pierre (12)" } ],
+      [ {cost: {}, nextSide: 3, otherCost: 'other_cost_destroy_stone_bridge' } ],
       [],
       [],
       [],
@@ -2757,8 +2757,8 @@ export const allCards: GameCard[] = [
       'effect_description_lost_civilization',
     ],
     upgrades: [
-      [{ cost: {}, nextSide: 2, otherCost: "1 Personne" }],
-      [{ cost: {}, nextSide: 4, otherCost: "2 Personnes" }],
+      [{ cost: {}, nextSide: 2, otherCost: 'other_cost_one_person' }],
+      [{ cost: {}, nextSide: 4, otherCost: 'other_cost_two_people' }],
       [],
       [{ cost: { coin: 1, metal: 2 }, nextSide: 3 }],
     ],
@@ -3059,8 +3059,8 @@ export const allCards: GameCard[] = [
       '',
     ],
     upgrades: [
-      [{ cost: {}, nextSide: 3, otherCost: "2 Personnes, 2 Terrains, 2 Bâtiments" }],
-      [{ cost: {}, nextSide: 1, otherCost: "2 Personnes" }],
+      [{ cost: {}, nextSide: 3, otherCost: 'other_cost_two_people_two_lands_two_buildings' }],
+      [{ cost: {}, nextSide: 1, otherCost: 'other_cost_two_people' }],
       [],
       [],
     ],
@@ -3433,7 +3433,7 @@ export const allCards: GameCard[] = [
       [{ cost: { coin: 1, wood: 3 }, nextSide: 2 }],
       [{ cost: { coin: 1, wood: 4 }, nextSide: 4 }],
       [],
-      [{ cost: { coin: 1, wood : 2}, nextSide: 3, otherCost: "2 Personnes" }],
+      [{ cost: { coin: 1, wood : 2}, nextSide: 3, otherCost: 'other_cost_two_people' }],
     ],
     currentSide: 1,
     type: ['land', 'building', 'seafaring - ship', 'seafaring - ship'],
@@ -3487,7 +3487,7 @@ export const allCards: GameCard[] = [
       [{ cost: { coin: 1, wood: 3 }, nextSide: 2 }],
       [{ cost: { coin: 1, wood: 4 }, nextSide: 4 }],
       [],
-      [{ cost: { coin: 1, wood : 2}, nextSide: 3, otherCost: "2 Personnes" }],
+      [{ cost: { coin: 1, wood : 2}, nextSide: 3, otherCost: 'other_cost_two_people' }],
     ],
     currentSide: 1,
     type: ['land', 'building', 'seafaring - ship', 'seafaring - ship'],
@@ -4372,9 +4372,9 @@ export const allCards: GameCard[] = [
     ],
     upgrades: [
       [ {cost: {coin: 1, wood: 1, metal: 1}, nextSide: 2} ],
-      [ {cost: {sword: 1, metal: 1}, nextSide: 4, otherCost: "2 Personnes" } ],
+      [ {cost: {sword: 1, metal: 1}, nextSide: 4, otherCost: 'other_cost_two_people' } ],
       [],
-      [ {cost: {}, nextSide: 3, otherCost: "2 Maritimes" } ],
+      [ {cost: {}, nextSide: 3, otherCost: 'other_cost_two_seafarings' } ],
     ],
     currentSide: 1,
     type: ['seafaring', 'seafaring', 'event', 'seafaring'],
@@ -5116,8 +5116,8 @@ export const allCards: GameCard[] = [
       '',
     ],
     upgrades: [
-      [ { cost: { wood: 2 }, nextSide: 2, otherCost: "1 Personne" } ],
-      [ { cost: { stone: 2 }, nextSide: 4, otherCost: "2 Personnes" } ],
+      [ { cost: { wood: 2 }, nextSide: 2, otherCost: 'other_cost_one_person' } ],
+      [ { cost: { stone: 2 }, nextSide: 4, otherCost: 'other_cost_two_people' } ],
       [],
       [ { cost: { stone: 4 }, nextSide: 3 } ],
     ],
@@ -5916,7 +5916,7 @@ export const allCards: GameCard[] = [
     upgrades: [
       [ { cost: { metal: 2 }, nextSide: 2 } ],
       [],
-      [ { cost: {}, nextSide: 4, otherCost: "2 Personnes" } ],
+      [ { cost: {}, nextSide: 4, otherCost: 'other_cost_two_people' } ],
       [],
     ],
     currentSide: 1,
@@ -5957,9 +5957,9 @@ export const allCards: GameCard[] = [
     ],
     upgrades: [
       [ { cost: { coin: 2, wood: 2 }, nextSide: 2 } ],
-      [ { cost: {}, nextSide: 4, otherCost: "2 Personnes" } ],
+      [ { cost: {}, nextSide: 4, otherCost: 'other_cost_two_people' } ],
       [],
-      [ { cost: {}, nextSide: 3, otherCost: "2 Personnes" } ],
+      [ { cost: {}, nextSide: 3, otherCost: 'other_cost_two_people' } ],
     ],
     currentSide: 1,
     type: ['land', 'land', 'land', 'land'],
@@ -6436,4 +6436,1363 @@ export const allCards: GameCard[] = [
       throw new Error("Function not implemented.");
     }
   },
+  { id: 139,
+    name: ['welcomeToRiddingTheWoods', '', '', ''],
+    resources: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    effects: [
+      'effect_description_welcome_to_ridding_the_woods',
+      '',
+      '',
+      '',
+    ],
+    upgrades: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    currentSide: 1,
+    type: ['scroll', '', '', ''],
+    choice: false,
+    checkboxes: [],
+    negative: [false, false, false, false],
+    discoverable: false,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 140,
+    name: ['aCertainLady', '', 'rogueLady', ''],
+    resources: [
+      [ { fame: 6 } ],
+      [],
+      [ { fame: -3 } ],
+      [],
+    ],
+    effects: [
+      'effect_description_a_certain_lady',
+      '',
+      'effect_description_rogue_lady',
+      '',
+    ],
+    upgrades: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    currentSide: 1,
+    type: ['person - lady', '', 'enemy', ''],
+    choice: false,
+    checkboxes: [],
+    negative: [false, false, true, false],
+    discoverable: true,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 141,
+    name: ['robbinLeader', '', 'sobbing', ''],
+    resources: [
+      [ { fame: -5 } ],
+      [],
+      [],
+      [],
+    ],
+    effects: [
+      'effect_description_robbin_leader',
+      '',
+      'effect_description_sobbing',
+      '',
+    ],
+    upgrades: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    currentSide: 1,
+    type: ['enemy', '', 'state', ''],
+    choice: false,
+    checkboxes: [
+      [
+        {content: "", checked: false},{content: "", checked: false},
+        {content: "", checked: false},{content: "", checked: false},
+        {content: "", checked: false},{content: "", checked: false},
+        {content: "", checked: false},{content: "", checked: false},
+      ],
+      [],
+      [],
+      []
+    ],
+    negative: [true, false, false, false],
+    discoverable: true,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 142,
+    name: ['bandit', '', 'prisoner', ''],
+    resources: [
+      [ { fame: -2 } ],
+      [],
+      [ { fame: 2 } ],
+      [],
+    ],
+    effects: [
+      'effect_description_bandit_ridding_the_woods',
+      '',
+      'effect_description_prisoner',
+      '',
+    ],
+    upgrades: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    currentSide: 1,
+    type: ['enemy', '', 'state', ''],
+    choice: false,
+    checkboxes: [],
+    negative: [true, false, true, false],
+    discoverable: true,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 143,
+    name: ['robberForest', 'unsafeForest', 'peacefulForest', 'calmForest'],
+    resources: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    effects: [
+      'effect_description_robber_forest',
+      'effect_description_unsafe_forest',
+      'staysInPlay',
+      '',
+    ],
+    upgrades: [
+      [ { cost: { sword: 4 }, nextSide: 2 } ],
+      [],
+      [],
+      [ { cost: { coin: 8 }, nextSide: 3 } ],
+    ],
+    currentSide: 1,
+    type: ['land - enemy', 'land - enemy', 'land', 'land'],
+    choice: false,
+    checkboxes: [],
+    negative: [true, true, false, false],
+    discoverable: true,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 144,
+    name: ['terrifiedTown', 'uneasyTown', '_Town', 'guardedTown'],
+    resources: [
+      [ { sword: 1 } ],
+      [ { sword: 1 } ],
+      [ { sword: 2, fame: 7 } ],
+      [ { sword: 2, fame: 3 } ],
+    ],
+    effects: [
+      'effect_description_terrified_town',
+      'effect_description_uneasy_town',
+      'effect_description___town',
+      'effect_description_guarded_town',
+    ],
+    upgrades: [
+      [ { cost: { sword: 4 }, nextSide: 2 } ],
+      [ { cost: { sword: 4 }, nextSide: 4 } ],
+      [],
+      [ { cost: { sword: 5 }, nextSide: 3 } ],
+    ],
+    currentSide: 1,
+    type: ['land', 'land', 'land', 'land'],
+    choice: false,
+    checkboxes: [],
+    negative: [false, false, false, false],
+    discoverable: true,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 145,
+    name: ['bandit', '', 'prisoner', ''],
+    resources: [
+      [ { fame: -2 } ],
+      [],
+      [ { fame: 2 } ],
+      [],
+    ],
+    effects: [
+      'effect_description_bandit_ridding_the_woods',
+      '',
+      'effect_description_prisoner',
+      '',
+    ],
+    upgrades: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    currentSide: 1,
+    type: ['enemy', '', 'state', ''],
+    choice: false,
+    checkboxes: [],
+    negative: [true, false, true, false],
+    discoverable: true,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 146,
+    name: ['hugeRobber', '', 'prisoner', ''],
+    resources: [
+      [ { fame: -3 } ],
+      [],
+      [ { fame: 2 } ],
+      [],
+    ],
+    effects: [
+      'effect_description_huge_robber',
+      '',
+      'effect_description_prisoner',
+      '',
+    ],
+    upgrades: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    currentSide: 1,
+    type: ['enemy', '', 'state', ''],
+    choice: false,
+    checkboxes: [],
+    negative: [true, false, true, false],
+    discoverable: true,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 147,
+    name: ['largeRobberCamp', 'smallRobberCamp', 'richForest', 'emptyCamp'],
+    resources: [
+      [],
+      [],
+      [ { coin: 1, wood: 1, fame: 3 } ],
+      [ { wood: 1 } ],
+    ],
+    effects: [
+      'effect_description_large_robber_camp',
+      'effect_description_small_robber_camp',
+      'staysInPlay',
+      '',
+    ],
+    upgrades: [
+      [ { cost: { sword: 4 }, nextSide: 2 } ],
+      [ { cost: { sword: 3 }, nextSide: 4 } ],
+      [],
+      [ { cost: { coin: 6 }, nextSide: 3 } ],
+    ],
+    currentSide: 1,
+    type: ['land - enemy', 'land - enemy', 'land', 'land'],
+    choice: false,
+    checkboxes: [],
+    negative: [true, true, false, false],
+    discoverable: true,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 148,
+    name: ['fortGrounds', 'wall', 'smallDungeon', 'largeDungeon'],
+    resources: [
+      [],
+      [ { fame: 3 } ],
+      [],
+      [],
+    ],
+    effects: [
+      '',
+      'staysInPlay',
+      'effect_description_small_dungeon',
+      'effect_description_large_dungeon',
+    ],
+    upgrades: [
+      [ { cost: { stone: 4 }, nextSide: 2 },  { cost: { stone: 2 }, nextSide: 3 }  ],
+      [],
+      [],
+      [],
+    ],
+    currentSide: 1,
+    type: ['land', 'building', 'building', 'building'],
+    choice: false,
+    checkboxes: [
+      [],
+      [],
+      [
+        {content: "", checked: false},
+        {content: "", checked: false},
+        {content: "", checked: false},
+        {content: "→", checked: false}
+      ],
+      []
+    ],
+    negative: [false, false, false, false],
+    discoverable: true,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 149,
+    name: ['taxCollector', '', '', ''],
+    resources: [
+      [ { coin: 4 } ],
+      [],
+      [],
+      [],
+    ],
+    effects: [
+      'effect_description_tax_collector',
+      '',
+      '',
+      '',
+    ],
+    upgrades: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    currentSide: 1,
+    type: ['person', '', '', ''],
+    choice: false,
+    checkboxes: [
+      [
+        {content: "", checked: false},{content: "", checked: false},
+        {content: "", checked: false},{content: "", checked: false},
+        {content: "", checked: false},{content: "", checked: false},
+        {content: "", checked: false},{content: "", checked: false},
+        {content: "", checked: false},{content: "", checked: false}
+      ],
+      [],
+      [],
+      []
+    ],
+    negative: [false, false, false, false],
+    discoverable: true,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 150,
+    name: ['robberVeteran', '', 'prisoner', ''],
+    resources: [
+      [ { fame: -2 } ],
+      [],
+      [ { fame: 2 } ],
+      [],
+    ],
+    effects: [
+      'effect_description_robber_veteran',
+      '',
+      'effect_description_prisoner',
+      '',
+    ],
+    upgrades: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    currentSide: 1,
+    type: ['enemy', '', 'state', ''],
+    choice: false,
+    checkboxes: [],
+    negative: [true, false, true, false],
+    discoverable: true,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 151,
+    name: ['archeryContest', '', 'baitAndTrap', ''],
+    resources: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    effects: [
+      'effect_description_archery_contest',
+      '',
+      'effect_description_bait_and_trap',
+      '',
+    ],
+    upgrades: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    currentSide: 1,
+    type: ['event', '', 'event', ''],
+    choice: false,
+    checkboxes: [
+      [
+        {content: "", checked: false},
+        {content: "", checked: false},
+        {content: "", checked: false},
+        {content: "→", checked: false}
+      ],
+      [],
+      [],
+      []
+    ],
+    negative: [false, false, false, false],
+    discoverable: true,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 152,
+    name: ['lousyGuard', 'impatientGuard', 'braveKnight', 'guard'],
+    resources: [
+      [ { sword: 1 } ],
+      [ { sword: 1 } ],
+      [ { sword: 2, fame: 13 } ],
+      [ { sword: 1, fame:3 } ],
+    ],
+    effects: [
+      'effect_description_lousy_guard',
+      'effect_description_impatient_guard',
+      'effect_description_brave_knight',
+      '',
+    ],
+    upgrades: [
+      [ { cost: { metal: 2 }, nextSide: 2 } ],
+      [ { cost: { sword: 3 }, nextSide: 4 } ],
+      [],
+      [ { cost: {  }, nextSide: 3, otherCost:  'other_cost_one_enemy'} ],
+    ],
+    currentSide: 1,
+    type: ['person', 'person', 'person - knight', 'person'],
+    choice: false,
+    checkboxes: [],
+    negative: [false, false, false, false],
+    discoverable: true,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 153,
+    name: ['treasureWagon', '', '', ''],
+    resources: [
+      [ { coin: 9 } ],
+      [],
+      [],
+      [],
+    ],
+    effects: [
+      'effect_description_treasure_wagon',
+      '',
+      '',
+      '',
+    ],
+    upgrades: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    currentSide: 1,
+    type: ['wagon', '', '', ''],
+    choice: false,
+    checkboxes: [],
+    negative: [false, false, false, false],
+    discoverable: true,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 154,
+    name: ['powerfulPrince', '', 'prince_', ''],
+    resources: [
+      [ { fame: -5 } ],
+      [],
+      [ { fame: -12 } ],
+      [],
+    ],
+    effects: [
+      'effect_description_powerful_prince',
+      '',
+      'effect_description_prince__',
+      '',
+    ],
+    upgrades: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    currentSide: 1,
+    type: ['person', '', 'person', ''],
+    choice: false,
+    checkboxes: [],
+    negative: [false, false, false, false],
+    discoverable: true,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 155,
+    name: ['largeRobberCamp', 'smallRobberCamp', 'denseForest', 'emptyCamp'],
+    resources: [
+      [],
+      [],
+      [ { wood: 3, fame: 3 } ],
+      [ { wood: 1 } ],
+    ],
+    effects: [
+      'effect_description_large_robber_camp',
+      'effect_description_small_robber_camp',
+      '',
+      '',
+    ],
+    upgrades: [
+      [ { cost: { sword: 4 }, nextSide: 2 } ],
+      [ { cost: { sword: 3 }, nextSide: 4 } ],
+      [],
+      [ { cost: { coin: 6 }, nextSide: 3 } ],
+    ],
+    currentSide: 1,
+    type: ['land - enemy', 'land - enemy', 'land', 'land'],
+    choice: false,
+    checkboxes: [],
+    negative: [true, true, false, false],
+    discoverable: true,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 156,
+    name: ['largeRobberCamp', 'smallRobberCamp', 'cliffyForest', 'emptyCamp'],
+    resources: [
+      [],
+      [],
+      [ { stone: 1, wood: 1, fame: 3 } ],
+      [ { wood: 1 } ],
+    ],
+    effects: [
+      'effect_description_large_robber_camp',
+      'effect_description_small_robber_camp',
+      'staysInPlay',
+      '',
+    ],
+    upgrades: [
+      [ { cost: { sword: 4 }, nextSide: 2 } ],
+      [ { cost: { sword: 3 }, nextSide: 4 } ],
+      [],
+      [ { cost: { coin: 6 }, nextSide: 3 } ],
+    ],
+    currentSide: 1,
+    type: ['land - enemy', 'land - enemy', 'land', 'land'],
+    choice: false,
+    checkboxes: [],
+    negative: [true, true, false, false],
+    discoverable: true,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 157,
+    name: ['robberSaboteur', '', 'prisoner', ''],
+    resources: [
+      [ { fame: -2 } ],
+      [],
+      [ { fame: 2 } ],
+      [],
+    ],
+    effects: [
+      'effect_description_robber_saboteur',
+      '',
+      'effect_description_prisoner',
+      '',
+    ],
+    upgrades: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    currentSide: 1,
+    type: ['enemy', '', 'state', ''],
+    choice: false,
+    checkboxes: [],
+    negative: [true, false, true, false],
+    discoverable: true,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 158,
+    name: ['rebelliousMonk', '', 'prisoner', ''],
+    resources: [
+      [ { fame: -2 } ],
+      [],
+      [ { fame: 2 } ],
+      [],
+    ],
+    effects: [
+      'effect_description_rebellious_monk',
+      '',
+      'effect_description_prisoner',
+      '',
+    ],
+    upgrades: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    currentSide: 1,
+    type: ['enemy', '', 'state', ''],
+    choice: false,
+    checkboxes: [],
+    negative: [true, false, true, false],
+    discoverable: true,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 159,
+    name: ['bardOfThePeople', '', 'obedientBard', ''],
+    resources: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    effects: [
+      'effect_description_bard_of_the_people',
+      '',
+      'effect_description_obedient_bard',
+      '',
+    ],
+    upgrades: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    currentSide: 1,
+    type: ['enemy - person', '', 'person', ''],
+    choice: false,
+    checkboxes: [
+      [],
+      [],
+      [
+        {content: "", checked: false},{content: "", checked: false},
+        {content: "", checked: false},{content: "", checked: false},
+        {content: "", checked: false},{content: "", checked: false},
+      ],
+      []
+    ],
+    negative: [true, false, false, false],
+    discoverable: true,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 160,
+    name: ['rescuer', '', 'prisoner', ''],
+    resources: [
+      [ { fame: -2 } ],
+      [],
+      [ { fame: 2 } ],
+      [],
+    ],
+    effects: [
+      'effect_description_rescuer',
+      '',
+      'effect_description_prisoner',
+      '',
+    ],
+    upgrades: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    currentSide: 1,
+    type: ['enemy', '', 'state', ''],
+    choice: false,
+    checkboxes: [],
+    negative: [true, false, true, false],
+    discoverable: true,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 161,
+    name: ['rescuer', '', 'prisoner', ''],
+    resources: [
+      [ { fame: -2 } ],
+      [],
+      [ { fame: 2 } ],
+      [],
+    ],
+    effects: [
+      'effect_description_rescuer',
+      '',
+      'effect_description_prisoner',
+      '',
+    ],
+    upgrades: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    currentSide: 1,
+    type: ['enemy', '', 'state', ''],
+    choice: false,
+    checkboxes: [],
+    negative: [true, false, true, false],
+    discoverable: true,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 162,
+    name: ['oldOakTree', '', 'stump', ''],
+    resources: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    effects: [
+      'effect_description_old_oak_tree',
+      '',
+      'effect_description_stump',
+      '',
+    ],
+    upgrades: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    currentSide: 1,
+    type: ['land', '', 'land', ''],
+    choice: false,
+    checkboxes: [
+      [
+        {content: "", checked: false},{content: "", checked: false},
+        {content: "", checked: false},{content: "→", checked: false}
+      ],
+      [],
+      [
+        {content: "wood, wood", checked: false},{content: "wood, wood", checked: false},
+        {content: "wood, wood", checked: false},{content: "wood, wood, wood", checked: false},
+        {content: "wood, wood, wood", checked: false}
+      ],
+      []
+    ],
+    negative: [true, false, false, false],
+    discoverable: true,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 163,
+    name: ['druidCamp', 'druidSanctuary', 'singingForest', 'secludedForest'],
+    resources: [
+      [],
+      [],
+      [ { wood: 1, tradegood: 2, fame: 5 } ],
+      [ { wood: 1 } ],
+    ],
+    effects: [
+      'effect_description_druid_camp',
+      'effect_description_druid_sanctuary',
+      '',
+      'effect_description_secluded_forest',
+    ],
+    upgrades: [
+      [ { cost: { tradegood: 2, coin: 2, sword: 2 }, nextSide: 2 } ],
+      [ { cost: { sword: 4 }, nextSide: 4 } ],
+      [],
+      [ { cost: { coin: 6 }, nextSide: 3 } ],
+    ],
+    currentSide: 1,
+    type: ['land - enemy', 'land - enemy', 'land', 'land'],
+    choice: false,
+    checkboxes: [],
+    negative: [true, true, false, false],
+    discoverable: true,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 164,
+    name: ['hilltop', 'hillMonument', 'ceremony', 'hillMegalith'],
+    resources: [
+      [ { coin: 1 } ],
+      [ { coin:1, fame: 4 } ],
+      [ { fame: 10 } ],
+      [ { coin: 1, fame: 10 } ],
+    ],
+    effects: [
+      '',
+      '',
+      'effect_description_ceremony',
+      'effect_description_hill_megalith',
+    ],
+    upgrades: [
+      [ { cost: { stone: 3 }, nextSide: 2} ],
+      [ { cost: { stone: 6 }, nextSide: 4} ],
+      [],
+      [ { cost: {  }, nextSide: 3} ],
+    ],
+    currentSide: 1,
+    type: ['land', 'land', 'event', 'land'],
+    choice: false,
+    checkboxes: [],
+    negative: [false, false, false, false],
+    discoverable: true,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 165,
+    name: ['keeperOfSecrets', 'theChase', '', 'etherConnector'],
+    resources: [
+      [],
+      [],
+      [],
+      [ { fame: 10 } ],
+    ],
+    effects: [
+      'effect_description_keeper_of_secrets',
+      'effect_description_the_chase',
+      '',
+      'thisCardIsIndestructible',
+    ],
+    upgrades: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    currentSide: 1,
+    type: ['enemy', 'event', '', 'artefact - permanent'],
+    choice: false,
+    checkboxes: [
+      [],
+      [
+        {content: "✓", checked: false},{content: "✓", checked: false},{content: "✓ →", checked: false},
+        {content: "X", checked: false},{content: "X", checked: false},{content: "X effects/destroy", checked: false}
+      ],
+      [],
+      []
+    ],
+    negative: [true, true, false, false],
+    discoverable: false,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 166,
+    name: ['sheriff', '', 'fearedSheriff', ''],
+    resources: [
+      [],
+      [],
+      [ { fame: -12 } ],
+      [],
+    ],
+    effects: [
+      'effect_description_sheriff',
+      '',
+      'effect_description_feared_sheriff',
+      ''
+    ],
+    upgrades: [
+      [ { cost: { tradegood: 12 }, nextSide: 3} ],
+      [],
+      [],
+      [],
+    ],
+    currentSide: 1,
+    type: ['person', '', 'person', ''],
+    choice: false,
+    checkboxes: [],
+    negative: [false, false, false, false],
+    discoverable: false,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 167,
+    name: ['treasury', '', 'famedTreasury', ''],
+    resources: [
+      [],
+      [],
+      [ { fame: 50 } ],
+      [],
+    ],
+    effects: [
+      'effect_description_treasury',
+      '',
+      'effect_description_famed_treasury',
+      ''
+    ],
+    upgrades: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    currentSide: 1,
+    type: ['permanent', '', 'permanent', ''],
+    choice: false,
+    checkboxes: [
+      [
+        {content: "fame", checked: false},
+        {content: "fame x2", checked: false},
+        {content: "fame x3", checked: false},
+        {content: "fame x5", checked: false},
+        {content: "fame x7", checked: false},
+        {content: "fame x10", checked: false},
+        {content: "fame x14", checked: false},
+        {content: "fame x19", checked: false},
+        {content: "fame x25", checked: false},
+        {content: "fame x32", checked: false},
+        {content: "fame x40", checked: false},
+        {content: "→", checked: false}
+      ],
+      [],
+      [
+        {content: "fame x10", checked: false},
+        {content: "fame x20", checked: false},
+        {content: "fame x30", checked: false},
+        {content: "fame x40", checked: false},
+        {content: "fame x50", checked: false},
+        {content: "fame x60", checked: false},
+        {content: "fame x70", checked: false},
+        {content: "fame x80", checked: false},
+        {content: "fame x100", checked: false},
+        {content: "fame x125", checked: false}
+      ],
+      []
+    ],
+    negative: [false, false, false, false],
+    discoverable: false,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 168,
+    name: ['outpostConstruction', 'pallisade', 'walledOutpost', 'forestOutpost'],
+    resources: [
+      [],
+      [],
+      [ { sword: 1, fame: 5 } ],
+      [ { fame: 3 } ],
+    ],
+    effects: [
+      '',
+      'effect_description_pallisade',
+      'effect_description_walled_outpost',
+      'effect_description_forest_outpost',
+    ],
+    upgrades: [
+      [ { cost: { wood: 4 }, nextSide: 2} ],
+      [ { cost: { wood: 5 }, nextSide: 4} ],
+      [],
+      [ { cost: { wood: 4, stone: 4 }, nextSide: 3} ],
+    ],
+    currentSide: 1,
+    type: ['land', 'land', 'land - building - wall', 'land'],
+    choice: false,
+    checkboxes: [],
+    negative: [false, false, false, false],
+    discoverable: false,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  }
 ];

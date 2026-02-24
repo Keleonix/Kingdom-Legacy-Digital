@@ -33,6 +33,14 @@ export const EXPANSIONS: ExpansionData[] = [
     deckPurgeValue: 8,
     focus: {wood: 2},
     permanentPurgeValue: 2,
-    discoverValue: 5
+    discoverValue: 5,
+    tutorialSteps: [
+      {
+        zone: null,
+        title: 'tutorialRiddingTheWoodsWelcomeTitle',
+        text: 'tutorialRiddingTheWoodsWelcomeText',
+        position: "auto",
+    },
+  ]
   },
 ];

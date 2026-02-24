@@ -11,7 +11,7 @@ import { getCardEffects, type GameContext, type CardEffect, cardEffectsRegistry,
 import { useTranslation, type Language, LanguageSelector, type TranslationKeys } from './i18n';
 import { createPortal } from 'react-dom';
 import { EXPANSIONS, FOCUS_KEYS } from "./expansions";
-import { DEFAULT_TUTORIAL_STEPS, tutorial, TutorialOverlay } from "./tutorial";
+import { DEFAULT_TUTORIAL_STEPS, tutorial, TutorialOverlay, type TutorialStep } from "./tutorial";
 
 const ZONE_MIN_HEIGHT = "290px";
 
@@ -132,7 +132,7 @@ function getBackgroundStyle(card: GameCard, sideIdx: number) {
   return {};
 }
 
-function renderCheckboxContent(content: string | undefined, outOfBox?: boolean) {
+function renderCheckboxContent(content: string | undefined, t: (key: TranslationKeys) => string, outOfBox?: boolean) {
   if (!content || content.trim() === "") return <span className="text-xs text-gray-400"></span>;
   if (content.trim() === "*") return <span className="font-bold text-sm">*</span>;
   
@@ -154,7 +154,7 @@ function renderCheckboxContent(content: string | undefined, outOfBox?: boolean) 
 
   if (parsedResources.length === 0) {
     // Fallback: render as plain text
-    return (<span className="text-[8px] font-bold">{content}</span>);
+    return (<span className="text-[8px] font-bold">{renderEffectText(content, t)}</span>);
   }
 
   return (
@@ -1104,7 +1104,7 @@ function CardView({
                   } hover:border-gray-400 transition-colors`}
                   title={box.content || t('emptyCheckbox')}
                 >
-                  {renderCheckboxContent(box.content)}
+                  {renderCheckboxContent(box.content, t)}
                 </button>
               ))}
             </div>
@@ -2256,7 +2256,7 @@ const CheckboxSelectionPopup: React.FC<{
                         !isSelected && selected.length >= requiredCount + optionalCount
                       }
                     />
-                    <span className="p-3">{renderCheckboxContent(checkbox.content, true) ?? `Case ${i + 1}`}</span>
+                    <span className="p-3">{renderCheckboxContent(checkbox.content, t, true) ?? `Case ${i + 1}`}</span>
                   </label>
                 );
               })}
@@ -2650,7 +2650,7 @@ export default function Game() {
 
   const [campaignDeck, setCampaignDeck] = useState<GameCard[]>(() =>
     allCards
-      .filter((c) => c.id > 10)
+      .filter((c) => c.id > 10 && c.id <= 138)
       .sort((a, b) => a.id - b.id)
       .map((c) => cloneGameCard(c))
   );
@@ -2683,7 +2683,7 @@ export default function Game() {
   const [cityNameInput, setCityNameInput] = useState("");
   const [selectedKingdom, setSelectedKingdom] = useState("New Kingdom");
 
-  const [turnEndFlag, setTurnEndFlag] = useState(false);
+  const [turnEndFlag, setTurnEndFlag] = useState(true);
   const [hasEndedBaseGame, setHasEndedBaseGame] = useState(false);
   const [shouldComputeFame, setShouldComputeFame] = useState(false);
 
@@ -2811,6 +2811,8 @@ export default function Game() {
     campaign:      t("campaign"),
   };
 
+  const [steps, setSteps] = useState<TutorialStep[]>(DEFAULT_TUTORIAL_STEPS);
+
   const {
     isActive: isTutorialActive,
     startTutorial,
@@ -2821,7 +2823,7 @@ export default function Game() {
     next: tutorialNext,
     previous: tutorialPrev,
     spotlightRect,
-  } = tutorial(zoneRefsMap, ZONE_KEY_MAP, DEFAULT_TUTORIAL_STEPS);
+  } = tutorial(zoneRefsMap, ZONE_KEY_MAP, steps);
 
   // ----------- immediate refs & setters (à ajouter près des useState) -----------
   const deckRef = useRef<GameCard[]>([]);
@@ -2831,6 +2833,7 @@ export default function Game() {
   const permanentZoneRef = useRef<GameCard[]>([]);
   const temporaryCardListRef = useRef<GameCard[]>([]);
   const purgedCardsRef = useRef<GameCard[]>([]);
+  const campaignDeckRef = useRef<GameCard[]>([]);
 
   // Keep refs in sync if other code uses setPlayArea / setDiscard directly
   useEffect(() => { deckRef.current = deck; }, [deck]);
@@ -2839,6 +2842,7 @@ export default function Game() {
   useEffect(() => { blockedZoneRef.current = blockedZone; }, [blockedZone]);
   useEffect(() => { permanentZoneRef.current = permanentZone; }, [permanentZone]);
   useEffect(() => { purgedCardsRef.current = purgedCards; }, [purgedCards]);
+  useEffect(() => { campaignDeckRef.current = campaignDeck; }, [campaignDeck]);
 
   function setPlayAreaImmediate(next: React.SetStateAction<GameCard[]>) {
     if (typeof next === "function") {
@@ -2903,6 +2907,17 @@ export default function Game() {
     } else {
       purgedCardsRef.current = next as GameCard[];
       setPurgedCards(next as GameCard[]);
+    }
+  }
+
+  function setCampaignDeckImmediate(next: React.SetStateAction<GameCard[]>) {
+    if (typeof next === "function") {
+      const v = (next as (prev: GameCard[]) => GameCard[])(campaignDeckRef.current);
+      campaignDeckRef.current = v;
+      setCampaignDeck(v);
+    } else {
+      campaignDeckRef.current = next as GameCard[];
+      setCampaignDeck(next as GameCard[]);
     }
   }
 
@@ -3015,6 +3030,13 @@ export default function Game() {
     setIsAnimating(true);
     if (!turnEndFlag) {
       await discardEndTurn();
+    }
+    else {
+      for (const card of blockedZoneRef.current) {
+        if (card.GetType(t).includes(t('scroll'))) {
+          await deleteCardInZone(t('blocked'), card.id);
+        }
+      }
     }
     setResources((prev) => {
       const reset: ResourceMap = { ...emptyResource };
@@ -3214,7 +3236,6 @@ export default function Game() {
       await new Promise(resolve => setTimeout(resolve, 100));
       
       await handleEffectsEndOfRound(endOfRoundCardList);
-
       setTurnEndFlag(false);
     }
     else {
@@ -3290,7 +3311,7 @@ export default function Game() {
         const resourceMaps = card.resources[currentSideIndex] || [];
         
         const maxFameFromResources = resourceMaps.reduce(
-          (max, res) => Math.max(max, res.fame || 0),
+          (max, res) => Math.max(max, res.fame ?? 0), // TODO: Account for negative fame
           0
         );
         
@@ -3610,7 +3631,7 @@ export default function Game() {
         resolve: (selectedCards: GameCard[] | null) => {
           if (selectedCards) {
             for(const card of selectedCards) {
-              setCampaignDeck(prev => prev.filter(c => c.id !== card.id));
+              setCampaignDeckImmediate(prev => prev.filter(c => c.id !== card.id));
               if(zone) {
                 if(zone === t('deck')) {
                   dropToDeck({id: card.id, fromZone: t('campaign')});
@@ -4418,7 +4439,7 @@ export default function Game() {
           setResources(() => emptyResource);
         }
         if (toZone === t('campaign')) {
-          setCampaignDeck((c) => [...c, cloneGameCard(toAdd)]);
+          setCampaignDeckImmediate((c) => [...c, cloneGameCard(toAdd)]);
         }
       }
 
@@ -4426,7 +4447,7 @@ export default function Game() {
       if (fromZone === t('playArea')) setPlayAreaImmediate((p) => removeById(p, id));
       if (fromZone === t('discard')) setDiscardImmediate((f) => removeById(f, id));
       if (fromZone === t('campaign')) {
-        setCampaignDeck((g) => removeById(g, id));
+        setCampaignDeckImmediate((g) => removeById(g, id));
         setAvailableDiscoverableCards(prev => prev.filter(cardId => cardId !== id));
       }
       if (fromZone === t('blocked')) setBlockedZoneImmediate((b) => removeById(b, id));
@@ -4746,17 +4767,24 @@ export default function Game() {
       }
 
       const newCampaignCards = expansion.campaignCardIds
-        ?.map(id => allCards.find(c => c.id === id))
+        ?.map(id => allCards.find(c => c.id === id && (expansion.campaignCardIds ? c.id !== expansion.campaignCardIds[0] : true)))
         .filter(Boolean)
         .map(c => cloneGameCard(c!)) || [];
       
-      setCampaignDeck(prev => [...prev, ...newCampaignCards].sort((a, b) => a.id - b.id));
+      setCampaignDeckImmediate(prev => [...prev, ...newCampaignCards].sort((a, b) => a.id - b.id));
       
-      // TODO: Post v1.0 : Might not work as expected, test with ridding_the_woods
       refreshDiscoverableCards();
+
+      // Set tutorial card
+      const tutorialCard = expansion.campaignCardIds?.map(() => allCards.find(c => expansion.campaignCardIds ? c.id === expansion.campaignCardIds[0] : false)).filter(Boolean).map(c => cloneGameCard(c!))[0];
+      if (tutorialCard) {
+        setBlockedZoneImmediate(prev => [...prev,  tutorialCard]);
+
+        if (expansion.tutorialSteps) {
+          setSteps(expansion.tutorialSteps);
+        }
+      }
     }
-    
-    await discardEndTurn(true);
     
     setIsChoosingExpansion(false);
   };
@@ -4765,10 +4793,17 @@ export default function Game() {
     if (!currentExpansion) return false;
     
     const expansion = EXPANSIONS.find(e => e.id === currentExpansion);
-    if (!expansion) return false;
+    if (!expansion) {
+      return false;
+    }
     
     else if (expansion.type === 'card') {
       return !permanentZoneRef.current.find(c => c.id === expansion.cardId);
+    }
+    else {
+      if (campaignDeckRef.current.filter((c) => c.discoverable).length === 0) {
+        return true
+      }
     }
     
     return false;
@@ -4817,7 +4852,7 @@ export default function Game() {
     if (zone === t('deck')) setDeck((d) => d.filter(c => c.id !== id));
     if (zone === t('playArea')) setPlayAreaImmediate((p) => p.filter(c => c.id !== id));
     if (zone === t('discard')) setDiscardImmediate((f) => f.filter(c => c.id !== id));
-    if (zone === t('campaign')) setCampaignDeck((g) => g.filter(c => c.id !== id));
+    if (zone === t('campaign')) setCampaignDeckImmediate((g) => g.filter(c => c.id !== id));
     if (zone === t('blocked')) setBlockedZone((b) => b.filter(c => c.id !== id));
     if (zone === t('permanentZone')) setPermanentZone((pe) => pe.filter(c => c.id !== id));
     
@@ -5189,7 +5224,7 @@ export default function Game() {
       };
       
       setDeck(reconstructCards(parsed.deck));
-      setCampaignDeck(reconstructCards(parsed.campaignDeck));
+      setCampaignDeckImmediate(reconstructCards(parsed.campaignDeck));
       setPlayArea(reconstructCards(parsed.playArea));
       setDiscard(reconstructCards(parsed.discard));
       setBlockedZone(reconstructCards(parsed.blockedZone));

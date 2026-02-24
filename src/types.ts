@@ -3,6 +3,7 @@
 // -------------------
 
 import type { TranslationKeys } from "./i18n";
+import type { TutorialStep } from "./tutorial";
 
 export type ResourceMap = {
   coin: number;
@@ -237,7 +238,7 @@ export interface ExpansionData {
   name: string;
   type: ExpansionType;
   iconPath: string;
-  
+
   // Pour type 'card'
   cardId?: number;
   
@@ -247,6 +248,9 @@ export interface ExpansionData {
   focus?: Partial<ResourceMap>;
   permanentPurgeValue?: number;
   discoverValue?: number;
+  
+  // For tutorial
+  tutorialSteps?: TutorialStep[];
 }
 
 export interface GameScore {
