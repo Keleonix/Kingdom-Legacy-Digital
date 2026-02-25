@@ -569,6 +569,8 @@ export type TranslationKeys =
   | 'string_choice_thriving_countryside'
   | 'string_choice_discard_two_other_cards'
   | 'string_choice_add_one_check'
+  | 'string_choice_upgrade'
+  | 'string_choice_pass'
   ;
 
 // Dictionnaire de traductions
@@ -1244,7 +1246,7 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     effect_description_stone_street: "effects/time Inspectez les cartes (111) et (112), détruisez l'une et découvrez l'autre.",
     effect_description_thunderstorm: "effects/forced Carte jouée: défaussez les 3 premières cartes de votre pioche, puis → (Verso Haut).",
     effect_description_rain: "effects/passive La production des Terrains est doublée. effects/passive Vous ne pouvez jouer aucune carte. effects/forced Fin du Tour: → (Front Up).",
-    effect_description_dark_knight: "effects/passive Vous ne pouvez ni jouer, ni améliorer de cartes, ni même utiliser les effets effects/time . effects/activate Dépensez resources/sword resources/sword resources/sword pour vaincre (→ Verso Up).",
+    effect_description_dark_knight: "effects/passive Vous ne pouvez ni jouer, ni améliorer de cartes, ni même utiliser les effets effects/time . effects/activate Dépensez resources/sword resources/sword resources/sword pour vaincre (→ Garçon Admiratif).",
     effect_description_impressed_boy: "effects/destroy Gagnez resources/sword resources/sword .",
     effect_description_squire: "effects/destroy Gagnez resources/sword resources/sword resources/sword .",
     effect_description_training_grounds: "effects/activate Dépensez resources/coin pour gagner resources/sword .",
@@ -1495,7 +1497,9 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     string_choice_health_potion: "Défausser la Potion de Soin pour garder une Personne en jeu ?",
     string_choice_thriving_countryside: "Depuis la Zone de Jeu ou la Défausse?",
     string_choice_discard_two_other_cards: "Défaussez 2 cartes?",
-    string_choice_add_one_check: "Ajoutez 1 check?"
+    string_choice_add_one_check: "Ajoutez 1 check?",
+    string_choice_upgrade: "Améliorer",
+    string_choice_pass: "Passer",
   },
   en: {
     // UI Elements
@@ -2419,7 +2423,9 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     string_choice_health_potion: "Discard the Health Potion to keep a Person in play ?",
     string_choice_thriving_countryside: "From Play Area or Discard?",
     string_choice_discard_two_other_cards: "Discard 2 cards?",
-    string_choice_add_one_check: "Add 1 check?"
+    string_choice_add_one_check: "Add 1 check?",
+    string_choice_upgrade: "Upgrade",
+    string_choice_pass: "Pass",
   }
 };
 

@@ -49,6 +49,7 @@ export type GameContext = {
   getCardZone: (id: number) => string;
   upgradeCard: (card: GameCard, nextSide: number) => Promise<boolean>;
   handleCardUpdate: (updatedCard: GameCard, zone: string) => void;
+  handleEnemyDefeated: (card: GameCard, zone: string) => Promise<void>;
   addDiscoverableCard: (cardId: number, force?: boolean) => void;
   hasBeenUsedThisTurn: (cardId: number, effectIndex: number) => number;
   markAsUsedThisTurn: (cardId: number, effectIndex: number) => void;
@@ -785,6 +786,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             applyChoice(ctx, choice1);
             applyChoice(ctx, choice2);
             ctx.setResources(prev => ({ ...prev, sword: prev.sword - 1}));
+            await ctx.handleEnemyDefeated(ctx.card, ctx.zone);
             ctx.deleteCardInZone(ctx.zone, ctx.card.id);
           }
         }
@@ -889,6 +891,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             applyChoice(ctx, choice1);
             applyChoice(ctx, choice2);
             ctx.setResources(prev => ({ ...prev, sword: prev.sword - 1}));
+            await ctx.handleEnemyDefeated(ctx.card, ctx.zone);
             ctx.deleteCardInZone(ctx.zone, ctx.card.id);
           }
         }
@@ -2147,6 +2150,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           ctx.setResources(prev => ({ ...prev, sword: prev.sword - 3}));
           await ctx.upgradeCard(ctx.card, 3);
           ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+          await ctx.handleEnemyDefeated(ctx.card, ctx.zone);
           return true;
         }
         return false;
@@ -2489,6 +2493,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         execute: async function (ctx) {
           if (ctx.resources.sword >= 3) {
             ctx.setResources(prev => ({ ...prev, sword: prev.sword - 3 }));
+            await ctx.handleEnemyDefeated(ctx.card, ctx.zone);
             ctx.deleteCardInZone(ctx.zone, ctx.card.id);
           }
           return false;
@@ -2532,6 +2537,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         execute: async function (ctx) {
           if (ctx.resources.sword >= 3) {
             ctx.setResources(prev => ({ ...prev, sword: prev.sword - 3 }));
+            await ctx.handleEnemyDefeated(ctx.card, ctx.zone);
             ctx.deleteCardInZone(ctx.zone, ctx.card.id);
           }
           return false;
@@ -2740,6 +2746,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         execute: async function (ctx) {
           if (ctx.resources.sword >= 2) {
             ctx.setResources(prev => ({ ...prev, sword: prev.sword - 2 }));
+            await ctx.handleEnemyDefeated(ctx.card, ctx.zone);
             ctx.deleteCardInZone(ctx.t('playArea'), ctx.card.id);
           }
           return false;
@@ -2773,6 +2780,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (ctx.resources.sword >= 3) {
             ctx.setResources(prev => ({ ...prev, sword: prev.sword - 3 }));
             await ctx.upgradeCard(ctx.card, 3);
+            await ctx.handleEnemyDefeated(ctx.card, ctx.zone);
             ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
             return true;
           }
@@ -2825,6 +2833,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         execute: async function (ctx) {
           if (ctx.resources.sword >= 2) {
             ctx.setResources(prev => ({ ...prev, sword: prev.sword - 2 }));
+            await ctx.handleEnemyDefeated(ctx.card, ctx.zone);
             ctx.deleteCardInZone(ctx.t('playArea'), ctx.card.id);
           }
           return false;
@@ -2972,6 +2981,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             applyChoice(ctx, choice2);
             applyChoice(ctx, choice3);
             ctx.setResources(prev => ({ ...prev, sword: prev.sword - 3}));
+            await ctx.handleEnemyDefeated(ctx.card, ctx.zone);
             ctx.deleteCardInZone(ctx.zone, ctx.card.id);
             return false;
           }
@@ -3020,6 +3030,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (ctx.resources.sword >= 5) {
             ctx.setResources(prev => ({ ...prev, sword: prev.sword - 5}));
             await ctx.upgradeCard(ctx.card, 3);
+            await ctx.handleEnemyDefeated(ctx.card, ctx.zone);
             ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
             return true;
           }
@@ -3167,6 +3178,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             applyChoice(ctx, choice2);
             applyChoice(ctx, choice3);
             ctx.setResources(prev => ({ ...prev, sword: prev.sword - 3}));
+            await ctx.handleEnemyDefeated(ctx.card, ctx.zone);
             ctx.deleteCardInZone(ctx.zone, ctx.card.id);
             return false;
           }
@@ -3623,6 +3635,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (ctx.resources.sword >= 2) {
             if ((await ctx.discoverCard((card) => [77].includes(card.id), this.description(ctx.t), 1, ctx.card))) {
               ctx.setResources(prev => ({ ...prev, sword: prev.sword - 2}));
+              await ctx.handleEnemyDefeated(ctx.card, ctx.zone);
               ctx.deleteCardInZone(ctx.t('playArea'), ctx.card.id);
             }
           }
@@ -4394,6 +4407,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         execute: async function (ctx) {
           if (ctx.resources.sword >= 4) {
             ctx.setResources(prev => ({ ...prev, sword: prev.sword - 4 }));
+            await ctx.handleEnemyDefeated(ctx.card, ctx.zone);
             ctx.deleteCardInZone(ctx.zone, ctx.card.id);
           }
           return false;
@@ -5208,7 +5222,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         return false;
       }
     }],
-    4: [{ // Noble Demeur
+    4: [{ // Noble Demeure
       description: (t) => t('none'),
       timing: "onResourceGain",
       execute: async function (ctx) {
@@ -6710,6 +6724,337 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           await ctx.startTutorial();
         }
         return false;
+      }
+    }]
+  },
+  140: {
+    1: [{ // Une Certaine Dame
+      description: (t) => t('effect_description_a_certain_lady'),
+      timing: "played",
+      execute: async function(ctx)  {
+        const enemies = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('playArea'));
+        for (let i = 0; i < enemies.length; i++) {
+          await checkNextBox(ctx.card);
+        }
+        ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+        await ctx.mill(0);
+        if (getLastCheckboxChecked(ctx.card)) {
+          await ctx.upgradeCard(ctx.card, 3);
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+          return true;
+        }
+        return false;
+      }
+    }],
+    3: [
+      { // Maraudeuse
+        description: (t) => t('effect_description_a_certain_lady'),
+        timing: "played",
+        execute: async function(ctx)  {
+          const card = (await ctx.selectCardsFromZone((c) => c.GetResources().some((map) => hasEnoughResources(map, {coin: 1})), ctx.t('playArea'), this.description(ctx.t), 1, ctx.card, 0))[0];
+          if (card) {
+            await removeResourceFromCard(card, {coin: 1});
+            ctx.replaceCardInZone(ctx.zone, card.id, card);
+            await checkNextBox(ctx.card);
+            ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+            if (getLastCheckboxChecked(ctx.card)) {
+              await ctx.handleEnemyDefeated(ctx.card, ctx.zone);
+              ctx.deleteCardInZone(ctx.zone, ctx.card.id);
+            }
+          }
+          return false;
+        }
+      },
+      {
+        description: (t) => t('effect_description_a_certain_lady'),
+        timing: "onEndOfExpansion",
+        execute: async function(ctx)  { // TODO: Implement Effects removal at the end of expansion
+          if(ctx) {
+            return false;
+          }
+          return false;
+        }
+      },
+    ]
+  },
+  141: {
+    1: [
+      { // Roi des Voleurs
+        description: (t) => t('none'),
+        timing: "onResourceGain", // TODO : Refactor effects to make use of this timing when gaining resources (big refactor)
+        execute: async function(ctx)  {
+          Object.keys(ctx.resources).forEach(key => {
+            if (key !== 'sword') ctx.resources[key as keyof ResourceMap] = -ctx.resources[key as keyof ResourceMap];
+            else ctx.resources[key as keyof ResourceMap] = 0;
+          });
+          ctx.setResources(ctx.resources);
+          return true;
+        }
+      },
+      {
+        description: (t) => t('none'),
+        timing: "onClick",
+        execute: async function(ctx)  {
+          if (hasEnoughResources(ctx.resources, {sword: 3})) {
+            ctx.setResources(prev => ({ ...prev, sword: prev.sword - 3 }));
+            await checkNextBox(ctx.card);
+            ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+            await ctx.handleEnemyDefeated(ctx.card, ctx.zone);
+            if (getLastCheckboxChecked(ctx.card)) {
+              if (ctx.fetchCardsInZone((c) => c.GetName(ctx.t) === ctx.t('aCertainLady'), ctx.getCardZone(140)).length > 0) {
+                ctx.deleteCardInZone(ctx.getCardZone(140), 140);
+                await ctx.upgradeCard(ctx.card, 3);
+                ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+              }
+              else {
+                ctx.deleteCardInZone(ctx.zone, ctx.card.id);
+                return false;
+              }
+            }
+            return true;
+          }
+          return false;
+        }
+      }
+    ],
+    3: [{ // Pleurs
+      description: (t) => t('none'),
+      timing: "onAdvance",
+      execute: async function () {
+        return 2;
+      }
+    }]
+  },
+  142: {
+    1: [
+      { // Bandit
+        description: (t) => t('none'),
+        timing: "played",
+        execute: async function(ctx)  {
+          const cards = ctx.fetchCardsInZone((c) => c.GetResources().some((map) => hasEnoughResources(map, {wood: 1})), ctx.zone);
+          await ctx.dropToDiscard({id: cards.map((c) => c.id), fromZone: ctx.zone});
+          return false;
+        }
+      },
+      {
+        description: (t) => t('none'),
+        timing: "onClick",
+        execute: async function(ctx)  {
+          if (hasEnoughResources(ctx.resources, {sword: 3})) {
+            ctx.setResources(prev => ({ ...prev, sword: prev.sword - 3 }));
+            await ctx.upgradeCard(ctx.card, 3);
+            ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+            await ctx.handleEnemyDefeated(ctx.card, ctx.zone);
+            ctx.effectEndTurn();
+          }
+          return false;
+        }
+      }
+    ],
+    3: [{ // Prisonnier
+      description: (t) => t('none'),
+        timing: "otherCardPlayed",
+        execute: async function(ctx)  {
+          const enemies = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('playArea'));
+          if (enemies.length >= 2) {
+            await ctx.upgradeCard(ctx.card, 1);
+            ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+            return true;
+          }
+          return false;
+        }
+    }]
+  },
+  143: {
+    1: [{ // Forêt des Voleurs
+      description: (t) => t('none'),
+      timing: "played",
+      execute: async function (ctx) {
+        const card = ctx.fetchCardsInZone((c) => c.GetName(ctx.t) === ctx.t('robbinLeader'), ctx.t('discard'))[0];
+        if (card) {
+          await ctx.dropToPlayArea({id: card.id, fromZone: ctx.t('discard')});
+        }
+        return false;
+      }
+    }],
+    2: [{ // Forêt Dangereuse
+      description: (t) => t('effect_description_unsafe_forest'),
+      timing: "onEnemyDefeated",
+      execute: async function (ctx) {
+        if (ctx.resources.coin >= 4 && ctx.resources.sword >= 2) {
+          const choice = await ctx.selectStringChoice(this.description(ctx.t), [ctx.t('string_choice_upgrade'), ctx.t('string_choice_pass')]);
+          if (choice === ctx.t('string_choice_upgrade')) {
+            ctx.setResources(prev => ({ ...prev, coin: prev.coin - 4, sword: prev.sword - 2 }));
+            await ctx.upgradeCard(ctx.card, 4);
+            ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+            return true;
+          }
+        }
+        return false;
+      }
+    }],
+    3: [{ // Forêt Paisible
+      description: (t) => t('staysInPlay'),
+      timing: "staysInPlay",
+      execute: async function (ctx) {
+        if(ctx) {
+          return false;
+        }
+        return true;
+      }
+    }]
+  },
+  144: {
+    1: [{ // Ville Terrorisée
+      description: (t) => t('effect_description_terrified_town'),
+      timing: "otherCardPlayed",
+      execute: async function(ctx)  {
+        if (ctx.cardsForTrigger?.filter((c) => c.GetType(ctx.t).includes(ctx.t('enemy'))).length ?? 0 > 0) {
+          const cards = await ctx.selectCardsFromZone((c) => !c.negative[c.currentSide - 1], ctx.zone, this.description(ctx.t), 3, ctx.card, 0);
+          await ctx.dropToDiscard({id: cards.map((c) => c.id), fromZone: ctx.zone});
+        }
+        return false;
+      }
+    }],
+    2: [{ // Ville Tourmentée
+      description: (t) => t('effect_description_uneasy_town'),
+      timing: "otherCardPlayed",
+      execute: async function(ctx)  {
+        if (ctx.cardsForTrigger?.filter((c) => c.GetType(ctx.t).includes(ctx.t('enemy'))).length ?? 0 > 0) {
+          const cards = await ctx.selectCardsFromZone((c) => !c.negative[c.currentSide - 1], ctx.zone, this.description(ctx.t), 2, ctx.card, 0);
+          await ctx.dropToDiscard({id: cards.map((c) => c.id), fromZone: ctx.zone});
+        }
+        return false;
+      }
+    }],
+    3: [{ // _
+      description: (t) => t('effect_description_terrified_town'),
+      timing: "onClick",
+      execute: async function(ctx)  {
+        if (await ctx.discoverCard((c) => [166].includes(c.id), this.description(ctx.t), 1, ctx.card, 0)) {
+          ctx.effectEndTurn();
+        }
+        return false;
+      }
+    }],
+    4: [{ // Ville aux Aguets
+      description: (t) => t('effect_description_terrified_town'),
+      timing: "onClick",
+      execute: async function(ctx)  {
+        if (ctx.resources.wood >= 4) {
+          if (await ctx.discoverCard((c) => [168].includes(c.id), this.description(ctx.t), 1, ctx.card, 0)) {
+            ctx.setResources(prev => ({...prev, wood: prev.wood - 4}));
+            return true;
+          }
+        }
+        return false;
+      }
+    }]
+  },
+  145: {
+    1: [
+      { // Bandit
+        description: (t) => t('none'),
+        timing: "played",
+        execute: async function(ctx)  {
+          const cards = ctx.fetchCardsInZone((c) => c.GetResources().some((map) => hasEnoughResources(map, {wood: 1})), ctx.zone);
+          await ctx.dropToDiscard({id: cards.map((c) => c.id), fromZone: ctx.zone});
+          return false;
+        }
+      },
+      {
+        description: (t) => t('none'),
+        timing: "onClick",
+        execute: async function(ctx)  {
+          if (hasEnoughResources(ctx.resources, {sword: 3})) {
+            ctx.setResources(prev => ({ ...prev, sword: prev.sword - 3 }));
+            await ctx.upgradeCard(ctx.card, 3);
+            ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+            await ctx.handleEnemyDefeated(ctx.card, ctx.zone);
+            ctx.effectEndTurn();
+          }
+          return false;
+        }
+      }
+    ],
+    3: [{ // Prisonnier
+      description: (t) => t('none'),
+        timing: "otherCardPlayed",
+        execute: async function(ctx)  {
+          const enemies = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('playArea'));
+          if (enemies.length >= 2) {
+            await ctx.upgradeCard(ctx.card, 1);
+            ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+            return true;
+          }
+          return false;
+        }
+    }]
+  },
+  146: {
+    1: [
+      { // Voleur Immense
+        description: (t) => t('none'),
+        timing: "restrictAdvance",
+        execute: async function () {
+          return false;
+        }
+      },
+      {
+        description: (t) => t('none'),
+        timing: "onClick",
+        execute: async function(ctx)  {
+          if (ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('person')), ctx.zone).reduce((sum, c) => sum + getCardSelectionValue(c, 'person'), 0) >= 4) {
+            const cards = (await ctx.selectCardsFromZone((c) => c.GetType(ctx.t).includes(ctx.t('person')), ctx.zone, this.description(ctx.t), 4, ctx.card, 0, 'person'));
+            if (cards.reduce((sum, c) => sum + getCardSelectionValue(c, 'person'), 0) >= 4) {
+              await ctx.dropToDiscard({id: cards.map((c) => c.id), fromZone: ctx.zone});
+              await ctx.upgradeCard(ctx.card, 3);
+              ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+              await ctx.handleEnemyDefeated(ctx.card, ctx.zone);
+              return true;
+            }
+          }
+          return false;
+        }
+      }
+    ],
+    3: [{ // Prisonnier
+      description: (t) => t('none'),
+        timing: "otherCardPlayed",
+        execute: async function(ctx)  {
+          const enemies = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('playArea'));
+          if (enemies.length >= 2) {
+            await ctx.upgradeCard(ctx.card, 1);
+            ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+            return true;
+          }
+          return false;
+        }
+    }]
+  },
+  147: {
+    1: [{ // Grand Camp de Voleurs
+      description: (t) => t('none'), // TODO : Include restrictResourceUse => ResourceMap of restricted resources
+      timing: "doesNothing",
+      execute: async function () {
+        return false;
+      }
+    }],
+    2: [{ // Petit Camp de Voleurs
+      description: (t) => t('none'),
+      timing: "doesNothing",
+      execute: async function () {
+        return false;
+      }
+    }],
+    3: [{ // Forêt Luxuriante
+      description: (t) => t('staysInPlay'),
+      timing: "staysInPlay",
+      execute: async function (ctx) {
+        if(ctx) {
+          return false;
+        }
+        return true;
       }
     }]
   },

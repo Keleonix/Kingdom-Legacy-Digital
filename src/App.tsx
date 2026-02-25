@@ -2673,7 +2673,7 @@ export default function Game() {
   const [showPurged, setShowPurged] = useState(false);
   const [showEndRound, setShowEndRound] = useState(false);
   const [campaignPreview, setCampaignPreview] = useState<GameCard | null>(null);
-  const [resources, setResources] = useState<ResourceMap>({ ...emptyResource });
+  const [resources, setResourcesState] = useState<ResourceMap>({ ...emptyResource });
   const [showSettings, setShowSettings] = useState(false);
   const [showGuide, setShowGuide] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
@@ -2834,6 +2834,7 @@ export default function Game() {
   const temporaryCardListRef = useRef<GameCard[]>([]);
   const purgedCardsRef = useRef<GameCard[]>([]);
   const campaignDeckRef = useRef<GameCard[]>([]);
+  const resourcesRef = useRef<ResourceMap>({ ...emptyResource });
 
   // Keep refs in sync if other code uses setPlayArea / setDiscard directly
   useEffect(() => { deckRef.current = deck; }, [deck]);
@@ -2921,6 +2922,14 @@ export default function Game() {
     }
   }
 
+  const setResources = (updater: ((prev: ResourceMap) => ResourceMap) | ResourceMap) => {
+    setResourcesState(prev => {
+      const next = typeof updater === 'function' ? updater(prev) : updater;
+      resourcesRef.current = next;
+      return next;
+    });
+  };
+
   const handleDebugClick = () => {
     const newCount = clickCount + 1;
     setClickCount(newCount);
@@ -2953,6 +2962,20 @@ export default function Game() {
       const effects = getCardEffects(card.id, card.currentSide);
       for (const effect of effects) {
         if (effect.timing === "restrictPlay" || effect.timing === "restrictAll") {
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+
+  const checkAdvanceRestrictions = (): boolean => {
+    const allActiveCards = [...playAreaRef.current];
+    
+    for (const card of allActiveCards) {
+      const effects = getCardEffects(card.id, card.currentSide);
+      for (const effect of effects) {
+        if (effect.timing === "restrictAll" || effect.timing === "restrictAdvance") {
           return true;
         }
       }
@@ -3051,6 +3074,10 @@ export default function Game() {
   
   const advance = async () => {
     let bonusCards = 0;
+
+    if (checkAdvanceRestrictions()) {
+      return;
+    }
     
     for (const card of playArea) {
       const effects = getCardEffects(card.id, card.currentSide);
@@ -3059,7 +3086,7 @@ export default function Game() {
           const context: GameContext = {
             card,
             zone: t('playArea'),
-            resources,
+            resources:resourcesRef.current,
             filterZone,
             setResources,
             draw,
@@ -3100,6 +3127,7 @@ export default function Game() {
             getCardZone,
             upgradeCard,
             handleCardUpdate,
+            handleEnemyDefeated,
             addDiscoverableCard,
             hasBeenUsedThisTurn,
             markAsUsedThisTurn,
@@ -3160,7 +3188,7 @@ export default function Game() {
         const context: GameContext = {
           card: card,
           zone: playArea.includes(card) ? t('playArea') : t('permanentZone'),
-          resources,
+          resources:resourcesRef.current,
           filterZone,
           setResources,
           draw,
@@ -3201,6 +3229,7 @@ export default function Game() {
           getCardZone,
           upgradeCard,
           handleCardUpdate,
+          handleEnemyDefeated,
           addDiscoverableCard,
           hasBeenUsedThisTurn,
           markAsUsedThisTurn,
@@ -3320,7 +3349,7 @@ export default function Game() {
           const context: GameContext = {
               card,
               zone: t('deck'),
-              resources,
+              resources:resourcesRef.current,
               filterZone,
               setResources,
               draw,
@@ -3361,6 +3390,7 @@ export default function Game() {
               getCardZone,
               upgradeCard,
               handleCardUpdate,
+              handleEnemyDefeated,
               addDiscoverableCard,
               hasBeenUsedThisTurn,
               markAsUsedThisTurn,
@@ -3387,7 +3417,7 @@ export default function Game() {
           const context: GameContext = {
               card,
               zone: t('deck'),
-              resources,
+              resources:resourcesRef.current,
               filterZone,
               setResources,
               draw,
@@ -3428,6 +3458,7 @@ export default function Game() {
               getCardZone,
               upgradeCard,
               handleCardUpdate,
+              handleEnemyDefeated,
               addDiscoverableCard,
               hasBeenUsedThisTurn,
               markAsUsedThisTurn,
@@ -3777,7 +3808,7 @@ export default function Game() {
       const context: GameContext = {
             card,
             zone,
-            resources,
+            resources:resourcesRef.current,
             filterZone,
             setResources,
             draw,
@@ -3818,6 +3849,7 @@ export default function Game() {
             getCardZone,
             upgradeCard,
             handleCardUpdate,
+            handleEnemyDefeated,
             addDiscoverableCard,
             hasBeenUsedThisTurn,
             markAsUsedThisTurn,
@@ -4079,7 +4111,7 @@ export default function Game() {
             card,
             zone: getCardZone(card.id),
             cardsForTrigger: destroyedCards,
-            resources,
+            resources:resourcesRef.current,
             filterZone,
             setResources,
             draw,
@@ -4120,6 +4152,7 @@ export default function Game() {
             getCardZone,
             upgradeCard,
             handleCardUpdate,
+            handleEnemyDefeated,
             addDiscoverableCard,
             hasBeenUsedThisTurn,
             markAsUsedThisTurn,
@@ -4232,7 +4265,7 @@ export default function Game() {
       card,
       cardsForTrigger,
       zone,
-      resources,
+      resources:resourcesRef.current,
       filterZone,
       setResources,
       draw,
@@ -4273,6 +4306,7 @@ export default function Game() {
       getCardZone,
       upgradeCard,
       handleCardUpdate,
+      handleEnemyDefeated,
       addDiscoverableCard,
       hasBeenUsedThisTurn,
       markAsUsedThisTurn,
@@ -4579,7 +4613,7 @@ export default function Game() {
           const context: GameContext = {
               card,
               zone: purgeType === 'deck' ? t('deck') : t('permanentZone'),
-              resources,
+              resources:resourcesRef.current,
               cardsForTrigger: purgedCardsRef.current,
               filterZone,
               setResources,
@@ -4621,6 +4655,7 @@ export default function Game() {
               getCardZone,
               upgradeCard,
               handleCardUpdate,
+              handleEnemyDefeated,
               addDiscoverableCard,
               hasBeenUsedThisTurn,
               markAsUsedThisTurn,
@@ -4656,7 +4691,7 @@ export default function Game() {
       const context: GameContext = {
         card,
         zone: purgeType === 'deck' ? t('deck') : t('permanentZone'),
-        resources,
+        resources:resourcesRef.current,
         filterZone,
         setResources,
         draw,
@@ -4697,6 +4732,7 @@ export default function Game() {
         getCardZone,
         upgradeCard,
         handleCardUpdate,
+        handleEnemyDefeated,
         addDiscoverableCard,
         hasBeenUsedThisTurn,
         markAsUsedThisTurn,
@@ -4913,7 +4949,7 @@ export default function Game() {
         const context: GameContext = {
           card,
           zone,
-          resources,
+          resources:resourcesRef.current,
           filterZone,
           setResources,
           draw,
@@ -4954,6 +4990,7 @@ export default function Game() {
           getCardZone,
           upgradeCard,
           handleCardUpdate,
+          handleEnemyDefeated,
           addDiscoverableCard,
           hasBeenUsedThisTurn,
           markAsUsedThisTurn,
@@ -5048,6 +5085,7 @@ export default function Game() {
             getCardZone,
             upgradeCard,
             handleCardUpdate,
+            handleEnemyDefeated,
             addDiscoverableCard,
             hasBeenUsedThisTurn,
             markAsUsedThisTurn,
@@ -5097,7 +5135,7 @@ export default function Game() {
             card,
             zone: playAreaRef.current.includes(card) ? t('playArea') : t('blocked'),
             cardsForTrigger: discardedCards,
-            resources,
+            resources:resourcesRef.current,
             filterZone,
             setResources,
             draw,
@@ -5138,6 +5176,7 @@ export default function Game() {
             getCardZone,
             upgradeCard,
             handleCardUpdate,
+            handleEnemyDefeated,
             addDiscoverableCard,
             hasBeenUsedThisTurn,
             markAsUsedThisTurn,
@@ -5155,6 +5194,17 @@ export default function Game() {
   const handleCardUpdate = (updatedCard: GameCard, zone: string) => {
     replaceCardInZone(zone, updatedCard.id, updatedCard);
   };
+
+  const handleEnemyDefeated = async (card: GameCard, zone: string): Promise<void> => {    
+    for (const cardInPlay of [...playAreaRef.current]) {
+      await handleExecuteCardEffect(cardInPlay, zone, "onEnemyDefeated", [card]);
+    }
+    for (const cardInPlay of [...permanentZoneRef.current]) {
+      if (cardInPlay.GetType(t).includes('permanent')) {
+        await handleExecuteCardEffect(cardInPlay, zone, "onEnemyDefeated", [card]);
+      }
+    }
+  }
 
   // -------------------
   // Memory management
@@ -5472,7 +5522,7 @@ export default function Game() {
           {/* Action Buttons à gauche */}
           <div className="flex flex-wrap gap-2 flex-shrink-0" ref={(el) => { if (el) zoneRefsMap.current.set(t('actionButtons'), el);}}>
             <Button onClick={drawNewTurn} disabled={deck.length === 0 || isChoosingExpansion || isAnimating}>{t('newTurn')}</Button>
-            <Button onClick={async () => { setIsAnimating(true); await advance(); setIsAnimating(false); }} disabled={deck.length === 0 || isChoosingExpansion || turnEndFlag || isPlayBlocked || isAnimating}>{t('advance')}</Button>
+            <Button onClick={async () => { setIsAnimating(true); await advance(); setIsAnimating(false); }} disabled={deck.length === 0 || isChoosingExpansion || turnEndFlag || isPlayBlocked || isAnimating || checkAdvanceRestrictions()}>{t('advance')}</Button>
             <Button disabled={deck.length !== 0} className="bg-red-600 hover:bg-red-500 text-white" onClick={handleEndRound}>{t('endRound')}</Button>
             <Button hidden={purgedCards.length === 0} onClick={() => setShowPurged(true)} className="bg-blue-600 hover:bg-blue-500 text-white">{t('seePurged')}</Button>
             <Button hidden={(hasEndedBaseGame || campaignDeck.some(card => card.id === 70)) || (currentExpansion !== null && !checkExpansionEnd())} disabled={deck.length !== 0 || isAnimating} className="bg-red-600 hover:bg-red-500 text-white" onClick={currentExpansion ? handleEndExpansion : handleEndBaseGame}>{currentExpansion ? t('endExpansion') : t('endGame')}</Button>

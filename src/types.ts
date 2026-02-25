@@ -107,13 +107,16 @@ export type EffectTiming =
   | "doesNothing"
   | "restrictPlay"
   | "restrictAll"
+  | "restrictAdvance"
   | "onEndOfGame"
+  | "onEndOfExpansion"
   | "onCardsDiscarded"
   | "onUpgrade"
   | "destroyed"
   | "removed"
   | "purged"
   | "modifyProduction"
+  | "onEnemyDefeated"
 ;
 
 export class GameCard {

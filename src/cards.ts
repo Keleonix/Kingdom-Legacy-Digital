@@ -6501,7 +6501,19 @@ export const allCards: GameCard[] = [
     currentSide: 1,
     type: ['person - lady', '', 'enemy', ''],
     choice: false,
-    checkboxes: [],
+    checkboxes: [
+      [
+        {content: "", checked: false},{content: "", checked: false},
+        {content: "", checked: false},{content: "→", checked: false}
+      ],
+      [],
+      [
+        {content: "", checked: false},{content: "", checked: false},
+        {content: "", checked: false},{content: "", checked: false},
+        {content: "", checked: false},{content: "effects/destroy", checked: false}
+      ],
+      []
+    ],
     negative: [false, false, true, false],
     discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
