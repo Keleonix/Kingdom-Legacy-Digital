@@ -271,6 +271,7 @@ function parseEffects(raw: string) {
   return { before, effects };
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function renderEffectText(effect: string, t: (key: TranslationKeys) => string) {
   const parts = effect.split(/(\s+)/);
   return parts.map((part, idx) => {
@@ -1123,7 +1124,9 @@ function CardView({
                     onUpgrade(card, upg, fromZone);
                   }}
                   onMouseEnter={(e) => {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     (window as any).lastMouseX = e.clientX;
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     (window as any).lastMouseY = e.clientY;
                     setUpgradePreviewSide(upg.nextSide);
                     setShowUpgradePreview(true);
@@ -2650,7 +2653,7 @@ export default function Game() {
 
   const [campaignDeck, setCampaignDeck] = useState<GameCard[]>(() =>
     allCards
-      .filter((c) => c.id > 10 && c.id <= 138)
+      .filter((c) => c.id > 10) // TODO: Change Back
       .sort((a, b) => a.id - b.id)
       .map((c) => cloneGameCard(c))
   );
@@ -3339,10 +3342,13 @@ export default function Game() {
         const currentSideIndex = card.currentSide - 1;
         const resourceMaps = card.resources[currentSideIndex] || [];
         
-        const maxFameFromResources = resourceMaps.reduce(
-          (max, res) => Math.max(max, res.fame ?? 0), // TODO: Account for negative fame
-          0
-        );
+        const maxFameFromResources =
+          resourceMaps.length === 0
+            ? 0
+            : resourceMaps.reduce(
+                (max, res) => Math.max(max, res.fame ?? 0),
+                Number.NEGATIVE_INFINITY
+              );
         
         const fameValueEffect = getCardFameValue(card.id, card.currentSide);
         if (fameValueEffect.execute) {
@@ -4851,6 +4857,9 @@ export default function Game() {
     
     if (currentExpansion) {
       setCompletedExpansions(prev => [...prev, currentExpansion]);
+      for (const card of deckRef.current) {
+        await handleExecuteCardEffect(card, t('deck'), "onEndOfExpansion");
+      }
     }
   };
 

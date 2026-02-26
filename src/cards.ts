@@ -6842,7 +6842,7 @@ export const allCards: GameCard[] = [
       [],
       [ { fame: 3 } ],
       [],
-      [],
+      [ {...emptyResource} ],
     ],
     effects: [
       '',

@@ -6728,39 +6728,21 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     }]
   },
   140: {
-    1: [{ // Une Certaine Dame
-      description: (t) => t('effect_description_a_certain_lady'),
-      timing: "played",
-      execute: async function(ctx)  {
-        const enemies = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('playArea'));
-        for (let i = 0; i < enemies.length; i++) {
-          await checkNextBox(ctx.card);
-        }
-        ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
-        await ctx.mill(0);
-        if (getLastCheckboxChecked(ctx.card)) {
-          await ctx.upgradeCard(ctx.card, 3);
-          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
-          return true;
-        }
-        return false;
-      }
-    }],
-    3: [
-      { // Maraudeuse
+    1: [
+      { // Une Certaine Dame
         description: (t) => t('effect_description_a_certain_lady'),
         timing: "played",
         execute: async function(ctx)  {
-          const card = (await ctx.selectCardsFromZone((c) => c.GetResources().some((map) => hasEnoughResources(map, {coin: 1})), ctx.t('playArea'), this.description(ctx.t), 1, ctx.card, 0))[0];
-          if (card) {
-            await removeResourceFromCard(card, {coin: 1});
-            ctx.replaceCardInZone(ctx.zone, card.id, card);
+          const enemies = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('playArea'));
+          for (let i = 0; i < enemies.length; i++) {
             await checkNextBox(ctx.card);
+          }
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+          await ctx.mill(0);
+          if (getLastCheckboxChecked(ctx.card)) {
+            await ctx.upgradeCard(ctx.card, 3);
             ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
-            if (getLastCheckboxChecked(ctx.card)) {
-              await ctx.handleEnemyDefeated(ctx.card, ctx.zone);
-              ctx.deleteCardInZone(ctx.zone, ctx.card.id);
-            }
+            return true;
           }
           return false;
         }
@@ -6768,14 +6750,31 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       {
         description: (t) => t('effect_description_a_certain_lady'),
         timing: "onEndOfExpansion",
-        execute: async function(ctx)  { // TODO: Implement Effects removal at the end of expansion
-          if(ctx) {
-            return false;
-          }
+        execute: async function(ctx)  { // TODO: Debug effect
+          cardEffectsRegistry[ctx.card.id][3][0].unusable = true;
+          cardEffectsRegistry[ctx.card.id][3][1].unusable = true;
           return false;
         }
-      },
-    ]
+      }
+    ],
+    3: [{ // Maraudeuse
+      description: (t) => t('effect_description_a_certain_lady'),
+      timing: "played",
+      execute: async function(ctx)  {
+        const card = (await ctx.selectCardsFromZone((c) => c.GetResources().some((map) => hasEnoughResources(map, {coin: 1})), ctx.t('playArea'), this.description(ctx.t), 1, ctx.card, 0))[0];
+        if (card) {
+          await removeResourceFromCard(card, {coin: 1});
+          ctx.replaceCardInZone(ctx.zone, card.id, card);
+          await checkNextBox(ctx.card);
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+          if (getLastCheckboxChecked(ctx.card)) {
+            await ctx.handleEnemyDefeated(ctx.card, ctx.zone);
+            ctx.deleteCardInZone(ctx.zone, ctx.card.id);
+          }
+        }
+        return false;
+      }
+    }]
   },
   141: {
     1: [
@@ -7058,6 +7057,71 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }]
   },
+  148: {
+    2: [{ // Muraille
+      description: (t) => t('staysInPlay'),
+      timing: "staysInPlay",
+      execute: async function (ctx) {
+        if(ctx) {
+          return false;
+        }
+        return true;
+      }
+    }],
+    3: [{ // Donjon
+      description: (t) => t('effect_description_small_dungeon'), 
+      timing: "onClick",
+      execute: async function (ctx) {
+        const cards = ctx.fetchCardsInZone((c) => c.GetName(ctx.t) === ctx.t('prisoner'), ctx.t('playArea'));
+        if (cards.length > 0) {
+          const selected = await ctx.selectCardsFromArray(cards, ctx.t('playArea'), this.description(ctx.t), 0, Math.min(4, cards.length), ctx.card);
+          if (selected.length > 0) {
+            await ctx.dropToDiscard({id: selected.map((c) => c.id), fromZone: ctx.t('playArea')});
+            for (let i = 0; i < selected.length; i++) {
+              checkNextBox(ctx.card);
+              if (getLastCheckboxChecked(ctx.card)) {
+                await ctx.upgradeCard(ctx.card, 4);
+                break;
+              }
+            }
+            ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+            return true;
+          }
+        }
+        return false;
+      }
+    }],
+    4: [{ // Vaste Donjon
+      description: (t) => t('effect_description_large_dungeon'),
+      timing: "onClick",
+      execute: async function (ctx) {
+        const cards = ctx.fetchCardsInZone((c) => c.GetName(ctx.t) === ctx.t('prisoner'), ctx.t('playArea'));
+        if (cards.length > 0) {
+          const selected = await ctx.selectCardsFromArray(cards, ctx.t('playArea'), this.description(ctx.t), 0, cards.length, ctx.card);
+          if (selected.length > 0) {
+            await ctx.dropToDiscard({id: selected.map((c) => c.id), fromZone: ctx.t('playArea')});
+            await addResourceMapToCard(ctx.card, {fame: selected.length * 2});
+            ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+            return true;
+          }
+        }
+        return false;
+      }
+    }],
+  },
+  149: {
+    1: [{ // Percepteur des Impôts
+      description: (t) => t('effect_description_tax_collector'), 
+      timing: "onResourceGain",
+      execute: async function (ctx) {
+        if (ctx.cardsForTrigger && ctx.cardsForTrigger[0].id === ctx.card.id) {
+          checkNextBox(ctx.card);
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+        }
+        return true;
+      }
+    }]
+  },
 };
 
 export const cardFameValueRegistry: Record<number, Record<number, CardFameValue>> = {
@@ -7269,14 +7333,22 @@ export const cardFameValueRegistry: Record<number, Record<number, CardFameValue>
       }
     }
   },
+  149: {
+    1: { // Percepteur des Impôts
+      description: "Vaut -1 par check",
+      execute: function(ctx)  {
+        return -1 * (ctx.card.checkboxes[0].filter(cb => cb.checked).length);
+      }
+    },
+  }
 }
 
 export const cardUpgradeAdditionalCostRegistry: Record<number, Record<number, CardUpgradeCost>> = {
   49: {
     1: {
-      description: "Détruisez le Pont de Pierre (12)",
+      description: "other_cost_destroy_stone_bridge",
       execute: async function (ctx) {
-        const card = ctx.fetchCardsInZone((c) => c.GetName(ctx.t) === "Pont de Pierre", ctx.t('playArea'))[0];
+        const card = ctx.fetchCardsInZone((c) => c.GetName(ctx.t) === ctx.t('stone_bridge'), ctx.t('playArea'))[0];
         if(card) {
           ctx.deleteCardInZone(ctx.t('playArea'), card.id);
           return true;
@@ -7287,7 +7359,7 @@ export const cardUpgradeAdditionalCostRegistry: Record<number, Record<number, Ca
   },
   59: {
     1: {
-      description: "Défaussez 1 Personne",
+      description: "other_cost_one_person",
       execute: async function (ctx) {
         const cards = await ctx.selectCardsFromZone((c) => c.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'), this.description, 1, ctx.card, 0, 'person');
         if(cards.reduce((sum, c) => sum + getCardSelectionValue(c, 'land'), 0) < 1) {
@@ -7300,7 +7372,7 @@ export const cardUpgradeAdditionalCostRegistry: Record<number, Record<number, Ca
       }
     },
     2: {
-      description: "Défaussez 2 Personnes",
+      description: "other_cost_two_person",
       execute: async function (ctx) {
         if(ctx.fetchCardsInZone(
           (c) => c.GetType(ctx.t).includes(ctx.t('person')),
@@ -7321,7 +7393,7 @@ export const cardUpgradeAdditionalCostRegistry: Record<number, Record<number, Ca
   },
   66: {
     1: {
-      description: "Défaussez 2 Personnes, 2 Terrains, 2 Bâtiments",
+      description: "other_cost_two_person_two_lands_two_buildings",
       execute: async function (ctx) {
         if( ctx.fetchCardsInZone(
               (c) => c.GetType(ctx.t).includes(ctx.t('person')),
@@ -7361,7 +7433,7 @@ export const cardUpgradeAdditionalCostRegistry: Record<number, Record<number, Ca
       }
     },
     2: {
-      description: "Défaussez 2 Personnes",
+      description: "other_cost_two_person",
       execute: async function (ctx) {
         if(ctx.fetchCardsInZone(
           (c) => c.GetType(ctx.t).includes(ctx.t('person')),
@@ -7382,7 +7454,7 @@ export const cardUpgradeAdditionalCostRegistry: Record<number, Record<number, Ca
   },
   74: {
     4: {
-      description: "Défaussez 2 Personnes",
+      description: "other_cost_two_person",
       execute: async function (ctx) {
         if(ctx.fetchCardsInZone(
           (c) => c.GetType(ctx.t).includes(ctx.t('person')),
@@ -7403,7 +7475,7 @@ export const cardUpgradeAdditionalCostRegistry: Record<number, Record<number, Ca
   },
   75: {
     4: {
-      description: "Défaussez 2 Personnes",
+      description: "other_cost_two_person",
       execute: async function (ctx) {
         if(ctx.fetchCardsInZone(
           (c) => c.GetType(ctx.t).includes(ctx.t('person')),
@@ -7424,7 +7496,7 @@ export const cardUpgradeAdditionalCostRegistry: Record<number, Record<number, Ca
   },
   93: {
     2: {
-      description: "Défaussez 2 Personnes",
+      description: "other_cost_two_person",
       execute: async function (ctx) {
         if(ctx.fetchCardsInZone(
           (c) => c.GetType(ctx.t).includes(ctx.t('person')),
@@ -7443,7 +7515,7 @@ export const cardUpgradeAdditionalCostRegistry: Record<number, Record<number, Ca
       }
     },
     4: {
-      description: "Défaussez 2 Maritimes",
+      description: "other_cost_two_seafarings",
       execute: async function (ctx) {
         if(ctx.fetchCardsInZone(
           (c) => c.GetType(ctx.t).includes(ctx.t('seafaring')),
@@ -7464,7 +7536,7 @@ export const cardUpgradeAdditionalCostRegistry: Record<number, Record<number, Ca
   },
   109: {
     1: {
-      description: "Défaussez 1 Personne",
+      description: "other_cost_one_person",
       execute: async function (ctx) {
         const cards = await ctx.selectCardsFromZone((c) => c.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'), this.description, 1, ctx.card, 0, 'person');
         if(cards.reduce((sum, c) => sum + getCardSelectionValue(c, 'land'), 0) < 1) {
@@ -7477,7 +7549,7 @@ export const cardUpgradeAdditionalCostRegistry: Record<number, Record<number, Ca
       }
     },
     2: {
-      description: "Défaussez 2 Personnes",
+      description: "other_cost_two_person",
       execute: async function (ctx) {
         if(ctx.fetchCardsInZone(
           (c) => c.GetType(ctx.t).includes(ctx.t('person')),
@@ -7498,7 +7570,7 @@ export const cardUpgradeAdditionalCostRegistry: Record<number, Record<number, Ca
   },
   127: {
     3: {
-      description: "Défaussez 2 Personnes",
+      description: "other_cost_two_person",
       execute: async function (ctx) {
         if(ctx.fetchCardsInZone(
           (c) => c.GetType(ctx.t).includes(ctx.t('person')),
@@ -7519,7 +7591,7 @@ export const cardUpgradeAdditionalCostRegistry: Record<number, Record<number, Ca
   },
   128: {
     2: {
-      description: "Défaussez 2 Personnes",
+      description: "other_cost_two_person",
       execute: async function (ctx) {
         if(ctx.fetchCardsInZone(
           (c) => c.GetType(ctx.t).includes(ctx.t('person')),
@@ -7538,7 +7610,7 @@ export const cardUpgradeAdditionalCostRegistry: Record<number, Record<number, Ca
       }
     },
     4: {
-      description: "Défaussez 2 Personnes",
+      description: "other_cost_two_person",
       execute: async function (ctx) {
         if(ctx.fetchCardsInZone(
           (c) => c.GetType(ctx.t).includes(ctx.t('person')),

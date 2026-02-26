@@ -723,7 +723,7 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     tutorialWelcomeTitle: "Bienvenue dans Kingdom Legacy !",
     tutorialWelcomeText: "Ce tutoriel va vous guider à travers les différentes zones du plateau de jeu et vous expliquer comment fonctionnent les cartes. Cliquez sur « i18n/tutorialNext » pour commencer.",
     tutorialGameTitle: "But du Jeu",
-    tutorialGameText: "Dans Kingdom Legacy, vous jouez pour créer le meilleur royaume. Pour cela, vous allez ajouter des cartes à votre deck et les améliorer pour leur faire gagner des points de renomée resources/fame . Au début de chaque manche (sauf la première), vous découvrirez 2 cartes à ajouter à votre deck. Votre renomée totale sera calculée à la fin de la partie, quand vous découvrirez la carte 70.",
+    tutorialGameText: "Dans Kingdom Legacy, vous jouez pour créer le meilleur royaume. Pour cela, vous allez ajouter des cartes à votre deck et les améliorer pour leur faire gagner des points de renommée resources/fame . Au début de chaque manche (sauf la première), vous découvrirez 2 cartes à ajouter à votre deck. Votre renommée totale sera calculée à la fin de la partie, quand vous découvrirez la carte 70.",
     tutorialDeckTitle: "La Pioche (Deck)",
     tutorialDeckText: "C'est votre deck de cartes. Le chiffre indique le nombre de cartes restantes. Appuyez sur « i18n/seeDeck » pour consulter toutes vos cartes qui seront triées par ordre numéraire pour éviter de connaître l'ordre réel.",
     tutorialDiscardTitle: "La Défausse",
