@@ -88,9 +88,11 @@ Then open [http://localhost:5173](http://localhost:5173) in your browser.
      ├── cards.ts       # Card definitions
      ├── components.ts  # UI components (buttons, cards)
      ├── expansions.ts  # Expansions data
-     └── i18n.ts        # Text data
+     ├── i18n.tsw       # Text data
+     └── tutorial.tsx   # Tutorial scenes
     public/
      ├── effects/       # Effect icons
+     ├── badges/        # cards illustrations
      ├── languages/     # Country flags
      ├── resources/     # Resource icons
      └── seals/         # Extension seals
@@ -111,7 +113,5 @@ All rights to the original **Kingdom Legacy** game, rules, and artwork remain wi
 
 ## Known bugs
 
-- Some cards with optional selection are mandatories instead.
-- Card id 73 Front Bottom doesn't count as 2 people for card fetches/upgrade costs.
-- Card id 81 is not implemented as purge doesn't exist yet
 - Cards don't look at bonus production (bandit (14) for example, won't see the scientist as a valid source) => Refactoring needed on getResources from context rather than cards for actual value checks
+- Interraction between 44 and 141 make it so lands don't produce double swords

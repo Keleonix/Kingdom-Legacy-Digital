@@ -419,7 +419,7 @@ function CardPreviewPopup({
       if (elements.length > 0) {
         elements.push(<span key="separator" className="text-[8px]">, </span>);
       }
-      elements.push(<span key="other" className="text-[8px] italic">{upg.otherCost}</span>);
+      elements.push(<span key="other" className="text-[8px] italic">{t(upg.otherCost as TranslationKeys)}</span>);
     }
     
     if (elements.length === 0) {
@@ -1166,7 +1166,7 @@ function CardView({
                       <span>{t('noCost')}</span>
                     )}
                     {upg.otherCost && (
-                      <span className="italic">{upg.otherCost}</span>
+                      <span className="italic">{t(upg.otherCost as TranslationKeys)}</span>
                     )}
                   </div>
                   <span className="relative opacity-60">→</span>
@@ -2653,7 +2653,7 @@ export default function Game() {
 
   const [campaignDeck, setCampaignDeck] = useState<GameCard[]>(() =>
     allCards
-      .filter((c) => c.id > 10) // TODO: Change Back
+      .filter((c) => c.id > 10 && c.id <= 138) // TODO: Change Back => && c.id <= 138
       .sort((a, b) => a.id - b.id)
       .map((c) => cloneGameCard(c))
   );
@@ -3092,6 +3092,8 @@ export default function Game() {
             resources:resourcesRef.current,
             filterZone,
             setResources,
+            handleGainResources,
+            handlePayResources,
             draw,
             effectEndTurn,
             dropToPlayArea,
@@ -3194,6 +3196,8 @@ export default function Game() {
           resources:resourcesRef.current,
           filterZone,
           setResources,
+          handleGainResources,
+          handlePayResources,
           draw,
           effectEndTurn,
           dropToPlayArea,
@@ -3358,6 +3362,8 @@ export default function Game() {
               resources:resourcesRef.current,
               filterZone,
               setResources,
+              handleGainResources,
+              handlePayResources,
               draw,
               effectEndTurn,
               dropToPlayArea,
@@ -3426,6 +3432,8 @@ export default function Game() {
               resources:resourcesRef.current,
               filterZone,
               setResources,
+              handleGainResources,
+              handlePayResources,
               draw,
               effectEndTurn,
               dropToPlayArea,
@@ -3817,6 +3825,8 @@ export default function Game() {
             resources:resourcesRef.current,
             filterZone,
             setResources,
+            handleGainResources,
+            handlePayResources,
             draw,
             effectEndTurn,
             dropToPlayArea,
@@ -4120,6 +4130,8 @@ export default function Game() {
             resources:resourcesRef.current,
             filterZone,
             setResources,
+            handleGainResources,
+            handlePayResources,
             draw,
             effectEndTurn,
             dropToPlayArea,
@@ -4274,6 +4286,8 @@ export default function Game() {
       resources:resourcesRef.current,
       filterZone,
       setResources,
+      handleGainResources,
+      handlePayResources,
       draw,
       effectEndTurn,
       dropToPlayArea,
@@ -4423,10 +4437,11 @@ export default function Game() {
     const cardIds = Array.isArray(id) ? id : [id];
     const cards: GameCard[] = [];
 
-    for(const id of cardIds) {
-      if (toZone === t('playArea') && checkPlayRestrictions()) {
+    if (toZone === t('playArea') && checkPlayRestrictions()) {
         return;
       }
+
+    for(const id of cardIds) {
       const cardToCheck = fetchCardsInZone((c) => c.id === id, fromZone)[0];
       if (cardToCheck && cardToCheck.GetType(t).includes(t('scroll')) && toZone !== t('destroy')) {
         return;
@@ -4509,7 +4524,11 @@ export default function Game() {
       });
     }
     if (toZone === t('playArea')) {
-      for (const card of cards) {
+      const effects = cards.flatMap(c =>
+        getCardEffects(c.id, c.currentSide, "played").map(effect => [effect, c] as [CardEffect, GameCard])
+      ).sort(([a], [b]) => ((b.priority ?? 0) - (a.priority ?? 0))
+      ).map((eff) => eff[1]);
+      for (const card of effects) {
         await handleExecuteCardEffect(card, t('playArea'), "played");
       }
       for (const card of [...playAreaRef.current, ...permanentZoneRef.current]) {
@@ -4615,7 +4634,7 @@ export default function Game() {
     for (const card of purged) {
       const effects = getCardEffects(card.id, card.currentSide);
       for (const effect of effects) {
-        if (effect.timing === 'purged') {
+        if (effect.timing === 'onPurge') {
           const context: GameContext = {
               card,
               zone: purgeType === 'deck' ? t('deck') : t('permanentZone'),
@@ -4623,6 +4642,8 @@ export default function Game() {
               cardsForTrigger: purgedCardsRef.current,
               filterZone,
               setResources,
+              handleGainResources,
+              handlePayResources,
               draw,
               effectEndTurn,
               dropToPlayArea,
@@ -4700,6 +4721,8 @@ export default function Game() {
         resources:resourcesRef.current,
         filterZone,
         setResources,
+        handleGainResources,
+        handlePayResources,
         draw,
         effectEndTurn,
         dropToPlayArea,
@@ -4961,6 +4984,8 @@ export default function Game() {
           resources:resourcesRef.current,
           filterZone,
           setResources,
+          handleGainResources,
+          handlePayResources,
           draw,
           effectEndTurn,
           dropToPlayArea,
@@ -5045,64 +5070,70 @@ export default function Game() {
   };
 
   const handleGainResources = async (card: GameCard, resources: Partial<ResourceMap>, zone: string, toZone?: string) => {
-    for (const c of [...playArea, ...permanentZone]) {
-      const effects = getCardEffects(c.id, c.currentSide, "onResourceGain");
-      for (const effect of effects) {
-        if (effect.timing === "onResourceGain") {
-          const context: GameContext = {
-            card: c,
-            zone: playArea.includes(c) ? t('playArea') : t('permanentZone'),
-            resources: { ...emptyResource, ...resources },
-            cardsForTrigger: [card],
-            filterZone,
-            setResources,
-            draw,
-            effectEndTurn,
-            dropToPlayArea,
-            dropToBlocked,
-            dropToDeck,
-            dropToDiscard,
-            dropToCampaign,
-            dropToPermanent,
-            setDeck: setDeckImmediate,
-            setPlayArea: setPlayAreaImmediate,
-            setDiscard: setDiscardImmediate,
-            setPermanentZone,
-            setCampaignDeck,
-            setTemporaryCardList,
-            setTemporaryCardListImmediate,
-            setBlockedZone,
-            setPurgedCards: setPurgedCardsImmediate,
-            deleteCardInZone,
-            replaceCardInZone,
-            mill,
-            openCheckboxPopup,
-            selectResourceChoice,
-            selectCardsFromZone,
-            selectCardsFromArray,
-            discoverCard,
-            boostProductivity,
-            registerEndRoundEffect,
-            addCardEffect,
-            fetchCardsInZone,
-            selectCardSides,
-            selectUpgradeCost,
-            selectTextInput,
-            selectStringChoice,
-            updateBlocks,
-            getBlockedBy,
-            getCardZone,
-            upgradeCard,
-            handleCardUpdate,
-            handleEnemyDefeated,
-            addDiscoverableCard,
-            hasBeenUsedThisTurn,
-            markAsUsedThisTurn,
-            t,
-          };
-          
-          await effect.execute(context);
-        }
+    const effects = [
+      ...playAreaRef.current,
+      ...permanentZoneRef.current.filter(c => c.GetType(t).includes(t('permanent')))
+    ].flatMap(c =>
+      getCardEffects(c.id, c.currentSide, "onResourceGain").map(effect => [effect, c] as [CardEffect, GameCard])
+    ).sort(([a], [b]) => ((b.priority ?? 0) - (a.priority ?? 0)));
+
+    for (const [effect, c] of effects) { // TODO [FIX] : Weird interraction between 44 and 141 => no double sword???
+      if (effect.timing === "onResourceGain") {
+        const context: GameContext = {
+          card: c,
+          zone: playArea.includes(c) ? t('playArea') : t('permanentZone'),
+          resources: { ...emptyResource, ...resources },
+          cardsForTrigger: [card],
+          filterZone,
+          setResources,
+          handleGainResources,
+          handlePayResources,
+          draw,
+          effectEndTurn,
+          dropToPlayArea,
+          dropToBlocked,
+          dropToDeck,
+          dropToDiscard,
+          dropToCampaign,
+          dropToPermanent,
+          setDeck: setDeckImmediate,
+          setPlayArea: setPlayAreaImmediate,
+          setDiscard: setDiscardImmediate,
+          setPermanentZone,
+          setCampaignDeck,
+          setTemporaryCardList,
+          setTemporaryCardListImmediate,
+          setBlockedZone,
+          setPurgedCards: setPurgedCardsImmediate,
+          deleteCardInZone,
+          replaceCardInZone,
+          mill,
+          openCheckboxPopup,
+          selectResourceChoice,
+          selectCardsFromZone,
+          selectCardsFromArray,
+          discoverCard,
+          boostProductivity,
+          registerEndRoundEffect,
+          addCardEffect,
+          fetchCardsInZone,
+          selectCardSides,
+          selectUpgradeCost,
+          selectTextInput,
+          selectStringChoice,
+          updateBlocks,
+          getBlockedBy,
+          getCardZone,
+          upgradeCard,
+          handleCardUpdate,
+          handleEnemyDefeated,
+          addDiscoverableCard,
+          hasBeenUsedThisTurn,
+          markAsUsedThisTurn,
+          t,
+        };
+        
+        await effect.execute(context);
       }
     }
 
@@ -5132,6 +5163,103 @@ export default function Game() {
     await drop({fromZone: zone, id: card.id});
   };
 
+  const handlePayResources = async (card: GameCard, resources: Partial<ResourceMap>, zone: string, toZone?: string) => {
+    const effects = [
+      ...playAreaRef.current,
+      ...permanentZoneRef.current.filter(c => c.GetType(t).includes(t('permanent')))
+    ].flatMap(c =>
+      getCardEffects(c.id, c.currentSide, "onResourcePay").map(effect => [effect, c] as [CardEffect, GameCard])
+    ).sort(([a], [b]) => ((b.priority ?? 0) - (a.priority ?? 0)));
+
+    for (const [effect, c] of effects) {
+      if (effect.timing === "onResourcePay") {
+        const context: GameContext = {
+          card: c,
+          zone: playArea.includes(c) ? t('playArea') : t('permanentZone'),
+          resources: { ...emptyResource, ...resources },
+          cardsForTrigger: [card],
+          filterZone,
+          setResources,
+          handleGainResources,
+          handlePayResources,
+          draw,
+          effectEndTurn,
+          dropToPlayArea,
+          dropToBlocked,
+          dropToDeck,
+          dropToDiscard,
+          dropToCampaign,
+          dropToPermanent,
+          setDeck: setDeckImmediate,
+          setPlayArea: setPlayAreaImmediate,
+          setDiscard: setDiscardImmediate,
+          setPermanentZone,
+          setCampaignDeck,
+          setTemporaryCardList,
+          setTemporaryCardListImmediate,
+          setBlockedZone,
+          setPurgedCards: setPurgedCardsImmediate,
+          deleteCardInZone,
+          replaceCardInZone,
+          mill,
+          openCheckboxPopup,
+          selectResourceChoice,
+          selectCardsFromZone,
+          selectCardsFromArray,
+          discoverCard,
+          boostProductivity,
+          registerEndRoundEffect,
+          addCardEffect,
+          fetchCardsInZone,
+          selectCardSides,
+          selectUpgradeCost,
+          selectTextInput,
+          selectStringChoice,
+          updateBlocks,
+          getBlockedBy,
+          getCardZone,
+          upgradeCard,
+          handleCardUpdate,
+          handleEnemyDefeated,
+          addDiscoverableCard,
+          hasBeenUsedThisTurn,
+          markAsUsedThisTurn,
+          t,
+        };
+        
+        if (! await effect.execute(context)) {
+          return false;
+        }
+      }
+    }
+
+    const onlyFame = !Object.entries(resources || {}).some(([key, value]) => 
+      key !== "fame" && Number(value) !== 0
+    );
+    
+    if (resources) {
+      setResources((prev) => {
+        const updated = { ...prev };
+        for (const key in resources) {
+          const resourceKey = key as keyof ResourceMap;
+          const amount = resources[resourceKey] ?? 0;
+          updated[resourceKey] = (updated[resourceKey] ?? 0) - amount;
+        }
+        return updated;
+      });
+    }
+    
+    if(onlyFame) {
+      return true;
+    }
+
+    const targetZone = toZone || t('discard');
+    const drop = handleDropToZone(targetZone);
+    await drop({fromZone: zone, id: card.id});
+
+    return true;
+  };
+
   const triggerOnCardDiscarded = async (discardedCards: GameCard[]) => {
     const allActiveCards = [...playAreaRef.current, ...permanentZone, ...discardedCards];
     
@@ -5147,6 +5275,8 @@ export default function Game() {
             resources:resourcesRef.current,
             filterZone,
             setResources,
+            handleGainResources,
+            handlePayResources,
             draw,
             effectEndTurn,
             dropToPlayArea,
