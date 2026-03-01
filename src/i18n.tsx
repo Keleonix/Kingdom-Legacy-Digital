@@ -571,6 +571,7 @@ export type TranslationKeys =
   | 'string_choice_add_one_check'
   | 'string_choice_upgrade'
   | 'string_choice_pass'
+  | 'string_choice_discard_to_keep_lands'
   ;
 
 // Dictionnaire de traductions
@@ -1500,6 +1501,7 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     string_choice_add_one_check: "Ajoutez 1 check?",
     string_choice_upgrade: "Améliorer",
     string_choice_pass: "Passer",
+    string_choice_discard_to_keep_lands: "Défausser la Muraille d'Avant-Poste pour faire rester en jeu les Terrains?",
   },
   en: {
     // UI Elements
@@ -2426,6 +2428,7 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     string_choice_add_one_check: "Add 1 check?",
     string_choice_upgrade: "Upgrade",
     string_choice_pass: "Pass",
+    string_choice_discard_to_keep_lands: "Défausser la Muraille d'Avant-Poste pour faire rester en jeu les Terrains?",
   }
 };
 

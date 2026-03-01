@@ -7134,7 +7134,7 @@ export const allCards: GameCard[] = [
       '',
     ],
     upgrades: [
-      [],
+      [ { cost: { coin: 18 }, nextSide: 3} ],
       [],
       [],
       [],
@@ -7344,7 +7344,7 @@ export const allCards: GameCard[] = [
       '',
     ],
     upgrades: [
-      [],
+      [ { cost: { metal: 2, sword: 2 }, nextSide: 3 } ],
       [],
       [],
       [],

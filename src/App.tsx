@@ -5154,7 +5154,7 @@ export default function Game() {
       });
     }
     
-    if(onlyFame) {
+    if (onlyFame || toZone === t('none')) {
       return;
     }
 
@@ -5249,7 +5249,7 @@ export default function Game() {
       });
     }
     
-    if(onlyFame) {
+    if(onlyFame || toZone === t('none')) {
       return true;
     }
 
