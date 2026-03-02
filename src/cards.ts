@@ -4497,7 +4497,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 96,
-    name: ['alchemist', 'potion_of_stregnt', 'love_potion', 'healing_potion'],
+    name: ['alchemist', 'potion_of_strength', 'love_potion', 'healing_potion'],
     resources: [
       [ emptyResource ],
       [ emptyResource ],

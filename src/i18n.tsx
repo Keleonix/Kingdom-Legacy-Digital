@@ -147,7 +147,7 @@ export type TranslationKeys =
   | 'treasure_hunt' | 'pirate_cove' | 'pirate_treasure' | 'treasure_map'
   | 'backstabber' | 'blood_curse'
   | 'astronomer' | 'astrologist'
-  | 'alchemist' | 'potion_of_stregnt' | 'love_potion' | 'healing_potion'
+  | 'alchemist' | 'potion_of_strength' | 'love_potion' | 'healing_potion'
   | 'spinning_wheel' | 'silk' | 'fashion' | 'cloth_export'
   | 'compass' | 'navigation' | 'calendar' | 'astrolabe'
   | 'public_punishment' | 'torture_device' | 'post_barbaric' | 'torture_chamber'
@@ -995,7 +995,7 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     astronomer: "Astronome",
     astrologist: "Astrologue",
     alchemist: "Alchimiste",
-    potion_of_stregnt: "Potion de Force",
+    potion_of_strength: "Potion de Force",
     love_potion: "Potion d'Amour",
     healing_potion: "Potion de Soin",
     spinning_wheel: "Rouet",
@@ -1922,7 +1922,7 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     astronomer: "Astronomer",
     astrologist: "Astrologist",
     alchemist: "Alchemist",
-    potion_of_stregnt: "Potion of Strength",
+    potion_of_strength: "Potion of Strength",
     love_potion: "Love Potion",
     healing_potion: "Healing Potion",
     spinning_wheel: "Spinning Wheel",
