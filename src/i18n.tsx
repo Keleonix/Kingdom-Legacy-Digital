@@ -187,67 +187,67 @@ export type TranslationKeys =
   | 'border_dispute_expansion' | 'espionage' | 'resistance' | 'attack'
 
   // Ridding the Woods
-  | 'welcomeToRiddingTheWoods'
-  | 'aCertainLady'
-  | 'rogueLady'
-  | 'robbinLeader'
+  | 'welcome_to_ridding_the_woods'
+  | 'a_certain_lady'
+  | 'rogue_lady'
+  | 'robbin_leader'
   | 'sobbing'
   | 'prisoner'
-  | 'robberForest'
-  | 'unsafeForest'
-  | 'peacefulForest'
-  | 'calmForest'
-  | 'terrifiedTown'
-  | 'uneasyTown'
-  | '_Town'
-  | 'guardedTown'
-  | 'hugeRobber'
-  | 'largeRobberCamp'
-  | 'smallRobberCamp'
-  | 'richForest'
-  | 'emptyCamp'
-  | 'fortGrounds'
-  | 'smallDungeon'
-  | 'largeDungeon'
-  | 'taxCollector'
-  | 'robberVeteran'
-  | 'archeryContest'
-  | 'baitAndTrap'
-  | 'lousyGuard'
-  | 'impatientGuard'
-  | 'braveKnight'
+  | 'robber_forest'
+  | 'unsafe_forest'
+  | 'peaceful_forest'
+  | 'calm_forest'
+  | 'terrified_town'
+  | 'uneasy_town'
+  | '__town'
+  | 'guarded_town'
+  | 'huge_robber'
+  | 'large_robber_camp'
+  | 'small_robber_camp'
+  | 'rich_forest'
+  | 'empty_camp'
+  | 'fort_grounds'
+  | 'small_dungeon'
+  | 'large_dungeon'
+  | 'tax_collector'
+  | 'robber_veteran'
+  | 'archery_contest'
+  | 'bait_and_trap'
+  | 'lousy_guard'
+  | 'impatient_guard'
+  | 'brave_knight'
   | 'guard'
-  | 'treasureWagon'
-  | 'powerfulPrince'
-  | 'prince_'
-  | 'denseForest'
-  | 'cliffyForest'
-  | 'robberSaboteur'
-  | 'rebelliousMonk'
-  | 'bardOfThePeople'
-  | 'obedientBard'
+  | 'treasure_wagon'
+  | 'powerful_prince'
+  | 'prince__'
+  | 'dense_forest'
+  | 'cliffy_forest'
+  | 'robber_saboteur'
+  | 'rebellious_monk'
+  | 'bard_of_the_people'
+  | 'obedient_bard'
   | 'rescuer'
-  | 'oldOakTree'
+  | 'old_oak_tree'
   | 'stump'
-  | 'druidCamp'
-  | 'druidSanctuary'
-  | 'singingForest'
-  | 'secludedForest'
+  | 'druid_camp'
+  | 'druid_sanctuary'
+  | 'singing_forest'
+  | 'secluded_forest'
   | 'hilltop'
-  | 'hillMonument'
+  | 'hill_monument'
   | 'ceremony'
-  | 'hillMegalith'
-  | 'keeperOfSecrets'
-  | 'theChase'
-  | 'etherConnector'
+  | 'hill_megalith'
+  | 'keeper_of_secrets'
+  | 'the_chase'
+  | 'ether_connector'
   | 'sheriff'
-  | 'fearedSheriff'
+  | 'feared_sheriff'
   | 'treasury'
-  | 'famedTreasury'
-  | 'outpostConstruction'
+  | 'famed_treasury'
+  | 'outpost_construction'
   | 'pallisade'
-  | 'walledOutpost'
-  | 'forestOutpost'
+  | 'walled_outpost'
+  | 'forest_outpost'
 
   // Cards Effects Descriptions
   | 'staysInPlay'
@@ -1117,67 +1117,67 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     attack: "Attaque",
 
     // Ridding the Woods
-    welcomeToRiddingTheWoods: 'Bienvenue dans la Forêt des Brigands',
-    aCertainLady: 'Une Certaine Dame',
-    rogueLady: 'Maraudeuse',
-    robbinLeader: 'Roi des Voleurs',
+    welcome_to_ridding_the_woods: 'Bienvenue dans la Forêt des Brigands',
+    a_certain_lady: 'Une Certaine Dame',
+    rogue_lady: 'Maraudeuse',
+    robbin_leader: 'Roi des Voleurs',
     sobbing: 'Pleurs',
     prisoner: 'Prisonnier',
-    robberForest: 'Forêt des Voleurs',
-    unsafeForest: 'Forêt Dangereuse',
-    peacefulForest: 'Forêt Paisible',
-    calmForest: 'Forêt Apaisée',
-    terrifiedTown: 'Ville Terrorisée',
-    uneasyTown: 'Ville Tourmentée',
-    _Town: '_',
-    guardedTown: 'Ville aux Aguets',
-    hugeRobber: 'Voleur Immense',
-    largeRobberCamp: 'Grand Camp de Voleurs',
-    smallRobberCamp: 'Petit Camp de Voleurs',
-    richForest: 'Forêt Luxuriante',
-    emptyCamp: 'Camp Désert',
-    fortGrounds: 'Terres du Fort',
-    smallDungeon: 'Modeste Donjon',
-    largeDungeon: 'Vaste Donjon',
-    taxCollector: 'Percepteur des Impôts',
-    robberVeteran: 'Voleur Aguerri',
-    archeryContest: 'Tournois de Tir à l\'Arc',
-    baitAndTrap: 'Appâter et Piéger',
-    lousyGuard: 'Guarde Incompétent',
-    impatientGuard: 'Guarde Impatient',
-    braveKnight: 'Preux Chevalier',
+    robber_forest: 'Forêt des Voleurs',
+    unsafe_forest: 'Forêt Dangereuse',
+    peaceful_forest: 'Forêt Paisible',
+    calm_forest: 'Forêt Apaisée',
+    terrified_town: 'Ville Terrorisée',
+    uneasy_town: 'Ville Tourmentée',
+    __town: '_',
+    guarded_town: 'Ville aux Aguets',
+    huge_robber: 'Voleur Immense',
+    large_robber_camp: 'Grand Camp de Voleurs',
+    small_robber_camp: 'Petit Camp de Voleurs',
+    rich_forest: 'Forêt Luxuriante',
+    empty_camp: 'Camp Désert',
+    fort_grounds: 'Terres du Fort',
+    small_dungeon: 'Modeste Donjon',
+    large_dungeon: 'Vaste Donjon',
+    tax_collector: 'Percepteur des Impôts',
+    robber_veteran: 'Voleur Aguerri',
+    archery_contest: 'Tournois de Tir à l\'Arc',
+    bait_and_trap: 'Appâter et Piéger',
+    lousy_guard: 'Guarde Incompétent',
+    impatient_guard: 'Guarde Impatient',
+    brave_knight: 'Preux Chevalier',
     guard: 'Guarde',
-    treasureWagon: 'Chariot à Trésors',
-    powerfulPrince: 'Puissant Prince',
-    prince_: 'Prince _',
-    denseForest: 'Forêt Dense',
-    cliffyForest: 'Forêt Escarpée',
-    robberSaboteur: 'Voleur Saboteur',
-    rebelliousMonk: 'Moine Rebelle',
-    bardOfThePeople: 'Barde du Peuple',
-    obedientBard: 'Barde Obéissant',
+    treasure_wagon: 'Chariot à Trésors',
+    powerful_prince: 'Puissant Prince',
+    prince__: 'Prince _',
+    dense_forest: 'Forêt Dense',
+    cliffy_forest: 'Forêt Escarpée',
+    robber_saboteur: 'Voleur Saboteur',
+    rebellious_monk: 'Moine Rebelle',
+    bard_of_the_people: 'Barde du Peuple',
+    obedient_bard: 'Barde Obéissant',
     rescuer: 'Sauveur',
-    oldOakTree: 'Vieux Chêne',
+    old_oak_tree: 'Vieux Chêne',
     stump: 'Souche',
-    druidCamp: 'Camp de Druides',
-    druidSanctuary: 'Sanctuaire Druidique',
-    singingForest: 'Forêt Chantante',
-    secludedForest: 'Forêt Reculée',
+    druid_camp: 'Camp de Druides',
+    druid_sanctuary: 'Sanctuaire Druidique',
+    singing_forest: 'Forêt Chantante',
+    secluded_forest: 'Forêt Reculée',
     hilltop: 'Point Culminant',
-    hillMonument: 'Monument',
+    hill_monument: 'Monument',
     ceremony: 'Cérémonie',
-    hillMegalith: 'Mégalithe',
-    keeperOfSecrets: 'Le Gardien des Secrets',
-    theChase: 'Course Poursuite',
-    etherConnector: 'Connecteur d\'Ether',
+    hill_megalith: 'Mégalithe',
+    keeper_of_secrets: 'Le Gardien des Secrets',
+    the_chase: 'Course Poursuite',
+    ether_connector: 'Connecteur d\'Ether',
     sheriff: 'Shérif',
-    fearedSheriff: 'Shérif Redouté',
+    feared_sheriff: 'Shérif Redouté',
     treasury: 'Trésor',
-    famedTreasury: 'Trésor Légendaire',
-    outpostConstruction: 'Construction d\'un Avant-Poste',
+    famed_treasury: 'Trésor Légendaire',
+    outpost_construction: 'Construction d\'un Avant-Poste',
     pallisade: 'Palissades',
-    walledOutpost: 'Muraille Avant-Poste',
-    forestOutpost: 'Avant-Poste Forestier',
+    walled_outpost: 'Muraille Avant-Poste',
+    forest_outpost: 'Avant-Poste Forestier',
 
     // Cards Effects Descriptions
     staysInPlay: "effects/passive Reste en jeu.",
@@ -1362,7 +1362,7 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     effect_description_stable_1: "effects/time Dépensez resources/coin resources/coin pour découvrir un cheval (113).",
     effect_description_stable_2: "effects/time Dépensez resources/coin resources/coin pour découvrir un cheval (114).",
     effect_description_large_stable: "effects/time Dépensez resources/coin resources/coin pour découvrir un cheval (115).",
-    effect_description_groom: "effects/activate Choisissez un Cheval en jeu avec 1 ou 2 ressources et ajoutez-lui resources/coin / resources/wood / resources/stone / resources/metal / resources/sword / resources/export . effects/activate Jouez un cheval depuis la défausse.",
+    effect_description_groom: "effects/activate Choisissez un Cheval en jeu avec 1 ou 2 ressources et ajoutez-lui resources/coin / resources/wood / resources/stone / resources/metal / resources/sword / resources/tradegood . effects/activate Jouez un cheval depuis la défausse.",
     effect_description_aric_blackwood: "effects/passive Reste en jeu. effects/forced Carte Jouée: vous devez défausser une carte en jeu.",
     effect_description_eadric_shadowstrike: "effects/passive Reste en jeu. effects/activate Défaussez 2 Personnes pour gagner resources/sword resources/sword resources/sword .",
     effect_description_trade_relations: "effects/passive Dépensez resources/tradegood resources/tradegood resources/tradegood pour gagner une ressource au choix.",
@@ -1370,7 +1370,7 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     effect_description_school: "effects/time Améliorez gratuitement 1 Personne en jeux, puis →.",
     effect_description_renowned_school: "effects/time Ajoutez 1 ressource à une Personne en jeux, puis effects/oneTime .",
     effect_description_prominent_school: "effects/time Ajoutez 1 ressource à une Personne en jeux, puis →.",
-    effect_description_investor_1: "effects/activate Gagnez 3 ressources au choix, puis Verso Bas.",
+    effect_description_investor_1: "effects/activate Gagnez 3 ressources au choix, puis Recto Bas.",
     effect_description_investor_2: "effects/activate Gagnez 3 ressources au choix, puis Verso Bas.",
     effect_description_investor_3: "effects/activate Gagnez 1 ressource au choix.",
     effect_description_investor_4: "effects/activate Gagnez 3 ressources au choix, puis Verso Haut.",
@@ -1419,7 +1419,7 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     effect_description_welcome_to_ridding_the_woods: "Pendant cette extension, vous découvrirez 5 cartes pendant 5 manches. effects/passive Lancer le tutoriel.",
     effect_description_a_certain_lady: "effects/forced Carte jouée: marquez un effects/check par Ennemi en jeu. effects/oneTime Le premier effet et celui-ci après avoir terminé cette extension.",
     effect_description_rogue_lady: "effects/forced Carte jouée: Enlevez 1 resources/coin de la production d'une carte en jeu, si vous le faites, ajoutez 1 effects/check .",
-    effect_description_robbin_leader: "effects/passive Vous ne pouvez pas gagner de ressources autres que resources/sword . effects/activate Dépensez resources/sword resources/sword resources/sword pour vaincre (ajoutez 1 effects/check ) et une fois complétée, effects/destroy i18n/aCertainLady où qu'elle soit et puis →, si vous ne pouvez pas, effects/destroy cette carte.",
+    effect_description_robbin_leader: "effects/passive Vous ne pouvez pas gagner de ressources autres que resources/sword . effects/activate Dépensez resources/sword resources/sword resources/sword pour vaincre (ajoutez 1 effects/check ) et une fois complétée, effects/destroy i18n/a_certain_lady où qu'elle soit et puis →, si vous ne pouvez pas, effects/destroy cette carte.",
     effect_description_sobbing: "effects/forced Lorsque vous i18n/advance : Jouez 2 cartes supplémentaires. effects/forced Purgée: Vaut -4 resources/fame.",
     effect_description_bandit_ridding_the_woods: "Peut être → par un Missionaire. effects/forced Carte jouée: Défaussez toutes les cartes qui produisent de resources/wood . effects/time Dépensez resources/sword resources/sword resources/sword pour vaincre (→).",
     effect_description_prisoner: "effects/forced Si 2 Ennemis sont en jeux, →. effects/passive Après avoir choisi les cartes lors d'une purge, vous pouvez ajouter 2 Prisonniers à cette purge.",
@@ -2044,67 +2044,67 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     attack: "Attack",
 
     // Ridding the Woods
-    welcomeToRiddingTheWoods: 'Welcome to Ridding the Woods',
-    aCertainLady: 'A Certain Lady',
-    rogueLady: 'Rogue Lady',
-    robbinLeader: 'Robbin\' Leader',
+    welcome_to_ridding_the_woods: 'Welcome to Ridding the Woods',
+    a_certain_lady: 'A Certain Lady',
+    rogue_lady: 'Rogue Lady',
+    robbin_leader: 'Robbin\' Leader',
     sobbing: 'Sobbing',
     prisoner: 'Prisoner',
-    robberForest: 'Robber Forest',
-    unsafeForest: 'Unsafe Forest',
-    peacefulForest: 'Peaceful Forest',
-    calmForest: 'Calm Forest',
-    terrifiedTown: 'Terrified Town',
-    uneasyTown: 'Uneasy Town',
-    _Town: '_',
-    guardedTown: 'Guarded Town',
-    hugeRobber: 'Huge Robber',
-    largeRobberCamp: 'Large Robber Camp',
-    smallRobberCamp: 'Small Robber Camp',
-    richForest: 'Rich Forest',
-    emptyCamp: 'Empty Camp',
-    fortGrounds: 'Fort Grounds',
-    smallDungeon: 'Small Dungeon',
-    largeDungeon: 'Large Dungeon',
-    taxCollector: 'Tax Collector',
-    robberVeteran: 'Robber Veteran',
-    archeryContest: 'Archery Contest',
-    baitAndTrap: 'Bait and Trap',
-    lousyGuard: 'Lousy Guard',
-    impatientGuard: 'Impatient Guard',
-    braveKnight: 'Brave Knight',
+    robber_forest: 'Robber Forest',
+    unsafe_forest: 'Unsafe Forest',
+    peaceful_forest: 'Peaceful Forest',
+    calm_forest: 'Calm Forest',
+    terrified_town: 'Terrified Town',
+    uneasy_town: 'Uneasy Town',
+    __town: '_',
+    guarded_town: 'Guarded Town',
+    huge_robber: 'Huge Robber',
+    large_robber_camp: 'Large Robber Camp',
+    small_robber_camp: 'Small Robber Camp',
+    rich_forest: 'Rich Forest',
+    empty_camp: 'Empty Camp',
+    fort_grounds: 'Fort Grounds',
+    small_dungeon: 'Small Dungeon',
+    large_dungeon: 'Large Dungeon',
+    tax_collector: 'Tax Collector',
+    robber_veteran: 'Robber Veteran',
+    archery_contest: 'Archery Contest',
+    bait_and_trap: 'Bait and Trap',
+    lousy_guard: 'Lousy Guard',
+    impatient_guard: 'Impatient Guard',
+    brave_knight: 'Brave Knight',
     guard: 'Guard',
-    treasureWagon: 'Treasure Wagon',
-    powerfulPrince: 'Powerful Prince',
-    prince_: 'Prince _',
-    denseForest: 'Dense Forest',
-    cliffyForest: 'Cliffy Forest',
-    robberSaboteur: 'Robber Saboteur',
-    rebelliousMonk: 'Rebellious Monk',
-    bardOfThePeople: 'Bard of the People',
-    obedientBard: 'Obedient Bard',
+    treasure_wagon: 'Treasure Wagon',
+    powerful_prince: 'Powerful Prince',
+    prince__: 'Prince _',
+    dense_forest: 'Dense Forest',
+    cliffy_forest: 'Cliffy Forest',
+    robber_saboteur: 'Robber Saboteur',
+    rebellious_monk: 'Rebellious Monk',
+    bard_of_the_people: 'Bard of the People',
+    obedient_bard: 'Obedient Bard',
     rescuer: 'Rescuer',
-    oldOakTree: 'Old Oak Tree',
+    old_oak_tree: 'Old Oak Tree',
     stump: 'Stump',
-    druidCamp: 'Druid Camp',
-    druidSanctuary: 'Druid Sanctuary',
-    singingForest: 'Singing Forest',
-    secludedForest: 'Secluded Forest',
+    druid_camp: 'Druid Camp',
+    druid_sanctuary: 'Druid Sanctuary',
+    singing_forest: 'Singing Forest',
+    secluded_forest: 'Secluded Forest',
     hilltop: 'Hilltop',
-    hillMonument: 'Hill Monument',
+    hill_monument: 'Hill Monument',
     ceremony: 'Ceremony',
-    hillMegalith: 'Hill Megalith',
-    keeperOfSecrets: 'Keeper of Secrets',
-    theChase: 'The Chase',
-    etherConnector: 'Ether Connector',
+    hill_megalith: 'Hill Megalith',
+    keeper_of_secrets: 'Keeper of Secrets',
+    the_chase: 'The Chase',
+    ether_connector: 'Ether Connector',
     sheriff: 'Sherif',
-    fearedSheriff: 'Feared Sheriff',
+    feared_sheriff: 'Feared Sheriff',
     treasury: 'Treasury',
-    famedTreasury: 'Famed Treasury',
-    outpostConstruction: 'Outpost Construction',
+    famed_treasury: 'Famed Treasury',
+    outpost_construction: 'Outpost Construction',
     pallisade: 'Pallisade',
-    walledOutpost: 'Walled Outpost',
-    forestOutpost: 'Forest Outpost',
+    walled_outpost: 'Walled Outpost',
+    forest_outpost: 'Forest Outpost',
 
     // Cards Effects Descriptions
     staysInPlay: "effects/passive Stays in play.",
@@ -2289,7 +2289,7 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     effect_description_stable_1: "effects/time Spend resources/coin resources/coin to discover a horse (113).",
     effect_description_stable_2: "effects/time Spend resources/coin resources/coin to discover a horse (114).",
     effect_description_large_stable: "effects/time Spend resources/coin resources/coin to discover a horse (115).",
-    effect_description_groom: "effects/activate Choose a Horse in play with 1 or 2 resources and add resources/coin / resources/wood / resources/stone / resources/metal / resources/sword / resources/export  to it. effects/activate Play a horse from the discard.",
+    effect_description_groom: "effects/activate Choose a Horse in play with 1 or 2 resources and add resources/coin / resources/wood / resources/stone / resources/metal / resources/sword / resources/tradegood  to it. effects/activate Play a horse from the discard.",
     effect_description_aric_blackwood: "effects/passive Stays in play. effects/forced Card Played: you must discard a card in play.",
     effect_description_eadric_shadowstrike: "effects/passive Stays in play. effects/activate Discard 2 People to gain resources/sword resources/sword resources/sword .",
     effect_description_trade_relations: "effects/passive Spend resources/tradegood resources/tradegood resources/tradegood to gain a resource of your choice.",
@@ -2346,7 +2346,7 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     effect_description_welcome_to_ridding_the_woods: "During this expansion, you will discover 5 cards during 5 rounds. effects/passive Launch Tutorial.",
     effect_description_a_certain_lady: "effects/forced Card Played: add 1 effects/check for each Enemy in play. effects/oneTime The first effect and this one after finishing this expansion.",
     effect_description_rogue_lady: "effects/forced Card PLayed: Remove 1 resources/coin from a production of a card in play, if you do, add 1 effects/check .",
-    effect_description_robbin_leader: "effects/passive You cannot gain any resource other than resources/sword . effects/activate Spend resources/sword resources/sword resources/sword to defeat (add 1 effects/check ) and once completed, effects/destroy i18n/aCertainLady wherever she is and then →, if you cannot, effects/destroy this card.",
+    effect_description_robbin_leader: "effects/passive You cannot gain any resource other than resources/sword . effects/activate Spend resources/sword resources/sword resources/sword to defeat (add 1 effects/check ) and once completed, effects/destroy i18n/a_certain_lady wherever she is and then →, if you cannot, effects/destroy this card.",
     effect_description_sobbing: "effects/forced Whenver you i18n/advance : Play 2 additional cards. effects/forced When Purged: Worth -4 resources/fame .",
     effect_description_bandit_ridding_the_woods: "May be → by a Missionary. effects/forced Card Played: Discard every card with a production of resources/wood . effects/time Spend resources/sword resources/sword resources/sword to defeat (→).",
     effect_description_prisoner: "effects/forced If there are 2 Enemies in play, →. effects/passive After selecting cards for a purge, you can add up to 2 Prisoners to that purge.",

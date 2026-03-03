@@ -987,6 +987,7 @@ function CardView({
           {card.choice && fromZone === t('campaign') &&(card.currentSide == 1 || card.currentSide == 3) && <button><img src={"effects/choice.png"} alt={t('choice')} title={t('choice')} className="w-49 h-2" /></button>}
           <div>
             <div className="absolute bottom-1 left-44 text-[8px]">{card.id > 0 ? card.id : ""}</div>
+            {/* Skull top right */}
           </div>
           <div>
             <p className="font-bold text-[16px] line-clamp-2 text-center">
@@ -1178,6 +1179,7 @@ function CardView({
         </CardContent>
         {/* Pixel art bottom left */}
         <div className="relative bottom-1 right-19 w-8 h-8">
+          {/* Première image - taille normale */}
           <img 
             src={`/badges/${card.name[card.currentSide - 1]}.png`}
             alt={' '}
@@ -1185,7 +1187,23 @@ function CardView({
             style={{ imageRendering: 'pixelated' }}
             onError={(e) => { e.currentTarget.style.display = 'none'; }}
           />
+
+          {/* Deuxième image - centrée horizontalement, à droite */}
+          {card.negative[card.currentSide - 1] ? (
+            <div className="absolute w-4 h-4 -right-17 top-1/2 -translate-y-1/2">
+              <img 
+                src={`/effects/negative.png`}
+                alt={' '}
+                className="w-full h-full object-contain"
+                style={{ imageRendering: 'pixelated' }}
+                onError={(e) => { e.currentTarget.style.display = 'none'; }}
+              />
+            </div>
+          ) : (
+            <p/>
+          )}
         </div>
+        
       </Card>
 
       {/* --- PREVIEW POPUP --- */}

@@ -5783,7 +5783,7 @@ export const allCards: GameCard[] = [
       [ {cost: { wood: 2, metal: 2 }, nextSide: 2} ],
       [ {cost: { wood: 2, metal: 3 }, nextSide: 4} ],
       [],
-      [ {cost: { wood: 2, metal: 4 }, nextSide: 2} ],
+      [ {cost: { wood: 2, metal: 4 }, nextSide: 3} ],
     ],
     currentSide: 1,
     type: ['event', 'event', 'event', 'event'],
@@ -6437,7 +6437,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 139,
-    name: ['welcomeToRiddingTheWoods', '', '', ''],
+    name: ['welcome_to_ridding_the_woods', '', '', ''],
     resources: [
       [],
       [],
@@ -6479,7 +6479,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 140,
-    name: ['aCertainLady', '', 'rogueLady', ''],
+    name: ['a_certain_lady', '', 'rogue_lady', ''],
     resources: [
       [ { fame: 6 } ],
       [],
@@ -6533,7 +6533,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 141,
-    name: ['robbinLeader', '', 'sobbing', ''],
+    name: ['robbin_leader', '', 'sobbing', ''],
     resources: [
       [ { fame: -5 } ],
       [],
@@ -6627,7 +6627,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 143,
-    name: ['robberForest', 'unsafeForest', 'peacefulForest', 'calmForest'],
+    name: ['robber_forest', 'unsafe_forest', 'peaceful_forest', 'calm_forest'],
     resources: [
       [],
       [],
@@ -6669,7 +6669,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 144,
-    name: ['terrifiedTown', 'uneasyTown', '_Town', 'guardedTown'],
+    name: ['terrified_town', 'uneasy_town', '__town', 'guarded_town'],
     resources: [
       [ { sword: 1 } ],
       [ { sword: 1 } ],
@@ -6753,7 +6753,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 146,
-    name: ['hugeRobber', '', 'prisoner', ''],
+    name: ['huge_robber', '', 'prisoner', ''],
     resources: [
       [ { fame: -3 } ],
       [],
@@ -6795,7 +6795,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 147,
-    name: ['largeRobberCamp', 'smallRobberCamp', 'richForest', 'emptyCamp'],
+    name: ['large_robber_camp', 'small_robber_camp', 'rich_forest', 'empty_camp'],
     resources: [
       [],
       [],
@@ -6837,7 +6837,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 148,
-    name: ['fortGrounds', 'wall', 'smallDungeon', 'largeDungeon'],
+    name: ['fort_grounds', 'wall', 'small_dungeon', 'large_dungeon'],
     resources: [
       [],
       [ { fame: 3 } ],
@@ -6889,7 +6889,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 149,
-    name: ['taxCollector', '', '', ''],
+    name: ['tax_collector', '', '', ''],
     resources: [
       [ { coin: 4 } ],
       [],
@@ -6942,7 +6942,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 150,
-    name: ['robberVeteran', '', 'prisoner', ''],
+    name: ['robber_veteran', '', 'prisoner', ''],
     resources: [
       [ { fame: -2 } ],
       [],
@@ -6984,7 +6984,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 151,
-    name: ['archeryContest', '', 'baitAndTrap', ''],
+    name: ['archery_contest', '', 'bait_and_trap', ''],
     resources: [
       [],
       [],
@@ -7036,7 +7036,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 152,
-    name: ['lousyGuard', 'impatientGuard', 'braveKnight', 'guard'],
+    name: ['lousy_guard', 'impatient_guard', 'brave_knight', 'guard'],
     resources: [
       [ { sword: 1 } ],
       [ { sword: 1 } ],
@@ -7078,7 +7078,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 153,
-    name: ['treasureWagon', '', '', ''],
+    name: ['treasure_wagon', '', '', ''],
     resources: [
       [ { coin: 9 } ],
       [],
@@ -7120,7 +7120,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 154,
-    name: ['powerfulPrince', '', 'prince_', ''],
+    name: ['powerful_prince', '', 'prince__', ''],
     resources: [
       [ { fame: -5 } ],
       [],
@@ -7162,7 +7162,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 155,
-    name: ['largeRobberCamp', 'smallRobberCamp', 'denseForest', 'emptyCamp'],
+    name: ['large_robber_camp', 'small_robber_camp', 'dense_forest', 'empty_camp'],
     resources: [
       [],
       [],
@@ -7204,7 +7204,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 156,
-    name: ['largeRobberCamp', 'smallRobberCamp', 'cliffyForest', 'emptyCamp'],
+    name: ['large_robber_camp', 'small_robber_camp', 'cliffy_forest', 'empty_camp'],
     resources: [
       [],
       [],
@@ -7246,7 +7246,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 157,
-    name: ['robberSaboteur', '', 'prisoner', ''],
+    name: ['robber_saboteur', '', 'prisoner', ''],
     resources: [
       [ { fame: -2 } ],
       [],
@@ -7288,7 +7288,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 158,
-    name: ['rebelliousMonk', '', 'prisoner', ''],
+    name: ['rebellious_monk', '', 'prisoner', ''],
     resources: [
       [ { fame: -2 } ],
       [],
@@ -7330,7 +7330,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 159,
-    name: ['bardOfThePeople', '', 'obedientBard', ''],
+    name: ['bard_of_the_people', '', 'obedient_bard', ''],
     resources: [
       [],
       [],
@@ -7465,7 +7465,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 162,
-    name: ['oldOakTree', '', 'stump', ''],
+    name: ['old_oak_tree', '', 'stump', ''],
     resources: [
       [],
       [],
@@ -7519,7 +7519,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 163,
-    name: ['druidCamp', 'druidSanctuary', 'singingForest', 'secludedForest'],
+    name: ['druid_camp', 'druid_sanctuary', 'singing_forest', 'secluded_forest'],
     resources: [
       [],
       [],
@@ -7561,7 +7561,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 164,
-    name: ['hilltop', 'hillMonument', 'ceremony', 'hillMegalith'],
+    name: ['hilltop', 'hill_monument', 'ceremony', 'hill_megalith'],
     resources: [
       [ { coin: 1 } ],
       [ { coin:1, fame: 4 } ],
@@ -7603,7 +7603,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 165,
-    name: ['keeperOfSecrets', 'theChase', '', 'etherConnector'],
+    name: ['keeper_of_secrets', 'the_chase', '', 'ether_connector'],
     resources: [
       [],
       [],
@@ -7653,7 +7653,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 166,
-    name: ['sheriff', '', 'fearedSheriff', ''],
+    name: ['sheriff', '', 'feared_sheriff', ''],
     resources: [
       [],
       [],
@@ -7695,7 +7695,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 167,
-    name: ['treasury', '', 'famedTreasury', ''],
+    name: ['treasury', '', 'famed_treasury', ''],
     resources: [
       [],
       [],
@@ -7766,7 +7766,7 @@ export const allCards: GameCard[] = [
     }
   },
   { id: 168,
-    name: ['outpostConstruction', 'pallisade', 'walledOutpost', 'forestOutpost'],
+    name: ['outpost_construction', 'pallisade', 'walled_outpost', 'forest_outpost'],
     resources: [
       [],
       [],

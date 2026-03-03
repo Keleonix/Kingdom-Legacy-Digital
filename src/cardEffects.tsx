@@ -6884,7 +6884,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
             await ctx.handleEnemyDefeated(ctx.card, ctx.zone);
             if (getLastCheckboxChecked(ctx.card)) {
-              if (ctx.fetchCardsInZone((c) => c.GetName(ctx.t) === ctx.t('aCertainLady'), ctx.getCardZone(140)).length > 0) {
+              if (ctx.fetchCardsInZone((c) => c.GetName(ctx.t) === ctx.t('a_certain_lady'), ctx.getCardZone(140)).length > 0) {
                 ctx.deleteCardInZone(ctx.getCardZone(140), 140);
                 await ctx.upgradeCard(ctx.card, 3);
                 ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
@@ -6965,7 +6965,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: (t) => t('none'),
       timing: "played",
       execute: async function (ctx) {
-        const card = ctx.fetchCardsInZone((c) => c.GetName(ctx.t) === ctx.t('robbinLeader'), ctx.t('discard'))[0];
+        const card = ctx.fetchCardsInZone((c) => c.GetName(ctx.t) === ctx.t('robbin_leader'), ctx.t('discard'))[0];
         if (card) {
           await ctx.dropToPlayArea({id: card.id, fromZone: ctx.t('discard')});
         }
