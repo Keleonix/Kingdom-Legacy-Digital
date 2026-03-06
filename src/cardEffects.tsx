@@ -34,7 +34,7 @@ export type GameContext = {
   replaceCardInZone: (zone: string, id: number, newCard: GameCard) => void;
   mill: (nbCards: number) => Promise<void>;
   openCheckboxPopup: (card: GameCard, requiredCount: number, optionalCount: number, callback: (selected: Checkbox[]) => void) => void ;
-  selectResourceChoice: (options: Array<Partial<ResourceMap>>, rawInput?: boolean) => Promise<Partial<ResourceMap> | null>;
+  selectResourceChoice: (options: Array<Partial<ResourceMap>>, totalLevel: number, rawInput?: boolean) => Promise<Partial<ResourceMap> | null>;
   selectCardsFromZone: (filter: (card: GameCard) => boolean, zone: string, effectDescription: string, requiredCount: number, triggeringCard?: GameCard, optionalCount?: number, searchType?: string) => Promise<GameCard[]>;
   selectCardsFromArray: (cards: GameCard[], zone: string, effectDescription: string, requiredCount: number, optionalCount?: number, triggeringCard?: GameCard, searchType?: string) => Promise<GameCard[]>;
   discoverCard: (filter: (card: GameCard) => boolean, effectDescription: string, requiredCount: number, triggeringCard?: GameCard, optionalCount?: number, zone?: string) => Promise<boolean>;
@@ -49,10 +49,11 @@ export type GameContext = {
   updateBlocks: (blocker: number, blocked: number[] | null) => void;
   getBlockedBy: (blocker: number) => GameCard[];
   getCardZone: (id: number) => string;
-  upgradeCard: (card: GameCard, nextSide: number) => Promise<boolean>;
+  upgradeCard: (card: GameCard, nextSide: number, forced?: boolean) => Promise<boolean>;
   handleCardUpdate: (updatedCard: GameCard, zone: string) => void;
   handleEnemyDefeated: (card: GameCard, zone: string) => Promise<void>;
   addDiscoverableCard: (cardId: number, force?: boolean) => void;
+  getCardProduction: (card: GameCard, zone: string) => Partial<ResourceMap>[];
   hasBeenUsedThisTurn: (cardId: number, effectIndex: number) => number;
   markAsUsedThisTurn: (cardId: number, effectIndex: number) => void;
   t: (key: TranslationKeys) => string;
@@ -482,7 +483,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       timing: "onClick",
       execute: async function (ctx) {
         await applyResourceMapDelta(ctx, { wood: 3 });
-        await ctx.upgradeCard(ctx.card, 2);
+        await ctx.upgradeCard(ctx.card, 2, true);
         return true;
       }
     }],
@@ -508,7 +509,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       timing: "onClick",
       execute: async function (ctx) {
         await applyResourceMapDelta(ctx, { wood: 3 });
-        await ctx.upgradeCard(ctx.card, 2);
+        await ctx.upgradeCard(ctx.card, 2, true);
         return true;
       }
     }],
@@ -612,10 +613,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (! await applyResourceMapDelta(ctx, { coin: 1 }, true)) {
             return false;
           }
-          const choice = await ctx.selectResourceChoice([
-            { wood: 1 },
-            { stone: 1 }
-          ]);
+          const choice = await ctx.selectResourceChoice([{ wood: 1, stone: 1 }], 1);
           if(choice) {
             await applyResourceMapDelta(ctx, choice);
             return true;
@@ -632,11 +630,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (! await applyResourceMapDelta(ctx, { coin: 1 }, true)) {
             return false;
           }
-          const choice = await ctx.selectResourceChoice([
-            { wood: 1 },
-            { stone: 1 },
-            { metal: 1 }
-          ]);
+          const choice = await ctx.selectResourceChoice([{ wood: 1 },{ stone: 1 },{ metal: 1 }], 1);
           if(choice) {
             await applyResourceMapDelta(ctx, choice);
             return true;
@@ -691,17 +685,15 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: (t) => t('effect_description_explorers'),
       timing: "onClick",
       execute: async function (ctx) {
-        if (await ctx.discoverCard(
+        (await ctx.discoverCard(
           (card) => ([71, 72, 73, 74].includes(card.id)),
           this.description(ctx.t),
           1,
           ctx.card
-        )) {
-          await ctx.upgradeCard(ctx.card, 4);
-          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
-          return true;
-        }
-        return false;
+        ))
+        await ctx.upgradeCard(ctx.card, 4, true);
+        ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+        return true;
       }
     }],
   },
@@ -720,7 +712,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           'land'
         );
         if (selectedCards.length > 0) {
-          const choice = await ctx.selectResourceChoice(selectedCards[0].GetResources());
+          const choice = await ctx.selectResourceChoice(ctx.getCardProduction(selectedCards[0], ctx.zone), 1);
             if(choice) {
               await applyResourceMapDelta(ctx, choice);
               return true;
@@ -733,11 +725,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: (t) => t('none'),
       timing: "onClick",
       execute: async function (ctx) {
-        const choice = await ctx.selectResourceChoice([
-            { coin: 1 },  
-            { wood: 1 },
-            { stone: 1 }
-          ]);
+        const choice = await ctx.selectResourceChoice([{ coin: 1 },  { wood: 1 }, { stone: 1 }], 1);
           if(choice) {
             await applyResourceMapDelta(ctx, choice);
             return true;
@@ -752,7 +740,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       timing: "played",
       execute: async function (ctx) {
         let selectedCards: GameCard[] = [];
-        const filter = (card: GameCard) => (card.GetResources().some((res) => (res.coin ?? 0) >= 1));
+        const filter = (card: GameCard) => (ctx.getCardProduction(card, ctx.zone).some((res) => (res.coin ?? 0) >= 1));
         while (selectedCards.length == 0 && ctx.filterZone(ctx.zone, filter).length !== 0) {
           selectedCards = await ctx.selectCardsFromZone(filter, ctx.t('playArea'), this.description(ctx.t), 1, ctx.card, 0);
         }
@@ -771,31 +759,13 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (! await applyResourceMapDelta(ctx, { sword: 1 }, true)) {
             return false;
           }
-          const choice1 = await ctx.selectResourceChoice([
-            { coin: 1 },  
-            { wood: 1 },
-            { stone: 1 },
-            { sword: 1 },
-            { metal: 1 },
-            { tradegood: 1 },
-          ]);
-          if (!choice1) {
+          const choice = await ctx.selectResourceChoice([{ coin: 1 },  { wood: 1 }, { stone: 1 }, { sword: 1 }, { metal: 1 }, { tradegood: 1 }], 2);
+          if (!choice) {
             return false;
           }
-          const choice2 = await ctx.selectResourceChoice([
-            { coin: 1 },  
-            { wood: 1 },
-            { stone: 1 },
-            { sword: 1 },
-            { metal: 1 },
-            { tradegood: 1 },
-          ]);
-          if(choice2) {
-            await applyResourceMapDelta(ctx, choice1);
-            await applyResourceMapDelta(ctx, choice2);
-            await ctx.handleEnemyDefeated(ctx.card, ctx.zone);
-            ctx.deleteCardInZone(ctx.zone, ctx.card.id);
-          }
+          await applyResourceMapDelta(ctx, choice);
+          await ctx.handleEnemyDefeated(ctx.card, ctx.zone);
+          ctx.deleteCardInZone(ctx.zone, ctx.card.id);
         }
         return false;
       }
@@ -815,7 +785,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           'building'
         );
         if (selectedCards.length > 0) {
-          const choice = await ctx.selectResourceChoice(selectedCards[0].GetResources());
+          const choice = await ctx.selectResourceChoice(ctx.getCardProduction(selectedCards[0], ctx.zone), 1);
             if(choice) {
               await applyResourceMapDelta(ctx, choice);
               return true;
@@ -862,7 +832,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       timing: "played",
       execute: async function (ctx) {
         let selectedCards: GameCard[] = [];
-        const filter = (card: GameCard) => (card.GetResources().some((res) => (res.coin ?? 0) >= 1));
+        const filter = (card: GameCard) => (ctx.getCardProduction(card, ctx.zone).some((res) => (res.coin ?? 0) >= 1));
         while (selectedCards.length == 0 && ctx.filterZone(ctx.zone, filter).length !== 0) {
           selectedCards = await ctx.selectCardsFromZone(filter, ctx.t('playArea'), this.description(ctx.t), 1, ctx.card, 0);
         }
@@ -881,31 +851,13 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (! await applyResourceMapDelta(ctx, { sword: 1 }, true)) {
             return false;
           }
-          const choice1 = await ctx.selectResourceChoice([
-            { coin: 1 },  
-            { wood: 1 },
-            { stone: 1 },
-            { sword: 1 },
-            { metal: 1 },
-            { tradegood: 1 },
-          ]);
-          if (!choice1) {
+          const choice = await ctx.selectResourceChoice([{ coin: 1 },  { wood: 1 }, { stone: 1 }, { sword: 1 }, { metal: 1 }, { tradegood: 1 }], 2);
+          if (!choice) {
             return false;
           }
-          const choice2 = await ctx.selectResourceChoice([
-            { coin: 1 },  
-            { wood: 1 },
-            { stone: 1 },
-            { sword: 1 },
-            { metal: 1 },
-            { tradegood: 1 },
-          ]);
-          if(choice2) {
-            await applyResourceMapDelta(ctx, choice1);
-            await applyResourceMapDelta(ctx, choice2);
-            await ctx.handleEnemyDefeated(ctx.card, ctx.zone);
-            ctx.deleteCardInZone(ctx.zone, ctx.card.id);
-          }
+          await applyResourceMapDelta(ctx, choice);
+          await ctx.handleEnemyDefeated(ctx.card, ctx.zone);
+          ctx.deleteCardInZone(ctx.zone, ctx.card.id);
         }
         return false;
       }
@@ -925,7 +877,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           'land'
         );
         if (selectedCards.length > 0) {
-          const choice = await ctx.selectResourceChoice(selectedCards[0].GetResources());
+          const choice = await ctx.selectResourceChoice(ctx.getCardProduction(selectedCards[0], ctx.zone), 1);
             if(choice) {
               await applyResourceMapDelta(ctx, choice);
               return true;
@@ -940,7 +892,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: (t) => t('effect_description_chapel'),
       timing: "onClick",
       execute: async function (ctx) {
-        if (ctx.resources.coin >= 3) {
+        if (ctx.resources.coin >= 3 && ctx.fetchCardsInZone((c) => c.id === 103, ctx.t('campaign')).length > 0) {
           if (! await applyResourceMapDelta(ctx, { coin: 3 }, true)) {
             return false;
           }
@@ -967,7 +919,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: (t) => t('effect_description_church'),
       timing: "onClick",
       execute: async function (ctx) {
-        if (ctx.resources.coin >= 4) {
+        if (ctx.resources.coin >= 4 && ctx.fetchCardsInZone((c) => c.id === 104, ctx.t('campaign')).length > 0) {
           if (! await applyResourceMapDelta(ctx, { coin: 4 }, true)) {
             return false;
           }
@@ -989,7 +941,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             1,
             ctx.card
           )) {
-          await ctx.upgradeCard(ctx.card, 1);
+          await ctx.upgradeCard(ctx.card, 1, true);
           ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
           return true;
         }
@@ -1021,7 +973,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       timing: "onClick",
       execute: async function (ctx) {
         await applyResourceMapDelta(ctx, { wood: 3 });
-        await ctx.upgradeCard(ctx.card, 2);
+        await ctx.upgradeCard(ctx.card, 2, true);
         ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
         return true;
       }
@@ -1150,7 +1102,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           }
           const allChecked = ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked);
           if (allChecked) {
-            ctx.card.currentSide = 3;
+            await ctx.upgradeCard(ctx.card, 3, true);
             await ctx.discoverCard(
               (card) => ([135].includes(card.id)),
               this.description(ctx.t),
@@ -1239,7 +1191,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           }
           const allChecked = ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked);
           if (allChecked) {
-            ctx.card.currentSide = 3;
+            await ctx.upgradeCard(ctx.card, 3, true);
           }
           return false;
         }
@@ -1308,11 +1260,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                     async () => {
                       let choice = null;
                       while (choice === null) {
-                        choice = await ctx.selectResourceChoice([
-                          { coin: 1 },  
-                          { wood: 1 },
-                          { stone: 1 }
-                        ]);
+                        choice = await ctx.selectResourceChoice([{ coin: 1 }, { wood: 1 }, { stone: 1 }], 1);
                       }
                       if(choice) {
                         await ctx.boostProductivity((card: GameCard) => (card.GetType(ctx.t) === ctx.t('land')), ctx.t('deck'), ctx.t('eor_export_10'), choice, ctx.card);
@@ -1353,11 +1301,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                     async () => {
                       let choice = null;
                       while (choice === null) {
-                        choice = await ctx.selectResourceChoice([
-                          { metal: 1 },  
-                          { sword: 1 },
-                          { tradegood: 1 }
-                        ]);
+                        choice = await ctx.selectResourceChoice([{ metal: 1 }, { sword: 1 }, { tradegood: 1 }], 1);
                       }
                       if(choice) {
                         await ctx.boostProductivity((card: GameCard) => (card.GetType(ctx.t) === ctx.t('building')), ctx.t('deck'), ctx.t('eor_export_40'), choice, ctx.card);
@@ -1372,12 +1316,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                     async () => {
                       let choice = null;
                       while (choice === null) {
-                        choice = await ctx.selectResourceChoice([
-                          { wood: 1 },  
-                          { stone: 1 },  
-                          { metal: 1 },  
-                          { sword: 1 },
-                        ]);
+                        choice = await ctx.selectResourceChoice([{ wood: 1 }, { stone: 1 }, { metal: 1 }, { sword: 1 }], 1);
                       }
                       if(choice) {
                         await ctx.boostProductivity(() => (true), ctx.t('deck'), ctx.t('eor_export_55'), choice, ctx.card);
@@ -1399,7 +1338,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                   ctx.registerEndRoundEffect(
                     ctx.t('export') + ctx.t('eor_export_100'),
                     async () => {
-                      ctx.card.currentSide = 3;
+                      await ctx.upgradeCard(ctx.card, 3, true);
                     },
                     false
                   );
@@ -1540,7 +1479,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
         if(selectableCards.length !== 0) {
           ctx.deleteCardInZone(ctx.t('playArea'), (await ctx.selectCardsFromArray(selectableCards, ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card, 'land'))[0].id);
-          await ctx.upgradeCard(ctx.card, 3);
+          await ctx.upgradeCard(ctx.card, 3, true);
           ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
           return true;
         }
@@ -1580,9 +1519,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         if (selectedSides.length > 0 && ((selectedSides[0] !== 4 && resourcesCount <= 1) || (selectedSides[0] === 4 && resourcesCount <= 4))) {
           const targetSide = selectedSides[0];
           
-          const resourceChoice = await ctx.selectResourceChoice([
-            { coin: 1 }, { wood: 1 }, { stone: 1 }, { metal: 1 }, {sword: 1} 
-          ]);
+          const resourceChoice = await ctx.selectResourceChoice([{ coin: 1 }, { wood: 1 }, { stone: 1 }, { metal: 1 }, {sword: 1}], 1);
           
           if (resourceChoice) {
             ctx.card.resources[targetSide - 1].forEach(option => {
@@ -1597,7 +1534,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           }
           
           ctx.handleCardUpdate(ctx.card, ctx.zone);
-          await ctx.upgradeCard(ctx.card, 1);
+          await ctx.upgradeCard(ctx.card, 1, true);
           ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
           return true;
         }
@@ -1773,20 +1710,13 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         if(checkedBoxes > 3) checkedBoxes = 3;
 
         if (choice.includes('Resources')) {
-          const resourcesChoice = [
-            {coin: checkedBoxes},
-            {wood: checkedBoxes},
-            {stone: checkedBoxes},
-            {metal: checkedBoxes},
-            {sword: checkedBoxes},
-            {tradegood: checkedBoxes}
-          ];
+          const resourcesChoice = [{coin: checkedBoxes}, {wood: checkedBoxes}, {stone: checkedBoxes}, {metal: checkedBoxes}, {sword: checkedBoxes}, {tradegood: checkedBoxes}];
           
-          const selectedResource = await ctx.selectResourceChoice(resourcesChoice);
+          const selectedResource = await ctx.selectResourceChoice(resourcesChoice, 1);
           
           if (selectedResource !== null) {
             await applyResourceMapDelta(ctx, selectedResource);
-            await ctx.upgradeCard(ctx.card, 1);
+            await ctx.upgradeCard(ctx.card, 1, true);
             ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
             await checkNextBox(ctx.card);
             return true;
@@ -1799,7 +1729,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             1,
             ctx.card
           )).valueOf()) {
-            await ctx.upgradeCard(ctx.card, 1);
+            await ctx.upgradeCard(ctx.card, 1, true);
             ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
             await checkNextBox(ctx.card);
             return true;
@@ -1875,6 +1805,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             await addResourceMapToCard(ctx.card, { sword: 1});
             ctx.effectEndTurn();
             this.unusable = true;
+            this.timing = 'doesNothing';
             return false;
           }
           return false;
@@ -1892,6 +1823,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             await addResourceMapToCard(ctx.card, { sword: 1});
             ctx.effectEndTurn();
             this.unusable = true;
+            this.timing = 'doesNothing';
             return false;
           }
           return false;
@@ -1997,7 +1929,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           'land'
         );
         if (selectedCards.length > 0) {
-          const choice = await ctx.selectResourceChoice(selectedCards[0].GetResources());
+          const choice = await ctx.selectResourceChoice(ctx.getCardProduction(selectedCards[0], ctx.zone), 1);
             if(choice) {
               await applyResourceMapDelta(ctx, choice);
               return true;
@@ -2105,7 +2037,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       timing: "played",
       execute: async function (ctx) {
         await ctx.mill(3);
-        await ctx.upgradeCard(ctx.card, 3);
+        await ctx.upgradeCard(ctx.card, 3, true);
         ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
         return true;
       }
@@ -2137,7 +2069,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         description: (t) => t('none'),
         timing: "endOfTurn",
         execute: async function (ctx) {
-          await ctx.upgradeCard(ctx.card, 1);
+          await ctx.upgradeCard(ctx.card, 1, true);
           ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
           return false;
         }
@@ -2161,7 +2093,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (! await applyResourceMapDelta(ctx, { sword: 3 }, true)) {
             return false;
           }
-          await ctx.upgradeCard(ctx.card, 3);
+          await ctx.upgradeCard(ctx.card, 3, true);
           ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
           await ctx.handleEnemyDefeated(ctx.card, ctx.zone);
           return true;
@@ -2368,31 +2300,13 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           const cards = await ctx.selectCardsFromZone((card) => card.GetType(ctx.t).includes(ctx.t('land')), ctx.t('playArea'), this.description(ctx.t), 1, ctx.card, 0, 'land');
           const card = cards[0];
           if (card) {
-            const choice1 = await ctx.selectResourceChoice([
-              { coin: 1 },  
-              { wood: 1 },
-              { stone: 1 },
-              { sword: 1 },
-              { metal: 1 },
-              { tradegood: 1 },
-            ]);
-            if (!choice1) {
+            const choice = await ctx.selectResourceChoice([{ coin: 1 }, { wood: 1 }, { stone: 1 }, { sword: 1 }, { metal: 1 }, { tradegood: 1 }], 2);
+            if (!choice) {
               return false;
             }
-            const choice2 = await ctx.selectResourceChoice([
-              { coin: 1 },  
-              { wood: 1 },
-              { stone: 1 },
-              { sword: 1 },
-              { metal: 1 },
-              { tradegood: 1 },
-            ]);
-            if(choice2) {
-              await applyResourceMapDelta(ctx, choice1);
-              await applyResourceMapDelta(ctx, choice2);
-              ctx.dropToDiscard({id: card.id, fromZone: ctx.t('playArea')});
-              return true;
-            }
+            await applyResourceMapDelta(ctx, choice);
+            ctx.dropToDiscard({id: card.id, fromZone: ctx.t('playArea')});
+            return true;
           }
           return false;
         }
@@ -2493,7 +2407,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           1,
           ctx.card
         )) {
-          await ctx.upgradeCard(ctx.card, 1);
+          await ctx.upgradeCard(ctx.card, 1, true);
           ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
           return true;
         }
@@ -2526,7 +2440,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
               for (const card of selected) {
                 ctx.dropToDiscard({id: card.id, fromZone: ctx.t('playArea')})
               }
-              await ctx.upgradeCard(ctx.card, 3);
+              await ctx.upgradeCard(ctx.card, 3, true);
               ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
               return true;
             }
@@ -2542,7 +2456,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             .slice(0, 2)
             .map(item => item.id);
           await ctx.discoverCard((card) => result.includes(card.id), this.description(ctx.t), 2, ctx.card);
-          await ctx.upgradeCard(ctx.card, 3);
+          await ctx.upgradeCard(ctx.card, 3, true);
           ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
           return false;
         }
@@ -2614,7 +2528,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           1,
           ctx.card
         )) {
-          await ctx.upgradeCard(ctx.card, 1);
+          await ctx.upgradeCard(ctx.card, 1, true);
           await ctx.dropToDiscard({id: ctx.card.id, fromZone: ctx.zone})
           ctx.effectEndTurn();
         }
@@ -2715,7 +2629,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           for (const card of selected) {
             ctx.deleteCardInZone(ctx.t('deck'), card.id);
           }
-          await ctx.upgradeCard(ctx.card, 3);
+          await ctx.upgradeCard(ctx.card, 3, true);
           ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
           return false;
         }
@@ -2788,7 +2702,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           }
           if(selectableCards.length !== 0) {
             ctx.deleteCardInZone(ctx.t('playArea'), (await ctx.selectCardsFromArray(selectableCards, ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card, 'person'))[0].id);
-            await ctx.upgradeCard(ctx.card, 3);
+            await ctx.upgradeCard(ctx.card, 3, true);
             ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
             return true;
           }
@@ -2803,7 +2717,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             if (! await applyResourceMapDelta(ctx, { sword: 3 }, true)) {
               return false;
             }
-            await ctx.upgradeCard(ctx.card, 3);
+            await ctx.upgradeCard(ctx.card, 3, true);
             await ctx.handleEnemyDefeated(ctx.card, ctx.zone);
             ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
             return true;
@@ -2888,7 +2802,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           for (const card of selected) {
             ctx.deleteCardInZone(ctx.t('deck'), card.id);
           }
-          await ctx.upgradeCard(ctx.card, 3);
+          await ctx.upgradeCard(ctx.card, 3, true);
           ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
           return false;
         }
@@ -2953,7 +2867,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       execute: async function (ctx) {
         let selectedCards: GameCard[] = [];
         const filter = (card: GameCard) =>
-          (card.GetResources().some(
+          (ctx.getCardProduction(card, ctx.zone).some(
             (res) => ((res.coin ?? 0) + (res.wood ?? 0) + (res.stone ?? 0) + (res.metal ?? 0) + (res.sword ?? 0) + (res.tradegood ?? 0)) >= 1));
         while (selectedCards.length == 0 && ctx.filterZone(ctx.zone, filter).length !== 0) {
           selectedCards = await ctx.selectCardsFromZone(filter, ctx.t('playArea'), this.description(ctx.t), 3, ctx.card, 0);
@@ -2975,44 +2889,13 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (await applyResourceMapDelta(ctx, { sword: 3 }, true)) {
             return false;
           }
-          const choice1 = await ctx.selectResourceChoice([
-            { coin: 1 },  
-            { wood: 1 },
-            { stone: 1 },
-            { sword: 1 },
-            { metal: 1 },
-            { tradegood: 1 },
-          ]);
-          if (!choice1) {
+          const choice = await ctx.selectResourceChoice([{ coin: 1 },  { wood: 1 }, { stone: 1 }, { sword: 1 }, { metal: 1 }, { tradegood: 1 }], 3);
+          if (!choice) {
             return false;
           }
-          const choice2 = await ctx.selectResourceChoice([
-            { coin: 1 },  
-            { wood: 1 },
-            { stone: 1 },
-            { sword: 1 },
-            { metal: 1 },
-            { tradegood: 1 },
-          ]);
-          if (!choice2) {
-            return false;
-          }
-          const choice3 = await ctx.selectResourceChoice([
-            { coin: 1 },  
-            { wood: 1 },
-            { stone: 1 },
-            { sword: 1 },
-            { metal: 1 },
-            { tradegood: 1 },
-          ]);
-          if(choice3) {
-            await applyResourceMapDelta(ctx, choice1);
-            await applyResourceMapDelta(ctx, choice2);
-            await applyResourceMapDelta(ctx, choice3);
-            await ctx.handleEnemyDefeated(ctx.card, ctx.zone);
-            ctx.deleteCardInZone(ctx.zone, ctx.card.id);
-            return false;
-          }
+          await applyResourceMapDelta(ctx, choice);
+          await ctx.handleEnemyDefeated(ctx.card, ctx.zone);
+          ctx.deleteCardInZone(ctx.zone, ctx.card.id);
         }
         return false;
       }
@@ -3032,7 +2915,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           'building'
         );
         if (selectedCards.length > 0) {
-          const choice = await ctx.selectResourceChoice(selectedCards[0].GetResources());
+          const choice = await ctx.selectResourceChoice(ctx.getCardProduction(selectedCards[0], ctx.zone), 1);
             if(choice) {
               await applyResourceMapDelta(ctx, choice);
               return true;
@@ -3059,7 +2942,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             if (await applyResourceMapDelta(ctx, { sword: 5 }, true)) {
               return false;
             }
-            await ctx.upgradeCard(ctx.card, 3);
+            await ctx.upgradeCard(ctx.card, 3, true);
             await ctx.handleEnemyDefeated(ctx.card, ctx.zone);
             ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
             return true;
@@ -3120,31 +3003,13 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       execute: async function (ctx) {
         const selected = await ctx.selectCardsFromZone((c) => c.GetType(ctx.t).includes(ctx.t('person')) && c.id !== ctx.card.id, ctx.t('playArea'), this.description(ctx.t), 1, ctx.card, 0, 'person');
         if (selected.length === 1) {
-          const choice1 = await ctx.selectResourceChoice([
-            { coin: 1 },  
-            { wood: 1 },
-            { stone: 1 },
-            { sword: 1 },
-            { metal: 1 },
-            { tradegood: 1 },
-          ]);
-          if (!choice1) {
+          const choice = await ctx.selectResourceChoice([{ coin: 1 },  { wood: 1 }, { stone: 1 }, { sword: 1 }, { metal: 1 }, { tradegood: 1 }], 2);
+          if (!choice) {
             return false;
           }
-          const choice2 = await ctx.selectResourceChoice([
-            { coin: 1 },  
-            { wood: 1 },
-            { stone: 1 },
-            { sword: 1 },
-            { metal: 1 },
-            { tradegood: 1 },
-          ]);
-          if(choice2) {
-            await applyResourceMapDelta(ctx, choice1);
-            await applyResourceMapDelta(ctx, choice2);
-            ctx.dropToDiscard({id: selected[0].id, fromZone: ctx.t('playArea')});
-            return true;
-          }
+          await applyResourceMapDelta(ctx, choice);
+          ctx.dropToDiscard({id: selected[0].id, fromZone: ctx.t('playArea')});
+          return true;
         }
         return false;
       }
@@ -3157,7 +3022,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       execute: async function (ctx) {
         let selectedCards: GameCard[] = [];
         const filter = (card: GameCard) =>
-          (card.GetResources().some(
+          (ctx.getCardProduction(card, ctx.zone).some(
             (res) => ((res.coin ?? 0) + (res.wood ?? 0) + (res.stone ?? 0) + (res.metal ?? 0) + (res.sword ?? 0) + (res.tradegood ?? 0)) >= 1));
         while (selectedCards.length == 0 && ctx.filterZone(ctx.zone, filter).length !== 0) {
           selectedCards = await ctx.selectCardsFromZone(filter, ctx.t('playArea'), this.description(ctx.t), 3, ctx.card, 0);
@@ -3179,44 +3044,13 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (! await applyResourceMapDelta(ctx, { sword: 3 }, true)) {
             return false;
           }
-          const choice1 = await ctx.selectResourceChoice([
-            { coin: 1 },  
-            { wood: 1 },
-            { stone: 1 },
-            { sword: 1 },
-            { metal: 1 },
-            { tradegood: 1 },
-          ]);
-          if (!choice1) {
+          const choice = await ctx.selectResourceChoice([{ coin: 1 },  { wood: 1 }, { stone: 1 }, { sword: 1 }, { metal: 1 }, { tradegood: 1 }], 3);
+          if (!choice) {
             return false;
           }
-          const choice2 = await ctx.selectResourceChoice([
-            { coin: 1 },  
-            { wood: 1 },
-            { stone: 1 },
-            { sword: 1 },
-            { metal: 1 },
-            { tradegood: 1 },
-          ]);
-          if (!choice2) {
-            return false;
-          }
-          const choice3 = await ctx.selectResourceChoice([
-            { coin: 1 },  
-            { wood: 1 },
-            { stone: 1 },
-            { sword: 1 },
-            { metal: 1 },
-            { tradegood: 1 },
-          ]);
-          if(choice3) {
-            await applyResourceMapDelta(ctx, choice1);
-            await applyResourceMapDelta(ctx, choice2);
-            await applyResourceMapDelta(ctx, choice3);
-            await ctx.handleEnemyDefeated(ctx.card, ctx.zone);
-            ctx.deleteCardInZone(ctx.zone, ctx.card.id);
-            return false;
-          }
+          await applyResourceMapDelta(ctx, choice);
+          await ctx.handleEnemyDefeated(ctx.card, ctx.zone);
+          ctx.deleteCardInZone(ctx.zone, ctx.card.id);
         }
         return false;
       }
@@ -3236,7 +3070,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           'land'
         );
         if (selectedCards.length > 0) {
-          const choice = await ctx.selectResourceChoice(selectedCards[0].GetResources());
+          const choice = await ctx.selectResourceChoice(ctx.getCardProduction(selectedCards[0], ctx.zone), 1);
             if(choice) {
               await applyResourceMapDelta(ctx, choice);
               return true;
@@ -3274,7 +3108,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           for (const card of selected) {
             ctx.deleteCardInZone(ctx.t('deck'), card.id);
           }
-          await ctx.upgradeCard(ctx.card, 3);
+          await ctx.upgradeCard(ctx.card, 3, true);
           ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
           return false;
         }
@@ -3348,7 +3182,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         execute: async function (ctx) {
           const selected = await ctx.selectCardsFromZone((card) => card.GetType(ctx.t).includes(ctx.t('person')) && card.id !== ctx.card.id, ctx.t('playArea'), this.description(ctx.t), 0, ctx.card, 2, 'person');
           if (selected.length !== 2) {
-            await ctx.upgradeCard(ctx.card, 2);
+            await ctx.upgradeCard(ctx.card, 2, true);
             ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
           }
           return false;
@@ -3369,16 +3203,9 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         description: (t) => t('none'),
         timing: "onClick",
         execute: async function (ctx) {
-          const choice1 = await ctx.selectResourceChoice([
-            { coin: 1 },  
-            { wood: 1 },
-            { stone: 1 },
-            { sword: 1 },
-            { metal: 1 },
-            { tradegood: 1 },
-          ]);
-          if(choice1) {
-            await applyResourceMapDelta(ctx, choice1);
+          const choice = await ctx.selectResourceChoice([{ coin: 1 },  { wood: 1 }, { stone: 1 }, { sword: 1 }, { metal: 1 }, { tradegood: 1 }], 1);
+          if(choice) {
+            await applyResourceMapDelta(ctx, choice);
             return true;
           }
           return false;
@@ -3398,16 +3225,9 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         description: (t) => t('none'),
         timing: "onClick",
         execute: async function (ctx) {
-          const choice1 = await ctx.selectResourceChoice([
-            { coin: 1 },  
-            { wood: 1 },
-            { stone: 1 },
-            { sword: 1 },
-            { metal: 1 },
-            { tradegood: 1 },
-          ]);
-          if(choice1) {
-            await applyResourceMapDelta(ctx, choice1);
+          const choice = await ctx.selectResourceChoice([{ coin: 1 },  { wood: 1 }, { stone: 1 }, { sword: 1 }, { metal: 1 }, { tradegood: 1 }], 1);
+          if(choice) {
+            await applyResourceMapDelta(ctx, choice);
             return true;
           }
           return false;
@@ -3445,54 +3265,12 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         description: (t) => t('none'),
         timing: "onClick",
         execute: async function (ctx) {
-          const choice1 = await ctx.selectResourceChoice([
-            { coin: 1 },  
-            { wood: 1 },
-            { stone: 1 },
-            { sword: 1 },
-            { metal: 1 },
-            { tradegood: 1 },
-          ]);
-          if (!choice1) {
+          const choice = await ctx.selectResourceChoice([{ coin: 1 },  { wood: 1 }, { stone: 1 }, { sword: 1 }, { metal: 1 }, { tradegood: 1 }], 4);
+          if (!choice) {
             return false;
           }
-          const choice2 = await ctx.selectResourceChoice([
-            { coin: 1 },  
-            { wood: 1 },
-            { stone: 1 },
-            { sword: 1 },
-            { metal: 1 },
-            { tradegood: 1 },
-          ]);
-          if (!choice2) {
-            return false;
-          }
-          const choice3 = await ctx.selectResourceChoice([
-            { coin: 1 },  
-            { wood: 1 },
-            { stone: 1 },
-            { sword: 1 },
-            { metal: 1 },
-            { tradegood: 1 },
-          ]);
-          if (!choice3) {
-            return false;
-          }
-          const choice4 = await ctx.selectResourceChoice([
-            { coin: 1 },  
-            { wood: 1 },
-            { stone: 1 },
-            { sword: 1 },
-            { metal: 1 },
-            { tradegood: 1 },
-          ]);
-          if(choice4) {
-            await applyResourceMapDelta(ctx, choice1);
-            await applyResourceMapDelta(ctx, choice2);
-            await applyResourceMapDelta(ctx, choice3);
-            await applyResourceMapDelta(ctx, choice4);
-            ctx.deleteCardInZone(ctx.zone, ctx.card.id);
-          }
+          await applyResourceMapDelta(ctx, choice);
+          ctx.deleteCardInZone(ctx.zone, ctx.card.id);
           return false;
         }
       }]
@@ -3586,7 +3364,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       timing: "onClick",
       execute: async function (ctx) {
         await applyResourceMapDelta(ctx, { wood: 3 });
-        await ctx.upgradeCard(ctx.card, 2);
+        await ctx.upgradeCard(ctx.card, 2, true);
         ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
         return true;
       }
@@ -3767,48 +3545,17 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         if (selected.length !== 2) {
           return false
         }
-        const choice1 = await ctx.selectResourceChoice([
-            { coin: 1 },  
-            { wood: 1 },
-            { stone: 1 },
-            { sword: 1 },
-            { metal: 1 },
-            { tradegood: 1 },
-          ]);
-          if (!choice1) {
-            return false;
-          }
-          const choice2 = await ctx.selectResourceChoice([
-            { coin: 1 },  
-            { wood: 1 },
-            { stone: 1 },
-            { sword: 1 },
-            { metal: 1 },
-            { tradegood: 1 },
-          ]);
-          if (!choice2) {
-            return false;
-          }
-          const choice3 = await ctx.selectResourceChoice([
-            { coin: 1 },  
-            { wood: 1 },
-            { stone: 1 },
-            { sword: 1 },
-            { metal: 1 },
-            { tradegood: 1 },
-          ]);
-          if(choice3) {
-            await applyResourceMapDelta(ctx, choice1);
-            await applyResourceMapDelta(ctx, choice2);
-            await applyResourceMapDelta(ctx, choice3);
-            for (const card of selected) {
-              ctx.dropToDiscard({id: card.id, fromZone: ctx.t('playArea')});
-            }
-            await ctx.upgradeCard(ctx.card, 3);
-            ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
-            return true;
-          }
-        return false;
+        const choice = await ctx.selectResourceChoice([{ coin: 1 },  { wood: 1 }, { stone: 1 }, { sword: 1 }, { metal: 1 }, { tradegood: 1 }], 3);
+        if (!choice) {
+          return false;
+        }
+        await applyResourceMapDelta(ctx, choice);
+        for (const card of selected) {
+          ctx.dropToDiscard({id: card.id, fromZone: ctx.t('playArea')});
+        }
+        await ctx.upgradeCard(ctx.card, 3, true);
+        ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+        return true;
       }
     }],
     3: [
@@ -3826,17 +3573,10 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         description: (t) => t('none'),
         timing: "onClick",
         execute: async function (ctx) {
-          const choice = await ctx.selectResourceChoice([
-            { coin: 1 },  
-            { wood: 1 },
-            { stone: 1 },
-            { sword: 1 },
-            { metal: 1 },
-            { tradegood: 1 },
-          ]);
+          const choice = await ctx.selectResourceChoice([{ coin: 1 }, { wood: 1 }, { stone: 1 }, { sword: 1 }, { metal: 1 }, { tradegood: 1 }], 1);
           if(choice) {
             await applyResourceMapDelta(ctx, choice);
-            await ctx.upgradeCard(ctx.card, 1);
+            await ctx.upgradeCard(ctx.card, 1, true);
             ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
             return true;
           }
@@ -4015,7 +3755,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           const card = selected[0];
           await addResourceMapToCard(card, {coin: 1, sword: 1});
           card.type[card.currentSide - 1] += ' - knight';
-          await ctx.upgradeCard(ctx.card, 3);
+          await ctx.upgradeCard(ctx.card, 3, true);
           ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
           return false;
         }
@@ -4040,17 +3780,10 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           let choice2;
           let selected: GameCard[] = [];
           selected = await ctx.selectCardsFromZone((card) => card.GetType(ctx.t).includes(ctx.t('building')), ctx.t('deck'), this.description(ctx.t), 1, ctx.card, 0, 'building');
-          while (!choice1) {
-            choice1 = await ctx.selectResourceChoice([  
-              { wood: 1 },
-              { stone: 1 },
-            ]);
-          }
-          while (!choice2) {
-            choice2 = await ctx.selectResourceChoice([  
-              { metal: 1 },
-              { tradegood: 1 },
-            ]);
+          choice1 = await ctx.selectResourceChoice([{ wood: 1 }, { stone: 1 }], 1);
+          choice2 = await ctx.selectResourceChoice([{ metal: 1 }, { tradegood: 1 }], 1);
+          if (!choice1 || !choice2) {
+            return false;
           }
           const card = selected[0];
           await addResourceMapToCard(card, choice1);
@@ -4173,7 +3906,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       execute: async function (ctx) {
         await checkNextBox(ctx.card);
         if (getLastCheckboxChecked(ctx.card)) {
-          await ctx.upgradeCard(ctx.card, 4);
+          await ctx.upgradeCard(ctx.card, 4, true);
           ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
         }
         return true;
@@ -4222,6 +3955,9 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: (t) => t('none'),
       timing: "onClick",
       execute: async function (ctx) {
+        if (getLastCheckboxChecked(ctx.card)) {
+          return false;
+        }
         let ingotToPay = 1;
         for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
           ingotToPay += checkbox.checked ? 1 : 0;
@@ -4282,7 +4018,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           }
         }
         if (ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked)) {
-          await ctx.upgradeCard(ctx.card, 3);
+          await ctx.upgradeCard(ctx.card, 3, true);
           await ctx.dropToDiscard({id: ctx.card.id, fromZone: ctx.t('permanentZone')})
         }
         return false;
@@ -4321,13 +4057,9 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           }
           case 1: {
             let resource1: Partial<ResourceMap> | null = null;
-            while (resource1 === null) {
-              resource1 = await ctx.selectResourceChoice([
-                  { sword: 1 },
-                  { fame: 5 }
-                ], 
-                true
-              );
+            resource1 = await ctx.selectResourceChoice([{ sword: 1 }, { fame: 5 }], 1, true);
+            if (!resource1) {
+              return false;
             }
             await addResourceMapToCard(ctx.card, resource1);
             ctx.handleCardUpdate(ctx.card, ctx.t('playArea'));
@@ -4336,13 +4068,9 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           }
           case 2: {
             let resource2: Partial<ResourceMap> | null = null;
-            while (resource2 === null) {
-              resource2 = await ctx.selectResourceChoice([
-                  { tradegood: 1 },
-                  { fame: 5 }
-                ],
-                true
-              );
+            resource2 = await ctx.selectResourceChoice([{ tradegood: 1 }, { fame: 5 }], 1, true);
+            if (!resource2) {
+              return false;
             }
             await addResourceMapToCard(ctx.card, resource2);
             ctx.handleCardUpdate(ctx.card, ctx.t('playArea'));
@@ -4382,17 +4110,9 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             }
             case 1: {
               let resource1: Partial<ResourceMap> | null = null;
-              while (resource1 === null) {
-                resource1 = await ctx.selectResourceChoice([
-                    { coin: 1 },
-                    { wood: 1 },
-                    { stone: 1 },
-                    { sword: 1 },
-                    { metal: 1 },
-                    { tradegood: 1 }
-                  ],
-                  true
-                );
+              resource1 = await ctx.selectResourceChoice([{ coin: 1 }, { wood: 1 }, { stone: 1 }, { sword: 1 }, { metal: 1 }, { tradegood: 1 }], 1, true);
+              if (!resource1) {
+                return false;
               }
               await addResourceMapToCard(ctx.card, resource1);
               ctx.handleCardUpdate(ctx.card, ctx.t('playArea'));
@@ -4401,17 +4121,9 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             }
             case 2: {
               let resource2: Partial<ResourceMap> | null = null;
-              while (resource2 === null) {
-                resource2 = await ctx.selectResourceChoice([
-                    { coin: 1 },
-                    { wood: 1 },
-                    { stone: 1 },
-                    { sword: 1 },
-                    { metal: 1 },
-                    { tradegood: 1 }
-                  ],
-                  true
-                );
+              resource2 = await ctx.selectResourceChoice([{ coin: 1 }, { wood: 1 }, { stone: 1 }, { sword: 1 }, { metal: 1 }, { tradegood: 1 }], 1, true);
+              if (!resource2) {
+                return false;
               }
               await addResourceMapToCard(ctx.card, resource2);
               ctx.handleCardUpdate(ctx.card, ctx.t('playArea'));
@@ -4529,7 +4241,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             if (! await applyResourceMapDelta(ctx, { coin: 2 }, true)) {
               return false;
             }
-            await ctx.upgradeCard(ctx.card, side);
+            await ctx.upgradeCard(ctx.card, side, true);
             ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
             return true;
           }
@@ -4542,7 +4254,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       timing: "onClick",
       execute: async function (ctx) {
         await applyResourceMapDelta(ctx, { sword: 3 });
-        await ctx.upgradeCard(ctx.card, 1);
+        await ctx.upgradeCard(ctx.card, 1, true);
         ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
         return true;
       }
@@ -4552,7 +4264,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       timing: "onClick",
       execute: async function (ctx) {
         await applyResourceMapDelta(ctx, { tradegood: 5 });
-        await ctx.upgradeCard(ctx.card, 1);
+        await ctx.upgradeCard(ctx.card, 1, true);
         ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
         return true;
       }
@@ -4575,6 +4287,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         );
         
         if (choice === ctx.t('no')) return false;
+
+        const currentResources = ctx.resources;
         
         let selected: GameCard[];
         if (people.length > 1) {
@@ -4592,9 +4306,11 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
         
         if (selected && selected.length > 0) {
-          ctx.dropToPlayArea({id: selected[0].id, fromZone: ctx.t('discard')});
-          await ctx.upgradeCard(ctx.card, 1);
+          await ctx.dropToPlayArea({id: selected[0].id, fromZone: ctx.t('discard')});
+          await ctx.upgradeCard(ctx.card, 1, true);
           ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+          /* Make sure to put back the resources */
+          await applyResourceMapDelta(ctx, currentResources);
           return true;
         }
         
@@ -4630,7 +4346,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         if (result) {
           const allChecked = ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked);
           if (allChecked) {
-            await ctx.upgradeCard(ctx.card, 2);
+            await ctx.upgradeCard(ctx.card, 2, true);
             ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
           }
           return true;
@@ -4662,7 +4378,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         if (result) {
           const allChecked = ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked);
           if (allChecked) {
-            await ctx.upgradeCard(ctx.card, 4);
+            await ctx.upgradeCard(ctx.card, 4, true);
             ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
           }
           return true;
@@ -4728,7 +4444,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         if (result) {
           const allChecked = ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked);
           if (allChecked) {
-            await ctx.upgradeCard(ctx.card, 3);
+            await ctx.upgradeCard(ctx.card, 3, true);
             ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
           }
           return true;
@@ -4812,7 +4528,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         await checkNextBox(ctx.card);
         const allChecked = ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked);
         if (allChecked) {
-          await ctx.upgradeCard(ctx.card, 4);
+          await ctx.upgradeCard(ctx.card, 4, true);
           await ctx.dropToPermanent({id: ctx.card.id, fromZone: ctx.zone});
           return false;
         }
@@ -4849,7 +4565,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (!card) {
             return false;
           }
-          await ctx.upgradeCard(card, 3);
+          await ctx.upgradeCard(card, 3, true);
           await ctx.dropToDiscard({id: card.id, fromZone: ctx.t('playArea')});
           return true;
         }
@@ -4893,7 +4609,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                   const resourceKey = key as keyof ResourceMap;
                   const amount = upgrade.cost[resourceKey] ?? 0;
                   if (ctx.resources[resourceKey] < amount) {
-                    return effectSuccessfull;
+                    resolve();
                   }
                 }
 
@@ -4915,11 +4631,10 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                     coin: prev.coin - (upgrade.cost?.coin ?? 0) - 2
                   }));
 
-                  await ctx.upgradeCard(card, upgrade.nextSide);
+                  await ctx.upgradeCard(card, upgrade.nextSide, true);
                   ctx.replaceCardInZone(ctx.t('playArea'), card.id, card);
                   await ctx.dropToDiscard({id: card.id, fromZone: ctx.t('playArea')});
                   effectSuccessfull = true;
-                  return effectSuccessfull;
                 }
               }
               resolve();
@@ -4949,7 +4664,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                   const resourceKey = key as keyof ResourceMap;
                   const amount = upgrade.cost[resourceKey] ?? 0;
                   if (ctx.resources[resourceKey] < amount) {
-                    return effectSuccessfull;
+                    resolve();
                   }
                 }
 
@@ -4970,11 +4685,10 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                     )),
                   }));
 
-                  await ctx.upgradeCard(card, upgrade.nextSide);
+                  await ctx.upgradeCard(card, upgrade.nextSide, true);
                   ctx.replaceCardInZone(ctx.t('playArea'), card.id, card);
                   await ctx.dropToDiscard({id: card.id, fromZone: ctx.t('playArea')});
                   effectSuccessfull = true;
-                  return effectSuccessfull;
                 }
               }
               resolve();
@@ -4995,14 +4709,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (! await applyResourceMapDelta(ctx, { coin: 2 }, true)) {
             return false;
           }
-          const choice = await ctx.selectResourceChoice([
-            { coin: 1 },
-            { wood: 1 },
-            { stone: 1 },
-            { sword: 1 },
-            { metal: 1 },
-            { tradegood: 1 }
-          ]);
+          const choice = await ctx.selectResourceChoice([{ coin: 1 }, { wood: 1 }, { stone: 1 }, { sword: 1 }, { metal: 1 }, { tradegood: 1 }], 1);
           if(choice) {
             await applyResourceMapDelta(ctx, choice);
             return true;
@@ -5019,14 +4726,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (! await applyResourceMapDelta(ctx, { coin: 1 }, true)) {
             return false;
           }
-          const choice = await ctx.selectResourceChoice([
-            { coin: 1 },
-            { wood: 1 },
-            { stone: 1 },
-            { sword: 1 },
-            { metal: 1 },
-            { tradegood: 1 }
-          ]);
+          const choice = await ctx.selectResourceChoice([{ coin: 1 }, { wood: 1 }, { stone: 1 }, { sword: 1 }, { metal: 1 }, { tradegood: 1 }], 1);
           if(choice) {
             await applyResourceMapDelta(ctx, choice);
             return true;
@@ -5042,7 +4742,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         const cardId = ctx.card.id;
 
         if (await ctx.discoverCard((card) => [106].includes(card.id), this.description(ctx.t), 1, ctx.card)) {
-          await ctx.upgradeCard(ctx.card, 1);
+          await ctx.upgradeCard(ctx.card, 1, true);
           await ctx.dropToCampaign({ id: cardId, fromZone: ctx.zone });
           const forgottenCard = ctx.fetchCardsInZone((card) => card.id === cardId, "Campaign Deck");
           if (forgottenCard.length === 0) {
@@ -5069,19 +4769,12 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           return false;
         }
         
-        const resToPay = await ctx.selectResourceChoice(Object.entries(availableResources).map(([key, value]) => ({[key]: (value >= 1 ? 1 : 0)})));
+        const resToPay = await ctx.selectResourceChoice(Object.entries(availableResources).map(([key, value]) => ({[key]: (value >= 1 ? 1 : 0)})), 1);
         if (!resToPay) {
           return false;
         }
         
-        const choice = await ctx.selectResourceChoice([
-          { coin: 1 },
-          { wood: 1 },
-          { stone: 1 },
-          { sword: 1 },
-          { metal: 1 },
-          { tradegood: 1 }
-        ]);
+        const choice = await ctx.selectResourceChoice([{ coin: 1 }, { wood: 1 }, { stone: 1 }, { sword: 1 }, { metal: 1 }, { tradegood: 1 }], 1);
         
         if (choice) {
           const paidResourceKey = Object.keys(resToPay)[0] as keyof ResourceMap;
@@ -5327,14 +5020,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         execute: async function (ctx) {
           const card = (await ctx.selectCardsFromZone((card) => (card.GetType(ctx.t).includes(ctx.t('horse'))) && (getResourcesCount(card.GetResources()[0]) <= 2), ctx.t('playArea'), this.description(ctx.t), 1, ctx.card, 0, ctx.t('horse')))[0];
           if (card) {
-            const choice = await ctx.selectResourceChoice([
-              { coin: 1 },
-              { wood: 1 },
-              { stone: 1 },
-              { sword: 1 },
-              { metal: 1 },
-              { tradegood: 1 }
-            ]);
+            const choice = await ctx.selectResourceChoice([{ coin: 1 }, { wood: 1 }, { stone: 1 }, { sword: 1 }, { metal: 1 }, { tradegood: 1 }], 1);
             if (choice) {
               addResourceMapToCard(card, choice);
               return true;
@@ -5439,14 +5125,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (! await applyResourceMapDelta(ctx, { tradegood: 3 }, true)) {
             return false;
           }
-          const choice = await ctx.selectResourceChoice([
-            { coin: 1 },
-            { wood: 1 },
-            { stone: 1 },
-            { sword: 1 },
-            { metal: 1 },
-            { tradegood: 1 }
-          ]);
+          const choice = await ctx.selectResourceChoice([{ coin: 1 }, { wood: 1 }, { stone: 1 }, { sword: 1 }, { metal: 1 }, { tradegood: 1 }], 1);
           if (choice) {
             await applyResourceMapDelta(ctx, choice);
           }
@@ -5467,14 +5146,14 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           await new Promise<void>((resolve) => {
             ctx.selectUpgradeCost(card, false, async (upgradeIndex) => {
               const upgrade: Upgrade = card.upgrades[card.currentSide - 1][upgradeIndex];
-              await ctx.upgradeCard(card, upgrade.nextSide);
+              await ctx.upgradeCard(card, upgrade.nextSide, true);
               ctx.replaceCardInZone(ctx.t('playArea'), card.id, card);
               await ctx.dropToDiscard({id: card.id, fromZone: ctx.t('playArea')});
               resolve();
             });
           });
 
-          await ctx.upgradeCard(ctx.card, 2);
+          await ctx.upgradeCard(ctx.card, 2, true);
           ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
           ctx.effectEndTurn();
         }
@@ -5492,14 +5171,14 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           await new Promise<void>((resolve) => {
             ctx.selectUpgradeCost(card, false, async (upgradeIndex) => {
               const upgrade: Upgrade = card.upgrades[card.currentSide - 1][upgradeIndex];
-              await ctx.upgradeCard(card, upgrade.nextSide);
+              await ctx.upgradeCard(card, upgrade.nextSide, true);
               ctx.replaceCardInZone(ctx.t('playArea'), card.id, card);
               await ctx.dropToDiscard({id: card.id, fromZone: ctx.t('playArea')});
               resolve();
             });
           });
 
-          await ctx.upgradeCard(ctx.card, 4);
+          await ctx.upgradeCard(ctx.card, 4, true);
           ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
           ctx.effectEndTurn();
         }
@@ -5509,29 +5188,19 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     3: [{ // Ecole Reconnue
       description: (t) => t('effect_description_renowned_school'),
       timing: "onClick",
-      uses: 0,
       execute: async function (ctx) {
-        if (this.uses !== 0) {
-          return false;
-        }
         const cards = ctx.fetchCardsInZone((card) => card.id !== ctx.card.id && card.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'));
         if (cards.length !== 0) {
           const card = (await ctx.selectCardsFromArray(cards, ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card, 'person'))[0];
           if (card) {
-            const choice = await ctx.selectResourceChoice([
-              { coin: 1 },
-              { wood: 1 },
-              { stone: 1 },
-              { sword: 1 },
-              { metal: 1 },
-              { tradegood: 1 }
-            ]);
+            const choice = await ctx.selectResourceChoice([{ coin: 1 }, { wood: 1 }, { stone: 1 }, { sword: 1 }, { metal: 1 }, { tradegood: 1 }], 1);
             if (choice) {
               addResourceMapToCard(card, choice);
-              await ctx.upgradeCard(ctx.card, 3);
+              await ctx.upgradeCard(ctx.card, 3, true);
               ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
               ctx.effectEndTurn();
-              this.uses += 1;
+              this.unusable = true;
+              this.timing = 'doesNothing';
             }
           }
         }
@@ -5546,17 +5215,10 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         if (cards.length !== 0) {
           const card = (await ctx.selectCardsFromArray(cards, ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card, 'person'))[0];
           if (card) {
-            const choice = await ctx.selectResourceChoice([
-              { coin: 1 },
-              { wood: 1 },
-              { stone: 1 },
-              { sword: 1 },
-              { metal: 1 },
-              { tradegood: 1 }
-            ]);
+            const choice = await ctx.selectResourceChoice([{ coin: 1 }, { wood: 1 }, { stone: 1 }, { sword: 1 }, { metal: 1 }, { tradegood: 1 }], 1);
             if (choice) {
               addResourceMapToCard(card, choice);
-              await ctx.upgradeCard(ctx.card, 3);
+              await ctx.upgradeCard(ctx.card, 3, true);
               ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
               ctx.effectEndTurn();
             }
@@ -5589,10 +5251,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (! await applyResourceMapDelta(ctx, { coin: 1 }, true)) {
             return false;
           }
-          const choice = await ctx.selectResourceChoice([
-            { wood: 1 },
-            { stone: 1 }
-          ]);
+          const choice = await ctx.selectResourceChoice([{ wood: 1 }, { stone: 1 }], 1);
           if(choice) {
             await applyResourceMapDelta(ctx, choice);
             return true;
@@ -5609,11 +5268,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (! await applyResourceMapDelta(ctx, { coin: 1 }, true)) {
             return false;
           }
-          const choice = await ctx.selectResourceChoice([
-            { wood: 1 },
-            { stone: 1 },
-            { metal: 1 }
-          ]);
+          const choice = await ctx.selectResourceChoice([{ wood: 1 }, { stone: 1 }, { metal: 1 }], 1);
           if(choice) {
             await applyResourceMapDelta(ctx, choice);
             return true;
@@ -5628,154 +5283,54 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: (t) => t('none'),
       timing: "onClick",
       execute: async function (ctx) {
-        const choice1 = await ctx.selectResourceChoice([
-          { coin: 1 },
-          { wood: 1 },
-          { stone: 1 },
-          { sword: 1 },
-          { metal: 1 },
-          { tradegood: 1 }
-        ]);
-        if (!choice1) {
+        const choice = await ctx.selectResourceChoice([{ coin: 1 }, { wood: 1 }, { stone: 1 }, { sword: 1 }, { metal: 1 }, { tradegood: 1 }], 3);
+        if (!choice) {
           return false;
         }
-        const choice2 = await ctx.selectResourceChoice([
-          { coin: 1 },
-          { wood: 1 },
-          { stone: 1 },
-          { sword: 1 },
-          { metal: 1 },
-          { tradegood: 1 }
-        ]);
-        if (!choice2) {
-          return false;
-        }
-        const choice3 = await ctx.selectResourceChoice([
-          { coin: 1 },
-          { wood: 1 },
-          { stone: 1 },
-          { sword: 1 },
-          { metal: 1 },
-          { tradegood: 1 }
-        ]);
-        if (choice3) {
-          await applyResourceMapDelta(ctx, choice1);
-          await applyResourceMapDelta(ctx, choice2);
-          await applyResourceMapDelta(ctx, choice3);
-          await ctx.upgradeCard(ctx.card, 2);
-          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
-          return true;
-        }
-        return false;
+        await applyResourceMapDelta(ctx, choice);
+        await ctx.upgradeCard(ctx.card, 2, true);
+        ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+        return true;
       }
     }],
     2: [{ // Investisseur
       description: (t) => t('none'),
       timing: "onClick",
       execute: async function (ctx) {
-        const choice1 = await ctx.selectResourceChoice([
-          { coin: 1 },
-          { wood: 1 },
-          { stone: 1 },
-          { sword: 1 },
-          { metal: 1 },
-          { tradegood: 1 }
-        ]);
-        if (!choice1) {
+        const choice = await ctx.selectResourceChoice([{ coin: 1 }, { wood: 1 }, { stone: 1 }, { sword: 1 }, { metal: 1 }, { tradegood: 1 }], 3);
+        if (!choice) {
           return false;
         }
-        const choice2 = await ctx.selectResourceChoice([
-          { coin: 1 },
-          { wood: 1 },
-          { stone: 1 },
-          { sword: 1 },
-          { metal: 1 },
-          { tradegood: 1 }
-        ]);
-        if (!choice2) {
-          return false;
-        }
-        const choice3 = await ctx.selectResourceChoice([
-          { coin: 1 },
-          { wood: 1 },
-          { stone: 1 },
-          { sword: 1 },
-          { metal: 1 },
-          { tradegood: 1 }
-        ]);
-        if (choice3) {
-          await applyResourceMapDelta(ctx, choice1);
-          await applyResourceMapDelta(ctx, choice2);
-          await applyResourceMapDelta(ctx, choice3);
-          await ctx.upgradeCard(ctx.card, 4);
-          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
-          return true;
-        }
-        return false;
+        await applyResourceMapDelta(ctx, choice);
+        await ctx.upgradeCard(ctx.card, 4, true);
+        ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+        return true;
       }
     }],
     3: [{ // Investisseur
       description: (t) => t('none'),
       timing: "onClick",
       execute: async function (ctx) {
-        const choice = await ctx.selectResourceChoice([
-          { coin: 1 },
-          { wood: 1 },
-          { stone: 1 },
-          { sword: 1 },
-          { metal: 1 },
-          { tradegood: 1 }
-        ]);
-        if (choice) {
-          await applyResourceMapDelta(ctx, choice);
-          return true;
+        const choice = await ctx.selectResourceChoice([{ coin: 1 }, { wood: 1 }, { stone: 1 }, { sword: 1 }, { metal: 1 }, { tradegood: 1 }], 1);
+        if (!choice) {
+          return false;
         }
-        return false;
+        await applyResourceMapDelta(ctx, choice);
+        return true;
       }
     }],
     4: [{ // Investisseur
       description: (t) => t('none'),
       timing: "onClick",
       execute: async function (ctx) {
-        const choice1 = await ctx.selectResourceChoice([
-          { coin: 1 },
-          { wood: 1 },
-          { stone: 1 },
-          { sword: 1 },
-          { metal: 1 },
-          { tradegood: 1 }
-        ]);
-        if (!choice1) {
+        const choice = await ctx.selectResourceChoice([{ coin: 1 }, { wood: 1 }, { stone: 1 }, { sword: 1 }, { metal: 1 }, { tradegood: 1 }], 3);
+        if (!choice) {
           return false;
         }
-        const choice2 = await ctx.selectResourceChoice([
-          { coin: 1 },
-          { wood: 1 },
-          { stone: 1 },
-          { sword: 1 },
-          { metal: 1 },
-          { tradegood: 1 }
-        ]);
-        if (!choice2) {
-          return false;
-        }
-        const choice3 = await ctx.selectResourceChoice([
-          { coin: 1 },
-          { wood: 1 },
-          { stone: 1 },
-          { sword: 1 },
-          { metal: 1 },
-          { tradegood: 1 }
-        ]);
-        if (choice3) {
-          await applyResourceMapDelta(ctx, choice1);
-          await applyResourceMapDelta(ctx, choice2);
-          await applyResourceMapDelta(ctx, choice3);
-          await ctx.upgradeCard(ctx.card, 3);
-          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
-          return true;
-        }
-        return false;
+        await applyResourceMapDelta(ctx, choice);
+        await ctx.upgradeCard(ctx.card, 3, true);
+        ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+        return true;
       }
     }],
   },
@@ -6148,14 +5703,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: (t) => t('none'),
       timing: "onClick",
       execute: async function (ctx) {
-        const choice = await ctx.selectResourceChoice([
-          { coin: 1 },  
-          { wood: 1 },
-          { stone: 1 },
-          { sword: 1 },
-          { metal: 1 },
-          { tradegood: 1 },
-        ]);
+        const choice = await ctx.selectResourceChoice([{ coin: 1 },   { wood: 1 }, { stone: 1 }, { sword: 1 }, { metal: 1 }, { tradegood: 1 }], 1);
         if(choice) {
           await applyResourceMapDelta(ctx, choice);
           return true;
@@ -6167,105 +5715,36 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: (t) => t('none'),
       timing: "onClick",
       execute: async function (ctx) {
-        const choice1 = await ctx.selectResourceChoice([
-          { coin: 1 },  
-          { wood: 1 },
-          { stone: 1 },
-          { sword: 1 },
-          { metal: 1 },
-          { tradegood: 1 },
-        ]);
-        if (!choice1) {
+        const choice = await ctx.selectResourceChoice([{ coin: 1 },   { wood: 1 }, { stone: 1 }, { sword: 1 }, { metal: 1 }, { tradegood: 1 }], 2);
+        if (!choice) {
           return false;
         }
-        const choice2 = await ctx.selectResourceChoice([
-          { coin: 1 },  
-          { wood: 1 },
-          { stone: 1 },
-          { sword: 1 },
-          { metal: 1 },
-          { tradegood: 1 },
-        ]);
-        if(choice2) {
-          await applyResourceMapDelta(ctx, choice1);
-          await applyResourceMapDelta(ctx, choice2);
-          return true;
-        }
-        return false;
+        await applyResourceMapDelta(ctx, choice);
+        return true;
       }
     }],
     3: [{ // Saccage
       description: (t) => t('none'),
       timing: "onClick",
       execute: async function (ctx) {
-        const choice1 = await ctx.selectResourceChoice([
-          { coin: 1 },  
-          { wood: 1 },
-          { stone: 1 },
-          { sword: 1 },
-          { metal: 1 },
-          { tradegood: 1 },
-        ]);
-        if (!choice1) {
+        const choice = await ctx.selectResourceChoice([{ coin: 1 },   { wood: 1 }, { stone: 1 }, { sword: 1 }, { metal: 1 }, { tradegood: 1 }], 3);
+        if (!choice) {
           return false;
         }
-        const choice2 = await ctx.selectResourceChoice([
-          { coin: 1 },  
-          { wood: 1 },
-          { stone: 1 },
-          { sword: 1 },
-          { metal: 1 },
-          { tradegood: 1 },
-        ]);
-        if (!choice2) {
-          return false;
-        }
-        const choice3 = await ctx.selectResourceChoice([
-          { coin: 1 },  
-          { wood: 1 },
-          { stone: 1 },
-          { sword: 1 },
-          { metal: 1 },
-          { tradegood: 1 },
-        ]);
-        if(choice3) {
-          await applyResourceMapDelta(ctx, choice1);
-          await applyResourceMapDelta(ctx, choice2);
-          await applyResourceMapDelta(ctx, choice3);
-          return true;
-        }
-        return false;
+        await applyResourceMapDelta(ctx, choice);
+        return true;
       }
     }],
     4: [{ // Pillage
       description: (t) => t('none'),
       timing: "onClick",
       execute: async function (ctx) {
-        const choice1 = await ctx.selectResourceChoice([
-          { coin: 1 },  
-          { wood: 1 },
-          { stone: 1 },
-          { sword: 1 },
-          { metal: 1 },
-          { tradegood: 1 },
-        ]);
-        if (!choice1) {
+        const choice = await ctx.selectResourceChoice([{ coin: 1 },   { wood: 1 }, { stone: 1 }, { sword: 1 }, { metal: 1 }, { tradegood: 1 }], 2);
+        if (!choice) {
           return false;
         }
-        const choice2 = await ctx.selectResourceChoice([
-          { coin: 1 },  
-          { wood: 1 },
-          { stone: 1 },
-          { sword: 1 },
-          { metal: 1 },
-          { tradegood: 1 },
-        ]);
-        if(choice2) {
-          await applyResourceMapDelta(ctx, choice1);
-          await applyResourceMapDelta(ctx, choice2);
-          return true;
-        }
-        return false;
+        await applyResourceMapDelta(ctx, choice);
+        return true;
       }
     }],
   },
@@ -6298,7 +5777,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                   await checkBoxes(ctx.card, boxes);
                   await ctx.dropToDiscard({ id: lord.id, fromZone: ctx.t('playArea') });
                   if (ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked)) {
-                    await ctx.upgradeCard(ctx.card, 3);
+                    await ctx.upgradeCard(ctx.card, 3, true);
                     ctx.replaceCardInZone(ctx.t('playArea'), ctx.card.id, ctx.card);
                   }
                   resolve(true);
@@ -6322,7 +5801,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (card) {
             let resources;
             if (card.GetResources().length > 1) {
-              resources = await ctx.selectResourceChoice(card.GetResources());
+              resources = await ctx.selectResourceChoice(card.GetResources(), 1);
             }
             else {
               resources = card.GetResources()[0];
@@ -6388,7 +5867,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: (t) => t('none'),
       timing: "onClick",
       execute: async function (ctx: GameContext) {
-        await ctx.upgradeCard(ctx.card, 1);
+        await ctx.upgradeCard(ctx.card, 1, true);
         return true;
       }
     }],
@@ -6426,9 +5905,9 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (!this.uses) {
             this.uses = 0;
           }
-          ctx.card.currentSide = 3;
+          await ctx.upgradeCard(ctx.card, 3, true);
           addResourceMapToCard(ctx.card, {fame: 20});
-          ctx.card.currentSide = 4;
+          await ctx.upgradeCard(ctx.card, 4, true);
           this.uses += 1;
           return false;
         }
@@ -6456,7 +5935,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         description: (t) => t('none'),
         timing: "endOfRound",
         execute: async function (ctx) {
-          ctx.card.currentSide = 2;
+          await ctx.upgradeCard(ctx.card, 2, true);
           return false;
         }
       },
@@ -6477,7 +5956,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         description: (t) => t('none'),
         timing: "endOfRound",
         execute: async function (ctx) {
-          ctx.card.currentSide = 4;
+          await ctx.upgradeCard(ctx.card, 4, true);
           return false;
         }
       },
@@ -6509,7 +5988,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             for(const card of selected) {
               let selectedResource = null;
               while(selectedResource === null) {
-                selectedResource = await ctx.selectResourceChoice(card.GetResources());
+                selectedResource = await ctx.selectResourceChoice(card.GetResources(), 1);
               }
               await removeResourceFromCard(card, selectedResource);
               ctx.replaceCardInZone(ctx.t('deck'), card.id, card);
@@ -6554,7 +6033,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         description: (t) => t('none'),
         timing: "endOfRound",
         execute: async function (ctx) {
-          ctx.card.currentSide = 3;
+          await ctx.upgradeCard(ctx.card, 3, true);
           return false;
         }
       },
@@ -6575,7 +6054,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         description: (t) => t('none'),
         timing: "endOfRound",
         execute: async function (ctx) {
-          ctx.card.currentSide = 2;
+          await ctx.upgradeCard(ctx.card, 2, true);
           return false;
         }
       },
@@ -6608,7 +6087,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         description: (t) => t('none'),
         timing: "endOfRound",
         execute: async function (ctx) {
-          ctx.card.currentSide = 4;
+          await ctx.upgradeCard(ctx.card, 4, true);
           return false;
         }
       },
@@ -6661,7 +6140,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         description: (t) => t('none'),
         timing: "endOfRound",
         execute: async function (ctx) {
-          ctx.card.currentSide = 3;
+          await ctx.upgradeCard(ctx.card, 3, true);
           return false;
         }
       },
@@ -6681,7 +6160,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         description: (t) => t('none'),
         timing: "endOfRound",
         execute: async function (ctx) {
-          ctx.card.currentSide = 2;
+          await ctx.upgradeCard(ctx.card, 2, true);
           return false;
         }
       },
@@ -6722,7 +6201,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         description: (t) => t('none'),
         timing: "endOfRound",
         execute: async function (ctx) {
-          ctx.card.currentSide = 4;
+          await ctx.upgradeCard(ctx.card, 4, true);
           return false;
         }
       },
@@ -6770,7 +6249,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             if(card) {
               let resources: Partial<ResourceMap>|null = null;
               while(resources === null) {
-                resources = (await ctx.selectResourceChoice(card.GetResources()));
+                resources = (await ctx.selectResourceChoice(card.GetResources(), 1));
               }
               resources = { coin: resources.coin ? 1 : 0, wood: resources.wood ? 1 : 0, stone: resources.stone ? 1 : 0,
                             sword: resources.sword ? 1 : 0, metal: resources.metal ? 1 : 0, tradegood: resources.tradegood ? 1 : 0};
@@ -6785,9 +6264,9 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         timing: "endOfRound",
         execute: async function (ctx) {
           const card = (await ctx.selectCardsFromZone((c) => !c.negative[c.currentSide - 1], ctx.t('deck'), this.description(ctx.t), 1, ctx.card, 0))[0];
-          const resource = (await ctx.selectResourceChoice([{ coin: 1}, {wood: 1}, {stone: 1}, {sword: 1}, {metal: 1}, {tradegood: 1 }])) ?? {};
+          const resource = (await ctx.selectResourceChoice([{ coin: 1}, {wood: 1}, {stone: 1}, {sword: 1}, {metal: 1}, {tradegood: 1 }], 1)) ?? {};
           await ctx.boostProductivity((c) => c.id === card.id, ctx.t('deck'), this.description(ctx.t), resource, ctx.card);
-          ctx.card.currentSide = 3;
+          await ctx.upgradeCard(ctx.card, 3, true);
           return false;
         }
       },
@@ -6810,7 +6289,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     1: [
       { // Une Certaine Dame
         description: (t) => t('effect_description_a_certain_lady'),
-        timing: "played",
+        timing: "onPlayAreaUpdated",
         execute: async function(ctx)  {
           const enemies = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('playArea'));
           for (let i = 0; i < enemies.length; i++) {
@@ -6819,7 +6298,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
           await ctx.mill(0);
           if (getLastCheckboxChecked(ctx.card)) {
-            await ctx.upgradeCard(ctx.card, 3);
+            await ctx.upgradeCard(ctx.card, 3, true);
             ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
             return true;
           }
@@ -6842,7 +6321,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: (t) => t('effect_description_a_certain_lady'),
       timing: "played",
       execute: async function(ctx)  {
-        const card = (await ctx.selectCardsFromZone((c) => c.GetResources().some((map) => hasEnoughResources(map, {coin: 1})), ctx.t('playArea'), this.description(ctx.t), 1, ctx.card, 0))[0];
+        const card = (await ctx.selectCardsFromZone((c) => ctx.getCardProduction(c, ctx.zone).some((map) => hasEnoughResources(map, {coin: 1})), ctx.t('playArea'), this.description(ctx.t), 1, ctx.card, 0))[0];
         if (card) {
           await removeResourceFromCard(card, {coin: 1});
           ctx.replaceCardInZone(ctx.zone, card.id, card);
@@ -6886,7 +6365,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             if (getLastCheckboxChecked(ctx.card)) {
               if (ctx.fetchCardsInZone((c) => c.GetName(ctx.t) === ctx.t('a_certain_lady'), ctx.getCardZone(140)).length > 0) {
                 ctx.deleteCardInZone(ctx.getCardZone(140), 140);
-                await ctx.upgradeCard(ctx.card, 3);
+                await ctx.upgradeCard(ctx.card, 3, true);
                 ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
               }
               else {
@@ -6924,7 +6403,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         description: (t) => t('none'),
         timing: "played",
         execute: async function(ctx)  {
-          const cards = ctx.fetchCardsInZone((c) => c.GetResources().some((map) => hasEnoughResources(map, {wood: 1})), ctx.zone);
+          const cards = ctx.fetchCardsInZone((c) => ctx.getCardProduction(c, ctx.zone).some((map) => hasEnoughResources(map, {wood: 1})), ctx.zone);
           await ctx.dropToDiscard({id: cards.map((c) => c.id), fromZone: ctx.zone});
           return false;
         }
@@ -6937,7 +6416,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             if (! await applyResourceMapDelta(ctx, { sword: 3 }, true)) {
               return false;
             }
-            await ctx.upgradeCard(ctx.card, 3);
+            await ctx.upgradeCard(ctx.card, 3, true);
             ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
             await ctx.handleEnemyDefeated(ctx.card, ctx.zone);
             ctx.effectEndTurn();
@@ -6952,7 +6431,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         execute: async function(ctx)  {
           const enemies = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('playArea'));
           if (enemies.length >= 2) {
-            await ctx.upgradeCard(ctx.card, 1);
+            await ctx.upgradeCard(ctx.card, 1, true);
             ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
             return true;
           }
@@ -6982,7 +6461,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             if (! await applyResourceMapDelta(ctx, { coin: 4, sword: 2 }, true)) {
               return false;
             }
-            await ctx.upgradeCard(ctx.card, 4);
+            await ctx.upgradeCard(ctx.card, 4, true);
             ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
             return true;
           }
@@ -7054,7 +6533,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         description: (t) => t('none'),
         timing: "played",
         execute: async function(ctx)  {
-          const cards = ctx.fetchCardsInZone((c) => c.GetResources().some((map) => hasEnoughResources(map, {wood: 1})), ctx.zone);
+          const cards = ctx.fetchCardsInZone((c) => ctx.getCardProduction(c, ctx.zone).some((map) => hasEnoughResources(map, {wood: 1})), ctx.zone);
           await ctx.dropToDiscard({id: cards.map((c) => c.id), fromZone: ctx.zone});
           return false;
         }
@@ -7067,7 +6546,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             if (! await applyResourceMapDelta(ctx, { sword: 3 }, true)) {
               return false;
             }
-            await ctx.upgradeCard(ctx.card, 3);
+            await ctx.upgradeCard(ctx.card, 3, true);
             ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
             await ctx.handleEnemyDefeated(ctx.card, ctx.zone);
             ctx.effectEndTurn();
@@ -7082,7 +6561,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         execute: async function(ctx)  {
           const enemies = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('playArea'));
           if (enemies.length >= 2) {
-            await ctx.upgradeCard(ctx.card, 1);
+            await ctx.upgradeCard(ctx.card, 1, true);
             ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
             return true;
           }
@@ -7107,7 +6586,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             const cards = (await ctx.selectCardsFromZone((c) => c.GetType(ctx.t).includes(ctx.t('person')), ctx.zone, this.description(ctx.t), 4, ctx.card, 0, 'person'));
             if (cards.reduce((sum, c) => sum + getCardSelectionValue(c, 'person'), 0) >= 4) {
               await ctx.dropToDiscard({id: cards.map((c) => c.id), fromZone: ctx.zone});
-              await ctx.upgradeCard(ctx.card, 3);
+              await ctx.upgradeCard(ctx.card, 3, true);
               ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
               await ctx.handleEnemyDefeated(ctx.card, ctx.zone);
               return true;
@@ -7123,7 +6602,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         execute: async function(ctx)  {
           const enemies = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('playArea'));
           if (enemies.length >= 2) {
-            await ctx.upgradeCard(ctx.card, 1);
+            await ctx.upgradeCard(ctx.card, 1, true);
             ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
             return true;
           }
@@ -7186,7 +6665,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             for (let i = 0; i < selected.length; i++) {
               checkNextBox(ctx.card);
               if (getLastCheckboxChecked(ctx.card)) {
-                await ctx.upgradeCard(ctx.card, 4);
+                await ctx.upgradeCard(ctx.card, 4, true);
                 break;
               }
             }
@@ -7234,7 +6713,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         description: (t) => t('none'),
         timing: "played",
         execute: async function(ctx)  {
-          const cards = ctx.fetchCardsInZone((c) => c.GetResources().some((map) => hasEnoughResources(map, {coin: 1})), ctx.zone);
+          const cards = ctx.fetchCardsInZone((c) => ctx.getCardProduction(c, ctx.zone).some((map) => hasEnoughResources(map, {coin: 1})), ctx.zone);
           await ctx.dropToDiscard({id: cards.map((c) => c.id), fromZone: ctx.zone});
           return false;
         }
@@ -7247,7 +6726,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             if (! await applyResourceMapDelta(ctx, { sword: 5 }, true)) {
               return false;
             }
-            await ctx.upgradeCard(ctx.card, 3);
+            await ctx.upgradeCard(ctx.card, 3, true);
             ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
             await ctx.handleEnemyDefeated(ctx.card, ctx.zone);
             ctx.effectEndTurn();
@@ -7262,7 +6741,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         execute: async function(ctx)  {
           const enemies = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('playArea'));
           if (enemies.length >= 2) {
-            await ctx.upgradeCard(ctx.card, 1);
+            await ctx.upgradeCard(ctx.card, 1, true);
             ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
             return true;
           }
@@ -7281,7 +6760,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (selected) {
             checkNextBox(ctx.card);
             if (getLastCheckboxChecked(ctx.card)) {
-              ctx.upgradeCard(ctx.card, 3);
+              await ctx.upgradeCard(ctx.card, 3, true);
             }
             ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
             await ctx.dropToPlayArea({id: selected.id, fromZone: ctx.t('discard')});
@@ -7312,7 +6791,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   152: {
     1: [{ // Guarde Incompétent
       description: (t) => t('none'), 
-      timing: "played", // TODO: New timing => onPlayAreaUpdated => if no enemy, discard
+      timing: "onPlayAreaUpdated", // TODO: New timing => onPlayAreaUpdated => if no enemy, discard
       execute: async function (ctx) {
         if (ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('playArea')).length === 0) {
           return true;
@@ -7322,7 +6801,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     }],
     2: [{ // Guarde Impatient
       description: (t) => t('none'), 
-      timing: "played",
+      timing: "onPlayAreaUpdated",
       execute: async function (ctx) {
         if (ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('playArea')).length === 0) {
           return true;
@@ -7357,9 +6836,9 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           }
           let resource: string;
           if (Object.keys(ctx.card.GetResources()[0]).filter(key => key !== 'fame').length > 1) {
-            let choice;
-            while (!choice) {
-              choice = await ctx.selectResourceChoice([ctx.card.GetResources()[0]]) ?? {};
+            const choice = await ctx.selectResourceChoice([ctx.card.GetResources()[0]], 1) ?? {};
+            if (! choice) {
+              return false;
             }
             resource = Object.keys(choice).filter(key => key !== 'fame')[0];
           }
@@ -7384,9 +6863,9 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           }
           let resource: string;
           if (Object.keys(ctx.card.GetResources()[0]).filter(key => key !== 'fame').length > 1) {
-            let choice;
-            while (!choice) {
-              choice = await ctx.selectResourceChoice([ctx.card.GetResources()[0]]) ?? {};
+            const choice = await ctx.selectResourceChoice([ctx.card.GetResources()[0]], 1) ?? {};
+            if (! choice) {
+              return false;
             }
             resource = Object.keys(choice).filter(key => key !== 'fame')[0];
           }
@@ -7441,29 +6920,11 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         description: (t) => t('effect_description_powerful_prince'), 
         timing: "played",
         execute: async function (ctx) {
-          let choice1, choice2;
-          while(!choice1) {
-            choice1 = await ctx.selectResourceChoice([
-              { coin: 1 },  
-              { wood: 1 },
-              { stone: 1 },
-              { sword: 1 },
-              { metal: 1 },
-              { tradegood: 1 },
-            ]);
+          const choice = await ctx.selectResourceChoice([{ coin: 1 },   { wood: 1 }, { stone: 1 }, { sword: 1 }, { metal: 1 }, { tradegood: 1 }], 2);
+          if (!choice) {
+            return false;
           }
-          while(!choice2) {
-            choice2 = await ctx.selectResourceChoice([
-              { coin: 1 },  
-              { wood: 1 },
-              { stone: 1 },
-              { sword: 1 },
-              { metal: 1 },
-              { tradegood: 1 },
-            ]);
-          }
-          await applyResourceMapDelta(ctx, choice1);
-          await applyResourceMapDelta(ctx, choice2);
+          await applyResourceMapDelta(ctx, choice);
           return false;
         }
       },
@@ -7473,40 +6934,11 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         description: (t) => t('effect_description_powerful_prince'), 
         timing: "played",
         execute: async function (ctx) {
-          let choice1, choice2, choice3;
-          while(!choice1) {
-            choice1 = await ctx.selectResourceChoice([
-              { coin: 1 },  
-              { wood: 1 },
-              { stone: 1 },
-              { sword: 1 },
-              { metal: 1 },
-              { tradegood: 1 },
-            ]);
+          const choice = await ctx.selectResourceChoice([{ coin: 1 },   { wood: 1 }, { stone: 1 }, { sword: 1 }, { metal: 1 }, { tradegood: 1 }], 3);
+          if (!choice) {
+            return false;
           }
-          while(!choice2) {
-            choice2 = await ctx.selectResourceChoice([
-              { coin: 1 },  
-              { wood: 1 },
-              { stone: 1 },
-              { sword: 1 },
-              { metal: 1 },
-              { tradegood: 1 },
-            ]);
-          }
-          while(!choice3) {
-            choice3 = await ctx.selectResourceChoice([
-              { coin: 1 },  
-              { wood: 1 },
-              { stone: 1 },
-              { sword: 1 },
-              { metal: 1 },
-              { tradegood: 1 },
-            ]);
-          }
-          await applyResourceMapDelta(ctx, choice1);
-          await applyResourceMapDelta(ctx, choice2);
-          await applyResourceMapDelta(ctx, choice3);
+          await applyResourceMapDelta(ctx, choice);
           return false;
         }
       },
@@ -7587,9 +7019,9 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             return false;
           }
           const card = (await ctx.selectCardsFromArray(buildings, ctx.zone, this.description(ctx.t), 1, 0, ctx.card, 'building'))[0];
-          let resource;
-          while (!resource) {
-            resource = await ctx.selectResourceChoice(card.GetResources());
+          const resource = await ctx.selectResourceChoice(card.GetResources(), 1);
+          if (! resource) {
+            return false;
           }
           removeResourceFromCard(card, resource);
           ctx.replaceCardInZone(ctx.t('playArea'), card.id, card);
@@ -7604,7 +7036,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             if (! await applyResourceMapDelta(ctx, { sword: 3 }, true)) {
               return false;
             }
-            await ctx.upgradeCard(ctx.card, 3);
+            await ctx.upgradeCard(ctx.card, 3, true);
             ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
             await ctx.handleEnemyDefeated(ctx.card, ctx.zone);
             ctx.effectEndTurn();
@@ -7619,7 +7051,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         execute: async function(ctx)  {
           const enemies = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('playArea'));
           if (enemies.length >= 2) {
-            await ctx.upgradeCard(ctx.card, 1);
+            await ctx.upgradeCard(ctx.card, 1, true);
             ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
             return true;
           }
@@ -7652,7 +7084,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             if (! await applyResourceMapDelta(ctx, { tradegood: 4 }, true)) {
               return false;
             }
-            await ctx.upgradeCard(ctx.card, 3);
+            await ctx.upgradeCard(ctx.card, 3, true);
             ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
             await ctx.handleEnemyDefeated(ctx.card, ctx.zone);
             ctx.effectEndTurn();
@@ -7667,7 +7099,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         execute: async function(ctx)  {
           const enemies = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('playArea'));
           if (enemies.length >= 2) {
-            await ctx.upgradeCard(ctx.card, 1);
+            await ctx.upgradeCard(ctx.card, 1, true);
             ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
             return true;
           }
@@ -7732,7 +7164,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             if (! await applyResourceMapDelta(ctx, { metal: 3 }, true)) {
               return false;
             }
-            await ctx.upgradeCard(ctx.card, 3);
+            await ctx.upgradeCard(ctx.card, 3, true);
             ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
             await ctx.handleEnemyDefeated(ctx.card, ctx.zone);
             ctx.effectEndTurn();
@@ -7747,7 +7179,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         execute: async function(ctx)  {
           const enemies = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('playArea'));
           if (enemies.length >= 2) {
-            await ctx.upgradeCard(ctx.card, 1);
+            await ctx.upgradeCard(ctx.card, 1, true);
             ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
             return true;
           }
@@ -7779,7 +7211,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             if (! await applyResourceMapDelta(ctx, { metal: 3 }, true)) {
               return false;
             }
-            await ctx.upgradeCard(ctx.card, 3);
+            await ctx.upgradeCard(ctx.card, 3, true);
             ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
             await ctx.handleEnemyDefeated(ctx.card, ctx.zone);
             ctx.effectEndTurn();
@@ -7794,7 +7226,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         execute: async function(ctx)  {
           const enemies = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('playArea'));
           if (enemies.length >= 2) {
-            await ctx.upgradeCard(ctx.card, 1);
+            await ctx.upgradeCard(ctx.card, 1, true);
             ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
             return true;
           }
@@ -7828,7 +7260,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             }
             checkNextBox(ctx.card);
             if (getLastCheckboxChecked(ctx.card)) {
-              await ctx.upgradeCard(ctx.card, 3);
+              await ctx.upgradeCard(ctx.card, 3, true);
               ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
             }
             return true
@@ -7923,7 +7355,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             addResourceMapToCard(card, { fame: 5 });
             ctx.replaceCardInZone(ctx.t('playArea'), card.id, card);
             await ctx.dropToDiscard({id: cards.map((c) => c.id), fromZone: ctx.t('playArea')});
-            await ctx.upgradeCard(ctx.card, 4);
+            await ctx.upgradeCard(ctx.card, 4, true);
             ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
             return true;
           }
@@ -7952,7 +7384,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       timing: "played",
       execute: async function(ctx)  {
         await ctx.dropToDiscard({id: ctx.fetchCardsInZone(() => true, ctx.zone).map((c) => c.id), fromZone: ctx.t('playArea')});
-        ctx.card.currentSide = 2;
+        await ctx.upgradeCard(ctx.card, 2, true);
         ctx.replaceCardInZone(ctx.t('discard'), ctx.card.id, ctx.card);
         return false;
       }
@@ -7971,7 +7403,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             const checkboxes = ctx.card.checkboxes[ctx.card.currentSide - 1].filter((c) => !c.checked && c.content.includes('✓'));
             await checkBoxes(ctx.card, [checkboxes[0]]);
             if (checkboxes[0].content.includes('→')) {
-              await ctx.upgradeCard(ctx.card, 4);
+              await ctx.upgradeCard(ctx.card, 4, true);
               await ctx.dropToPermanent({id: ctx.card.id, fromZone: ctx.zone});
               ctx.replaceCardInZone(ctx.t('permanentZone'), ctx.card.id, ctx.card);
               return false;
@@ -8039,29 +7471,11 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (!land) {
             return false;
           }
-          let choice1, choice2;
-          while(!choice1) {
-            choice1 = await ctx.selectResourceChoice([
-              { coin: 1 },  
-              { wood: 1 },
-              { stone: 1 },
-              { sword: 1 },
-              { metal: 1 },
-              { tradegood: 1 },
-            ]);
+          const choice = await ctx.selectResourceChoice([{ coin: 1 },   { wood: 1 }, { stone: 1 }, { sword: 1 }, { metal: 1 }, { tradegood: 1 }], 2);
+          if (!choice) {
+            return false;
           }
-          while(!choice2) {
-            choice2 = await ctx.selectResourceChoice([
-              { coin: 1 },  
-              { wood: 1 },
-              { stone: 1 },
-              { sword: 1 },
-              { metal: 1 },
-              { tradegood: 1 },
-            ]);
-          }
-          await applyResourceMapDelta(ctx, choice1);
-          await applyResourceMapDelta(ctx, choice2);
+          await applyResourceMapDelta(ctx, choice);
           await ctx.dropToDiscard({id: land.id, fromZone: ctx.t('playArea')});
           return true;
         }
@@ -8079,29 +7493,11 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         if (!land) {
           return false;
         }
-        let choice1, choice2;
-        while(!choice1) {
-          choice1 = await ctx.selectResourceChoice([
-            { coin: 1 },  
-            { wood: 1 },
-            { stone: 1 },
-            { sword: 1 },
-            { metal: 1 },
-            { tradegood: 1 },
-          ]);
+        const choice = await ctx.selectResourceChoice([{ coin: 1 },   { wood: 1 }, { stone: 1 }, { sword: 1 }, { metal: 1 }, { tradegood: 1 }], 2);
+        if (!choice) {
+          return false;
         }
-        while(!choice2) {
-          choice2 = await ctx.selectResourceChoice([
-            { coin: 1 },  
-            { wood: 1 },
-            { stone: 1 },
-            { sword: 1 },
-            { metal: 1 },
-            { tradegood: 1 },
-          ]);
-        }
-        await applyResourceMapDelta(ctx, choice1);
-        await applyResourceMapDelta(ctx, choice2);
+        await applyResourceMapDelta(ctx, choice);
         await ctx.dropToDiscard({id: land.id, fromZone: ctx.t('playArea')});
         return false;
       }
@@ -8138,7 +7534,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
         const allChecked = ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked);
         if (allChecked) {
-          ctx.card.currentSide = 3;
+          await ctx.upgradeCard(ctx.card, 3, true);
         }
         return false;
       }

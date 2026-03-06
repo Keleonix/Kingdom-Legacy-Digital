@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
@@ -2151,11 +2151,6 @@ function CardSelectionPopup({
                         }}
                         title={t('choice')}
                       >
-                        <img 
-                          src="effects/choice.png" 
-                          alt={t('choice')} 
-                          className="w-full h-full object-contain opacity-0 hover:opacity-100 transition-opacity"
-                        />
                       </button>
                     )}
                     
@@ -2191,7 +2186,7 @@ function CardSelectionPopup({
           </span>
           <div className="flex gap-2">
             <Button onClick={onCancel} variant="secondary" hidden={zone === t('campaign') || requiredCount !== 0}>
-              Cancel
+              {t('cancel')}
             </Button>
             <Button 
               onClick={() => onConfirm(selectedCards)}
@@ -2338,6 +2333,104 @@ const CheckboxSelectionPopup: React.FC<{
 };
 
 // -------------------
+// Resource Selection Popup
+// -------------------
+const ResourceSelectionPopup: React.FC<{
+  resources: Partial<ResourceMap> | Partial<ResourceMap>[];
+  totalLevel: number;
+  onConfirm: (selected: Partial<ResourceMap>) => void;
+  onCancel: () => void;
+}> = ({ resources, totalLevel, onConfirm }) => {
+  const { t } = useTranslation();
+
+  const mergedResources = useMemo<Partial<ResourceMap>>(() => {
+    const maps = Array.isArray(resources) ? resources : [resources];
+    return maps.reduce((acc, map) => {
+      for (const [key, value] of Object.entries(map) as [keyof ResourceMap, number][]) {
+        acc[key] = (acc[key] ?? 0) + value;
+      }
+      return acc;
+    }, {} as Partial<ResourceMap>);
+  }, [resources]);
+
+  const resourceKeys = Object.keys(mergedResources) as (keyof ResourceMap)[];
+
+  const [amounts, setAmounts] = useState<Partial<ResourceMap>>(
+    Object.fromEntries(resourceKeys.map((r) => [r, 0])) as Partial<ResourceMap>
+  );
+
+  const totalSelected = Object.values(amounts).reduce((sum, v) => sum + (v ?? 0), 0);
+  const remaining = totalLevel - totalSelected;
+
+  const handleChange = (resource: keyof ResourceMap, value: number) => {
+    const current = amounts[resource] ?? 0;
+    const delta = value - current;
+    if (delta > remaining && delta > 0) return;
+    setAmounts((prev) => ({ ...prev, [resource]: Math.max(0, value) }));
+  };
+
+  const isConfirmDisabled = totalSelected === 0 || totalSelected > totalLevel;
+
+  return (
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[70]">
+      <div className="bg-white p-4 rounded-xl space-y-4 max-w-md w-full">
+        <h2 className="font-bold">{t('chooseResource')}</h2>
+
+        <p className="text-sm text-gray-500">
+          {t('remaining')}: <span className={remaining === 0 ? 'text-green-600 font-bold' : 'font-semibold'}>{remaining} / {totalLevel}</span>
+        </p>
+
+        <div className="flex flex-col gap-3">
+          {resourceKeys.map((resource) => (
+            <div key={resource} className="flex items-center gap-3 bg-gray-50 p-2 rounded-lg">
+              <img
+                src={resourceIconPath(resource)}
+                alt={resource}
+                className="w-7 h-7"
+              />
+              <span className="text-sm flex-1 capitalize">{resource}</span>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => handleChange(resource, (amounts[resource] ?? 0) - 1)}
+                  disabled={(amounts[resource] ?? 0) <= 0}
+                  className="w-7 h-7 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-40 font-bold"
+                >
+                  −
+                </button>
+                <span className="w-6 text-center text-sm font-semibold">
+                  {amounts[resource] ?? 0}
+                </span>
+                <button
+                  onClick={() => handleChange(resource, (amounts[resource] ?? 0) + 1)}
+                  disabled={remaining <= 0}
+                  className="w-7 h-7 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-40 font-bold"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex justify-end gap-2">
+          <button
+            onClick={() => onConfirm(amounts)}
+            disabled={isConfirmDisabled}
+            className={`px-3 py-1 rounded ${
+              !isConfirmDisabled
+                ? 'bg-blue-500 hover:bg-blue-600 text-white'
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            }`}
+          >
+            {t('confirm')}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// -------------------
 // Card Side Selection Popup
 // -------------------
 const CardSideSelectionPopup: React.FC<{
@@ -2437,7 +2530,7 @@ const UpgradeCostSelectionPopup: React.FC<{
     <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex justify-center items-center">
       <div className="bg-white p-4 rounded shadow-lg max-w-md w-full">
         <h2 className="text-lg font-bold mb-2">
-          {t('selectUpgradeRemoveCost')}
+          {t('selectUpgrade')}
         </h2>
         
         {currentUpgrades.length === 0 ? (
@@ -2700,7 +2793,7 @@ export default function Game() {
 
   const [campaignDeck, setCampaignDeck] = useState<GameCard[]>(() =>
     allCards
-      .filter((c) => c.id > 10 && c.id <= 138) // TODO: Change Back => && c.id <= 138
+      .filter((c) => c.id > 10) // TODO: Change Back => && c.id <= 138
       .sort((a, b) => a.id - b.id)
       .map((c) => cloneGameCard(c))
   );
@@ -2742,6 +2835,7 @@ export default function Game() {
   // Effects handling
   const [resourceChoicePopup, setResourceChoicePopup] = useState<{
     options: Array<Partial<ResourceMap>>;
+    totalLevel: number;
     resolve: (choice: Partial<ResourceMap> | null) => void;
   } | null>(null);
 
@@ -2885,6 +2979,7 @@ export default function Game() {
   const purgedCardsRef = useRef<GameCard[]>([]);
   const campaignDeckRef = useRef<GameCard[]>([]);
   const resourcesRef = useRef<ResourceMap>({ ...emptyResource });
+  const turnEndFlagRef = useRef<boolean>(true);
 
   // Keep refs in sync if other code uses setPlayArea / setDiscard directly
   useEffect(() => { deckRef.current = deck; }, [deck]);
@@ -2894,6 +2989,7 @@ export default function Game() {
   useEffect(() => { permanentZoneRef.current = permanentZone; }, [permanentZone]);
   useEffect(() => { purgedCardsRef.current = purgedCards; }, [purgedCards]);
   useEffect(() => { campaignDeckRef.current = campaignDeck; }, [campaignDeck]);
+  useEffect(() => { turnEndFlagRef.current = turnEndFlag; }, [turnEndFlagRef]);
 
   function setPlayAreaImmediate(next: React.SetStateAction<GameCard[]>) {
     if (typeof next === "function") {
@@ -2969,6 +3065,17 @@ export default function Game() {
     } else {
       campaignDeckRef.current = next as GameCard[];
       setCampaignDeck(next as GameCard[]);
+    }
+  }
+
+  function setTurnEndFlagImmediate(next: React.SetStateAction<boolean>) {
+    if (typeof next === "function") {
+      const v = (next as (prev: boolean) => boolean)(turnEndFlagRef.current);
+      turnEndFlagRef.current = v;
+      setTurnEndFlag(v);
+    } else {
+      turnEndFlagRef.current = next as boolean;
+      setTurnEndFlag(next as boolean);
     }
   }
 
@@ -3111,6 +3218,7 @@ export default function Game() {
         }
       }
     }
+    setTurnEndFlagImmediate(false);
     setResources((prev) => {
       const reset: ResourceMap = { ...emptyResource };
       if ("fame" in prev) (reset as Partial<ResourceMap>).fame = (prev as Partial<ResourceMap>).fame;
@@ -3118,7 +3226,6 @@ export default function Game() {
     });
     setUsedEffectsThisTurn(new Map());
     await draw(4);
-    setTurnEndFlag(false);
     setIsAnimating(false);
   }
   
@@ -3181,6 +3288,7 @@ export default function Game() {
             handleCardUpdate,
             handleEnemyDefeated,
             addDiscoverableCard,
+            getCardProduction,
             hasBeenUsedThisTurn,
             markAsUsedThisTurn,
             t,
@@ -3285,6 +3393,7 @@ export default function Game() {
           handleCardUpdate,
           handleEnemyDefeated,
           addDiscoverableCard,
+          getCardProduction,
           hasBeenUsedThisTurn,
           markAsUsedThisTurn,
           t,
@@ -3300,7 +3409,7 @@ export default function Game() {
   };
 
   const discardEndTurn = async (endRound?: boolean) => {
-    setTurnEndFlag(true);
+    setTurnEndFlagImmediate(true);
     await handleEffectsEndOfTurn();
 
     if (endRound) {
@@ -3450,6 +3559,7 @@ export default function Game() {
               handleCardUpdate,
               handleEnemyDefeated,
               addDiscoverableCard,
+              getCardProduction,
               hasBeenUsedThisTurn,
               markAsUsedThisTurn,
               t,
@@ -3520,6 +3630,7 @@ export default function Game() {
               handleCardUpdate,
               handleEnemyDefeated,
               addDiscoverableCard,
+              getCardProduction,
               hasBeenUsedThisTurn,
               markAsUsedThisTurn,
               t,
@@ -3611,18 +3722,18 @@ export default function Game() {
     ) as Partial<ResourceMap>;
   };
 
-  const selectResourceChoice = (options: Array<Partial<ResourceMap>>, rawInput?: boolean): Promise<Partial<ResourceMap> | null> => {
+  const selectResourceChoice = (options: Array<Partial<ResourceMap>>, totalLevel: number, rawInput?: boolean): Promise<Partial<ResourceMap> | null> => {
     return new Promise((resolve) => {
       if (rawInput) {
         const cleanedOptions = options
           .filter(option => Object.keys(option).length > 0);
-        setResourceChoicePopup({ options: cleanedOptions, resolve });
+        setResourceChoicePopup({ options: cleanedOptions, totalLevel, resolve });
       }
       else {
         const cleanedOptions = options
           .map(cleanResourceOption)
           .filter(option => Object.keys(option).length > 0);
-        setResourceChoicePopup({ options: cleanedOptions, resolve });
+        setResourceChoicePopup({ options: cleanedOptions, totalLevel, resolve });
       }
     });
   };
@@ -3790,7 +3901,7 @@ export default function Game() {
                 [key as keyof ResourceMap]: 1
               }));
               
-              const chosenResources = await selectResourceChoice(resourceOptions);
+              const chosenResources = await selectResourceChoice(resourceOptions, 1);
               if (chosenResources) {
                 finalBoost = chosenResources;
               } else {
@@ -3830,7 +3941,7 @@ export default function Game() {
       source: GameCard;
     }> = [];
 
-    for (const activeCard of playArea) {
+    for (const activeCard of playAreaRef.current) {
       const effects = getCardEffects(activeCard.id, activeCard.currentSide);
       for (const effect of effects) {
         if (effect.timing === "modifyProduction" && effect.productionModifier) {
@@ -3913,6 +4024,7 @@ export default function Game() {
             handleCardUpdate,
             handleEnemyDefeated,
             addDiscoverableCard,
+            getCardProduction,
             hasBeenUsedThisTurn,
             markAsUsedThisTurn,
             t,
@@ -3949,7 +4061,7 @@ export default function Game() {
       source: GameCard;
     }> = [];
     
-    for (const activeCard of playArea) {
+    for (const activeCard of playAreaRef.current) {
       const effects = getCardEffects(activeCard.id, activeCard.currentSide);
       for (const effect of effects) {
         if (effect.timing === "modifyProduction" && effect.productionModifier?.addOptions) {
@@ -3963,7 +4075,7 @@ export default function Game() {
       }
     }
     
-    for (const activeCard of permanentZone) {
+    for (const activeCard of permanentZoneRef.current) {
       if (activeCard.GetType(t).includes(t('permanent'))) {
         const effects = getCardEffects(activeCard.id, activeCard.currentSide);
         for (const effect of effects) {
@@ -3992,6 +4104,13 @@ export default function Game() {
     
     return additionalOptions;
   };
+
+  const getCardProduction = (card: GameCard, zone: string) => {
+    const productionBonus = gatherProductionBonus(card, zone);
+    const additionalProducitons = gatherAdditionalProductionOptions(card, zone);
+
+    return [...card.GetResources(), productionBonus, ...additionalProducitons];
+  }
 
   function openCheckboxPopup(card: GameCard, requiredCount: number, optionalCount: number, callback: (selected: Checkbox[]) => void) {
     setCheckboxPopupCard(card);
@@ -4142,8 +4261,8 @@ export default function Game() {
     return blockedZone.filter(c => ids.includes(c.id));
   }
 
-  async function upgradeCard(card: GameCard, nextSide: number): Promise<boolean> {
-    if (card.name[nextSide - 1] === "" || turnEndFlag) {
+  async function upgradeCard(card: GameCard, nextSide: number, forced?: boolean): Promise<boolean> {
+    if (card.name[nextSide - 1] === "" || (turnEndFlag && !forced)) {
       return false;
     }
 
@@ -4155,8 +4274,7 @@ export default function Game() {
     card.currentSide = nextSide;
 
     if (blockedIds && cardsToUnblock.length > 0) {
-      setBlockedZone(prev => prev.filter(c => !blockedIds.includes(c.id)));
-      setPlayAreaImmediate(prev => [...prev, ...cardsToUnblock]);
+      await dropToPlayArea({id: cardsToUnblock.map((c) => c.id), fromZone: t('campaign')});
       updateBlocks(card.id, null);
     }
 
@@ -4218,6 +4336,7 @@ export default function Game() {
             handleCardUpdate,
             handleEnemyDefeated,
             addDiscoverableCard,
+            getCardProduction,
             hasBeenUsedThisTurn,
             markAsUsedThisTurn,
             t,
@@ -4374,6 +4493,7 @@ export default function Game() {
       handleCardUpdate,
       handleEnemyDefeated,
       addDiscoverableCard,
+      getCardProduction,
       hasBeenUsedThisTurn,
       markAsUsedThisTurn,
       t,
@@ -4580,12 +4700,18 @@ export default function Game() {
       for (const card of [...playAreaRef.current, ...permanentZoneRef.current]) {
         if(playAreaRef.current.includes(card) || (permanentZoneRef.current.includes(card) && card.GetType(t).includes(t('permanent')))) {
           await handleExecuteCardEffect(card, t('playArea'), "otherCardPlayed", cards);
+          await handleExecuteCardEffect(card, t('playArea'), "onPlayAreaUpdated", cards);
         }
       }
     }
     if (toZone === t('discard') && (fromZone === t('playArea') || fromZone === t('blocked'))) {
       for (const card of cards) {
         await triggerOnCardDiscarded(fetchCardsInZone((c) => c.id === card.id, t('discard')));
+      }
+      for (const card of [...playAreaRef.current, ...permanentZoneRef.current]) {
+        if(playAreaRef.current.includes(card) || (permanentZoneRef.current.includes(card) && card.GetType(t).includes(t('permanent')))) {
+          await handleExecuteCardEffect(card, t('playArea'), "onPlayAreaUpdated", cards);
+        }
       }
     }
   };
@@ -4730,6 +4856,7 @@ export default function Game() {
               handleCardUpdate,
               handleEnemyDefeated,
               addDiscoverableCard,
+              getCardProduction,
               hasBeenUsedThisTurn,
               markAsUsedThisTurn,
               t,
@@ -4809,6 +4936,7 @@ export default function Game() {
         handleCardUpdate,
         handleEnemyDefeated,
         addDiscoverableCard,
+        getCardProduction,
         hasBeenUsedThisTurn,
         markAsUsedThisTurn,
         t,
@@ -5072,6 +5200,7 @@ export default function Game() {
           handleCardUpdate,
           handleEnemyDefeated,
           addDiscoverableCard,
+          getCardProduction,
           hasBeenUsedThisTurn,
           markAsUsedThisTurn,
           t,
@@ -5174,6 +5303,7 @@ export default function Game() {
           handleCardUpdate,
           handleEnemyDefeated,
           addDiscoverableCard,
+          getCardProduction,
           hasBeenUsedThisTurn,
           markAsUsedThisTurn,
           t,
@@ -5268,6 +5398,7 @@ export default function Game() {
           handleCardUpdate,
           handleEnemyDefeated,
           addDiscoverableCard,
+          getCardProduction,
           hasBeenUsedThisTurn,
           markAsUsedThisTurn,
           t,
@@ -5363,6 +5494,7 @@ export default function Game() {
             handleCardUpdate,
             handleEnemyDefeated,
             addDiscoverableCard,
+            getCardProduction,
             hasBeenUsedThisTurn,
             markAsUsedThisTurn,
             t,
@@ -5715,7 +5847,7 @@ export default function Game() {
               onClick={handleDebugClick}
               className="absolute -bottom-7 -right-98 text-xs text-gray-700 whitespace-nowrap cursor-pointer select-none z-50"
             >
-              Kingdom Legacy - Digital by Keleonix | v0.9.0 {debugMode && '🐛'}
+              Kingdom Legacy - Digital by Keleonix | v0.9.1 {debugMode && '🐛'}
             </div>
           </div>
         </div>
@@ -6101,47 +6233,19 @@ export default function Game() {
         )}
 
         {resourceChoicePopup && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[70]">
-          <div className="bg-white p-4 rounded-xl space-y-4 max-w-md">
-            <h2 className="font-bold">{t('chooseResource')}</h2>
-            
-            <div className="space-y-2">
-              {resourceChoicePopup.options.map((option, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => {
-                    resourceChoicePopup.resolve(option);
-                    setResourceChoicePopup(null);
-                  }}
-                  className="w-full p-3 border rounded hover:bg-gray-100 transition flex items-center gap-2 justify-center"
-                >
-                  {Object.entries(option).map(([key, value]) => (
-                    <div key={key} className="flex items-center gap-1">
-                      <img 
-                        src={resourceIconPath(key as keyof ResourceMap)} 
-                        alt={key} 
-                        className="w-5 h-5" 
-                      />
-                      <span className="text-sm">x{value}</span>
-                    </div>
-                  ))}
-                </button>
-              ))}
-            </div>
-
-            <Button 
-              onClick={() => {
-                resourceChoicePopup.resolve(null);
-                setResourceChoicePopup(null);
-              }}
-              variant="secondary"
-              className="w-full"
-            >
-              {t('cancel')}
-            </Button>
-          </div>
-        </div>
-      )}
+          <ResourceSelectionPopup
+            resources={resourceChoicePopup.options}
+            totalLevel={resourceChoicePopup.totalLevel}
+            onConfirm={(selected) => {
+              resourceChoicePopup.resolve(selected);
+              setResourceChoicePopup(null);
+            }}
+            onCancel={() => {
+              resourceChoicePopup.resolve(null);
+              setResourceChoicePopup(null);
+            }}
+          />
+        )}
 
       {cardSelectionPopup && (
         <CardSelectionPopup

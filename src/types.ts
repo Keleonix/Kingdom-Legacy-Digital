@@ -119,6 +119,7 @@ export type EffectTiming =
   | "purged"
   | "modifyProduction"
   | "onEnemyDefeated"
+  | "onPlayAreaUpdated"
 ;
 
 export class GameCard {

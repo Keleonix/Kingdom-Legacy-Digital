@@ -8,12 +8,12 @@ export type TranslationKeys =
   | 'deck' | 'discard' | 'playArea' | 'blocked' | 'permanentZone' | 'campaign' | 'destroy' | 'purged' | 'resourcePool' | 'actionButtons'
   | 'settings' | 'guide' | 'about' | 'close' | 'save' | 'continue' | 'reset'
   | 'newTurn' | 'pass' | 'advance' | 'endRound' | 'shuffleDeck' | 'noCost' | 'emptyCheckbox'
-  | 'emptySide' | 'card' | 'none' | 'cardNames' | 'autoSelected' | 'side' | 'selectUpgradeRemoveCost'
+  | 'emptySide' | 'card' | 'none' | 'cardNames' | 'autoSelected' | 'side' | 'selectUpgrade'
   | 'noUpgradeAvailable' | 'selectAnUpgrade' | 'selectAResource' | 'failedToSave' | 'failedToLoad'
   | 'select' | 'id' | 'preview' | 'endGame' | 'seeDeck' | 'seeDiscard' | 'cardsList' | 'triggeredCard'
   | 'selectCardToPurge' | 'chooseExpansion' | 'expansionCard' | 'expansionBlock' | 'scores' | 'baseGame'
   | 'totalScore' | 'endExpansion' | 'seePurged' | 'add' | 'top' | 'bottom' | 'aboutContent'
-  | 'guideTitle' | 'guideRulesLink' | 'guideContent'
+  | 'guideTitle' | 'guideRulesLink' | 'guideContent' | 'remaining'
   
   // Cards Elements
   | 'frontUp' | 'frontDown' | 'backUp' | 'backDown'
@@ -608,7 +608,7 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     cardNames: "Noms de la carte",
     autoSelected: " - Pré-sélectionné",
     side: "Side",
-    selectUpgradeRemoveCost: 'Sélectionnez une amélioration et une ressource à lui retirer',
+    selectUpgrade: 'Sélectionnez une amélioration',
     noUpgradeAvailable: 'Aucun upgrade disponible.',
     selectAnUpgrade: 'Choisissez une amélioration',
     selectAResource: 'Choisissez une ressource',
@@ -672,6 +672,7 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
       </ul>
     </li>
   </ul>`,
+    remaining: 'Reste',
     
     // Cards Elements
     frontUp: 'Recto Haut',
@@ -1417,7 +1418,7 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
 
     // Ridding the Woods
     effect_description_welcome_to_ridding_the_woods: "Pendant cette extension, vous découvrirez 5 cartes pendant 5 manches. effects/passive Lancer le tutoriel.",
-    effect_description_a_certain_lady: "effects/forced Carte jouée: marquez un effects/check par Ennemi en jeu. effects/oneTime Le premier effet et celui-ci après avoir terminé cette extension.",
+    effect_description_a_certain_lady: "effects/forced Marquez un effects/check par Ennemi en jeu. effects/oneTime Le premier effet et celui-ci après avoir terminé cette extension.",
     effect_description_rogue_lady: "effects/forced Carte jouée: Enlevez 1 resources/coin de la production d'une carte en jeu, si vous le faites, ajoutez 1 effects/check .",
     effect_description_robbin_leader: "effects/passive Vous ne pouvez pas gagner de ressources autres que resources/sword . effects/activate Dépensez resources/sword resources/sword resources/sword pour vaincre (ajoutez 1 effects/check ) et une fois complétée, effects/destroy i18n/a_certain_lady où qu'elle soit et puis →, si vous ne pouvez pas, effects/destroy cette carte.",
     effect_description_sobbing: "effects/forced Lorsque vous i18n/advance : Jouez 2 cartes supplémentaires. effects/forced Purgée: Vaut -4 resources/fame.",
@@ -1535,7 +1536,7 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     cardNames: "Card Names",
     autoSelected: " - Auto-selected",
     side: "Côté",
-    selectUpgradeRemoveCost: 'Select an upgrade and a resource to remove from it',
+    selectUpgrade: 'Select an upgrade',
     noUpgradeAvailable: 'No upgrade available.',
     selectAnUpgrade: 'Select an upgrade',
     selectAResource: 'Select a resource',
@@ -1599,6 +1600,7 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
       </ul>
     </li>
   </ul>`,
+    remaining: 'Remaining',
 
     // Cards Elements
     frontUp: 'Front Up',
@@ -2344,7 +2346,7 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
 
     // Ridding the Woods
     effect_description_welcome_to_ridding_the_woods: "During this expansion, you will discover 5 cards during 5 rounds. effects/passive Launch Tutorial.",
-    effect_description_a_certain_lady: "effects/forced Card Played: add 1 effects/check for each Enemy in play. effects/oneTime The first effect and this one after finishing this expansion.",
+    effect_description_a_certain_lady: "effects/forced Add 1 effects/check for each Enemy in play. effects/oneTime The first effect and this one after finishing this expansion.",
     effect_description_rogue_lady: "effects/forced Card PLayed: Remove 1 resources/coin from a production of a card in play, if you do, add 1 effects/check .",
     effect_description_robbin_leader: "effects/passive You cannot gain any resource other than resources/sword . effects/activate Spend resources/sword resources/sword resources/sword to defeat (add 1 effects/check ) and once completed, effects/destroy i18n/a_certain_lady wherever she is and then →, if you cannot, effects/destroy this card.",
     effect_description_sobbing: "effects/forced Whenver you i18n/advance : Play 2 additional cards. effects/forced When Purged: Worth -4 resources/fame .",
