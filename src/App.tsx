@@ -13,7 +13,7 @@ import { createPortal } from 'react-dom';
 import { EXPANSIONS, FOCUS_KEYS } from "./expansions";
 import { DEFAULT_TUTORIAL_STEPS, tutorial, TutorialOverlay, type TutorialStep } from "./tutorial";
 
-const ZONE_MIN_HEIGHT = "290px";
+const ZONE_MIN_HEIGHT = "300px";
 
 const HTML5toTouch = {
   backends: [
@@ -743,6 +743,7 @@ function CardView({
   gatherAdditionalProductionOptions,
   interactable = true,
   isHighlighted = false,
+  debugMode = false,
 }: {
   card: GameCard;
   fromZone: string;
@@ -756,6 +757,7 @@ function CardView({
   gatherAdditionalProductionOptions?: (card: GameCard, zone: string) => Array<Partial<ResourceMap>>;
   interactable?: boolean;
   isHighlighted?: boolean;
+  debugMode?: boolean;
 }) {
   const { t } = useTranslation();
   const ref = useRef<HTMLDivElement | null>(null);
@@ -948,18 +950,27 @@ function CardView({
 
   const currentSideIdx = (card.currentSide || 1) - 1;
   const sideCheckboxes = card.checkboxes?.[currentSideIdx] ?? [];
+  const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
+  const [isHolding, setIsHolding] = useState(false);
 
   return (
     <div
-      className="relative"
-      onMouseEnter={() => setShowPreview(true)}
-      onMouseLeave={() => setShowPreview(false)}
+      className="relative select-none"
+      style={{ WebkitUserSelect: 'none', userSelect: 'none' }}
+      onMouseEnter={() => { if (!isTouchDevice) setShowPreview(true); }}
+      onMouseLeave={() => { if (!isTouchDevice) setShowPreview(false); }}
       onTouchStart={() => {
-        touchTimeout.current = setTimeout(() => setShowPreview(true), 450);
+        touchTimeout.current = setTimeout(() => {
+          setIsHolding(true);
+          setShowPreview(true);
+        }, 450);
       }}
       onTouchEnd={() => {
         clearTimeout(touchTimeout.current);
-        setShowPreview(false);
+        if (isHolding) {
+          setIsHolding(false);
+          setShowPreview(false);
+        }
       }}
     >
       <Card
@@ -983,11 +994,13 @@ function CardView({
       >
 
         <CardContent className="text-center p-2 overflow-auto flex flex-col h-full w-full">
-          {card.GetType(t).includes(t('permanent')) && <img src={"effects/permanent.png"} alt={t('permanentZone')} title={t('permanentZone')} className="w-49 h-2" />}
-          {card.choice && fromZone === t('campaign') &&(card.currentSide == 1 || card.currentSide == 3) && <button><img src={"effects/choice.png"} alt={t('choice')} title={t('choice')} className="w-49 h-2" /></button>}
+          <div className="flex justify-between items-start w-full">
+            <div className="flex flex-col">
+              {card.GetType(t).includes(t('permanent')) && <img src={"effects/permanent.png"} alt={t('permanentZone')} title={t('permanentZone')} className="w-49 h-2" />}
+              {card.choice && fromZone === t('campaign') &&(card.currentSide == 1 || card.currentSide == 3) && <button><img src={"effects/choice.png"} alt={t('choice')} title={t('choice')} className="w-49 h-2" /></button>}
+            </div>
+          </div>
           <div>
-            <div className="absolute bottom-1 left-44 text-[8px]">{card.id > 0 ? card.id : ""}</div>
-            {/* Skull top right */}
           </div>
           <div>
             <p className="font-bold text-[16px] line-clamp-2 text-center">
@@ -1023,11 +1036,11 @@ function CardView({
                   const bonusCount = (idx < baseOptions.length && productionBonus) ? (productionBonus[k] ?? 0) : 0;
                   const totalCount = baseCount + bonusCount;
                   
-                  if (totalCount === 0) return [];
+                  if (totalCount === 0 || k === 'fame') return [];
                   
                   return [
                     <div key={`${idx}-${k}`} className="flex items-center gap-1">
-                      <img src={resourceIconPath(k)} alt={k} title={`${k} x${totalCount}`} className="w-4 h-4" />
+                      <img src={resourceIconPath(k)} alt={k} title={`${k} x${totalCount}`} className="w-8 h-8" />
                       {totalCount !== 1 && (
                         <span className="text-xs">
                           {baseCount > 0 && bonusCount > 0 ? (
@@ -1095,7 +1108,7 @@ function CardView({
                   key={idx}
                   onClick={(ev) => {
                     ev.stopPropagation();
-                    if (!interactable) return;
+                    if (!interactable || !debugMode) return;
                     if (onCardUpdate) {
                       box.checked = !box.checked;
                       onCardUpdate(card, fromZone);
@@ -1177,33 +1190,48 @@ function CardView({
             </div>
           </div>
         </CardContent>
-        {/* Pixel art bottom left */}
-        <div className="relative bottom-1 right-19 w-8 h-8">
-          {/* Première image - taille normale */}
-          <img 
-            src={`/badges/${card.name[card.currentSide - 1]}.png`}
-            alt={' '}
-            className="w-full h-full object-contain"
-            style={{ imageRendering: 'pixelated' }}
-            onError={(e) => { e.currentTarget.style.display = 'none'; }}
-          />
-
-          {/* Deuxième image - centrée horizontalement, à droite */}
-          {card.negative[card.currentSide - 1] ? (
-            <div className="absolute w-4 h-4 -right-17 top-1/2 -translate-y-1/2">
+        <div className="relative bottom-1 right-19">
+            {/* Pixel art bottom left */}
+            <div className="w-8 h-8">
+              {/* Première image - taille normale */}
               <img 
-                src={`/effects/negative.png`}
+                src={`/badges/${card.name[card.currentSide - 1]}.png`}
                 alt={' '}
                 className="w-full h-full object-contain"
                 style={{ imageRendering: 'pixelated' }}
                 onError={(e) => { e.currentTarget.style.display = 'none'; }}
               />
             </div>
-          ) : (
-            <p/>
-          )}
-        </div>
-        
+
+            {/* Deuxième image - centrée horizontalement, à droite */}
+            {card.negative[card.currentSide - 1] ? (
+              <div className="absolute w-4 h-4 -right-17 top-3 -translate-y-1/2">
+                <img 
+                  src={`/effects/negative.png`}
+                  alt={' '}
+                  className="w-full h-full object-contain"
+                  style={{ imageRendering: 'pixelated' }}
+                  onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                />
+              </div>
+            ) : (
+              <p/>
+            )}
+            {/* Fame badge */}
+            {(() => {
+              const fameTotal = resOptions.reduce((sum, opt) => sum + (opt.fame ?? 0), 0);
+              if (fameTotal === 0) return null;
+              return (
+                <div className="absolute left-33 top-2 flex items-center gap-0.5 bg-yellow-100 border border-yellow-400 rounded-full px-1.5 py-0.5">
+                  <img src={resourceIconPath('fame')} alt="fame" className="relative w-4 h-4 min-w-4 flex-shrink-0 object-contain" />
+                  <span className="relative text-[10px] font-bold text-yellow-700">{fameTotal}</span>
+                </div>
+              );
+            })()}
+            <div className="absolute bottom-0 left-22 text-[8px]">
+              {card.id > 0 ? card.id : ""}
+            </div>
+          </div>
       </Card>
 
       {/* --- PREVIEW POPUP --- */}
@@ -1428,7 +1456,7 @@ function Zone({
     if (isPermanentZone || isBlockedZone) {
       const cardsPerLine = isBlockedZone ? 3 : 9;
       const offsetX = 90;
-      const offsetY = 290;
+      const offsetY = 310;
       const fixedWidth = 220 + ((cardsPerLine - 1) * offsetX);
       const totalLines = Math.max(1, Math.ceil(displayCards.length / cardsPerLine));
       const totalHeight = totalLines * offsetY - 10;
@@ -1559,6 +1587,7 @@ function Zone({
                 fromZone={name}
                 onRightClick={onRightClick}
                 interactable={interactable}
+                debugMode={debugMode}
                 onTapAction={onTapAction}
                 onUpgrade={onUpgrade}
                 onGainResources={onGainResources}
@@ -2168,7 +2197,7 @@ function CardSelectionPopup({
               onClick={() => onConfirm(selectedCards)}
               disabled={!canConfirm}
             >
-              Confirm
+              {t('confirm')}
             </Button>
           </div>
         </div>
@@ -3290,7 +3319,6 @@ export default function Game() {
       await new Promise(resolve => setTimeout(resolve, 100));
       
       await handleEffectsEndOfRound(endOfRoundCardList);
-      setTurnEndFlag(false);
     }
     else {
       const cardsToDiscard: GameCard[] = [];
@@ -5533,6 +5561,9 @@ export default function Game() {
             {/* Deck */}
             <div className="min-w-[200px]">
               <div className="relative">
+                <Button disabled={deck.length === 0} onClick={() => setShowDeck(true)}className="absolute mt-4 right-2">
+                  {t('seeDeck')}
+                </Button>
                 <Zone
                   name={t('deck')}
                   cards={deck}
@@ -5543,26 +5574,32 @@ export default function Game() {
                   onZoneRef={(el) => { if (el) zoneRefsMap.current.set(t('deck'), el);}}
                   debugMode={debugMode}
                 />
-                <span className="absolute top-5 right-5 text-sm text-gray-500">
+                <span className="absolute bottom-3 right-5 text-sm text-gray-500">
                   {deck.length}
                 </span>
               </div>
-              <Button disabled={deck.length === 0} onClick={() => setShowDeck(true)}className="mt-2">{t('seeDeck')}</Button>
             </div>
 
             {/* Discard */}
             <div className="min-w-[200px]">
-              <Zone
-                name={t('discard')}
-                cards={discard}
-                onDrop={(p) => dropToDiscard(p)}
-                onRightClick={() => {}}
-                showAll={false}
-                onTapAction={debugMode ? handleTapAction : undefined}
-                onZoneRef={(el) => { if (el) zoneRefsMap.current.set(t('discard'), el);}}
-                debugMode={debugMode}
-              />
-              <Button disabled={discard.length === 0} onClick={() => setShowDiscard(true)}className="mt-2">{t('seeDiscard')}</Button>
+              <div className="relative">
+                <Button disabled={discard.length === 0} onClick={() => setShowDiscard(true)}className="absolute mt-4 right-2">
+                  {t('seeDiscard')}
+                </Button>
+                <Zone
+                  name={t('discard')}
+                  cards={discard}
+                  onDrop={(p) => dropToDiscard(p)}
+                  onRightClick={() => {}}
+                  showAll={false}
+                  onTapAction={debugMode ? handleTapAction : undefined}
+                  onZoneRef={(el) => { if (el) zoneRefsMap.current.set(t('discard'), el);}}
+                  debugMode={debugMode}
+                />
+                <span className="absolute bottom-3 right-5 text-sm text-gray-500">
+                  {discard.length}
+                </span>
+              </div>
             </div>
 
             {/* Permanent zone */}
@@ -5624,11 +5661,13 @@ export default function Game() {
 
           {/* Settings button */}
           <div>
-            <Button onClick={() => setShowSettings(true)}>{t('settings')}</Button>
+            <Button onClick={() => setShowSettings(true)}>
+              <img src="settings.png" alt={t('settings')} className="w-6 h-6" />
+            </Button>
           </div>
         </div>
 
-        <div className="flex flex-col flex-row gap-4 max-w-[1300px]">
+        <div className="relative flex flex-col flex-row gap-4 max-w-[1300px]">
           {/* Play Area */}
           <div className="flex-1 max-w-[1300px]">
             <Zone
@@ -5671,48 +5710,53 @@ export default function Game() {
               onZoneRef={(el) => { if (el) zoneRefsMap.current.set(t('blocked'), el);}}
               debugMode={debugMode}
             />
+            {/* Infos à droite */}
+            <div 
+              onClick={handleDebugClick}
+              className="absolute -bottom-7 -right-98 text-xs text-gray-700 whitespace-nowrap cursor-pointer select-none z-50"
+            >
+              Kingdom Legacy - Digital by Keleonix | v0.9.0 {debugMode && '🐛'}
+            </div>
           </div>
         </div>
 
-        {/* Action Buttons, Resource Pool et Infos sur une seune ligne */}
-        <div className="flex gap-4 items-center">
-          {/* Action Buttons à gauche */}
-          <div className="flex flex-wrap gap-2 flex-shrink-0" ref={(el) => { if (el) zoneRefsMap.current.set(t('actionButtons'), el);}}>
-            <Button onClick={drawNewTurn} disabled={deck.length === 0 || isChoosingExpansion || isAnimating}>{t('newTurn')}</Button>
-            <Button onClick={async () => { setIsAnimating(true); await advance(); setIsAnimating(false); }} disabled={deck.length === 0 || isChoosingExpansion || turnEndFlag || isPlayBlocked || isAnimating || checkAdvanceRestrictions()}>{t('advance')}</Button>
-            <Button disabled={deck.length !== 0} className="bg-red-600 hover:bg-red-500 text-white" onClick={handleEndRound}>{t('endRound')}</Button>
-            <Button hidden={purgedCards.length === 0} onClick={() => setShowPurged(true)} className="bg-blue-600 hover:bg-blue-500 text-white">{t('seePurged')}</Button>
-            <Button hidden={(hasEndedBaseGame || campaignDeck.some(card => card.id === 70)) || (currentExpansion !== null && !checkExpansionEnd())} disabled={deck.length !== 0 || isAnimating} className="bg-red-600 hover:bg-red-500 text-white" onClick={currentExpansion ? handleEndExpansion : handleEndBaseGame}>{currentExpansion ? t('endExpansion') : t('endGame')}</Button>
-            <Button onClick={() => setShowExpansionChoice(true)} hidden={!isChoosingExpansion || completedExpansions.length >= 9} disabled={isAnimating} className="bg-purple-600 hover:bg-purple-500 text-white">{t('chooseExpansion')}</Button>
-          </div>
-
+        {/* Resource Pool et Infos sur une seune ligne */}
+        <div className="flex gap-4 items-center -mt-98 ml-93">
           {/* Resource Pool au centre */}
           <div className="bg-white/80 backdrop-blur-sm p-2 rounded-xl shadow-lg border-2 border-gray-200 flex-shrink-0" ref={(el) => { if (el) zoneRefsMap.current.set(t('resourcePool'), el);}}>
-            <div className="grid grid-cols-7 gap-2">
-              {RESOURCE_KEYS.map((key) => (
+            <div className="grid grid-cols-6 gap-2">
+              {RESOURCE_KEYS.filter((key) => key !== 'fame').map((key) => (
                 <div key={key} className="flex items-center gap-1 p-1 bg-gradient-to-br from-white to-gray-50 rounded-lg shadow-sm border border-gray-200">
                   <img src={resourceIconPath(key)} alt={key} title={key} className="w-5 h-5 flex-shrink-0" />
                   <div className="flex items-center gap-1">
-                    <input
-                      type="number"
-                      className="w-10 text-center border rounded text-xs py-0.5"
-                      value={resources[key]}
-                      onChange={(e) => setResources((r) => ({ ...r, [key]: parseInt(e.target.value || "0", 10) || 0 }))}
-                      disabled={key === "fame" || !debugMode}
-                    />
+                    {debugMode?(
+                      <input
+                        type="number"
+                        className="w-10 text-center border rounded text-xs py-0.5"
+                        value={resources[key]}
+                        onChange={(e) => setResources((r) => ({ ...r, [key]: parseInt(e.target.value || "0", 10) || 0 }))}
+                      />
+                    ) : (
+                      <div className="w-10 text-center border rounded text-xs py-0.5">
+                        {resources[key]}
+                      </div>
+                    )}
+                    
                   </div>
                 </div>
               ))}
             </div>
           </div>
+        </div>
 
-          {/* Infos à droite - masquées sur mobile */}
-          <div 
-            onClick={handleDebugClick}
-            className="hidden md:block text-xs text-gray-700 whitespace-nowrap ml-auto flex-shrink-0 cursor-pointer select-none"
-          >
-            Kingdom Legacy - Digital by Keleonix | v0.8.0 {debugMode && '🐛'}
-          </div>
+        {/* Action Buttons à gauche */}
+        <div className="relative top-80 flex flex-wrap gap-2 flex-shrink-0" ref={(el) => { if (el) zoneRefsMap.current.set(t('actionButtons'), el);}}>
+          <Button onClick={drawNewTurn} disabled={deck.length === 0 || isChoosingExpansion || isAnimating}>{t('newTurn')}</Button>
+          <Button onClick={async () => { setIsAnimating(true); await advance(); setIsAnimating(false); }} disabled={deck.length === 0 || isChoosingExpansion || turnEndFlag || isPlayBlocked || isAnimating || checkAdvanceRestrictions()}>{t('advance')}</Button>
+          <Button disabled={deck.length !== 0} className="bg-red-600 hover:bg-red-500 text-white" onClick={handleEndRound}>{t('endRound')}</Button>
+          <Button hidden={purgedCards.length === 0} onClick={() => setShowPurged(true)} className="bg-blue-600 hover:bg-blue-500 text-white">{t('seePurged')}</Button>
+          <Button hidden={(hasEndedBaseGame || campaignDeck.some(card => card.id === 70)) || (currentExpansion !== null && !checkExpansionEnd())} disabled={deck.length !== 0 || isAnimating} className="bg-red-600 hover:bg-red-500 text-white" onClick={currentExpansion ? handleEndExpansion : handleEndBaseGame}>{currentExpansion ? t('endExpansion') : t('endGame')}</Button>
+          <Button onClick={() => setShowExpansionChoice(true)} hidden={!isChoosingExpansion || completedExpansions.length >= 9} disabled={isAnimating} className="bg-purple-600 hover:bg-purple-500 text-white">{t('chooseExpansion')}</Button>
         </div>
 
         {/* Settings Modal */}
@@ -5880,21 +5924,37 @@ export default function Game() {
               <h2 className="font-bold text-xl">{t('discard')}</h2>
               <div className="flex flex-col flex-row gap-4 flex-1 min-h-0">
                 <div className="flex-1 overflow-y-auto p-2 border rounded">
-                  <div className="grid grid-cols-6 gap-2">
-                    {discard.map((c) => (
-                      <CardView
-                        key={`modal-${c.id}-${c.currentSide}-${Math.random()}`}
-                        card={c}
-                        fromZone={t('discard')}
-                        onRightClick={() => {}}
-                        onTapAction={debugMode ? handleTapAction : undefined}
-                      />
-                    ))}
+                  {debugMode ? (
+                    <div className="grid grid-cols-3 gap-2">
+                      {discard.map((c) => (
+                        <CardView
+                          key={`modal-${c.id}-${c.currentSide}-${Math.random()}`}
+                          card={c}
+                          fromZone={t('discard')}
+                          onRightClick={() => {}}
+                          onTapAction={debugMode ? handleTapAction : undefined}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-9 gap-2">
+                      {discard.map((c) => (
+                        <CardView
+                          key={`modal-${c.id}-${c.currentSide}-${Math.random()}`}
+                          card={c}
+                          fromZone={t('discard')}
+                          onRightClick={() => {}}
+                          onTapAction={debugMode ? handleTapAction : undefined}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+                {debugMode && (
+                  <div className="min-w-[220px]">
+                    <Zone name={t('playArea')} cards={playArea} onDrop={(p) => dropToPlayArea(p)} onRightClick={() => {}} onTapAction={debugMode ? handleTapAction : undefined} debugMode={debugMode} />
                   </div>
-                </div>
-                <div className="min-w-[220px]">
-                  <Zone name={t('playArea')} cards={playArea} onDrop={(p) => dropToPlayArea(p)} onRightClick={() => {}} onTapAction={debugMode ? handleTapAction : undefined} debugMode={debugMode} />
-                </div>
+                )}
               </div>
 
               <div className="flex justify-end gap-2 pt-2 border-t">
@@ -5974,19 +6034,35 @@ export default function Game() {
               <h2 className="font-bold text-xl">{t('deck')}</h2>
               <div className="flex flex-col flex-row gap-4 flex-1 min-h-0">
                 <div className="flex-1 overflow-y-auto p-2 border rounded">
-                  <div className="grid grid-cols-6 gap-2">
-                    {[...deck].sort((a, b) => a.id - b.id).map((c) => (
-                      <CardView
-                        key={`modal-${c.id}-${c.currentSide}-${Math.random()}`}
-                        card={c}
-                        fromZone={t('deck')}
-                        onRightClick={() => {}}
-                        onTapAction={debugMode ? handleTapAction : undefined}
-                      />
-                    ))}
-                  </div>
+                  {debugMode ? (
+                    <div className="grid grid-cols-7 gap-2">
+                      {[...deck].sort((a, b) => a.id - b.id).map((c) => (
+                        <CardView
+                          key={`modal-${c.id}-${c.currentSide}-${Math.random()}`}
+                          card={c}
+                          fromZone={t('deck')}
+                          onRightClick={() => {}}
+                          onTapAction={debugMode ? handleTapAction : undefined}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-9 gap-2">
+                      {[...deck].sort((a, b) => a.id - b.id).map((c) => (
+                        <CardView
+                          key={`modal-${c.id}-${c.currentSide}-${Math.random()}`}
+                          card={c}
+                          fromZone={t('deck')}
+                          onRightClick={() => {}}
+                          onTapAction={debugMode ? handleTapAction : undefined}
+                        />
+                      ))}
+                    </div>
+                  )}
                 </div>
-                <Zone name={t('destroy')} cards={[]} onDrop={(p) => dropToDestroy(p)} onRightClick={() => {}} debugMode={debugMode} />
+                {debugMode && (
+                  <Zone name={t('destroy')} cards={[]} onDrop={(p) => dropToDestroy(p)} onRightClick={() => {}} debugMode={debugMode} />
+                )}
               </div>
 
               <div className="flex justify-end gap-2 pt-2 border-t">
