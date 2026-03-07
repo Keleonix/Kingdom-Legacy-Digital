@@ -2340,25 +2340,47 @@ const ResourceSelectionPopup: React.FC<{
   totalLevel: number;
   onConfirm: (selected: Partial<ResourceMap>) => void;
   onCancel: () => void;
-}> = ({ resources, totalLevel, onConfirm }) => {
+}> = ({ resources, totalLevel, onConfirm, onCancel }) => {
   const { t } = useTranslation();
 
-  const mergedResources = useMemo<Partial<ResourceMap>>(() => {
-    const maps = Array.isArray(resources) ? resources : [resources];
-    return maps.reduce((acc, map) => {
+  const isOptionMode = Array.isArray(resources);
+
+  // --- Mode options (array) ---
+  const options = isOptionMode ? resources : [];
+  const [selectedOptions, setSelectedOptions] = useState<number[]>([]); // indices des options choisies
+  const remainingChoices = totalLevel - selectedOptions.length;
+
+  const handleOptionToggle = (index: number) => {
+    setSelectedOptions((prev) => {
+      if (prev.includes(index)) {
+        return prev.filter((i) => i !== index);
+      }
+      if (prev.length >= totalLevel) return prev;
+      return [...prev, index];
+    });
+  };
+
+  const optionConfirm = () => {
+    const merged = selectedOptions.reduce((acc, i) => {
+      const map = options[i];
       for (const [key, value] of Object.entries(map) as [keyof ResourceMap, number][]) {
         acc[key] = (acc[key] ?? 0) + value;
       }
       return acc;
     }, {} as Partial<ResourceMap>);
-  }, [resources]);
+    onConfirm(merged);
+  };
+
+  // --- Mode quantités (objet simple) ---
+  const mergedResources = useMemo<Partial<ResourceMap>>(() => {
+    if (isOptionMode) return {};
+    return resources as Partial<ResourceMap>;
+  }, [resources, isOptionMode]);
 
   const resourceKeys = Object.keys(mergedResources) as (keyof ResourceMap)[];
-
   const [amounts, setAmounts] = useState<Partial<ResourceMap>>(
     Object.fromEntries(resourceKeys.map((r) => [r, 0])) as Partial<ResourceMap>
   );
-
   const totalSelected = Object.values(amounts).reduce((sum, v) => sum + (v ?? 0), 0);
   const remaining = totalLevel - totalSelected;
 
@@ -2369,52 +2391,89 @@ const ResourceSelectionPopup: React.FC<{
     setAmounts((prev) => ({ ...prev, [resource]: Math.max(0, value) }));
   };
 
-  const isConfirmDisabled = totalSelected === 0 || totalSelected > totalLevel;
+  const isConfirmDisabled = isOptionMode
+    ? selectedOptions.length === 0 || selectedOptions.length > totalLevel
+    : totalSelected === 0 || totalSelected > totalLevel;
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[70]">
       <div className="bg-white p-4 rounded-xl space-y-4 max-w-md w-full">
         <h2 className="font-bold">{t('chooseResource')}</h2>
-
         <p className="text-sm text-gray-500">
-          {t('remaining')}: <span className={remaining === 0 ? 'text-green-600 font-bold' : 'font-semibold'}>{remaining} / {totalLevel}</span>
+          {t('remaining')}:{' '}
+          <span className={(isOptionMode ? remainingChoices : remaining) === 0 ? 'text-green-600 font-bold' : 'font-semibold'}>
+            {isOptionMode ? remainingChoices : remaining} / {totalLevel}
+          </span>
         </p>
 
         <div className="flex flex-col gap-3">
-          {resourceKeys.map((resource) => (
-            <div key={resource} className="flex items-center gap-3 bg-gray-50 p-2 rounded-lg">
-              <img
-                src={resourceIconPath(resource)}
-                alt={resource}
-                className="w-7 h-7"
-              />
-              <span className="text-sm flex-1 capitalize">{resource}</span>
-              <div className="flex items-center gap-2">
+          {isOptionMode ? (
+            // --- Rendu options ---
+            options.map((option, index) => {
+              const isSelected = selectedOptions.includes(index);
+              const entries = Object.entries(option) as [keyof ResourceMap, number][];
+              return (
                 <button
-                  onClick={() => handleChange(resource, (amounts[resource] ?? 0) - 1)}
-                  disabled={(amounts[resource] ?? 0) <= 0}
-                  className="w-7 h-7 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-40 font-bold"
+                  key={index}
+                  onClick={() => handleOptionToggle(index)}
+                  disabled={!isSelected && remainingChoices <= 0}
+                  className={`flex items-center gap-3 p-2 rounded-lg border-2 text-left transition-colors
+                    ${isSelected
+                      ? 'border-blue-500 bg-blue-50'
+                      : 'border-transparent bg-gray-50 hover:bg-gray-100 disabled:opacity-40'
+                    }`}
                 >
-                  −
+                  <div className="flex items-center gap-2 flex-wrap flex-1">
+                    {entries.map(([resource, value]) => (
+                      <div key={resource} className="flex items-center gap-1">
+                        <img src={resourceIconPath(resource)} alt={resource} className="w-6 h-6" />
+                        <span className="text-sm font-semibold">×{value}</span>
+                      </div>
+                    ))}
+                  </div>
+                  {isSelected && <span className="text-blue-500 font-bold text-lg">✓</span>}
                 </button>
-                <span className="w-6 text-center text-sm font-semibold">
-                  {amounts[resource] ?? 0}
-                </span>
-                <button
-                  onClick={() => handleChange(resource, (amounts[resource] ?? 0) + 1)}
-                  disabled={remaining <= 0}
-                  className="w-7 h-7 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-40 font-bold"
-                >
-                  +
-                </button>
+              );
+            })
+          ) : (
+            // --- Rendu quantités ---
+            resourceKeys.map((resource) => (
+              <div key={resource} className="flex items-center gap-3 bg-gray-50 p-2 rounded-lg">
+                <img src={resourceIconPath(resource)} alt={resource} className="w-7 h-7" />
+                <span className="text-sm flex-1 capitalize">{resource}</span>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handleChange(resource, (amounts[resource] ?? 0) - 1)}
+                    disabled={(amounts[resource] ?? 0) <= 0}
+                    className="w-7 h-7 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-40 font-bold"
+                  >
+                    −
+                  </button>
+                  <span className="w-6 text-center text-sm font-semibold">
+                    {amounts[resource] ?? 0}
+                  </span>
+                  <button
+                    onClick={() => handleChange(resource, (amounts[resource] ?? 0) + 1)}
+                    disabled={remaining <= 0}
+                    className="w-7 h-7 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-40 font-bold"
+                  >
+                    +
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
 
         <div className="flex justify-end gap-2">
           <button
-            onClick={() => onConfirm(amounts)}
+            onClick={onCancel}
+            className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300"
+          >
+            {t('cancel')}
+          </button>
+          <button
+            onClick={isOptionMode ? optionConfirm : () => onConfirm(amounts)}
             disabled={isConfirmDisabled}
             className={`px-3 py-1 rounded ${
               !isConfirmDisabled
@@ -2793,7 +2852,7 @@ export default function Game() {
 
   const [campaignDeck, setCampaignDeck] = useState<GameCard[]>(() =>
     allCards
-      .filter((c) => c.id > 10) // TODO: Change Back => && c.id <= 138
+      .filter((c) => c.id > 10 && c.id <= 138) // TODO: Change Back => && c.id <= 138
       .sort((a, b) => a.id - b.id)
       .map((c) => cloneGameCard(c))
   );
@@ -2834,7 +2893,7 @@ export default function Game() {
 
   // Effects handling
   const [resourceChoicePopup, setResourceChoicePopup] = useState<{
-    options: Array<Partial<ResourceMap>>;
+    options: Partial<ResourceMap> | Partial<ResourceMap>[];
     totalLevel: number;
     resolve: (choice: Partial<ResourceMap> | null) => void;
   } | null>(null);
@@ -3722,14 +3781,22 @@ export default function Game() {
     ) as Partial<ResourceMap>;
   };
 
-  const selectResourceChoice = (options: Array<Partial<ResourceMap>>, totalLevel: number, rawInput?: boolean): Promise<Partial<ResourceMap> | null> => {
+  const selectResourceChoice = (
+    options: Partial<ResourceMap> | Partial<ResourceMap>[],
+    totalLevel: number,
+    rawInput?: boolean
+  ): Promise<Partial<ResourceMap> | null> => {
     return new Promise((resolve) => {
+      if (!Array.isArray(options)) {
+        setResourceChoicePopup({ options, totalLevel, resolve });
+        return;
+      }
+
       if (rawInput) {
         const cleanedOptions = options
           .filter(option => Object.keys(option).length > 0);
         setResourceChoicePopup({ options: cleanedOptions, totalLevel, resolve });
-      }
-      else {
+      } else {
         const cleanedOptions = options
           .map(cleanResourceOption)
           .filter(option => Object.keys(option).length > 0);
@@ -5847,7 +5914,7 @@ export default function Game() {
               onClick={handleDebugClick}
               className="absolute -bottom-7 -right-98 text-xs text-gray-700 whitespace-nowrap cursor-pointer select-none z-50"
             >
-              Kingdom Legacy - Digital by Keleonix | v0.9.1 {debugMode && '🐛'}
+              Kingdom Legacy - Digital by Keleonix | v0.9.2 {debugMode && '🐛'}
             </div>
           </div>
         </div>
