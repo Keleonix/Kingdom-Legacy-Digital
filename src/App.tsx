@@ -12,6 +12,7 @@ import { useTranslation, type Language, LanguageSelector, type TranslationKeys }
 import { createPortal } from 'react-dom';
 import { EXPANSIONS, FOCUS_KEYS } from "./expansions";
 import { DEFAULT_TUTORIAL_STEPS, tutorial, TutorialOverlay, type TutorialStep } from "./tutorial";
+import { Preferences } from '@capacitor/preferences';
 
 const ZONE_MIN_HEIGHT = "300px";
 
@@ -764,7 +765,6 @@ function CardView({
   const previewRef = useRef<HTMLDivElement | null>(null);
   const [showPreview, setShowPreview] = useState(false);
   const [previewPosition, setPreviewPosition] = useState({ top: 0, left: 0 });
-  const touchTimeout = useRef<string | number | NodeJS.Timeout | undefined>(undefined);
   const upgradePreviewRef = useRef<HTMLDivElement | null>(null);
   const [showUpgradePreview, setShowUpgradePreview] = useState(false);
   const [upgradePreviewSide, setUpgradePreviewSide] = useState<number | null>(null);
@@ -950,27 +950,25 @@ function CardView({
 
   const currentSideIdx = (card.currentSide || 1) - 1;
   const sideCheckboxes = card.checkboxes?.[currentSideIdx] ?? [];
-  const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
-  const [isHolding, setIsHolding] = useState(false);
+  const lastTap = useRef<number>(0);
 
   return (
     <div
       className="relative select-none"
       style={{ WebkitUserSelect: 'none', userSelect: 'none' }}
-      onMouseEnter={() => { if (!isTouchDevice) setShowPreview(true); }}
-      onMouseLeave={() => { if (!isTouchDevice) setShowPreview(false); }}
-      onTouchStart={() => {
-        touchTimeout.current = setTimeout(() => {
-          setIsHolding(true);
-          setShowPreview(true);
-        }, 450);
-      }}
-      onTouchEnd={() => {
-        clearTimeout(touchTimeout.current);
-        if (isHolding) {
-          setIsHolding(false);
-          setShowPreview(false);
+      onTouchEnd={(e) => {
+        const now = Date.now();
+        if (now - lastTap.current < 300) {
+          e.preventDefault();
+          setShowPreview(prev => !prev);
         }
+        lastTap.current = now;
+      }}
+      onDoubleClick={() => {
+        setShowPreview(prev => !prev);
+      }}
+      onMouseLeave={() => {
+        setShowPreview(false);
       }}
     >
       <Card
@@ -1136,6 +1134,21 @@ function CardView({
                     e.stopPropagation();
                     if (!interactable || !onUpgrade) return;
                     onUpgrade(card, upg, fromZone);
+                  }}
+                  onTouchStart={(e) => {
+                    e.stopPropagation();
+                    const touch = e.touches[0];
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    (window as any).lastMouseX = touch.clientX;
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    (window as any).lastMouseY = touch.clientY;
+                    setUpgradePreviewSide(upg.nextSide);
+                    setShowUpgradePreview(true);
+                  }}
+                  onTouchEnd={(e) => {
+                    e.stopPropagation();
+                    setShowUpgradePreview(false);
+                    setUpgradePreviewSide(null);
                   }}
                   onMouseEnter={(e) => {
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -3003,6 +3016,15 @@ export default function Game() {
   const [isChoosingExpansion, setIsChoosingExpansion] = useState(false);
   const [showExpansionChoice, setShowExpansionChoice] = useState(false);
 
+  const [savedKingdoms, setSavedKingdoms] = useState<string[]>([]);
+
+  // Recharger la liste quand le menu s'ouvre
+  useEffect(() => {
+    if (showSettings) {
+      getSavedKingdoms().then(setSavedKingdoms);
+    }
+  }, [showSettings]);
+
   const ZONE_KEY_MAP = {
     deck:          t("deck"),
     discard:       t("discard"),
@@ -4341,7 +4363,7 @@ export default function Game() {
     card.currentSide = nextSide;
 
     if (blockedIds && cardsToUnblock.length > 0) {
-      await dropToPlayArea({id: cardsToUnblock.map((c) => c.id), fromZone: t('campaign')});
+      await dropToPlayArea({id: cardsToUnblock.map((c) => c.id), fromZone: t('blocked')});
       updateBlocks(card.id, null);
     }
 
@@ -5319,12 +5341,14 @@ export default function Game() {
       getCardEffects(c.id, c.currentSide, "onResourceGain").map(effect => [effect, c] as [CardEffect, GameCard])
     ).sort(([a], [b]) => ((b.priority ?? 0) - (a.priority ?? 0)));
 
-    for (const [effect, c] of effects) { // TODO [FIX] : Weird interraction between 44 and 141 => no double sword???
+    let modularResources: ResourceMap = { ...emptyResource, ...resources };
+
+    for (const [effect, c] of effects) {
       if (effect.timing === "onResourceGain") {
         const context: GameContext = {
           card: c,
           zone: playArea.includes(c) ? t('playArea') : t('permanentZone'),
-          resources: { ...emptyResource, ...resources },
+          resources: modularResources,
           cardsForTrigger: [card],
           filterZone,
           setResources,
@@ -5380,14 +5404,14 @@ export default function Game() {
       }
     }
 
-    const onlyFame = !Object.entries(resources || {}).some(([key, value]) => 
+    const onlyFame = !Object.entries(modularResources || {}).some(([key, value]) => 
       key !== "fame" && Number(value) !== 0
     );
     
-    if (resources) {
+    if (modularResources) {
       setResources((prev) => {
         const next = { ...prev };
-        Object.entries(resources).forEach(([k, v]) => {
+        Object.entries(modularResources).forEach(([k, v]) => {
           const key = k as keyof ResourceMap;
           if(key !== "fame" && Number(v) !== 0){
             next[key] = (Number(next[key]) || 0) + (Number(v) || 0);
@@ -5593,7 +5617,7 @@ export default function Game() {
   // -------------------
   // Memory management
   // -------------------
-  const saveGame = (name: string) => {
+  const saveGame = async (name: string) => {
     if (!name) {
       setConfirmationPopup({
         message: t('enterKingdomName'),
@@ -5616,7 +5640,7 @@ export default function Game() {
       scores,
     };
     try {
-      localStorage.setItem(`citysave:${name}`, JSON.stringify(payload));
+      await Preferences.set({ key: `citysave:${name}`, value: JSON.stringify(payload) });
       setConfirmationPopup({
         message: `${t('saveSuccess')} '${name}'.`,
         onConfirm: () => setConfirmationPopup(null)
@@ -5630,7 +5654,7 @@ export default function Game() {
     }
   };
 
-  const loadGame = (name: string) => {
+  const loadGame = async (name: string) => {
     if (!name) {
       setConfirmationPopup({
         message: t('enterKingdomName'),
@@ -5639,7 +5663,7 @@ export default function Game() {
       return;
     }
     try {
-      const raw = localStorage.getItem(`citysave:${name}`);
+      const raw = (await Preferences.get({ key: `citysave:${name}` })).value;
       if (!raw) {
         setConfirmationPopup({
           message: t('noSaveFound') + ": " + name,
@@ -5683,14 +5707,9 @@ export default function Game() {
     }
   };
 
-  const getSavedKingdoms = () => {
-    const kingdoms = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key && key.startsWith('citysave:')) {
-        kingdoms.push(key.replace('citysave:', ''));
-      }
-    }
+  const getSavedKingdoms = async () => {
+    const keys = (await Preferences.keys()).keys;
+    const kingdoms = keys.filter(k => k.startsWith('citysave:')).map(k => k.replace('citysave:', ''));
     return kingdoms.sort();
   };
 
@@ -5869,6 +5888,34 @@ export default function Game() {
         <div className="relative flex flex-col flex-row gap-4 max-w-[1300px]">
           {/* Play Area */}
           <div className="flex-1 max-w-[1300px]">
+            {/* Resource Pool et Infos sur une seune ligne */}
+            <div className="flex gap-4 items-center -mb-13 ml-93">
+              {/* Resource Pool au centre */}
+              <div className="bg-white/80 backdrop-blur-sm p-2 rounded-xl shadow-lg border-2 border-gray-200 flex-shrink-0" ref={(el) => { if (el) zoneRefsMap.current.set(t('resourcePool'), el);}}>
+                <div className="grid grid-cols-6 gap-2">
+                  {RESOURCE_KEYS.filter((key) => key !== 'fame').map((key) => (
+                    <div key={key} className="flex items-center gap-1 p-1 bg-gradient-to-br from-white to-gray-50 rounded-lg shadow-sm border border-gray-200">
+                      <img src={resourceIconPath(key)} alt={key} title={key} className="w-5 h-5 flex-shrink-0" />
+                      <div className="flex items-center gap-1">
+                        {debugMode?(
+                          <input
+                            type="number"
+                            className="w-10 text-center border rounded text-xs py-0.5"
+                            value={resources[key]}
+                            onChange={(e) => setResources((r) => ({ ...r, [key]: parseInt(e.target.value || "0", 10) || 0 }))}
+                          />
+                        ) : (
+                          <div className="w-10 text-center border rounded text-xs py-0.5">
+                            {resources[key]}
+                          </div>
+                        )}
+                        
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
             <Zone
               name={t('playArea')}
               cards={playArea}
@@ -5914,42 +5961,13 @@ export default function Game() {
               onClick={handleDebugClick}
               className="absolute -bottom-7 -right-98 text-xs text-gray-700 whitespace-nowrap cursor-pointer select-none z-50"
             >
-              Kingdom Legacy - Digital by Keleonix | v0.9.2 {debugMode && '🐛'}
-            </div>
-          </div>
-        </div>
-
-        {/* Resource Pool et Infos sur une seune ligne */}
-        <div className="flex gap-4 items-center -mt-98 ml-93">
-          {/* Resource Pool au centre */}
-          <div className="bg-white/80 backdrop-blur-sm p-2 rounded-xl shadow-lg border-2 border-gray-200 flex-shrink-0" ref={(el) => { if (el) zoneRefsMap.current.set(t('resourcePool'), el);}}>
-            <div className="grid grid-cols-6 gap-2">
-              {RESOURCE_KEYS.filter((key) => key !== 'fame').map((key) => (
-                <div key={key} className="flex items-center gap-1 p-1 bg-gradient-to-br from-white to-gray-50 rounded-lg shadow-sm border border-gray-200">
-                  <img src={resourceIconPath(key)} alt={key} title={key} className="w-5 h-5 flex-shrink-0" />
-                  <div className="flex items-center gap-1">
-                    {debugMode?(
-                      <input
-                        type="number"
-                        className="w-10 text-center border rounded text-xs py-0.5"
-                        value={resources[key]}
-                        onChange={(e) => setResources((r) => ({ ...r, [key]: parseInt(e.target.value || "0", 10) || 0 }))}
-                      />
-                    ) : (
-                      <div className="w-10 text-center border rounded text-xs py-0.5">
-                        {resources[key]}
-                      </div>
-                    )}
-                    
-                  </div>
-                </div>
-              ))}
+              Kingdom Legacy - Digital by Keleonix | v0.9.3 {debugMode && '🐛'}
             </div>
           </div>
         </div>
 
         {/* Action Buttons à gauche */}
-        <div className="relative top-80 flex flex-wrap gap-2 flex-shrink-0" ref={(el) => { if (el) zoneRefsMap.current.set(t('actionButtons'), el);}}>
+        <div className="relative flex flex-wrap gap-2 flex-shrink-0" ref={(el) => { if (el) zoneRefsMap.current.set(t('actionButtons'), el);}}>
           <Button onClick={drawNewTurn} disabled={deck.length === 0 || isChoosingExpansion || isAnimating}>{t('newTurn')}</Button>
           <Button onClick={async () => { setIsAnimating(true); await advance(); setIsAnimating(false); }} disabled={deck.length === 0 || isChoosingExpansion || turnEndFlag || isPlayBlocked || isAnimating || checkAdvanceRestrictions()}>{t('advance')}</Button>
           <Button disabled={deck.length !== 0} className="bg-red-600 hover:bg-red-500 text-white" onClick={handleEndRound}>{t('endRound')}</Button>
@@ -5978,7 +5996,7 @@ export default function Game() {
                     onChange={(e) => setSelectedKingdom(e.target.value)}
                   >
                     <option value="New Kingdom">{t('newKingdom')}</option>
-                    {getSavedKingdoms().map(kingdom => (
+                    {savedKingdoms.map(kingdom => (
                       <option key={kingdom} value={kingdom}>{kingdom}</option>
                     ))}
                   </select>
