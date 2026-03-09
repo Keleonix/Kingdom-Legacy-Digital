@@ -5,7 +5,7 @@ import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { TouchBackend } from 'react-dnd-touch-backend';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { MouseTransition, TouchTransition, MultiBackend } from 'react-dnd-multi-backend';
-import { emptyResource, GameCard, RESOURCE_KEYS, EFFECT_KEYWORDS, TYPE_COLORS, type ResourceMap, type PopupPayload, type DropPayload, type Checkbox, type Upgrade, type EffectTiming, type SavedGame, type GameScore, type SortMode } from "./types";
+import { emptyResource, GameCard, RESOURCE_KEYS, TYPE_COLORS, type ResourceMap, type PopupPayload, type DropPayload, type Checkbox, type Upgrade, type EffectTiming, type SavedGame, type GameScore, type SortMode } from "./types";
 import { allCards } from "./cards";
 import { getCardEffects, type GameContext, type CardEffect, cardEffectsRegistry, getCardFameValue, getCardUpgradeAdditionalCost, getCardSelectionValue } from "./cardEffects";
 import { useTranslation, type Language, LanguageSelector, type TranslationKeys } from './i18n';
@@ -13,6 +13,8 @@ import { createPortal } from 'react-dom';
 import { EXPANSIONS, FOCUS_KEYS } from "./expansions";
 import { DEFAULT_TUTORIAL_STEPS, tutorial, TutorialOverlay, type TutorialStep } from "./tutorial";
 import { Preferences } from '@capacitor/preferences';
+import { CustomKeyboard } from './customKeyboard'
+import { parseEffects } from "./utils";
 
 const ZONE_MIN_HEIGHT = "300px";
 
@@ -175,101 +177,6 @@ function renderCheckboxContent(content: string | undefined, t: (key: Translation
       ))}
     </div>
   );
-}
-
-function parseEffects(raw: string) {
-  if (!raw) return { before: "", effects: [] as { text: string; keyword: string }[] };
-
-  const pattern = new RegExp(`\\b(${EFFECT_KEYWORDS.join("|")})`, "gi");
-
-  const matches: Array<{ index: number; keyword: string }> = [];
-  let match: RegExpExecArray | null;
-  while ((match = pattern.exec(raw)) !== null) {
-    matches.push({ index: match.index, keyword: match[0].toLowerCase() });
-  }
-
-  if (matches.length === 0) {
-    return { before: raw.trim(), effects: [] };
-  }
-
-  const validMatches = matches.filter(m => {
-    let depth = 0;
-    for (let i = 0; i < m.index; i++) {
-      if (raw[i] === '(') depth++;
-      else if (raw[i] === ')') depth--;
-    }
-    if (depth !== 0) return false;
-
-    let lastPeriodIndex = -1;
-    for (let i = m.index - 1; i >= 0; i--) {
-      if (raw[i] === '.') { lastPeriodIndex = i; break; }
-    }
-    const textBefore = raw.slice(lastPeriodIndex + 1, m.index);
-    return /^\s*$/.test(textBefore);
-  });
-
-  if (validMatches.length === 0) {
-    return { before: raw.trim(), effects: [] };
-  }
-
-  const before = raw.slice(0, validMatches[0].index).trim();
-  const effects: { text: string; keyword: string }[] = [];
-
-  for (let i = 0; i < validMatches.length; i++) {
-    const start = validMatches[i].index;
-    let effectText = "";
-    let depth = 0;
-    let foundEnd = false;
-
-    for (let j = start; j < raw.length; j++) {
-      const ch = raw[j];
-
-      if (ch === '(') depth++;
-      else if (ch === ')') depth--;
-      else if (ch === '.' && depth === 0) {
-        const nextKeywordIndex = i < validMatches.length - 1 ? validMatches[i + 1].index : Infinity;
-
-        let hasParenAfter = false;
-        let parenStart = -1;
-        for (let k = j + 1; k < nextKeywordIndex && k < raw.length; k++) {
-          if (raw[k] === '(') { hasParenAfter = true; parenStart = k; break; }
-          else if (raw[k].trim() && validMatches.some(vm => vm.index === k)) { break; }
-        }
-
-        if (hasParenAfter && parenStart < nextKeywordIndex) {
-          let parenDepth = 1;
-          let parenEnd = -1;
-          for (let k = parenStart + 1; k < raw.length; k++) {
-            if (raw[k] === '(') parenDepth++;
-            else if (raw[k] === ')') {
-              parenDepth--;
-              if (parenDepth === 0) { parenEnd = k; break; }
-            }
-          }
-          if (parenEnd !== -1) {
-            effectText = raw.slice(start, parenEnd + 1).trim();
-            foundEnd = true;
-            break;
-          }
-        } else {
-          effectText = raw.slice(start, j + 1).trim();
-          foundEnd = true;
-          break;
-        }
-      }
-    }
-
-    if (!foundEnd) {
-      const end = i < validMatches.length - 1 ? validMatches[i + 1].index : raw.length;
-      effectText = raw.slice(start, end).trim();
-    }
-
-    if (effectText) {
-      effects.push({ text: effectText, keyword: validMatches[i].keyword });
-    }
-  }
-
-  return { before, effects };
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -2865,7 +2772,7 @@ export default function Game() {
 
   const [campaignDeck, setCampaignDeck] = useState<GameCard[]>(() =>
     allCards
-      .filter((c) => c.id > 10 && c.id <= 138) // TODO: Change Back => && c.id <= 138
+      .filter((c) => c.id > 10) // TODO: Change Back => && c.id <= 138
       .sort((a, b) => a.id - b.id)
       .map((c) => cloneGameCard(c))
   );
@@ -2896,7 +2803,7 @@ export default function Game() {
   const [availableDiscoverableCards, setAvailableDiscoverableCards] = useState<number[]>([]);
 
   const [cityNameInput, setCityNameInput] = useState("");
-  const [selectedKingdom, setSelectedKingdom] = useState("New Kingdom");
+  const [selectedKingdom, setSelectedKingdom] = useState(t('newKingdom'));
 
   const [turnEndFlag, setTurnEndFlag] = useState(true);
   const [hasEndedBaseGame, setHasEndedBaseGame] = useState(false);
@@ -3017,6 +2924,11 @@ export default function Game() {
   const [showExpansionChoice, setShowExpansionChoice] = useState(false);
 
   const [savedKingdoms, setSavedKingdoms] = useState<string[]>([]);
+  const [showKeyboard, setShowKeyboard] = useState(false);
+
+  const isTouchDevice = () => {
+    return window.matchMedia('(pointer: coarse)').matches;
+  };
 
   // Recharger la liste quand le menu s'ouvre
   useEffect(() => {
@@ -5691,7 +5603,7 @@ export default function Game() {
       setResources(parsed.resources || { ...emptyResource });
       setCompletedExpansions(parsed.completedExpansions || []);
       setCurrentExpansion(parsed.currentExpansion || null);
-      setScores(parsed.scores || { baseGame: 0, extensions: {} });
+      setScores(parsed.scores || { baseGame: 0, expansions: {} });
       
       setShowSettings(false);
       setConfirmationPopup({
@@ -5732,6 +5644,19 @@ export default function Game() {
           },
           onCancel: () => setConfirmationPopup(null)
         });
+      },
+      onCancel: () => setConfirmationPopup(null)
+    });
+  };
+
+  const deleteGame = async (name: string) => {
+    setConfirmationPopup({
+      message: `${t('areYouSureDelete')} "${name}" ?`,
+      onConfirm: async () => {
+        await Preferences.remove({ key: `citysave:${name}` });
+        setSavedKingdoms(prev => prev.filter(k => k !== name));
+        if (selectedKingdom === name) setSelectedKingdom(t('newKingdom'));
+        setConfirmationPopup(null);
       },
       onCancel: () => setConfirmationPopup(null)
     });
@@ -5880,7 +5805,10 @@ export default function Game() {
           {/* Settings button */}
           <div>
             <Button onClick={() => setShowSettings(true)}>
-              <img src="settings.png" alt={t('settings')} className="w-6 h-6" />
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+              </svg>
             </Button>
           </div>
         </div>
@@ -5961,7 +5889,7 @@ export default function Game() {
               onClick={handleDebugClick}
               className="absolute -bottom-7 -right-98 text-xs text-gray-700 whitespace-nowrap cursor-pointer select-none z-50"
             >
-              Kingdom Legacy - Digital by Keleonix | v0.9.3 {debugMode && '🐛'}
+              Kingdom Legacy - Digital by Keleonix | v0.9.4 {debugMode && '🐛'}
             </div>
           </div>
         </div>
@@ -5970,7 +5898,7 @@ export default function Game() {
         <div className="relative flex flex-wrap gap-2 flex-shrink-0" ref={(el) => { if (el) zoneRefsMap.current.set(t('actionButtons'), el);}}>
           <Button onClick={drawNewTurn} disabled={deck.length === 0 || isChoosingExpansion || isAnimating}>{t('newTurn')}</Button>
           <Button onClick={async () => { setIsAnimating(true); await advance(); setIsAnimating(false); }} disabled={deck.length === 0 || isChoosingExpansion || turnEndFlag || isPlayBlocked || isAnimating || checkAdvanceRestrictions()}>{t('advance')}</Button>
-          <Button disabled={deck.length !== 0} className="bg-red-600 hover:bg-red-500 text-white" onClick={handleEndRound}>{t('endRound')}</Button>
+          <Button disabled={deck.length !== 0 || (deck.length === 0 && campaignDeck.filter(card => card.id === 70).length === 0 && (!hasEndedBaseGame || (hasEndedBaseGame && currentExpansion !== null && checkExpansionEnd())))} className="bg-red-600 hover:bg-red-500 text-white" onClick={handleEndRound}>{t('endRound')}</Button>
           <Button hidden={purgedCards.length === 0} onClick={() => setShowPurged(true)} className="bg-blue-600 hover:bg-blue-500 text-white">{t('seePurged')}</Button>
           <Button hidden={(hasEndedBaseGame || campaignDeck.some(card => card.id === 70)) || (currentExpansion !== null && !checkExpansionEnd())} disabled={deck.length !== 0 || isAnimating} className="bg-red-600 hover:bg-red-500 text-white" onClick={currentExpansion ? handleEndExpansion : handleEndBaseGame}>{currentExpansion ? t('endExpansion') : t('endGame')}</Button>
           <Button onClick={() => setShowExpansionChoice(true)} hidden={!isChoosingExpansion || completedExpansions.length >= 9} disabled={isAnimating} className="bg-purple-600 hover:bg-purple-500 text-white">{t('chooseExpansion')}</Button>
@@ -5990,29 +5918,71 @@ export default function Game() {
                 <div className="flex flex-col gap-2">
                   <label className="text-sm">{t('kingdomSaveLoad')}</label>
                   
-                  <select 
-                    className="border p-1 rounded" 
-                    value={selectedKingdom} 
-                    onChange={(e) => setSelectedKingdom(e.target.value)}
-                  >
-                    <option value="New Kingdom">{t('newKingdom')}</option>
+                  <div className="flex flex-col gap-1 max-h-40 overflow-y-auto border rounded">
+                    <div
+                      className={`p-2 cursor-pointer hover:bg-blue-50 ${selectedKingdom === t('newKingdom') ? "bg-blue-100 font-bold" : ""}`}
+                      onClick={() => setSelectedKingdom(t('newKingdom'))}
+                    >
+                      {t('newKingdom')}
+                    </div>
                     {savedKingdoms.map(kingdom => (
-                      <option key={kingdom} value={kingdom}>{kingdom}</option>
+                      <div
+                        key={kingdom}
+                        className={`flex items-center p-2 hover:bg-blue-50 ${selectedKingdom === kingdom ? "bg-blue-100 font-bold" : ""}`}
+                      >
+                        <span
+                          className="flex-1 cursor-pointer"
+                          onClick={() => setSelectedKingdom(kingdom)}
+                        >
+                          {kingdom}
+                        </span>
+                        <button
+                          onClick={() => deleteGame(kingdom)}
+                          className="ml-2 text-red-400 hover:text-red-600 font-bold text-lg leading-none px-1"
+                        >
+                          ✕
+                        </button>
+                      </div>
                     ))}
-                  </select>
+                  </div>
 
-                  {selectedKingdom === "New Kingdom" && (
-                    <input 
-                      className="border p-1 rounded" 
-                      value={cityNameInput} 
-                      onChange={(e) => setCityNameInput(e.target.value)} 
-                      placeholder={t('enterKingdomName')} 
-                    />
-                  )}
+                  {selectedKingdom === t('newKingdom') && (
+                  <>
+                    {isTouchDevice() ? (
+                      <>
+                        <div
+                          className="border p-2 rounded bg-white cursor-pointer text-center"
+                          onClick={() => setShowKeyboard(true)}
+                        >
+                          {cityNameInput 
+                            ? cityNameInput 
+                            : <span className="text-gray-400">{t('enterKingdomName')}</span>
+                          }
+                        </div>
+
+                        {showKeyboard && (
+                          <CustomKeyboard
+                            value={cityNameInput}
+                            onChange={setCityNameInput}
+                            onClose={() => setShowKeyboard(false)}
+                            placeholder={t('enterKingdomName')}
+                          />
+                        )}
+                      </>
+                    ) : (
+                      <input 
+                        className="border p-1 rounded" 
+                        value={cityNameInput} 
+                        onChange={(e) => setCityNameInput(e.target.value)} 
+                        placeholder={t('enterKingdomName')} 
+                      />
+                    )}
+                  </>
+                )}
 
                   <div className="flex gap-2">
                     <Button onClick={() => {
-                      if (selectedKingdom === "New Kingdom") {
+                      if (selectedKingdom === t('newKingdom')) {
                         saveGame(cityNameInput);
                       } else {
                         saveGame(selectedKingdom);
@@ -6021,7 +5991,7 @@ export default function Game() {
                       {t('save')}
                     </Button>
                     <Button 
-                      disabled={selectedKingdom === "New Kingdom"}
+                      disabled={selectedKingdom === t('newKingdom')}
                       onClick={() => loadGame(selectedKingdom)}
                     >
                       {t('continue')}

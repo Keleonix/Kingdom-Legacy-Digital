@@ -13,7 +13,7 @@ export type TranslationKeys =
   | 'select' | 'id' | 'preview' | 'endGame' | 'seeDeck' | 'seeDiscard' | 'cardsList' | 'triggeredCard'
   | 'selectCardToPurge' | 'chooseExpansion' | 'expansionCard' | 'expansionBlock' | 'scores' | 'baseGame'
   | 'totalScore' | 'endExpansion' | 'seePurged' | 'add' | 'top' | 'bottom' | 'aboutContent'
-  | 'guideTitle' | 'guideRulesLink' | 'guideContent' | 'remaining'
+  | 'guideTitle' | 'guideRulesLink' | 'guideContent' | 'remaining' | 'areYouSureDelete'
   
   // Cards Elements
   | 'frontUp' | 'frontDown' | 'backUp' | 'backDown'
@@ -673,6 +673,7 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     </li>
   </ul>`,
     remaining: 'Reste',
+    areYouSureDelete: 'Êtes-vous sûr de vouloir supprimer',
     
     // Cards Elements
     frontUp: 'Recto Haut',
@@ -1421,7 +1422,7 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     effect_description_a_certain_lady: "effects/forced Marquez un effects/check par Ennemi en jeu. effects/oneTime Le premier effet et celui-ci après avoir terminé cette extension.",
     effect_description_rogue_lady: "effects/forced Carte jouée: Enlevez 1 resources/coin de la production d'une carte en jeu, si vous le faites, ajoutez 1 effects/check .",
     effect_description_robbin_leader: "effects/passive Vous ne pouvez pas gagner de ressources autres que resources/sword . effects/activate Dépensez resources/sword resources/sword resources/sword pour vaincre (ajoutez 1 effects/check ) et une fois complétée, effects/destroy i18n/a_certain_lady où qu'elle soit et puis →, si vous ne pouvez pas, effects/destroy cette carte.",
-    effect_description_sobbing: "effects/forced Lorsque vous i18n/advance : Jouez 2 cartes supplémentaires. effects/forced Purgée: Vaut -4 resources/fame.",
+    effect_description_sobbing: "effects/forced Lorsque vous i18n/advance : Jouez 2 cartes supplémentaires. effects/forced Purgée: Vaut -4 resources/fame .",
     effect_description_bandit_ridding_the_woods: "Peut être → par un Missionaire. effects/forced Carte jouée: Défaussez toutes les cartes qui produisent de resources/wood . effects/time Dépensez resources/sword resources/sword resources/sword pour vaincre (→).",
     effect_description_prisoner: "effects/forced Si 2 Ennemis sont en jeux, →. effects/passive Après avoir choisi les cartes lors d'une purge, vous pouvez ajouter 2 Prisonniers à cette purge.",
     effect_description_robber_forest: "effects/forced Carte jouée: Jouez le Prince des Voleurs depuis la défausse.",
@@ -1601,6 +1602,7 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     </li>
   </ul>`,
     remaining: 'Remaining',
+    areYouSureDelete: 'Are you sure you want to delete',
 
     // Cards Elements
     frontUp: 'Front Up',

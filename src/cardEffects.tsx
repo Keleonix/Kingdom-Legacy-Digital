@@ -1,3 +1,4 @@
+import { parseEffects } from "./utils";
 import type { TranslationKeys } from "./i18n";
 import { GameCard, type ResourceMap, type DropPayload, type EffectTiming, type Checkbox, RESOURCE_KEYS, emptyResource, type Upgrade } from "./types";
 
@@ -275,7 +276,7 @@ async function removeResourceFromCard(
 export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> = {
   0: {
     1: [{ // Bienvenue
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function(ctx)  {
         if (ctx.startTutorial) {
@@ -289,13 +290,13 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   1: {
     2: [{ // Plaines
-      description: (t) => t('effect_description_plains'),
+      description: (t) => parseEffects(t('effect_description_plains')).effects[0].text,
       timing: "onClick",
       execute: async function(ctx)  {
         const selectedCards = await ctx.selectCardsFromZone(
           (card) => (!(card.negative[card.currentSide - 1]) && card.id != ctx.card.id),
           ctx.t('playArea'),
-          this.description(ctx.t), // TODO : Refactor to get only this effect's text
+          this.description(ctx.t),
           1,
           ctx.card,
           0
@@ -309,7 +310,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Grange
-        description: (t) => t('staysInPlay'),
+        description: (t) => parseEffects(t('staysInPlay')).effects[0].text,
         timing: "staysInPlay",
         execute: async function (ctx) {
           if(ctx) {
@@ -321,7 +322,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   2: {
     2: [{ // Plaines
-      description: (t) => t('effect_description_plains'),
+      description: (t) => parseEffects(t('effect_description_plains')).effects[0].text,
       timing: "onClick",
       execute: async function(ctx)  {
         const selectedCards = await ctx.selectCardsFromZone(
@@ -341,7 +342,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Grange
-        description: (t) => t('staysInPlay'),
+        description: (t) => parseEffects(t('staysInPlay')).effects[0].text,
         timing: "staysInPlay",
         execute: async function (ctx) {
           if(ctx) {
@@ -353,7 +354,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   3: {
     2: [{ // Plaines
-      description: (t) => t('effect_description_plains'),
+      description: (t) => parseEffects(t('effect_description_plains')).effects[0].text,
       timing: "onClick",
       execute: async function(ctx)  {
         const selectedCards = await ctx.selectCardsFromZone(
@@ -373,7 +374,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Grange
-        description: (t) => t('staysInPlay'),
+        description: (t) => parseEffects(t('staysInPlay')).effects[0].text,
         timing: "staysInPlay",
         execute: async function (ctx) {
           if(ctx) {
@@ -385,7 +386,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   4: {
     2: [{ // Plaines
-      description: (t) => t('effect_description_plains'),
+      description: (t) => parseEffects(t('effect_description_plains')).effects[0].text,
       timing: "onClick",
       execute: async function(ctx)  {
         const selectedCards = await ctx.selectCardsFromZone(
@@ -405,7 +406,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Grange
-        description: (t) => t('staysInPlay'),
+        description: (t) => parseEffects(t('staysInPlay')).effects[0].text,
         timing: "staysInPlay",
         execute: async function (ctx) {
           if(ctx) {
@@ -417,7 +418,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   5: {
     2: [{ // Zone Rocheuse
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (ctx.resources.coin >= 1) {
@@ -431,7 +432,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Mine Profonde
-      description: (t) => t('effect_description_shallow_mines'),
+      description: (t) => parseEffects(t('effect_description_shallow_mines')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (await ctx.discoverCard(
@@ -448,7 +449,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   6: {
     2: [{ // Zone Rocheuse
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (ctx.resources.coin >= 1) {
@@ -462,7 +463,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Mine Profonde
-      description: (t) => t('effect_description_shallow_mines'),
+      description: (t) => parseEffects(t('effect_description_shallow_mines')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (await ctx.discoverCard(
@@ -479,7 +480,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   7: {
     1: [{ // Forêt
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         await applyResourceMapDelta(ctx, { wood: 3 });
@@ -488,7 +489,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Puit Sacré
-      description: (t) => t('effect_description_sacred_well'),
+      description: (t) => parseEffects(t('effect_description_sacred_well')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (await ctx.discoverCard(
@@ -505,7 +506,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   8: {
     1: [{ // Forêt
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         await applyResourceMapDelta(ctx, { wood: 3 });
@@ -514,7 +515,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Puit Sacré
-      description: (t) => t('effect_description_sacred_well'),
+      description: (t) => parseEffects(t('effect_description_sacred_well')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (await ctx.discoverCard(
@@ -531,7 +532,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   9: {
     2: [{ // Hôtel de Ville
-      description: (t) => t('effect_description_town_hall'),
+      description: (t) => parseEffects(t('effect_description_town_hall')).effects[0].text,
       timing: "onClick",
       execute: async function(ctx) {
         const selectedCards = await ctx.selectCardsFromZone(
@@ -551,7 +552,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Château
-      description: (t) => t('effect_description_castle'),
+      description: (t) => parseEffects(t('effect_description_castle')).effects[0].text,
       timing: "onClick",
       execute: async function(ctx) {
         const selectedCards = await ctx.selectCardsFromZone(
@@ -570,7 +571,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     4: [{ // Donjon
-      description: (t) => t('effect_description_keep'),
+      description: (t) => parseEffects(t('effect_description_keep')).effects[0].text,
       timing: "onClick",
       execute: async function(ctx) {
         const selectedCards = await ctx.selectCardsFromZone(
@@ -592,7 +593,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   10: {
     1: [{ // Commerçante
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (ctx.resources.coin >= 1) {
@@ -606,7 +607,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     2: [{ // Bazar
-      description: (t) => t('effect_description_bazaar'),
+      description: (t) => parseEffects(t('effect_description_bazaar')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (ctx.resources.coin >= 1) {
@@ -623,7 +624,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     4: [{ // Marché
-      description: (t) => t('effect_description_market'),
+      description: (t) => parseEffects(t('effect_description_market')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (ctx.resources.coin >= 1) {
@@ -642,7 +643,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   11: {
     1: [{ // Jungle
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (ctx.resources.coin >= 1) {
@@ -656,7 +657,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     2: [{ // Arbres Géants
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (ctx.resources.coin >= 1) {
@@ -670,7 +671,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Cabane dans les Arbres
-        description: (t) => t('staysInPlay'),
+        description: (t) => parseEffects(t('staysInPlay')).effects[0].text,
         timing: "staysInPlay",
         execute: async function (ctx) {
           if(ctx) {
@@ -682,7 +683,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   12: {
     3: [{ // Explorateurs
-      description: (t) => t('effect_description_explorers'),
+      description: (t) => parseEffects(t('effect_description_explorers')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         (await ctx.discoverCard(
@@ -699,7 +700,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   13: {
     1: [{ // Exploitant
-      description: (t) => t('effect_description_field_worker'),
+      description: (t) => parseEffects(t('effect_description_field_worker')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         const selectedCards = await ctx.selectCardsFromZone(
@@ -722,7 +723,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Domestique
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         const choice = await ctx.selectResourceChoice({ coin: 1, wood: 1, stone: 1 }, 1);
@@ -736,7 +737,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   14: {
     1: [{ // Bandit
-      description: (t) => t('effect_description_bandit'),
+      description: (t) => parseEffects(t('effect_description_bandit')).effects[0].text,
       timing: "played",
       execute: async function (ctx) {
         let selectedCards: GameCard[] = [];
@@ -752,7 +753,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     },
     { // Bandit
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[1].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (ctx.resources.sword >= 1) {
@@ -772,7 +773,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     },
     ],
     3: [{ // Travailleur
-      description: (t) => t('effect_description_worker'),
+      description: (t) => parseEffects(t('effect_description_worker')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         const selectedCards = await ctx.selectCardsFromZone(
@@ -797,7 +798,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   15: {
     2: [{ // Zone Rocheuse
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (ctx.resources.coin >= 1) {
@@ -811,7 +812,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Mine Profonde
-      description: (t) => t('effect_description_shallow_mines'),
+      description: (t) => parseEffects(t('effect_description_shallow_mines')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (await ctx.discoverCard(
@@ -828,7 +829,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   16: {
     1: [{ // Bandit
-      description: (t) => t('effect_description_bandit'),
+      description: (t) => parseEffects(t('effect_description_bandit')).effects[0].text,
       timing: "played",
       execute: async function (ctx) {
         let selectedCards: GameCard[] = [];
@@ -844,7 +845,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     },
     { // Bandit
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[1].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (ctx.resources.sword >= 1) {
@@ -864,7 +865,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     },
     ],
     3: [{ // Exploitant
-      description: (t) => t('effect_description_field_worker'),
+      description: (t) => parseEffects(t('effect_description_field_worker')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         const selectedCards = await ctx.selectCardsFromZone(
@@ -889,7 +890,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   17: {
     2: [{ // Chappelle
-      description: (t) => t('effect_description_chapel'),
+      description: (t) => parseEffects(t('effect_description_chapel')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (ctx.resources.coin >= 3 && ctx.fetchCardsInZone((c) => c.id === 103, ctx.t('campaign')).length > 0) {
@@ -902,7 +903,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Cathédrale
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "modifyProduction",
       productionModifier: {
         filter: (card: GameCard) => card.id === 17,
@@ -916,7 +917,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     4: [{ // Eglise
-      description: (t) => t('effect_description_church'),
+      description: (t) => parseEffects(t('effect_description_church')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (ctx.resources.coin >= 4 && ctx.fetchCardsInZone((c) => c.id === 104, ctx.t('campaign')).length > 0) {
@@ -931,7 +932,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   18: {
     2: [{ // Forge
-      description: (t) => t('effect_description_smithy'),
+      description: (t) => parseEffects(t('effect_description_smithy')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (await ctx.discoverCard(
@@ -949,7 +950,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Muraille
-        description: (t) => t('staysInPlay'),
+        description: (t) => parseEffects(t('staysInPlay')).effects[0].text,
         timing: "staysInPlay",
         execute: async function (ctx) {
           if(ctx) {
@@ -959,7 +960,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
     }],
     4: [{ // Armurerie
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         await applyResourceMapDelta(ctx, { sword: ctx.filterZone(ctx.t('playArea'), (card: GameCard) => (card.GetType(ctx.t) == ctx.t('person'))).length });
@@ -969,7 +970,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   19: {
     1: [{ // Forêt
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         await applyResourceMapDelta(ctx, { wood: 3 });
@@ -979,7 +980,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Puit Sacré
-      description: (t) => t('effect_description_sacred_well'),
+      description: (t) => parseEffects(t('effect_description_sacred_well')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (await ctx.discoverCard(
@@ -1003,7 +1004,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   22: {
     3: [
       { // Phare
-        description: (t) => t('staysInPlay'),
+        description: (t) => parseEffects(t('staysInPlay')).effects[0].text,
         timing: "staysInPlay",
         execute: async function (ctx) {
           if(ctx) {
@@ -1013,7 +1014,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       { // Phare
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[1].text,
         timing: "onClick",
         execute: async function (ctx) {
           await ctx.mill(1);
@@ -1022,7 +1023,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       },
     ],
     4: [{ // Bateau de Pêche
-      description: (t) => t('effect_description_fishing_boat'),
+      description: (t) => parseEffects(t('effect_description_fishing_boat')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (await ctx.discoverCard(
@@ -1039,7 +1040,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   23: {
     1: [{ // STOP
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[0].text,
         timing: "onClick",
         execute: async function (ctx) {
           const cardsIds = [24, 25, 26, 27];
@@ -1053,7 +1054,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   24: {
     1: [{ // Terre Fertile/Efficacité
-        description: (t) => t('effect_description_fertile_soil_efficiency'),
+        description: (t) => parseEffects(t('effect_description_fertile_soil_efficiency')).effects[0].text,
         timing: "onClick",
         execute: async function (ctx) {
           const selected: GameCard = (await ctx.selectCardsFromZone((c) => c.GetType(ctx.t).includes(ctx.t('land')), ctx.t('deck'), this.description(ctx.t), 1, ctx.card, 0, 'land'))[0];
@@ -1068,7 +1069,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   25: {
     1: [{ // Armée
-        description: (t) => t('effect_description_army'),
+        description: (t) => parseEffects(t('effect_description_army')).effects[0].text,
         timing: "onClick",
         execute: async function (ctx) {
           let militaryToPay = 1;
@@ -1114,7 +1115,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       }],
     3: [{ // Grande Armée
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[0].text,
         timing: "onClick",
         execute: async function (ctx) {
           if (getLastCheckboxChecked(ctx.card)) {
@@ -1160,7 +1161,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   26: {
     1: [{ // Trésor
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[0].text,
         timing: "onClick",
         execute: async function (ctx) {
           let goldToPay = 1;
@@ -1200,7 +1201,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       }],
     3: [{ // Immense Trésor
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[0].text,
         timing: "onClick",
         execute: async function (ctx) {
           if (getLastCheckboxChecked(ctx.card)) {
@@ -1245,7 +1246,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   27: {
     1: [{ // Exportation
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[0].text,
         timing: "onClick",
         execute: async function (ctx) {
           const oldExportValue = ctx.card.GetResources()[0].tradegood ?? 0;
@@ -1356,7 +1357,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       }],
     3: [{ // Exportation de Masse
-        description: (t) => t('effect_description_mass_export'),
+        description: (t) => parseEffects(t('effect_description_mass_export')).effects[0].text,
         timing: "onClick",
         execute: async function (ctx) {
           const oldExportValue = ctx.card.GetResources()[0].tradegood ?? 0;
@@ -1476,7 +1477,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   28: {
     1: [{ // Eruption Volcanique
-      description: (t) => t('effect_description_volcanic_eruption'),
+      description: (t) => parseEffects(t('effect_description_volcanic_eruption')).effects[0].text,
       timing: "otherCardPlayed",
       execute: async function (ctx) {
         const selectableCards = [];
@@ -1493,7 +1494,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     4: [{ // Jeune Forêt
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if(!getLastCheckboxChecked(ctx.card)) {
@@ -1515,7 +1516,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   29: {
     4: [{ // Prétendu Noble
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         const selectedSides = await new Promise<number[]>((resolve) => {
@@ -1550,7 +1551,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   30: {
     1: [{ // STOP !
-      description: (t) => t('effect_description_stop_2'),
+      description: (t) => parseEffects(t('effect_description_stop_2')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         const cards = (await ctx.selectCardsFromZone((card) => (card.id >= 31 && card.id <= 34), ctx.t('campaign'), this.description(ctx.t), 2, ctx.card, 0)).splice(0);
@@ -1569,7 +1570,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   31: {
     1: [{ // Entrepreneur
-      description: (t) => t('effect_description_entrepreneur'),
+      description: (t) => parseEffects(t('effect_description_entrepreneur')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (await ctx.discoverCard((card) => card.id === 118, ctx.t('effect_description_entrepreneur'), 1, ctx.card)) {
@@ -1579,7 +1580,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     2: [{ // Hôtel
-      description: (t) => t('effect_description_hotel'),
+      description: (t) => parseEffects(t('effect_description_hotel')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (ctx.fetchCardsInZone((card) => card.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea')).length === 0) {
@@ -1590,14 +1591,14 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Taverne
-      description: (t) => t('effect_description_tavern'),
+      description: (t) => parseEffects(t('effect_description_tavern')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         return (await ctx.discoverCard((card) => card.id === 87, ctx.t('effect_description_tavern'), 1, ctx.card));
       }
     }],
     4: [{ // Bar Confortable
-      description: (t) => t('effect_description_cozy_pub'),
+      description: (t) => parseEffects(t('effect_description_cozy_pub')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (ctx.fetchCardsInZone((card) => card.id === 92, ctx.t('campaign')).length !== 1) return false;
@@ -1612,7 +1613,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   32: {
     1: [{ // Scientifique
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "modifyProduction",
       productionModifier: {
         filter: (card: GameCard, t) => card.GetType(t!).includes(t!('person')),
@@ -1627,7 +1628,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Observatoire
-      description: (t) => t('effect_description_observatory'),
+      description: (t) => parseEffects(t('effect_description_observatory')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (await ctx.discoverCard((card) => card.id === 95, this.description(ctx.t), 1, ctx.card)) {
@@ -1637,7 +1638,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     4: [{ // Laboratoire
-      description: (t) => t('effect_description_lab'),
+      description: (t) => parseEffects(t('effect_description_lab')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (await ctx.discoverCard((card) => card.id === 96, this.description(ctx.t), 1, ctx.card)) {
@@ -1649,7 +1650,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   33: {
     1: [{ // Ingénieur
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('effect_description_engineer')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         const cardsNames = [ctx.t('lumberjack'), ctx.t('food_barns'), ctx.t('fishing_boat')];
@@ -1667,7 +1668,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Trébuchet
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('effect_description_trebuchet')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         const playAreaCards = ctx.fetchCardsInZone((card) => card.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('playArea'));
@@ -1699,7 +1700,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   34: {
     3: [{ // Inventrice Inspirée
-      description: (t) => t('effect_description_inspired_inventor'),
+      description: (t) => parseEffects(t('effect_description_inspired_inventor')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         let choice = 'Resources';
@@ -1747,7 +1748,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   35: {
     2: [{ // Zone Rocheuse
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (ctx.resources.coin >= 1) {
@@ -1761,7 +1762,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Mine Profonde
-      description: (t) => t('effect_description_shallow_mines'),
+      description: (t) => parseEffects(t('effect_description_shallow_mines')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (await ctx.discoverCard(
@@ -1778,7 +1779,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   36: {
     1: [{ // Mercenaire
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if(! await applyResourceMapDelta(ctx, { coin: 2 }, true)) {
@@ -1802,7 +1803,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     }],
     3: [
         { // Sir ___
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[0].text,
         timing: "onClick",
         execute: async function (ctx) {
           if(ctx.resources.metal >= 3) {
@@ -1819,7 +1820,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       { // Sir ___
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[1].text,
         timing: "onClick",
         execute: async function (ctx) {
           if(ctx.resources.metal >= 4) {
@@ -1839,7 +1840,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   37: {
     1: [{ // STOP
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[0].text,
         timing: "onClick",
         execute: async function (ctx) {
           const cardsIds = [38, 39, 40, 41, 42];
@@ -1863,7 +1864,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   41: {
     1: [
       { // Bouffon
-        description: (t) => t('staysInPlay'),
+        description: (t) => parseEffects(t('staysInPlay')).effects[0].text,
         timing: "staysInPlay",
         execute: async function (ctx) {
           if(ctx) {
@@ -1873,7 +1874,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[1].text,
         timing: "onClick",
         execute: async function (ctx) {
           await ctx.mill(1);
@@ -1881,7 +1882,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[2].text,
         timing: "onClick",
         execute: async function (ctx) {
           return new Promise<boolean>((resolve) => {
@@ -1902,7 +1903,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     ],
     3: [{ // Marchande
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
           return new Promise<boolean>((resolve) => {
@@ -1924,7 +1925,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   42: {
     1: [{ // Exploitant
-      description: (t) => t('effect_description_field_worker'),
+      description: (t) => parseEffects(t('effect_description_field_worker')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         const selectedCards = await ctx.selectCardsFromZone(
@@ -1948,7 +1949,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     }],
     3: [
       { // Grenier
-        description: (t) => t('staysInPlay'),
+        description: (t) => parseEffects(t('staysInPlay')).effects[0].text,
         timing: "staysInPlay",
         execute: async function (ctx) {
           if(ctx) {
@@ -1958,7 +1959,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       { // Grenier
-        description: (t) => t('effect_description_storage'),
+        description: (t) => parseEffects(t('effect_description_storage')).effects[1].text,
         timing: "endOfTurn",
         execute: async function (ctx) {
           const selected = await ctx.selectCardsFromZone(
@@ -1980,7 +1981,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   43: {
     1: [{ // Maçon
-      description: (t) => t('effect_description_mason'),
+      description: (t) => parseEffects(t('effect_description_mason')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if(ctx.resources.coin >= 2 && (ctx.fetchCardsInZone((c) => [88, 89].includes(c.id), ctx.t('campaign')))) {
@@ -1993,7 +1994,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Route Pavée
-        description: (t) => t('effect_description_brick_road'),
+        description: (t) => parseEffects(t('effect_description_brick_road')).effects[0].text,
         timing: "onClick",
         execute: async function (ctx) {
           const cards = await ctx.selectCardsFromZone(
@@ -2016,7 +2017,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       }],
       4: [{ // Rue Pavée
-        description: (t) => t('effect_description_stone_street'),
+        description: (t) => parseEffects(t('effect_description_stone_street')).effects[0].text,
         timing: "onClick",
         execute: async function (ctx) {
           const cards = await ctx.selectCardsFromZone(
@@ -2041,7 +2042,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   44: {
     1: [{ // Orage
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "played",
       execute: async function (ctx) {
         await ctx.mill(3);
@@ -2052,7 +2053,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     }],
     3: [
       { // Pluie
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[0].text,
         timing: "onResourceGain",
         execute: async function (ctx) {
           const card = (ctx.cardsForTrigger?ctx.cardsForTrigger:[])[0];
@@ -2065,14 +2066,14 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[1].text,
         timing: "restrictPlay",
         execute: async function () {
           return false;
         }
       },
       {
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[2].text,
         timing: "endOfTurn",
         execute: async function (ctx) {
           await ctx.upgradeCard(ctx.card, 1, true);
@@ -2085,14 +2086,14 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   45: {
     1: [
       { // Chevalier Noir
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[0].text,
         timing: "restrictAll",
         execute: async function () {
           return false;
         }
       },
       {
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[1].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (ctx.resources.sword >= 3) {
@@ -2109,7 +2110,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     },
     ],
     3: [{ // Garçon Admiratif
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[0].text,
         timing: "onClick",
         execute: async function (ctx) {
           await applyResourceMapDelta(ctx, { sword: 2 });
@@ -2118,7 +2119,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       }],
     4: [{ // Ecuyer
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         await applyResourceMapDelta(ctx, { sword: 3 });
@@ -2129,7 +2130,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   46: {
     2: [{ // Camp d'Entrainement
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[0].text,
         timing: "onClick",
         execute: async function (ctx) {
           if(ctx.resources.coin >= 1) {
@@ -2145,7 +2146,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   47: {
     1: [{ // STOP !
-      description: (t) => t('effect_description_stop_3'),
+      description: (t) => parseEffects(t('effect_description_stop_3')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         const cards = (await ctx.selectCardsFromZone((card) => (card.id >= 48 && card.id <= 51), ctx.t('campaign'), this.description(ctx.t), 2, ctx.card, 0)).splice(0);
@@ -2164,7 +2165,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   48: {
     1: [{ // Envoyé
-      description: (t) => t('effect_description_envoy'),
+      description: (t) => parseEffects(t('effect_description_envoy')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (ctx.resources.coin >= 3) {
@@ -2182,7 +2183,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     2: [{ // Emissaire
-      description: (t) => t('effect_description_emissary'),
+      description: (t) => parseEffects(t('effect_description_emissary')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (ctx.resources.coin >= 3) {
@@ -2200,7 +2201,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Ambassadeur
-      description: (t) => t('effect_description_ambassador'),
+      description: (t) => parseEffects(t('effect_description_ambassador')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (ctx.resources.coin >= 3) {
@@ -2218,7 +2219,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     4: [{ // Diplomate
-      description: (t) => t('effect_description_diplomat'),
+      description: (t) => parseEffects(t('effect_description_diplomat')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (ctx.resources.coin >= 3) {
@@ -2238,7 +2239,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   49: {
     1: [{ // Architecte Royal
-      description: (t) => t('effect_description_royal_architect'),
+      description: (t) => parseEffects(t('effect_description_royal_architect')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         const cardsNames = [ctx.t('castle'), ctx.t('diamond_mine'), ctx.t('temple')];
@@ -2258,7 +2259,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   50: {
     1: [{ // Voyageur
-      description: (t) => t('effect_description_traveller_1'),
+      description: (t) => parseEffects(t('effect_description_traveller_1')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (await ctx.discoverCard(
@@ -2273,7 +2274,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     2: [{ // Voyageur
-      description: (t) => t('effect_description_traveller_2'),
+      description: (t) => parseEffects(t('effect_description_traveller_2')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (await ctx.discoverCard(
@@ -2289,7 +2290,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     }],
     3: [
       { // Voyageur
-        description: (t) => t('effect_description_traveller_3'),
+        description: (t) => parseEffects(t('effect_description_traveller_3')).effects[0].text,
         timing: "onClick",
         execute: async function (ctx) {
           if (await ctx.discoverCard(
@@ -2304,7 +2305,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('effect_description_traveller_3'),
+        description: (t) => parseEffects(t('effect_description_traveller_3')).effects[1].text,
         timing: "onClick",
         execute: async function (ctx) {
           const cards = await ctx.selectCardsFromZone((card) => card.GetType(ctx.t).includes(ctx.t('land')), ctx.t('playArea'), this.description(ctx.t), 1, ctx.card, 0, 'land');
@@ -2323,7 +2324,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       },
     ],
     4: [{ // Voyageur
-      description: (t) => t('effect_description_traveller_4'),
+      description: (t) => parseEffects(t('effect_description_traveller_4')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (await ctx.discoverCard(
@@ -2340,7 +2341,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   51: {
     1: [{ // Magistrat
-      description: (t) => t('effect_description_magistrate_1'),
+      description: (t) => parseEffects(t('effect_description_magistrate_1')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (await ctx.discoverCard(
@@ -2355,7 +2356,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     2: [{ // Magistrat
-      description: (t) => t('effect_description_magistrate_2'),
+      description: (t) => parseEffects(t('effect_description_magistrate_2')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (await ctx.discoverCard(
@@ -2370,7 +2371,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Stratège
-      description: (t) => t('effect_description_strategist'),
+      description: (t) => parseEffects(t('effect_description_strategist')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         const cards = await ctx.selectCardsFromZone(
@@ -2391,7 +2392,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     4: [{ // Magistrat
-      description: (t) => t('effect_description_magistrate_3'),
+      description: (t) => parseEffects(t('effect_description_magistrate_3')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (await ctx.discoverCard(
@@ -2408,7 +2409,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   52: {
     3: [{ // Village Culminant
-      description: (t) => t('effect_description_peak_village'),
+      description: (t) => parseEffects(t('effect_description_peak_village')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (await ctx.discoverCard(
@@ -2428,7 +2429,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   53: {
     1: [
       { // Sorcière
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[0].text,
         timing: "onClick",
         execute: async function (ctx) {
           if (ctx.resources.sword >= 3) {
@@ -2442,7 +2443,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('effect_description_witch'),
+        description: (t) => parseEffects(t('effect_description_witch')).effects[1].text,
         timing: "onClick",
         execute: async function (ctx) {
           const people = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('person')) && c.id !== ctx.card.id, ctx.t('playArea'));
@@ -2460,7 +2461,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('effect_description_witch'),
+        description: (t) => parseEffects(t('effect_description_witch')).effects[2].text,
         timing: "endOfTurn",
         execute: async function (ctx) {
           const result: number[] = ctx.fetchCardsInZone((card) => card.discoverable, ctx.t('campaign'))
@@ -2476,7 +2477,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     ],
     3: [
       { // Hutte de la Sorcière
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[0].text,
         timing: "onClick",
         execute: async function (ctx) {
           if (ctx.resources.sword >= 3) {
@@ -2490,7 +2491,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('effect_description_witch_cabin'),
+        description: (t) => parseEffects(t('effect_description_witch_cabin')).effects[1].text,
         timing: "onClick",
         execute: async function (ctx) {
           const card = (await ctx.selectCardsFromZone((card) => card.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'), this.description(ctx.t), 1, ctx.card, 0, 'person'))[0];
@@ -2502,7 +2503,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('effect_description_witch_cabin'),
+        description: (t) => parseEffects(t('effect_description_witch_cabin')).effects[2].text,
         timing: "endOfTurn",
         execute: async function (ctx) {
           const result: number[] = ctx.fetchCardsInZone((card) => card.discoverable, ctx.t('campaign'))
@@ -2518,7 +2519,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   54: {
     1: [{ // Scribe
-      description: (t) => t('effect_description_scribe'),
+      description: (t) => parseEffects(t('effect_description_scribe')).effects[0].text,
       timing: "endOfTurn",
       execute: async function (ctx) {
         if (ctx.fetchCardsInZone((card) => card.id === ctx.card.id, ctx.t('playArea')).length === 0) return false;
@@ -2531,7 +2532,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Architecte
-      description: (t) => t('effect_description_architect'),
+      description: (t) => parseEffects(t('effect_description_architect')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         await ctx.discoverCard((card) => ([78, 79].includes(card.id)), this.description(ctx.t), 1, ctx.card);
@@ -2545,7 +2546,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   55: {
     1: [
       { // Lord Aethan
-        description: (t) => t('effect_description_lord_aethan'),
+        description: (t) => parseEffects(t('effect_description_lord_aethan')).effects[0].text,
         timing: "onClick",
         execute: async function (ctx) {
           if (await ctx.discoverCard(
@@ -2560,7 +2561,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[1].text,
         timing: "onClick",
         execute: async function (ctx) {
           if (getLastCheckboxChecked(ctx.card)) {
@@ -2583,7 +2584,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     ],
     3: [
       { // Lord Nimrod
-        description: (t) => t('effect_description_lord_nimrod'),
+        description: (t) => parseEffects(t('effect_description_lord_nimrod')).effects[0].text,
         timing: "onClick",
         execute: async function (ctx) {
           if (await ctx.discoverCard(
@@ -2598,7 +2599,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[1].text,
         timing: "onClick",
         execute: async function (ctx) {
           if (getLastCheckboxChecked(ctx.card)) {
@@ -2625,7 +2626,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   56: {
     1: [
       { // Peste
-        description: (t) => t('staysInPlay'),
+        description: (t) => parseEffects(t('staysInPlay')).effects[0].text,
         timing: "staysInPlay",
         execute: async function (ctx) {
           if(ctx) {
@@ -2635,7 +2636,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('effect_description_plague'),
+        description: (t) => parseEffects(t('effect_description_plague')).effects[1].text,
         timing: "endOfRound",
         execute: async function (ctx) {
           const people = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('person')) && c.id !== ctx.card.id, ctx.t('deck'));
@@ -2657,7 +2658,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     ],
     3: [
       { // Soldat Ennemi
-        description: (t) => t('effect_description_enemy_soldier'),
+        description: (t) => parseEffects(t('effect_description_enemy_soldier')).effects[0].text,
         timing: "played",
         execute: async function (ctx) {
           const cards = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('building')) || c.GetType(ctx.t).includes(ctx.t('land')) && c.id !== ctx.card.id, ctx.t('playArea'));
@@ -2676,7 +2677,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('staysInPlay'),
+        description: (t) => parseEffects(t('staysInPlay')).effects[1].text,
         timing: "staysInPlay",
         execute: async function (ctx) {
           if(ctx) {
@@ -2686,7 +2687,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[2].text,
         timing: "endOfRound",
         execute: async function (ctx) {
           const blocked = ctx.getBlockedBy(ctx.card.id)[0];
@@ -2698,7 +2699,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('effect_description_enemy_soldier'),
+        description: (t) => parseEffects(t('effect_description_enemy_soldier')).effects[3].text,
         timing: "onClick",
         execute: async function (ctx) {
           if (ctx.resources.sword >= 2) {
@@ -2716,7 +2717,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   57: {
     1: [
       { // Assassin
-        description: (t) => t('effect_description_assassin'),
+        description: (t) => parseEffects(t('effect_description_assassin')).effects[0].text,
         timing: "otherCardPlayed",
         execute: async function (ctx) {
           const selectableCards = [];
@@ -2733,7 +2734,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[1].text,
         timing: "onClick",
         execute: async function (ctx) {
           if (ctx.resources.sword >= 3) {
@@ -2751,7 +2752,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     ],
     3: [
       { // Soldat Ennemi
-        description: (t) => t('effect_description_enemy_soldier'),
+        description: (t) => parseEffects(t('effect_description_enemy_soldier')).effects[0].text,
         timing: "played",
         execute: async function (ctx) {
           const cards = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('building')) || c.GetType(ctx.t).includes(ctx.t('land')) && c.id !== ctx.card.id, ctx.t('playArea'));
@@ -2770,7 +2771,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('staysInPlay'),
+        description: (t) => parseEffects(t('staysInPlay')).effects[1].text,
         timing: "staysInPlay",
         execute: async function (ctx) {
           if(ctx) {
@@ -2780,7 +2781,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[2].text,
         timing: "endOfRound",
         execute: async function (ctx) {
           const blocked = ctx.getBlockedBy(ctx.card.id)[0];
@@ -2792,7 +2793,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[3].text,
         timing: "onClick",
         execute: async function (ctx) {
           if (ctx.resources.sword >= 2) {
@@ -2810,7 +2811,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   58: {
     1: [
       { // Ville en Flamme
-        description: (t) => t('staysInPlay'),
+        description: (t) => parseEffects(t('staysInPlay')).effects[0].text,
         timing: "staysInPlay",
         execute: async function (ctx) {
           if(ctx) {
@@ -2820,7 +2821,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('effect_description_city_fire'),
+        description: (t) => parseEffects(t('effect_description_city_fire')).effects[1].text,
         timing: "endOfRound",
         execute: async function (ctx) {
           let selected: GameCard[] = [];
@@ -2835,7 +2836,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       },
     ],
     4: [{ // Jeune Forêt
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if(!getLastCheckboxChecked(ctx.card)) {
@@ -2857,7 +2858,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   59: {
     3: [{ // Trésor
-      description: (t) => t('staysInPlay'),
+      description: (t) => parseEffects(t('staysInPlay')).effects[0].text,
       timing: "staysInPlay",
       execute: async function (ctx) {
         if(ctx) {
@@ -2867,7 +2868,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     4: [{ // Civilisation Oubliée
-      description: (t) => t('effect_description_lost_civilization'),
+      description: (t) => parseEffects(t('effect_description_lost_civilization')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if((  ctx.fetchCardsInZone((card) => !card.negative[card.currentSide - 1] && card.id !== ctx.card.id, ctx.t('playArea')).length < 6)
@@ -2887,7 +2888,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   60: {
     1: [{ // Bandit d'Elite
-      description: (t) => t('effect_description_skilled_bandit'),
+      description: (t) => parseEffects(t('effect_description_skilled_bandit')).effects[0].text,
       timing: "played",
       execute: async function (ctx) {
         let selectedCards: GameCard[] = [];
@@ -2907,7 +2908,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     },
     {
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[1].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (ctx.resources.sword >= 3) {
@@ -2927,7 +2928,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     },
     ],
     3: [{ // Travailleur
-      description: (t) => t('effect_description_worker'),
+      description: (t) => parseEffects(t('effect_description_worker')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         const selectedCards = await ctx.selectCardsFromZone(
@@ -2953,14 +2954,14 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   61: {
     1: [
       { // Prince des Ténèbres
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[0].text,
         timing: "restrictAll",
         execute: async function () {
           return false;
         }
       },
       {
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[1].text,
         timing: "onClick",
         execute: async function (ctx) {
           if (ctx.resources.sword >= 5) {
@@ -2977,7 +2978,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       },
     ],
     3: [{ // Garçon Admiratif
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[0].text,
         timing: "onClick",
         execute: async function (ctx) {
           await applyResourceMapDelta(ctx, { sword: 2 });
@@ -2986,7 +2987,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
     }],
     4: [{ // Ecuyer
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         await applyResourceMapDelta(ctx, { sword: 3 });
@@ -2997,7 +2998,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   62: {
     2: [{ // Camp d'Entrainement
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[0].text,
         timing: "onClick",
         execute: async function (ctx) {
           if(ctx.resources.coin >= 1) {
@@ -3013,7 +3014,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   63: {
     3: [{ // Muraille
-      description: (t) => t('staysInPlay'),
+      description: (t) => parseEffects(t('staysInPlay')).effects[0].text,
       timing: "staysInPlay",
       execute: async function (ctx) {
         if(ctx) {
@@ -3023,7 +3024,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     4: [{ // Aubergiste
-      description: (t) => t('effect_description_innkeeper'),
+      description: (t) => parseEffects(t('effect_description_innkeeper')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         const selected = await ctx.selectCardsFromZone((c) => c.GetType(ctx.t).includes(ctx.t('person')) && c.id !== ctx.card.id, ctx.t('playArea'), this.description(ctx.t), 1, ctx.card, 0, 'person');
@@ -3042,7 +3043,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   64: {
     1: [{ // Bandit d'Elite
-      description: (t) => t('effect_description_skilled_bandit'),
+      description: (t) => parseEffects(t('effect_description_skilled_bandit')).effects[0].text,
       timing: "played",
       execute: async function (ctx) {
         let selectedCards: GameCard[] = [];
@@ -3062,7 +3063,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     },
     {
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[1].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (ctx.resources.sword >= 3) {
@@ -3082,7 +3083,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     },
     ],
     3: [{ // Exploitant
-      description: (t) => t('effect_description_field_worker'),
+      description: (t) => parseEffects(t('effect_description_field_worker')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         const selectedCards = await ctx.selectCardsFromZone(
@@ -3108,7 +3109,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   65: {
     1: [
       { // Tornade
-        description: (t) => t('staysInPlay'),
+        description: (t) => parseEffects(t('staysInPlay')).effects[0].text,
         timing: "staysInPlay",
         execute: async function (ctx) {
           if(ctx) {
@@ -3118,7 +3119,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('effect_description_tornado'),
+        description: (t) => parseEffects(t('effect_description_tornado')).effects[1].text,
         timing: "endOfRound",
         execute: async function (ctx) {
           let selected: GameCard[] = [];
@@ -3141,7 +3142,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     ],
     3: [
       { // Innodations
-        description: (t) => t('staysInPlay'),
+        description: (t) => parseEffects(t('staysInPlay')).effects[0].text,
         timing: "staysInPlay",
         execute: async function (ctx) {
           if(ctx) {
@@ -3151,7 +3152,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('effect_description_flooding'),
+        description: (t) => parseEffects(t('effect_description_flooding')).effects[1].text,
         timing: "played",
         execute: async function (ctx) {
           let selectedCards: GameCard[] = [];
@@ -3169,7 +3170,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('effect_description_flooding'),
+        description: (t) => parseEffects(t('effect_description_flooding')).effects[2].text,
         timing: "endOfRound",
         execute: async function (ctx) {
           const blockedCards = ctx.getBlockedBy(ctx.card.id);
@@ -3202,7 +3203,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   66: {
     1: [{ // Jeune Princesse
-        description: (t) => t('effect_description_young_princess'),
+        description: (t) => parseEffects(t('effect_description_young_princess')).effects[0].text,
         timing: "endOfTurn",
         execute: async function (ctx) {
           const selected = await ctx.selectCardsFromZone((card) => card.GetType(ctx.t).includes(ctx.t('person')) && card.id !== ctx.card.id, ctx.t('playArea'), this.description(ctx.t), 0, ctx.card, 2, 'person');
@@ -3214,7 +3215,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       }],
       2: [{ // Princesse Pourrie Gâtée
-        description: (t) => t('effect_description_spoiled_princess'),
+        description: (t) => parseEffects(t('effect_description_spoiled_princess')).effects[0].text,
         timing: "played",
         execute: async function (ctx) {
           const selected = await ctx.selectCardsFromZone((card) => !card.negative[card.currentSide - 1], ctx.t('playArea'), this.description(ctx.t), 2, ctx.card, 0);
@@ -3223,7 +3224,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       }],
       3: [{ // Princesse Bien Elevée
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[0].text,
         timing: "onClick",
         execute: async function (ctx) {
           const choice = await ctx.selectResourceChoice({ coin: 1, wood: 1, stone: 1, sword: 1, metal: 1, tradegood: 1 }, 1);
@@ -3237,7 +3238,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   67: {
     1: [{ // Maladie
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[0].text,
         timing: "played",
         execute: async function (ctx) {
           await ctx.mill(1);
@@ -3245,7 +3246,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       }],
       3: [{ // Festin
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[0].text,
         timing: "onClick",
         execute: async function (ctx) {
           const choice = await ctx.selectResourceChoice({ coin: 1, wood: 1, stone: 1, sword: 1, metal: 1, tradegood: 1 }, 1);
@@ -3259,7 +3260,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   68: {
     1: [{ // STOP
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[0].text,
         timing: "onClick",
         execute: async function (ctx) {
           const cardsIds = [69, 70];
@@ -3273,7 +3274,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   69: {
     1: [{ // Touche Finale
-        description: (t) => t('effect_description_finishing_touch'),
+        description: (t) => parseEffects(t('effect_description_finishing_touch')).effects[0].text,
         timing: "onClick",
         execute: async function (ctx) {
           const card = (await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, ctx.t('playArea'), this.description(ctx.t), 0, ctx.card, 1))[0];
@@ -3285,7 +3286,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       }],
       3: [{ // Festin
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[0].text,
         timing: "onClick",
         execute: async function (ctx) {
           const choice = await ctx.selectResourceChoice({ coin: 1, wood: 1, stone: 1, sword: 1, metal: 1, tradegood: 1 }, 4);
@@ -3300,7 +3301,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   70: {
     1: [{ // Visite Royale
-      description: (t) => t('effect_description_royal_visit'),
+      description: (t) => parseEffects(t('effect_description_royal_visit')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         const cards = await ctx.selectCardsFromZone(
@@ -3337,7 +3338,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Inquisitrice
-      description: (t) => t('effect_description_inquisitor'),
+      description: (t) => parseEffects(t('effect_description_inquisitor')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         const selected = await ctx.selectCardsFromZone((card) => card.negative[card.currentSide - 1], ctx.t('playArea'), this.description(ctx.t), 0, ctx.card, 1);
@@ -3352,7 +3353,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   71: {
     2: [{ // Zone Rocheuse
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (ctx.resources.coin >= 1) {
@@ -3366,7 +3367,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Mine Profonde
-      description: (t) => t('effect_description_shallow_mines'),
+      description: (t) => parseEffects(t('effect_description_shallow_mines')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (await ctx.discoverCard(
@@ -3383,7 +3384,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   72: {
     1: [{ // Forêt
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         await applyResourceMapDelta(ctx, { wood: 3 });
@@ -3393,7 +3394,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Puit Sacré
-      description: (t) => t('effect_description_sacred_well'),
+      description: (t) => parseEffects(t('effect_description_sacred_well')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (await ctx.discoverCard(
@@ -3410,7 +3411,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   73: {
     3: [{ // Muraille
-      description: (t) => t('staysInPlay'),
+      description: (t) => parseEffects(t('staysInPlay')).effects[0].text,
       timing: "staysInPlay",
       execute: async function (ctx) {
         if(ctx) {
@@ -3422,7 +3423,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   74: {
     3: [{ // Route Commerciale
-      description: (t) => t('effect_description_trade_route'),
+      description: (t) => parseEffects(t('effect_description_trade_route')).effects[0].text,
       timing: "played",
       execute: async function (ctx) {
         await ctx.discoverCard(
@@ -3437,7 +3438,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   75: {
     3: [{ // Route Commerciale
-      description: (t) => t('effect_description_trade_route'),
+      description: (t) => parseEffects(t('effect_description_trade_route')).effects[0].text,
       timing: "played",
       execute: async function (ctx) {
         await ctx.discoverCard(
@@ -3453,12 +3454,12 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   76: {
     1: [
       { // Pirate
-        description: (t) => t('staysInPlay'),
+        description: (t) => parseEffects(t('staysInPlay')).effects[0].text,
         timing: "staysInPlay",
         execute: async function () {return false;}
       },
       {
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[1].text,
         timing: "onResourceGain",
         execute: async function (ctx) {
           if (ctx.resources.coin > 0) {
@@ -3468,7 +3469,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('effect_description_pirate'),
+        description: (t) => parseEffects(t('effect_description_pirate')).effects[2].text,
         timing: "onClick",
         execute: async function (ctx) {
           if (ctx.resources.sword >= 2) {
@@ -3485,7 +3486,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       },
     ],
     3: [{ // Précieux Allié
-      description: (t) => t('effect_description_skilled_ally'),
+      description: (t) => parseEffects(t('effect_description_skilled_ally')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         return (await ctx.discoverCard((card) => [93].includes(card.id), this.description(ctx.t), 1,ctx.card));
@@ -3494,7 +3495,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   77: {
     3: [{ // Sea Gate Wall
-      description: (t) => t('effect_description_sea_gate_wall'),
+      description: (t) => parseEffects(t('effect_description_sea_gate_wall')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         const selected = await ctx.selectCardsFromZone((card) => card.GetType(ctx.t).includes(ctx.t('seafaring')), ctx.t('discard'), this.description(ctx.t), 1, ctx.card, 0, ctx.t('seafaring'));
@@ -3511,7 +3512,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   79: {
     1: [{ // Villa
-      description: (t) => t('effect_description_villa'),
+      description: (t) => parseEffects(t('effect_description_villa')).effects[0].text,
       timing: "endOfTurn",
       execute: async function (ctx) {
         const selected = await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id && card.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'), this.description(ctx.t), 0, ctx.card, 1, 'person');
@@ -3523,7 +3524,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     2: [{ // Demeure
-      description: (t) => t('effect_description_estate'),
+      description: (t) => parseEffects(t('effect_description_estate')).effects[0].text,
       timing: "endOfTurn",
       execute: async function (ctx) {
         const selected = await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id && card.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'), this.description(ctx.t), 0, ctx.card, 2, 'person');
@@ -3535,7 +3536,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Palais
-      description: (t) => t('effect_description_palace'),
+      description: (t) => parseEffects(t('effect_description_palace')).effects[0].text,
       timing: "endOfTurn",
       execute: async function (ctx) {
         const selected = await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, ctx.t('playArea'), this.description(ctx.t), 0, ctx.card, 2);
@@ -3547,7 +3548,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     4: [{ // Manoir
-      description: (t) => t('effect_description_mansion'),
+      description: (t) => parseEffects(t('effect_description_mansion')).effects[0].text,
       timing: "endOfTurn",
       execute: async function (ctx) {
         const selected = await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, ctx.t('playArea'), this.description(ctx.t), 0, ctx.card, 1);
@@ -3561,7 +3562,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   80: {
     1: [{ // Coopération
-      description: (t) => t('effect_description_cooperation'),
+      description: (t) => parseEffects(t('effect_description_cooperation')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         const people = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('person')) && c.id !== ctx.card.id, ctx.t('playArea'));
@@ -3585,7 +3586,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     }],
     3: [
       { // Faveur
-        description: (t) => t('staysInPlay'),
+        description: (t) => parseEffects(t('staysInPlay')).effects[0].text,
         timing: "staysInPlay",
         execute: async function (ctx) {
           if(ctx) {
@@ -3595,7 +3596,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[1].text,
         timing: "onClick",
         execute: async function (ctx) {
           const choice = await ctx.selectResourceChoice({ coin: 1, wood: 1, stone: 1, sword: 1, metal: 1, tradegood: 1 }, 1);
@@ -3612,7 +3613,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   81: {
     2: [{ // Domaine Aethien
-      description: (t) => t('effect_description_aethan_estate_1'),
+      description: (t) => parseEffects(t('effect_description_aethan_estate_1')).effects[0].text,
       timing: "onPurge",
       execute: async function (ctx) {
         const card = (await ctx.selectCardsFromArray(ctx.cardsForTrigger?.filter((c) => c.id !== ctx.card.id) ?? [], ctx.zone, this.description(ctx.t), 0, 1, ctx.card))[0];
@@ -3623,7 +3624,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Domaine Aethien
-      description: (t) => t('effect_description_aethan_estate_2'),
+      description: (t) => parseEffects(t('effect_description_aethan_estate_2')).effects[0].text,
       timing: "onPurge",
       execute: async function (ctx) {
         const cards = (await ctx.selectCardsFromArray(ctx.cardsForTrigger?.filter((c) => c.id !== ctx.card.id) ?? [], ctx.zone, this.description(ctx.t), 0, 3, ctx.card));
@@ -3634,7 +3635,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     4: [{ // Domaine Aethien
-      description: (t) => t('effect_description_aethan_estate_3'),
+      description: (t) => parseEffects(t('effect_description_aethan_estate_3')).effects[0].text,
       timing: "onPurge",
       execute: async function (ctx) {
         const cards = (await ctx.selectCardsFromArray(ctx.cardsForTrigger?.filter((c) => c.id !== ctx.card.id) ?? [], ctx.zone, this.description(ctx.t), 0, 2, ctx.card));
@@ -3647,7 +3648,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   82: {
     1: [{ // Autel
-      description: (t) => t('effect_description_shrine'),
+      description: (t) => parseEffects(t('effect_description_shrine')).effects[0].text,
       timing: "endOfTurn",
       execute: async function (ctx) {
         if (ctx.fetchCardsInZone((card) => card.id === ctx.card.id, ctx.t('playArea')).length === 0) return false;
@@ -3660,7 +3661,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     2: [{ // Sanctuaire
-      description: (t) => t('effect_description_sanctuary'),
+      description: (t) => parseEffects(t('effect_description_sanctuary')).effects[0].text,
       timing: "endOfTurn",
       execute: async function (ctx) {
         if (ctx.fetchCardsInZone((card) => card.id === ctx.card.id, ctx.t('playArea')).length === 0) return false;
@@ -3673,7 +3674,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Temple
-      description: (t) => t('effect_description_temple'),
+      description: (t) => parseEffects(t('effect_description_temple')).effects[0].text,
       timing: "endOfTurn",
       execute: async function (ctx) {
         if (ctx.fetchCardsInZone((card) => card.id === ctx.card.id, ctx.t('playArea')).length === 0) return false;
@@ -3686,7 +3687,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     4: [{ // Oratoir
-      description: (t) => t('effect_description_oratory'),
+      description: (t) => parseEffects(t('effect_description_oratory')).effects[0].text,
       timing: "endOfTurn",
       execute: async function (ctx) {
         if (ctx.fetchCardsInZone((card) => card.id === ctx.card.id, ctx.t('playArea')).length === 0) return false;
@@ -3701,7 +3702,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   83: {
     1: [{ // Autel
-      description: (t) => t('effect_description_shrine'),
+      description: (t) => parseEffects(t('effect_description_shrine')).effects[0].text,
       timing: "endOfTurn",
       execute: async function (ctx) {
         if (ctx.fetchCardsInZone((card) => card.id === ctx.card.id, ctx.t('playArea')).length === 0) return false;
@@ -3714,7 +3715,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     2: [{ // Sanctuaire
-      description: (t) => t('effect_description_sanctuary'),
+      description: (t) => parseEffects(t('effect_description_sanctuary')).effects[0].text,
       timing: "endOfTurn",
       execute: async function (ctx) {
         if (ctx.fetchCardsInZone((card) => card.id === ctx.card.id, ctx.t('playArea')).length === 0) return false;
@@ -3727,7 +3728,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Temple
-      description: (t) => t('effect_description_temple'),
+      description: (t) => parseEffects(t('effect_description_temple')).effects[0].text,
       timing: "endOfTurn",
       execute: async function (ctx) {
         if (ctx.fetchCardsInZone((card) => card.id === ctx.card.id, ctx.t('playArea')).length === 0) return false;
@@ -3740,7 +3741,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     4: [{ // Oratoir
-      description: (t) => t('effect_description_oratory'),
+      description: (t) => parseEffects(t('effect_description_oratory')).effects[0].text,
       timing: "endOfTurn",
       execute: async function (ctx) {
         if (ctx.fetchCardsInZone((card) => card.id === ctx.card.id, ctx.t('playArea')).length === 0) return false;
@@ -3762,7 +3763,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   86: {
     1: [
       { // Adoubement
-        description: (t) => t('staysInPlay'),
+        description: (t) => parseEffects(t('staysInPlay')).effects[0].text,
         timing: "staysInPlay",
         execute: async function (ctx) {
           if(ctx) {
@@ -3772,7 +3773,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('effect_description_dubbing'),
+        description: (t) => parseEffects(t('effect_description_dubbing')).effects[1].text,
         timing: "endOfRound",
         execute: async function (ctx) {
           let selected: GameCard[] = [];
@@ -3788,7 +3789,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     ],
     3: [
       { // Faveur
-        description: (t) => t('staysInPlay'),
+        description: (t) => parseEffects(t('staysInPlay')).effects[0].text,
         timing: "staysInPlay",
         execute: async function (ctx) {
           if(ctx) {
@@ -3798,7 +3799,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('effect_description_favor'),
+        description: (t) => parseEffects(t('effect_description_favor')).effects[1].text,
         timing: "endOfRound",
         execute: async function (ctx) {
           let choice1;
@@ -3824,7 +3825,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   87: {
     1: [{ // Quêtes
-      description: (t) => t('effect_description_quests'),
+      description: (t) => parseEffects(t('effect_description_quests')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         let checkedBoxes = 0;
@@ -3870,7 +3871,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   88: {
     1: [{ // Une Tour Idéale
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         let stoneToPay = 1;
@@ -3915,7 +3916,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   89: {
     2: [{ // Puits du Village
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "modifyProduction",
       productionModifier: {
         filter: (card: GameCard, t) => card.GetType(t!).includes(t!('building')),
@@ -3930,7 +3931,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Colonie de la Fosse
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         await checkNextBox(ctx.card);
@@ -3943,7 +3944,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     }],
     4: [
       { // Prison
-        description: (t) => t('staysInPlay'),
+        description: (t) => parseEffects(t('staysInPlay')).effects[0].text,
         timing: "staysInPlay",
         execute: async function (ctx: GameContext) {
           if(ctx) {
@@ -3953,7 +3954,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('effect_description_prison'),
+        description: (t) => parseEffects(t('effect_description_prison')).effects[1].text,
         timing: "onClick",
         execute: async function (ctx) {
           if (getLastCheckboxChecked(ctx.card)) {
@@ -3985,7 +3986,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   90: {
     1: [{ // Bijoux
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (getLastCheckboxChecked(ctx.card)) {
@@ -4030,7 +4031,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   91: {
     1: [{ // Construire une Arche
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         let woodToPay = 2;
@@ -4058,7 +4059,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // L'Arche
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         const people = ctx.fetchCardsInZone((card) => card.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'));
@@ -4074,7 +4075,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   92: {
     1: [{ // __
-      description: (t) => t('effect_description____1'),
+      description: (t) => parseEffects(t('effect_description____1')).effects[0].text,
       timing: "played",
       uses: 0,
       execute: async function (ctx) {
@@ -4117,7 +4118,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     }],
     3: [
       { // __
-        description: (t) => t('staysInPlay'),
+        description: (t) => parseEffects(t('staysInPlay')).effects[0].text,
         timing: "staysInPlay",
         execute: async function (ctx: GameContext) {
           if(ctx) {
@@ -4127,7 +4128,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('effect_description____2'),
+        description: (t) => parseEffects(t('effect_description____2')).effects[1].text,
         timing: "played",
         uses: 0,
         execute: async function (ctx) {
@@ -4172,7 +4173,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   93: {
     2: [{ // Baie des Pirates
-        description: (t) => t('effect_description_pirate_cove'),
+        description: (t) => parseEffects(t('effect_description_pirate_cove')).effects[0].text,
         timing: "endOfTurn",
         execute: async function (ctx) {
           await ctx.discoverCard((card) => [94].includes(card.id), this.description(ctx.t), 1, ctx.card);
@@ -4183,7 +4184,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   94: {
     1: [
       { // Traître
-        description: (t) => t('effect_description_backstabber'),
+        description: (t) => parseEffects(t('effect_description_backstabber')).effects[0].text,
         timing: "played",
         execute: async function (ctx) {
           const selected = await ctx.selectCardsFromZone((card) => card.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'), this.description(ctx.t), 2, ctx.card, 0, 'person');
@@ -4192,7 +4193,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[1].text,
         timing: "onClick",
         execute: async function (ctx) {
           if (ctx.resources.sword >= 4) {
@@ -4207,7 +4208,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     ],
     3: [{ // Malédiction
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onAdvance",
       execute: async function () {
         return 2;
@@ -4216,7 +4217,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   95: {
     1: [{ // Astronome
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (ctx.resources.coin >= 2) {
@@ -4230,7 +4231,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Astrologue
-      description: (t) => t('effect_description_astrologist'),
+      description: (t) => parseEffects(t('effect_description_astrologist')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         const selected = await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, ctx.t('playArea'), this.description(ctx.t), 0, ctx.card, 3);
@@ -4259,7 +4260,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   96: {
     1: [{ // Alchimiste
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (ctx.resources.coin >= 2) {
@@ -4281,7 +4282,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     2: [{ // Potion de Force
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         await applyResourceMapDelta(ctx, { sword: 3 });
@@ -4291,7 +4292,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Potion d'Amour
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         await applyResourceMapDelta(ctx, { tradegood: 5 });
@@ -4301,7 +4302,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     4: [{ // Potion de Soin
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onCardsDiscarded",
       execute: async function (ctx) {
         if (!ctx.cardsForTrigger) return false;
@@ -4354,7 +4355,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   98: {
     1: [{ // Boussole
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         const cards = ctx.fetchCardsInZone((card) => card.GetType(ctx.t).includes(ctx.t('seafaring')), ctx.t('playArea'));
@@ -4387,7 +4388,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     2: [{ // Navigation
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         const cards = ctx.fetchCardsInZone((card) => card.GetType(ctx.t).includes(ctx.t('seafaring')), ctx.t('playArea'));
@@ -4420,7 +4421,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Calendrier
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (ctx.card.checkboxes[ctx.card.currentSide - 1][ctx.card.checkboxes.length - 1].checked) {
@@ -4454,7 +4455,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     4: [{ // Astrolabe
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         const cards = ctx.fetchCardsInZone((card) => card.GetType(ctx.t).includes(ctx.t('seafaring')), ctx.t('playArea'));
@@ -4492,7 +4493,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   100: {
     2: [{ // Industrie du Bois
-      description: (t) => t('effect_description_saw_mill'),
+      description: (t) => parseEffects(t('effect_description_saw_mill')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (await ctx.discoverCard(
@@ -4507,7 +4508,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     4: [{ // Cargaison de Bois
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (ctx.resources.tradegood > 0) {
@@ -4522,7 +4523,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   101: {
     2: [{ // Machines Agricoles
-        description: (t) => t('staysInPlay'),
+        description: (t) => parseEffects(t('staysInPlay')).effects[0].text,
         timing: "staysInPlay",
         execute: async function (ctx) {
           if(ctx) {
@@ -4532,7 +4533,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
     }],
     3: [{ // Grange Agrandie
-      description: (t) => t('effect_description_larger_barns'),
+      description: (t) => parseEffects(t('effect_description_larger_barns')).effects[0].text,
       timing: "endOfTurn",
       execute: async function (ctx) {
         const selected = await ctx.selectCardsFromZone(() => true, ctx.t('playArea'), this.description(ctx.t), 0, ctx.card, 1);
@@ -4543,7 +4544,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     4: [{ // Entrepôt Royal
-      description: (t) => t('effect_description_royal_storehouse'),
+      description: (t) => parseEffects(t('effect_description_royal_storehouse')).effects[0].text,
       timing: "endOfTurn",
       execute: async function (ctx) {
         const selected = await ctx.selectCardsFromZone(() => true, ctx.t('playArea'), this.description(ctx.t), 0, ctx.card, 2);
@@ -4556,7 +4557,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   102: {
     3: [{ //
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         await checkNextBox(ctx.card);
@@ -4570,7 +4571,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     4: [{ //
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "modifyProduction",
       productionModifier: {
         filter: (card: GameCard, t) => card.GetType(t!).includes(t!('seafaring')),
@@ -4587,7 +4588,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   103: {
     1: [{ // Missionaire
-      description: (t) => t('effect_description_missionary'),
+      description: (t) => parseEffects(t('effect_description_missionary')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         const bandits = ctx.fetchCardsInZone((card) => card.GetName(ctx.t).includes(ctx.t('bandit')), ctx.t('playArea'));
@@ -4607,7 +4608,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Apiculteur
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         let allChecked = ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked);
@@ -4625,7 +4626,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   104: {
     1: [{ // Prêtre
-      description: (t) => t('effect_description_priest'),
+      description: (t) => parseEffects(t('effect_description_priest')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         let effectSuccessfull = false;
@@ -4680,7 +4681,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Cardinal
-      description: (t) => t('effect_description_cardinal'),
+      description: (t) => parseEffects(t('effect_description_cardinal')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         let effectSuccessfull = false;
@@ -4736,7 +4737,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   105: {
     1: [{ // Petit Village sur la Colline
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (ctx.resources.coin >= 2) {
@@ -4753,7 +4754,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     2: [{ // Village sur la Colline
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (ctx.resources.coin >= 1) {
@@ -4770,7 +4771,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Ville sur la Colline
-      description: (t) => t('effect_description_city_on_a_hill'),
+      description: (t) => parseEffects(t('effect_description_city_on_a_hill')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (await ctx.discoverCard((card) => [106].includes(card.id), this.description(ctx.t), 1, ctx.card)) {
@@ -4781,7 +4782,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     4: [{ // Grande Ville
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         // Créer un objet avec seulement les ressources disponibles (> 0)
@@ -4820,7 +4821,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   106: {
     3: [{ // Camelot
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "endOfTurn",
       execute: async function (ctx) {
         if (ctx.fetchCardsInZone(() => (true), ctx.t('deck')).length === 0) {
@@ -4832,7 +4833,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   107: {
     1: [{ // Visite Royale
-      description: (t) => t('effect_description_royal_visit'),
+      description: (t) => parseEffects(t('effect_description_royal_visit')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         const cards = await ctx.selectCardsFromZone(
@@ -4869,7 +4870,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Inquisitrice
-      description: (t) => t('effect_description_inquisitor'),
+      description: (t) => parseEffects(t('effect_description_inquisitor')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         const selected = await ctx.selectCardsFromZone((card) => card.negative[card.currentSide - 1], ctx.t('playArea'), this.description(ctx.t), 0, ctx.card, 1);
@@ -4884,7 +4885,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   108: {
     1: [{ // Cristal Ethéré Royale
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "removed",
       execute: async function () {
         return false;
@@ -4893,7 +4894,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   109: {
     3: [{ // Manoir de la Guilde
-      description: (t) => t('effect_description_grand_guild_hall'),
+      description: (t) => parseEffects(t('effect_description_grand_guild_hall')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked)) {
@@ -4920,7 +4921,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   110: {
     3: [{ // Campagne Prospère
-      description: (t) => t('effect_description_thriving_countryside'),
+      description: (t) => parseEffects(t('effect_description_thriving_countryside')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         const zone = await ctx.selectStringChoice(
@@ -4946,7 +4947,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     4: [{ // Campagne
-      description: (t) => t('effect_description_countryside'),
+      description: (t) => parseEffects(t('effect_description_countryside')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         const card = (await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, ctx.t('playArea'), this.description(ctx.t), 1, ctx.card, 0))[0];
@@ -4966,7 +4967,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   111: {
     1: [{ // Manoir
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onResourceGain",
       execute: async function (ctx) {
         if (ctx.cardsForTrigger && ctx.cardsForTrigger[0].id === ctx.card.id) {
@@ -4979,7 +4980,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     2: [{ // Grand Manoir
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onResourceGain",
       execute: async function (ctx) {
         if (ctx.cardsForTrigger && ctx.cardsForTrigger[0].id === ctx.card.id) {
@@ -4992,7 +4993,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Imposante Demeur
-      description: (t) => t('effect_description_grand_residence'),
+      description: (t) => parseEffects(t('effect_description_grand_residence')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (await ctx.discoverCard((card) => [116].includes(card.id), this.description(ctx.t), 1, ctx.card)) {
@@ -5002,7 +5003,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     4: [{ // Noble Demeure
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onResourceGain",
       execute: async function (ctx) {
         if (ctx.cardsForTrigger && ctx.cardsForTrigger[0].id === ctx.card.id) {
@@ -5017,7 +5018,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   112: {
     1: [{ // Etable
-      description: (t) => t('effect_description_stable_1'),
+      description: (t) => parseEffects(t('effect_description_stable_1')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (ctx.resources.coin >= 2) {
@@ -5029,7 +5030,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     2: [{ // Etable
-      description: (t) => t('effect_description_stable_2'),
+      description: (t) => parseEffects(t('effect_description_stable_2')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (ctx.resources.coin >= 2) {
@@ -5042,7 +5043,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     }],
     3: [
       { // Palfrenier
-        description: (t) => t('effect_description_groom'),
+        description: (t) => parseEffects(t('effect_description_groom')).effects[0].text,
         timing: "onClick",
         execute: async function (ctx) {
           const card = (await ctx.selectCardsFromZone((card) => (card.GetType(ctx.t).includes(ctx.t('horse'))) && (getResourcesCount(card.GetResources()[0]) <= 2), ctx.t('playArea'), this.description(ctx.t), 1, ctx.card, 0, ctx.t('horse')))[0];
@@ -5057,7 +5058,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('effect_description_groom'),
+        description: (t) => parseEffects(t('effect_description_groom')).effects[1].text,
         timing: "onClick",
         execute: async function (ctx) {
           const card = (await ctx.selectCardsFromZone((card) => card.GetType(ctx.t).includes(ctx.t('horse')), ctx.t('discard'), this.description(ctx.t), 1, ctx.card, 0, ctx.t('horse')))[0];
@@ -5070,7 +5071,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     ],
     4: [{ // Grande Etable
-      description: (t) => t('effect_description_large_stable'),
+      description: (t) => parseEffects(t('effect_description_large_stable')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (ctx.resources.coin >= 2) {
@@ -5094,7 +5095,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   116: {
     1: [
       { // Aric Blackwood
-        description: (t) => t('staysInPlay'),
+        description: (t) => parseEffects(t('staysInPlay')).effects[0].text,
         timing: "staysInPlay",
         execute: async function (ctx: GameContext) {
           if(ctx) {
@@ -5104,7 +5105,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('effect_description_aric_blackwood'),
+        description: (t) => parseEffects(t('effect_description_aric_blackwood')).effects[1].text,
         timing: "played",
         execute: async function (ctx) {
           const card = (await ctx.selectCardsFromZone(() => true, ctx.t('playArea'), this.description(ctx.t), 1, ctx.card, 0))[0];
@@ -5117,7 +5118,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     ],
     3: [
       { // Eadric Shadowstrike
-        description: (t) => t('staysInPlay'),
+        description: (t) => parseEffects(t('staysInPlay')).effects[0].text,
         timing: "staysInPlay",
         execute: async function (ctx: GameContext) {
           if(ctx) {
@@ -5127,7 +5128,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('effect_description_eadric_shadowstrike'),
+        description: (t) => parseEffects(t('effect_description_eadric_shadowstrike')).effects[1].text,
         timing: "onClick",
         execute: async function (ctx) {
           const people = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('person')) && c.id !== ctx.card.id, ctx.t('playArea'));
@@ -5147,7 +5148,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   117: {
     1: [{
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (ctx.resources.tradegood >= 3) {
@@ -5165,7 +5166,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   118: {
     1: [{ // Petite Ecole
-      description: (t) => t('effect_description_small_school'),
+      description: (t) => parseEffects(t('effect_description_small_school')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         const cards = ctx.fetchCardsInZone((card) => card.GetUpgrades().length !== 0 && card.id !== ctx.card.id && card.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'));
@@ -5190,7 +5191,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     2: [{ // Ecole
-      description: (t) => t('effect_description_school'),
+      description: (t) => parseEffects(t('effect_description_school')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         const cards = ctx.fetchCardsInZone((card) => card.GetUpgrades().length !== 0 && card.id !== ctx.card.id && card.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'));
@@ -5215,7 +5216,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Ecole Reconnue
-      description: (t) => t('effect_description_renowned_school'),
+      description: (t) => parseEffects(t('effect_description_renowned_school')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         const cards = ctx.fetchCardsInZone((card) => card.id !== ctx.card.id && card.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'));
@@ -5237,7 +5238,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     4: [{ // Ecole Reconnue
-      description: (t) => t('effect_description_prominent_school'),
+      description: (t) => parseEffects(t('effect_description_prominent_school')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         const cards = ctx.fetchCardsInZone((card) => card.id !== ctx.card.id && card.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'));
@@ -5259,7 +5260,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   119: {
     1: [{ // Commerçante
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (ctx.resources.coin >= 1) {
@@ -5273,7 +5274,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     2: [{ // Bazar
-      description: (t) => t('effect_description_bazaar'),
+      description: (t) => parseEffects(t('effect_description_bazaar')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (ctx.resources.coin >= 1) {
@@ -5290,7 +5291,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     4: [{ // Marché
-      description: (t) => t('effect_description_market'),
+      description: (t) => parseEffects(t('effect_description_market')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (ctx.resources.coin >= 1) {
@@ -5309,7 +5310,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   120: {
     1: [{ // Investisseur
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         const choice = await ctx.selectResourceChoice({ coin: 1, wood: 1, stone: 1, sword: 1, metal: 1, tradegood: 1 }, 3);
@@ -5323,7 +5324,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     2: [{ // Investisseur
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         const choice = await ctx.selectResourceChoice({ coin: 1, wood: 1, stone: 1, sword: 1, metal: 1, tradegood: 1 }, 3);
@@ -5337,7 +5338,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Investisseur
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         const choice = await ctx.selectResourceChoice({ coin: 1, wood: 1, stone: 1, sword: 1, metal: 1, tradegood: 1 }, 1);
@@ -5349,7 +5350,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     4: [{ // Investisseur
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         const choice = await ctx.selectResourceChoice({ coin: 1, wood: 1, stone: 1, sword: 1, metal: 1, tradegood: 1 }, 3);
@@ -5365,7 +5366,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   121: {
     1: [{ // Roi Alahar
-      description: (t) => t('staysInPlay'),
+      description: (t) => parseEffects(t('staysInPlay')).effects[0].text,
       timing: "staysInPlay",
       execute: async function (ctx: GameContext) {
         if(ctx) {
@@ -5375,7 +5376,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Reine Jemimah
-      description: (t) => t('effect_description_queen_jeminah'),
+      description: (t) => parseEffects(t('effect_description_queen_jeminah')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked)) {
@@ -5400,7 +5401,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   123: {
     1: [{ // Château Majestueux
-      description: (t) => t('effect_description_grand_castle'),
+      description: (t) => parseEffects(t('effect_description_grand_castle')).effects[0].text,
       timing: "onClick",
       execute: async function(ctx) {
         const selectedCards = await ctx.selectCardsFromZone(
@@ -5419,7 +5420,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     2: [{ // Château Monumental
-      description: (t) => t('effect_description_huge_castle'),
+      description: (t) => parseEffects(t('effect_description_huge_castle')).effects[0].text,
       timing: "onClick",
       execute: async function(ctx) {
         const selectedCards = await ctx.selectCardsFromZone(
@@ -5439,7 +5440,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     }],
     3: [
       { // Forteresse Imprenable
-        description: (t) => t('effect_description_impregnable_fortress'),
+        description: (t) => parseEffects(t('effect_description_impregnable_fortress')).effects[0].text,
         timing: "onClick",
         execute: async function(ctx) {
           const selectedCards = await ctx.selectCardsFromZone(
@@ -5458,7 +5459,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('effect_description_impregnable_fortress'),
+        description: (t) => parseEffects(t('effect_description_impregnable_fortress')).effects[1].text,
         timing: "onCardsDiscarded",
         execute: async function(ctx) {
           if (!ctx.cardsForTrigger) return false;
@@ -5477,7 +5478,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     ],
     4: [{ // Forteresse
-      description: (t) => t('effect_description_fortress'),
+      description: (t) => parseEffects(t('effect_description_fortress')).effects[0].text,
       timing: "onClick",
       execute: async function(ctx) {
         const selectedCards = await ctx.selectCardsFromZone(
@@ -5501,7 +5502,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   125: {
     1: [{ // Grand Temple
-      description: (t) => t('effect_description_large_temple'),
+      description: (t) => parseEffects(t('effect_description_large_temple')).effects[0].text,
       timing: "endOfTurn",
       execute: async function (ctx) {
         if (ctx.fetchCardsInZone((card) => card.id === ctx.card.id, ctx.t('playArea')).length === 0) return false;
@@ -5514,7 +5515,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     2: [{ // Temple Sculpté
-      description: (t) => t('effect_description_ornate_temple'),
+      description: (t) => parseEffects(t('effect_description_ornate_temple')).effects[0].text,
       timing: "endOfTurn",
       execute: async function (ctx) {
         if (ctx.fetchCardsInZone((card) => card.id === ctx.card.id, ctx.t('playArea')).length === 0) return false;
@@ -5528,7 +5529,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     }],
     3: [
       { // Temple de la Lumière
-        description: (t) => t('effect_description_temple_of_light'),
+        description: (t) => parseEffects(t('effect_description_temple_of_light')).effects[0].text,
         timing: "endOfTurn",
         execute: async function (ctx) {
           if (ctx.fetchCardsInZone((card) => card.id === ctx.card.id, ctx.t('playArea')).length === 0) return false;
@@ -5541,7 +5542,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[1].text,
         timing: "onClick",
         execute: async function (ctx) {
           if (ctx.resources.tradegood >= 4 && !ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked)) {
@@ -5552,7 +5553,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[2].text,
         timing: "onPurge",
         execute: async function (ctx) {
           await addResourceMapToCard(ctx.card, { fame: 10 * (ctx.card.checkboxes[ctx.card.currentSide - 1].filter(cb => cb.checked).length) });
@@ -5561,7 +5562,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       },
     ],
     4: [{ // Temple Légendaire
-      description: (t) => t('effect_description_legendary_temple'),
+      description: (t) => parseEffects(t('effect_description_legendary_temple')).effects[0].text,
       timing: "endOfTurn",
       execute: async function (ctx) {
         if (ctx.fetchCardsInZone((card) => card.id === ctx.card.id, ctx.t('playArea')).length === 0) return false;
@@ -5579,7 +5580,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   127: {
     4: [{ // Champignons
-      description: (t) => t('effect_description_mushrooms'),
+      description: (t) => parseEffects(t('effect_description_mushrooms')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         const card = (await ctx.selectCardsFromZone((card) => card.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'), this.description(ctx.t), 1, ctx.card, 0, 'person'))[0];
@@ -5593,7 +5594,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   128: {
     3: [{ // Site de Fouilles
-      description: (t) => t('effect_description_excavation_site'),
+      description: (t) => parseEffects(t('effect_description_excavation_site')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         if (ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked) || ctx.resources.stone < 3 || ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea')).length === 0) {
@@ -5614,7 +5615,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   129: {
     1: [{ // Sources Chaudes
-      description: (t) => t('effect_description_hot_springs'),
+      description: (t) => parseEffects(t('effect_description_hot_springs')).effects[0].text,
       timing: "onUpgrade",
       execute: async function (ctx) {
         const card = (await ctx.selectCardsFromZone((card) => card.GetType(ctx.t).includes(ctx.t('land')) && card.id !== ctx.card.id, ctx.t('playArea'), this.description(ctx.t), 1, ctx.card, 0, 'land'))[0];
@@ -5626,7 +5627,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     2: [{ // Fontaine
-      description: (t) => t('effect_description_fountain'),
+      description: (t) => parseEffects(t('effect_description_fountain')).effects[0].text,
       timing: "onUpgrade",
       execute: async function (ctx) {
         await ctx.boostProductivity((card) => card.id !== ctx.card.id, ctx.t('playArea'), this.description(ctx.t), null, ctx.card);
@@ -5634,7 +5635,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     4: [{ // Canaux
-      description: (t) => t('effect_description_canals'),
+      description: (t) => parseEffects(t('effect_description_canals')).effects[0].text,
       timing: "onUpgrade",
       execute: async function (ctx) {
         const card = (await ctx.selectCardsFromZone((card) => card.GetType(ctx.t).includes(ctx.t('land')) && card.id !== ctx.card.id, ctx.t('playArea'), this.description(ctx.t), 1, ctx.card, 0, 'land'))[0];
@@ -5647,7 +5648,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   130: {
     2: [{ // Mur Intérieur
-      description: (t) => t('effect_description_watchtower'),
+      description: (t) => parseEffects(t('effect_description_watchtower')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx: GameContext) {
         ctx.setDeck((d) => {
@@ -5658,7 +5659,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Mur Intérieur
-      description: (t) => t('staysInPlay'),
+      description: (t) => parseEffects(t('staysInPlay')).effects[0].text,
       timing: "staysInPlay",
       execute: async function (ctx: GameContext) {
         if(ctx) {
@@ -5668,7 +5669,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     4: [{ // Double Muraille
-      description: (t) => t('staysInPlay'),
+      description: (t) => parseEffects(t('staysInPlay')).effects[0].text,
       timing: "staysInPlay",
       execute: async function (ctx: GameContext) {
         if(ctx) {
@@ -5680,7 +5681,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   131: {
     2: [{ // Douves
-      description: (t) => t('effect_description_moat'),
+      description: (t) => parseEffects(t('effect_description_moat')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx: GameContext) {
         const card = (await ctx.selectCardsFromZone((card) => card.id !== ctx.card.id, ctx.t('playArea'), this.description(ctx.t), 1, ctx.card, 0))[0];
@@ -5693,7 +5694,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Muraille
-      description: (t) => t('staysInPlay'),
+      description: (t) => parseEffects(t('staysInPlay')).effects[0].text,
       timing: "staysInPlay",
       execute: async function (ctx: GameContext) {
         if(ctx) {
@@ -5703,7 +5704,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     4: [{ // Pont de Douves
-      description: (t) => t('effect_description_moat_bridge'),
+      description: (t) => parseEffects(t('effect_description_moat_bridge')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx: GameContext) {
         if (ctx.resources.coin < 1 || ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('person')), ctx.t('discard')).length === 0) {
@@ -5723,7 +5724,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   132: {
     4: [{ // Muraille
-      description: (t) => t('staysInPlay'),
+      description: (t) => parseEffects(t('staysInPlay')).effects[0].text,
       timing: "staysInPlay",
       execute: async function (ctx: GameContext) {
         if(ctx) {
@@ -5735,7 +5736,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   133: {
     1: [{ // Pillage
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         const choice = await ctx.selectResourceChoice({ coin: 1, wood: 1, stone: 1, sword: 1, metal: 1, tradegood: 1 }, 1);
@@ -5747,7 +5748,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     2: [{ // Razzia
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         const choice = await ctx.selectResourceChoice({ coin: 1, wood: 1, stone: 1, sword: 1, metal: 1, tradegood: 1 }, 2);
@@ -5759,7 +5760,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Saccage
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         const choice = await ctx.selectResourceChoice({ coin: 1, wood: 1, stone: 1, sword: 1, metal: 1, tradegood: 1 }, 3);
@@ -5771,7 +5772,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     4: [{ // Pillage
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         const choice = await ctx.selectResourceChoice({ coin: 1, wood: 1, stone: 1, sword: 1, metal: 1, tradegood: 1 }, 2);
@@ -5786,7 +5787,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   134: {
     1: [
       { // Rival Beau-Gosse
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[0].text,
         timing: "destroyed",
         execute: async function (ctx) {
           const lord = [  ...ctx.fetchCardsInZone((c) => c.GetName(ctx.t) === ctx.t('lord_nimrod'), ctx.t('deck')),
@@ -5798,7 +5799,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[1].text,
         timing: "onClick",
         execute: async function (ctx) {
           const lord = ctx.fetchCardsInZone((card) => card.GetName(ctx.t) === ctx.t('lord_nimrod'), ctx.t('playArea'))[0];
@@ -5833,7 +5834,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     ],
     3: [{ // Noble Allié
-      description: (t) => t('effect_description_noble_ally'),
+      description: (t) => parseEffects(t('effect_description_noble_ally')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         const cards = ctx.fetchCardsInZone((card) => card.GetType(ctx.t).includes(ctx.t('person')) && card.id !==  ctx.card.id, ctx.t('playArea'));
@@ -5865,7 +5866,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   135: {
     1: [{ // Terres Frontalières
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx: GameContext) {
         const upgrade = ctx.card.GetUpgrades()[0];
@@ -5887,7 +5888,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     2: [{ // Occupation
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx: GameContext) {
         const upgrade = ctx.card.GetUpgrades()[0];
@@ -5909,7 +5910,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Etats Vassaux
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx: GameContext) {
         await ctx.upgradeCard(ctx.card, 1, true);
@@ -5918,7 +5919,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     }],
     4: [
       { // Villages Alliés
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[0].text,
         timing: "onClick",
         execute: async function (ctx) {
           const upgrade = ctx.card.GetUpgrades()[0];
@@ -5940,7 +5941,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[1].text,
         timing: "onUpgrade",
         uses: 0,
         execute: async function (ctx) {
@@ -5963,7 +5964,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   136: {
     1: [
       { // Prospérité
-        description: (t) => t('effect_description_prosperity_expansion'),
+        description: (t) => parseEffects(t('effect_description_prosperity_expansion')).effects[0].text,
         timing: "modifyProduction",
         productionModifier: {
           filter: (card: GameCard) => !card.negative[card.currentSide - 1],
@@ -5978,7 +5979,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[1].text,
         timing: "endOfRound",
         execute: async function (ctx) {
           await ctx.upgradeCard(ctx.card, 2, true);
@@ -5988,7 +5989,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     ],
     2: [
       { // Engranger des réserves
-        description: (t) => t('effect_description_hoarding'),
+        description: (t) => parseEffects(t('effect_description_hoarding')).effects[0].text,
         timing: "endOfTurn",
         execute: async function (ctx) {
           const selected = await ctx.selectCardsFromZone(() => true, ctx.t('playArea'), this.description(ctx.t), 0, ctx.card, 1);
@@ -5999,7 +6000,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[1].text,
         timing: "endOfRound",
         execute: async function (ctx) {
           await ctx.upgradeCard(ctx.card, 4, true);
@@ -6009,7 +6010,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     ],
     3: [
       { // Décret Royal
-        description: (t) => t('effect_description_royal_decree'),
+        description: (t) => parseEffects(t('effect_description_royal_decree')).effects[0].text,
         timing: "endOfRound",
         execute: async function (ctx) {
           let checked = 0;
@@ -6048,7 +6049,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[1].text,
         timing: "endOfRound",
         execute: async function (ctx) {
           ctx.deleteCardInZone(ctx.t('permanentZone'), ctx.card.id);
@@ -6058,7 +6059,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     ],
     4: [
       { // Soulèvement
-        description: (t) => t('effect_description_uprising'),
+        description: (t) => parseEffects(t('effect_description_uprising')).effects[0].text,
         timing: "otherCardPlayed",
         execute: async function (ctx) {
           const peopleInPlay = ctx.fetchCardsInZone(
@@ -6080,7 +6081,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[1].text,
         timing: "endOfRound",
         execute: async function (ctx) {
           await ctx.upgradeCard(ctx.card, 3, true);
@@ -6092,7 +6093,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   137: {
     1: [
       { // Moulin à Eau
-        description: (t) => t('effect_description_the_water_mill_expansion'),
+        description: (t) => parseEffects(t('effect_description_the_water_mill_expansion')).effects[0].text,
         timing: "onClick",
         usesPerTurn: 1,
         execute: async (ctx) => {
@@ -6101,7 +6102,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[1].text,
         timing: "endOfRound",
         execute: async function (ctx) {
           await ctx.upgradeCard(ctx.card, 2, true);
@@ -6111,7 +6112,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     ],
     2: [
       { // Récoltes Productives
-        description: (t) => t('effect_description_efficient_farming'),
+        description: (t) => parseEffects(t('effect_description_efficient_farming')).effects[0].text,
         timing: "onClick",
         execute: async function (ctx) {
           const buildings = ctx.fetchCardsInZone((card) => card.GetType(ctx.t).includes(ctx.t('building')), ctx.t('playArea'));
@@ -6134,7 +6135,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[1].text,
         timing: "endOfRound",
         execute: async function (ctx) {
           await ctx.upgradeCard(ctx.card, 4, true);
@@ -6144,7 +6145,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     ],
     3: [
       { // Fermes Abandonnées
-        description: (t) => t('effect_description_obsolete_farms'),
+        description: (t) => parseEffects(t('effect_description_obsolete_farms')).effects[0].text,
         timing: "endOfRound",
         execute: async function (ctx) {
           const card = (await ctx.selectCardsFromZone((c) => c.GetResources().some((map) => hasEnoughResources(map, {coin: 1})), ctx.t('deck'), this.description(ctx.t), 1, ctx.card, 0))[0];
@@ -6159,7 +6160,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     ],
     4: [
       { // Surplus
-        description: (t) => t('effect_description_surplus'),
+        description: (t) => parseEffects(t('effect_description_surplus')).effects[0].text,
         timing: "modifyProduction",
         productionModifier: {
           filter: (card: GameCard, t) => {
@@ -6187,7 +6188,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[1].text,
         timing: "endOfRound",
         execute: async function (ctx) {
           await ctx.upgradeCard(ctx.card, 3, true);
@@ -6199,7 +6200,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   138: {
     1: [
       { // Border Dispute
-        description: (t) => t('effect_description_border_dispute_expansion'),
+        description: (t) => parseEffects(t('effect_description_border_dispute_expansion')).effects[0].text,
         timing: "endOfTurn",
         execute: async function (ctx) {
           ctx.setTemporaryCardListImmediate(ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('land')), ctx.zone));
@@ -6207,7 +6208,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[1].text,
         timing: "endOfRound",
         execute: async function (ctx) {
           await ctx.upgradeCard(ctx.card, 2, true);
@@ -6217,7 +6218,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     ],
     2: [
       { // Espionnage
-        description: (t) => t('effect_description_espionage'),
+        description: (t) => parseEffects(t('effect_description_espionage')).effects[0].text,
         timing: "otherCardPlayed",
         execute: async function (ctx) {
           let discarded: GameCard[] = [];
@@ -6248,7 +6249,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[1].text,
         timing: "endOfRound",
         execute: async function (ctx) {
           await ctx.upgradeCard(ctx.card, 4, true);
@@ -6258,7 +6259,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     ],
     3: [
       { // Resistance
-        description: (t) => t('effect_description_resistance'),
+        description: (t) => parseEffects(t('effect_description_resistance')).effects[0].text,
         timing: "onClick",
         execute: async function (ctx) {
           addResourceMapToCard(ctx.card, { sword: ctx.resources.sword });
@@ -6267,7 +6268,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('effect_description_resistance'),
+        description: (t) => parseEffects(t('effect_description_resistance')).effects[1].text,
         timing: "endOfRound",
         execute: async function (ctx) {
           const land = (await ctx.selectCardsFromZone((c) => c.GetType(ctx.t).includes(ctx.t('land')), ctx.t('deck'), this.description(ctx.t), 1, ctx.card, 0, 'land'))[0];
@@ -6279,7 +6280,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     ],
     4: [
       { // Attaque
-        description: (t) => t('effect_description_attack'),
+        description: (t) => parseEffects(t('effect_description_attack')).effects[0].text,
         timing: "endOfTurn",
         execute: async function (ctx) {
           let hasSword = false;
@@ -6311,7 +6312,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('effect_description_attack'),
+        description: (t) => parseEffects(t('effect_description_attack')).effects[1].text,
         timing: "endOfRound",
         execute: async function (ctx) {
           const card = (await ctx.selectCardsFromZone((c) => !c.negative[c.currentSide - 1], ctx.t('deck'), this.description(ctx.t), 1, ctx.card, 0))[0];
@@ -6326,7 +6327,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   // Ridding the Woods
   139: {
     1: [{ // Bienvenue dans la Forêt des Brigands
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function(ctx)  {
         if (ctx.startTutorial) {
@@ -6339,10 +6340,14 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   140: {
     1: [
       { // Une Certaine Dame
-        description: (t) => t('effect_description_a_certain_lady'),
+        description: (t) => parseEffects(t('effect_description_a_certain_lady')).effects[0].text,
         timing: "onPlayAreaUpdated",
         execute: async function(ctx)  {
-          const enemies = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('playArea'));
+          let enemies = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('playArea'));
+          if (! ctx.cardsForTrigger?.map((c) => c.id).includes(ctx.card.id)) {
+            const discardedEnemies = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('discard'));
+            enemies = enemies.filter((c) => ctx.cardsForTrigger?.map((d) => d.id).includes(c.id) && !discardedEnemies.map((d) => d.id).includes(c.id));
+          }
           for (let i = 0; i < enemies.length; i++) {
             await checkNextBox(ctx.card);
           }
@@ -6357,7 +6362,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('effect_description_a_certain_lady'),
+        description: (t) => parseEffects(t('effect_description_a_certain_lady')).effects[1].text,
         timing: "onEndOfExpansion",
         execute: async function(ctx)  {
           cardEffectsRegistry[ctx.card.id][1][0].timing = 'doesNothing';
@@ -6369,7 +6374,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     ],
     3: [{ // Maraudeuse
-      description: (t) => t('effect_description_a_certain_lady'),
+      description: (t) => parseEffects(t('effect_description_a_certain_lady')).effects[0].text,
       timing: "played",
       execute: async function(ctx)  {
         const card = (await ctx.selectCardsFromZone((c) => ctx.getCardProduction(c, ctx.zone).some((map) => hasEnoughResources(map, {coin: 1})), ctx.t('playArea'), this.description(ctx.t), 1, ctx.card, 0))[0];
@@ -6390,7 +6395,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   141: {
     1: [
       { // Roi des Voleurs
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[0].text,
         timing: "onResourceGain",
         priority: 1,
         execute: async function(ctx)  {
@@ -6401,7 +6406,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[1].text,
         timing: "onClick",
         execute: async function(ctx)  {
           if (hasEnoughResources(ctx.resources, {sword: 3})) {
@@ -6430,14 +6435,14 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     ],
     3: [
       { // Pleurs
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[0].text,
         timing: "onAdvance",
         execute: async function () {
           return 2;
         }
       },
       {
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[1].text,
         timing: "onPurge",
         execute: async function (ctx) {
           await addResourceMapToCard(ctx.card, { fame: -4 });
@@ -6449,7 +6454,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   142: {
     1: [
       { // Bandit
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[0].text,
         timing: "played",
         execute: async function(ctx)  {
           const cards = ctx.fetchCardsInZone((c) => ctx.getCardProduction(c, ctx.zone).some((map) => hasEnoughResources(map, {wood: 1})), ctx.zone);
@@ -6458,7 +6463,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[1].text,
         timing: "onClick",
         execute: async function(ctx)  {
           if (hasEnoughResources(ctx.resources, {sword: 3})) {
@@ -6475,7 +6480,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     ],
     3: [{ // Prisonnier
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
         timing: "otherCardPlayed",
         execute: async function(ctx)  {
           const enemies = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('playArea'));
@@ -6490,7 +6495,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   143: {
     1: [{ // Forêt des Voleurs
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "played",
       execute: async function (ctx) {
         const card = ctx.fetchCardsInZone((c) => c.GetName(ctx.t) === ctx.t('robbin_leader'), ctx.t('discard'))[0];
@@ -6501,7 +6506,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     2: [{ // Forêt Dangereuse
-      description: (t) => t('effect_description_unsafe_forest'),
+      description: (t) => parseEffects(t('effect_description_unsafe_forest')).effects[0].text,
       timing: "onEnemyDefeated",
       execute: async function (ctx) {
         if (ctx.resources.coin >= 4 && ctx.resources.sword >= 2) {
@@ -6519,7 +6524,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Forêt Paisible
-      description: (t) => t('staysInPlay'),
+      description: (t) => parseEffects(t('staysInPlay')).effects[0].text,
       timing: "staysInPlay",
       execute: async function (ctx) {
         if(ctx) {
@@ -6531,7 +6536,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   144: {
     1: [{ // Ville Terrorisée
-      description: (t) => t('effect_description_terrified_town'),
+      description: (t) => parseEffects(t('effect_description_terrified_town')).effects[0].text,
       timing: "otherCardPlayed",
       execute: async function(ctx)  {
         if (ctx.cardsForTrigger?.filter((c) => c.GetType(ctx.t).includes(ctx.t('enemy'))).length ?? 0 > 0) {
@@ -6542,7 +6547,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     2: [{ // Ville Tourmentée
-      description: (t) => t('effect_description_uneasy_town'),
+      description: (t) => parseEffects(t('effect_description_uneasy_town')).effects[0].text,
       timing: "otherCardPlayed",
       execute: async function(ctx)  {
         if (ctx.cardsForTrigger?.filter((c) => c.GetType(ctx.t).includes(ctx.t('enemy'))).length ?? 0 > 0) {
@@ -6553,7 +6558,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // _
-      description: (t) => t('effect_description_terrified_town'),
+      description: (t) => parseEffects(t('effect_description___town')).effects[0].text,
       timing: "onClick",
       execute: async function(ctx)  {
         if (await ctx.discoverCard((c) => [166].includes(c.id), this.description(ctx.t), 1, ctx.card, 0)) {
@@ -6563,10 +6568,10 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     4: [{ // Ville aux Aguets
-      description: (t) => t('effect_description_terrified_town'),
+      description: (t) => parseEffects(t('effect_description_guarded_town')).effects[0].text,
       timing: "onClick",
       execute: async function(ctx)  {
-        if (ctx.resources.wood >= 4 && ctx.fetchCardsInZone((c) => [168].includes(c.id), ctx.t('campaign'))) {
+        if (ctx.resources.wood >= 4 && ctx.fetchCardsInZone((c) => [168].includes(c.id), ctx.t('campaign')).length !== 0) {
           if (! await applyResourceMapDelta(ctx, { wood: 4 }, true)) {
             return false;
           }
@@ -6579,7 +6584,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   145: {
     1: [
       { // Bandit
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[0].text,
         timing: "played",
         execute: async function(ctx)  {
           const cards = ctx.fetchCardsInZone((c) => ctx.getCardProduction(c, ctx.zone).some((map) => hasEnoughResources(map, {wood: 1})), ctx.zone);
@@ -6588,7 +6593,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[1].text,
         timing: "onClick",
         execute: async function(ctx)  {
           if (hasEnoughResources(ctx.resources, {sword: 3})) {
@@ -6605,7 +6610,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     ],
     3: [{ // Prisonnier
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
         timing: "otherCardPlayed",
         execute: async function(ctx)  {
           const enemies = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('playArea'));
@@ -6621,14 +6626,14 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   146: {
     1: [
       { // Voleur Immense
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[0].text,
         timing: "restrictAdvance",
         execute: async function () {
           return false;
         }
       },
       {
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('effect_description_huge_robber')).effects[1].text,
         timing: "onClick",
         execute: async function(ctx)  {
           if (ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('person')), ctx.zone).reduce((sum, c) => sum + getCardSelectionValue(c, 'person'), 0) >= 4) {
@@ -6646,7 +6651,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     ],
     3: [{ // Prisonnier
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
         timing: "otherCardPlayed",
         execute: async function(ctx)  {
           const enemies = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('playArea'));
@@ -6661,7 +6666,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   147: {
     1: [{ // Grand Camp de Voleurs
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onResourcePay",
       execute: async function (ctx) {
         if (ctx.resources.sword === 0) {
@@ -6671,7 +6676,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     2: [{ // Petit Camp de Voleurs
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onResourcePay",
       execute: async function (ctx) {
         if (ctx.resources.sword === 0) {
@@ -6681,7 +6686,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Forêt Luxuriante
-      description: (t) => t('staysInPlay'),
+      description: (t) => parseEffects(t('staysInPlay')).effects[0].text,
       timing: "staysInPlay",
       execute: async function (ctx) {
         if(ctx) {
@@ -6693,7 +6698,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   148: {
     2: [{ // Muraille
-      description: (t) => t('staysInPlay'),
+      description: (t) => parseEffects(t('staysInPlay')).effects[0].text,
       timing: "staysInPlay",
       execute: async function (ctx) {
         if(ctx) {
@@ -6703,7 +6708,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Donjon
-      description: (t) => t('effect_description_small_dungeon'), 
+      description: (t) => parseEffects(t('effect_description_small_dungeon')).effects[0].text, 
       timing: "onClick",
       execute: async function (ctx) {
         const cards = ctx.fetchCardsInZone((c) => c.GetName(ctx.t) === ctx.t('prisoner'), ctx.t('playArea'));
@@ -6726,7 +6731,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     4: [{ // Vaste Donjon
-      description: (t) => t('effect_description_large_dungeon'),
+      description: (t) => parseEffects(t('effect_description_large_dungeon')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         const cards = ctx.fetchCardsInZone((c) => c.GetName(ctx.t) === ctx.t('prisoner'), ctx.t('playArea'));
@@ -6745,7 +6750,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   149: {
     1: [{ // Percepteur des Impôts
-      description: (t) => t('effect_description_tax_collector'), 
+      description: (t) => parseEffects(t('effect_description_tax_collector')).effects[0].text, 
       timing: "onResourceGain",
       execute: async function (ctx) {
         if (ctx.cardsForTrigger && ctx.cardsForTrigger[0].id === ctx.card.id) {
@@ -6759,7 +6764,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   150: {
     1: [
       { // Voleur Aguerri
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[0].text,
         timing: "played",
         execute: async function(ctx)  {
           const cards = ctx.fetchCardsInZone((c) => ctx.getCardProduction(c, ctx.zone).some((map) => hasEnoughResources(map, {coin: 1})), ctx.zone);
@@ -6768,7 +6773,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[1].text,
         timing: "onClick",
         execute: async function(ctx)  {
           if (hasEnoughResources(ctx.resources, {sword: 5})) {
@@ -6785,7 +6790,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     ],
     3: [{ // Prisonnier
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
         timing: "otherCardPlayed",
         execute: async function(ctx)  {
           const enemies = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('playArea'));
@@ -6800,7 +6805,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   151: {
     1: [{ // Concours de Tir à l'Arc
-      description: (t) => t('effect_description_archery_contest'), 
+      description: (t) => parseEffects(t('effect_description_archery_contest')).effects[0].text, 
       timing: "onClick",
       execute: async function (ctx) {
         const enemies = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('discard'));
@@ -6820,7 +6825,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Appâter et Piéger
-      description: (t) => t('effect_description_bait_and_trap'), 
+      description: (t) => parseEffects(t('effect_description_bait_and_trap')).effects[0].text, 
       timing: "onClick",
       execute: async function (ctx) {
         const enemies = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('discard'));
@@ -6839,7 +6844,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   152: {
     1: [{ // Guarde Incompétent
-      description: (t) => t('none'), 
+      description: (t) => parseEffects(t('none')).effects[0].text, 
       timing: "onPlayAreaUpdated",
       execute: async function (ctx) {
         if (ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('playArea')).length === 0) {
@@ -6849,7 +6854,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     2: [{ // Guarde Impatient
-      description: (t) => t('none'), 
+      description: (t) => parseEffects(t('none')).effects[0].text, 
       timing: "onPlayAreaUpdated",
       execute: async function (ctx) {
         if (ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('playArea')).length === 0) {
@@ -6859,7 +6864,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Preux Chevalier
-      description: (t) => t('effect_description_brave_knight'), 
+      description: (t) => parseEffects(t('effect_description_brave_knight')).effects[0].text, 
       timing: "played",
       execute: async function (ctx) {
         const enemies = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('discard'));
@@ -6876,7 +6881,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   153: {
     1: [
       { // Chariot à Trésors
-        description: (t) => t('effect_description_treasure_wagon'), 
+        description: (t) => parseEffects(t('effect_description_treasure_wagon')).effects[0].text, 
         timing: "played",
         priority: 1,
         execute: async function (ctx) {
@@ -6906,7 +6911,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('effect_description_treasure_wagon'), 
+        description: (t) => parseEffects(t('effect_description_treasure_wagon')).effects[1].text, 
         timing: "otherCardPlayed",
         priority: 1,
         execute: async function (ctx) {
@@ -6937,7 +6942,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('none'), 
+        description: (t) => parseEffects(t('none')).effects[2].text, 
         timing: "onPurge",
         execute: async function (ctx) {
           let sum = 0;
@@ -6951,7 +6956,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   154: {
     1: [
       { // Prince Puissant
-        description: (t) => t('none'), 
+        description: (t) => parseEffects(t('none')).effects[0].text, 
         timing: "onClick",
         execute: async function (ctx) {
           const upgrade = ctx.card.GetUpgrades()[0];
@@ -6974,7 +6979,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('effect_description_powerful_prince'), 
+        description: (t) => parseEffects(t('effect_description_powerful_prince')).effects[1].text, 
         timing: "played",
         execute: async function (ctx) {
           const choice = await ctx.selectResourceChoice({ coin: 1, wood: 1, stone: 1, sword: 1, metal: 1, tradegood: 1 }, 2);
@@ -6988,7 +6993,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     ],
     3: [
       { // Prince _
-        description: (t) => t('effect_description_powerful_prince'), 
+        description: (t) => parseEffects(t('effect_description_powerful_prince')).effects[0].text, 
         timing: "played",
         execute: async function (ctx) {
           const choice = await ctx.selectResourceChoice({ coin: 1, wood: 1, stone: 1, sword: 1, metal: 1, tradegood: 1 }, 3);
@@ -7000,7 +7005,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('effect_description_prince__'),
+        description: (t) => parseEffects(t('effect_description_prince__')).effects[1].text,
         timing: 'onClick',
         execute: async function(ctx) {
           if (await ctx.discoverCard((c) => [167].includes(c.id), this.description(ctx.t), 1, ctx.card, 0)) {
@@ -7013,7 +7018,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   155: {
     1: [{ // Grand Camp de Voleurs
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onResourcePay",
       execute: async function (ctx) {
         if (ctx.resources.sword === 0) {
@@ -7023,7 +7028,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     2: [{ // Petit Camp de Voleurs
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onResourcePay",
       execute: async function (ctx) {
         if (ctx.resources.sword === 0) {
@@ -7035,7 +7040,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   156: {
     1: [{ // Grand Camp de Voleurs
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onResourcePay",
       execute: async function (ctx) {
         if (ctx.resources.sword === 0) {
@@ -7045,7 +7050,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     2: [{ // Petit Camp de Voleurs
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onResourcePay",
       execute: async function (ctx) {
         if (ctx.resources.sword === 0) {
@@ -7055,7 +7060,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Forêt Escarpée
-      description: (t) => t('staysInPlay'),
+      description: (t) => parseEffects(t('staysInPlay')).effects[0].text,
       timing: "staysInPlay",
       execute: async function (ctx) {
         if(ctx) {
@@ -7068,7 +7073,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   157: {
     1: [
       { // Voleur Saboteur
-        description: (t) => t('effect_description_robber_saboteur'),
+        description: (t) => parseEffects(t('effect_description_robber_saboteur')).effects[0].text,
         timing: "played",
         execute: async function(ctx)  {
           const buildings = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('building')), ctx.t('playArea'));
@@ -7090,7 +7095,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[1].text,
         timing: "onClick",
         execute: async function(ctx)  {
           if (ctx.resources.sword >= 3) {
@@ -7107,7 +7112,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     ],
     3: [{ // Prisonnier
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
         timing: "otherCardPlayed",
         execute: async function(ctx)  {
           const enemies = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('playArea'));
@@ -7123,7 +7128,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   158: {
     1: [
       { // Moine Rebelle
-        description: (t) => t('effect_description_rebellious_monk'),
+        description: (t) => parseEffects(t('effect_description_rebellious_monk')).effects[0].text,
         timing: "played",
         execute: async function(ctx)  {
           let selectedCards: GameCard[] = [];
@@ -7138,7 +7143,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[1].text,
         timing: "onClick",
         execute: async function(ctx)  {
           if (ctx.resources.tradegood >= 4) {
@@ -7155,7 +7160,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     ],
     3: [{ // Prisonnier
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
         timing: "otherCardPlayed",
         execute: async function(ctx)  {
           const enemies = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('playArea'));
@@ -7170,7 +7175,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   159: {
     1: [{ // Barde du Peuple
-      description: (t) => t('effect_description_bard_of_the_people'),
+      description: (t) => parseEffects(t('effect_description_bard_of_the_people')).effects[0].text,
       timing: "played",
       execute: async function(ctx)  {
         const enemies = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('discard'));
@@ -7184,7 +7189,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Barde Obéissant
-      description: (t) => t('effect_description_obedient_bard'),
+      description: (t) => parseEffects(t('effect_description_obedient_bard')).effects[0].text,
         timing: "onClick",
         execute: async function(ctx)  {
           const events = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('event')), ctx.t('discard'));
@@ -7204,7 +7209,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   160: {
     1: [
       { // Sauveur
-        description: (t) => t('effect_description_rescuer'),
+        description: (t) => parseEffects(t('effect_description_rescuer')).effects[0].text,
         timing: "played",
         execute: async function(ctx)  {
           const prisoners = ctx.fetchCardsInZone((c) => c.GetName(ctx.t) === ctx.t('prisoner'), ctx.t('discard'));
@@ -7218,7 +7223,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[1].text,
         timing: "onClick",
         execute: async function(ctx)  {
           if (ctx.resources.metal >= 3) {
@@ -7235,7 +7240,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     ],
     3: [{ // Prisonnier
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
         timing: "otherCardPlayed",
         execute: async function(ctx)  {
           const enemies = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('playArea'));
@@ -7251,7 +7256,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   161: {
     1: [
       { // Sauveur
-        description: (t) => t('effect_description_rescuer'),
+        description: (t) => parseEffects(t('effect_description_rescuer')).effects[0].text,
         timing: "played",
         execute: async function(ctx)  {
           const prisoners = ctx.fetchCardsInZone((c) => c.GetName(ctx.t) === ctx.t('prisoner'), ctx.t('discard'));
@@ -7265,7 +7270,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[1].text,
         timing: "onClick",
         execute: async function(ctx)  {
           if (ctx.resources.metal >= 3) {
@@ -7282,7 +7287,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     ],
     3: [{ // Prisonnier
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
         timing: "otherCardPlayed",
         execute: async function(ctx)  {
           const enemies = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('playArea'));
@@ -7298,7 +7303,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   162: {
     1: [
       { // Vieux Chêne
-        description: (t) => t('effect_description_old_oak_tree'),
+        description: (t) => parseEffects(t('effect_description_old_oak_tree')).effects[0].text,
         timing: "played",
         execute: async function(ctx)  {
           const enemies = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('discard'));
@@ -7312,7 +7317,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[1].text,
         timing: "onClick",
         execute: async function(ctx)  {
           if (ctx.resources.metal >= 2) {
@@ -7331,7 +7336,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     ],
     3: [{ // Barde Obéissant
-      description: (t) => t('effect_description_obedient_bard'),
+      description: (t) => parseEffects(t('effect_description_obedient_bard')).effects[0].text,
         timing: "onClick",
         execute: async function(ctx)  {
           if (!getLastCheckboxChecked(ctx.card)) {
@@ -7355,7 +7360,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   163: {
     1: [{ // Camp de Druides
-      description: (t) => t('effect_description_druid_camp'),
+      description: (t) => parseEffects(t('effect_description_druid_camp')).effects[0].text,
       timing: "played",
       execute: async function(ctx)  {
         const stayInPlay = ctx.fetchCardsInZone((c) => c.GetEffect(ctx.t).includes(ctx.t('staysInPlay')), ctx.zone);
@@ -7365,7 +7370,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     }],
     2: [
       { // Sanctuaire Druidique
-        description: (t) => t('effect_description_druid_sanctuary'),
+        description: (t) => parseEffects(t('effect_description_druid_sanctuary')).effects[0].text,
         timing: "played",
         execute: async function(ctx)  {
           const stayInPlay = ctx.fetchCardsInZone((c) => c.GetEffect(ctx.t).includes(ctx.t('staysInPlay')), ctx.zone);
@@ -7374,7 +7379,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('effect_description_druid_sanctuary'),
+        description: (t) => parseEffects(t('effect_description_druid_sanctuary')).effects[1].text,
         timing: "onUpgrade",
         execute: async function(ctx)  {
           const cards = await ctx.selectCardsFromZone((c) => c.id !== ctx.card.id && !c.negative[c.currentSide - 1], ctx.t('playArea'), this.description(ctx.t), 2, ctx.card, 0);
@@ -7386,7 +7391,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     ],
     4: [{ // Forêt Reculée
-      description: (t) => t('effect_description_secluded_forest'),
+      description: (t) => parseEffects(t('effect_description_secluded_forest')).effects[0].text,
         timing: "played",
         execute: async function(ctx)  {
           const stayInPlay = ctx.fetchCardsInZone((c) => c.GetEffect(ctx.t).includes(ctx.t('staysInPlay')), ctx.zone);
@@ -7401,7 +7406,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   164: {
     3: [{ // Cérémonie
-      description: (t) => t('effect_description_ceremony'),
+      description: (t) => parseEffects(t('effect_description_ceremony')).effects[0].text,
       timing: "onClick",
       execute: async function(ctx)  {
         if (ctx.fetchCardsInZone((c) => !c.negative[c.currentSide - 1] && c.id !== ctx.card.id, ctx.t('playArea')).length < 5) {
@@ -7424,7 +7429,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     4: [{ // Mégalithe
-      description: (t) => t('effect_description_hill_megalith'),
+      description: (t) => parseEffects(t('effect_description_hill_megalith')).effects[0].text,
         timing: "onClick",
         execute: async function(ctx)  {
           if (ctx.resources.tradegood < 4 || ctx.fetchCardsInZone((c) => c.id === 165, ctx.t('campaign')).length === 0) {
@@ -7441,7 +7446,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   165: {
     1: [{ // Le Gardien des Secrets
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "played",
       execute: async function(ctx)  {
         await ctx.dropToDiscard({id: ctx.fetchCardsInZone(() => true, ctx.zone).map((c) => c.id), fromZone: ctx.t('playArea')});
@@ -7452,7 +7457,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     }],
     2: [
       { // Course Poursuite
-        description: (t) => t('effect_description_the_chase'),
+        description: (t) => parseEffects(t('effect_description_the_chase')).effects[0].text,
         timing: "onClick",
         execute: async function(ctx)  {
           if (ctx.fetchCardsInZone((c) => !c.negative[c.currentSide - 1], ctx.t('playArea')).length < 6) {
@@ -7476,7 +7481,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('effect_description_the_chase'),
+        description: (t) => parseEffects(t('effect_description_the_chase')).effects[1].text,
         timing: "endOfTurn",
         execute: async function(ctx)  {
           const checkboxes = ctx.card.checkboxes[ctx.card.currentSide - 1].filter((c) => !c.checked && c.content.includes('X'));
@@ -7490,7 +7495,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     ],
     4: [{ // Connecteur d'Ether
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "removed",
       execute: async function () {
         return false;
@@ -7500,7 +7505,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   166: {
     1: [
       { // Shérif
-        description: (t) => t('none'), 
+        description: (t) => parseEffects(t('none')).effects[0].text, 
         timing: "onClick",
         execute: async function (ctx) {
           const upgrade = ctx.card.GetUpgrades()[0];
@@ -7523,7 +7528,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('effect_description_sheriff'), 
+        description: (t) => parseEffects(t('effect_description_sheriff')).effects[1].text, 
         timing: "onClick",
         execute: async function (ctx) {
           const lands = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('land')), ctx.t('playArea'));
@@ -7545,7 +7550,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       },
     ],
     3: [{ // Shérif Redouté
-      description: (t) => t('effect_description_feared_sheriff'), 
+      description: (t) => parseEffects(t('effect_description_feared_sheriff')).effects[0].text, 
       timing: "onClick",
       execute: async function (ctx) {
         const lands = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('land')), ctx.t('playArea'));
@@ -7568,7 +7573,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   167: {
     1: [{ // Trésor
-      description: (t) => t('none'),
+      description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
         let goldToPay = 1;
@@ -7603,7 +7608,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Trésor Légendaire
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[0].text,
         timing: "onClick",
         execute: async function (ctx) {
           let goldToPay = 13;
@@ -7649,7 +7654,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   },
   168: {
     2: [{ // Palissade
-      description: (t) => t('effect_description_pallisade'), 
+      description: (t) => parseEffects(t('effect_description_pallisade')).effects[0].text, 
       timing: "endOfTurn",
       execute: async function (ctx) {
         const lands = await ctx.selectCardsFromZone((c) => c.GetType(ctx.t).includes(ctx.t('land')) && c.id !== ctx.card.id, ctx.t('playArea'), this.description(ctx.t), 0, ctx.card, 2, 'land');
@@ -7662,7 +7667,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
     }],
     3: [
       { // Muraille Avant-Poste
-        description: (t) => t('effect_description_walled_outpost'), 
+        description: (t) => parseEffects(t('effect_description_walled_outpost')).effects[0].text, 
         timing: "endOfTurn",
         execute: async function (ctx) {
           const choice = await ctx.selectStringChoice(ctx.t('string_choice_discard_to_keep_lands'), [ctx.t('yes'), ctx.t('no')]);
@@ -7674,7 +7679,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => t('none'),
+        description: (t) => parseEffects(t('none')).effects[1].text,
         timing: "onPurge",
         execute: async function (ctx) {
           await addResourceMapToCard(ctx.card, { fame: ctx.cardsForTrigger? 2 * ctx.cardsForTrigger.filter((c) => c.id !== ctx.card.id).length : 0 });
@@ -7683,7 +7688,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     ],
     4: [{ // Avant-Poste Forestier
-      description: (t) => t('effect_description_forest_outpost'), 
+      description: (t) => parseEffects(t('effect_description_forest_outpost')).effects[0].text, 
       timing: "endOfTurn",
       execute: async function (ctx) {
         const lands = await ctx.selectCardsFromZone((c) => c.GetType(ctx.t).includes(ctx.t('land')) && c.id !== ctx.card.id, ctx.t('playArea'), this.description(ctx.t), 0, ctx.card, 3, 'land');
