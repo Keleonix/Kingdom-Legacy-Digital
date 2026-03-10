@@ -7915,7 +7915,7 @@ export const cardFameValueRegistry: Record<number, Record<number, CardFameValue>
     3: { // Barde Obéissant
       description: "Vaut 2 par check",
       execute: function(ctx)  {
-        return 2 * (ctx.card.checkboxes[0].filter(cb => cb.checked).length);
+        return 2 * (ctx.card.checkboxes[2].filter(cb => cb.checked).length);
       }
     },
   }
