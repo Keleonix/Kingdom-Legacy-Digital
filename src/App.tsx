@@ -2260,7 +2260,7 @@ const ResourceSelectionPopup: React.FC<{
   totalLevel: number;
   onConfirm: (selected: Partial<ResourceMap>) => void;
   onCancel: () => void;
-}> = ({ resources, totalLevel, onConfirm, onCancel }) => {
+}> = ({ resources, totalLevel, onConfirm }) => {
   const { t } = useTranslation();
 
   const isOptionMode = Array.isArray(resources);
