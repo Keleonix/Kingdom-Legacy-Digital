@@ -25,7 +25,7 @@ export type TranslationKeys =
   | 'land' | 'building' | 'person' | 'knight' | 'lady' | 'seafaring'
   | 'ship' | 'event' | 'enemy' | 'permanent' | 'scroll' | 'choice'
   | 'potion' | 'item' | 'invention' | 'artefact' | 'livestock'
-  | 'horse' | 'wagon'
+  | 'horse' | 'wagon' | 'state'
   
   // Resources
   | 'coin' | 'wood' | 'stone' | 'sword' | 'metal' | 'tradegood' | 'fame'
@@ -712,6 +712,7 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     livestock: 'Elevage',
     horse: 'Cheval',
     wagon: 'Chariot',
+    state: 'État',
     
     // Resources
     coin: 'Or',
@@ -1641,6 +1642,7 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     livestock: 'Livestock',
     horse: 'Horse',
     wagon: 'Wagon',
+    state: 'State',
 
     // Resources
     coin: 'Gold',

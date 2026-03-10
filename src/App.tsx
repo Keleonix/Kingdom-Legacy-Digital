@@ -2311,7 +2311,11 @@ const ResourceSelectionPopup: React.FC<{
     setAmounts((prev) => ({ ...prev, [resource]: Math.max(0, value) }));
   };
 
-  const isConfirmDisabled = isOptionMode
+  const hasAnyResource = isOptionMode
+    ? options.some((map) => Object.keys(map).length > 0)
+    : resourceKeys.length > 0;
+
+  const isConfirmDisabled = !hasAnyResource ? false : isOptionMode
     ? selectedOptions.length === 0 || selectedOptions.length > totalLevel
     : totalSelected === 0 || totalSelected > totalLevel;
 
@@ -2386,12 +2390,6 @@ const ResourceSelectionPopup: React.FC<{
         </div>
 
         <div className="flex justify-end gap-2">
-          <button
-            onClick={onCancel}
-            className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300"
-          >
-            {t('cancel')}
-          </button>
           <button
             onClick={isOptionMode ? optionConfirm : () => onConfirm(amounts)}
             disabled={isConfirmDisabled}

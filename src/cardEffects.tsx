@@ -6741,7 +6741,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             await ctx.dropToDiscard({id: selected.map((c) => c.id), fromZone: ctx.t('playArea')});
             await addResourceMapToCard(ctx.card, {fame: selected.length * 2});
             ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
-            return true;
+            return false;
           }
         }
         return false;
@@ -7193,7 +7193,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         timing: "onClick",
         execute: async function(ctx)  {
           const events = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('event')), ctx.t('discard'));
-          if (events.length > 0 || !getLastCheckboxChecked(ctx.card)) {
+          if (events.length > 0 && !getLastCheckboxChecked(ctx.card)) {
             const selected = (await ctx.selectCardsFromArray(events, ctx.t('discard'), this.description(ctx.t), 1, 0, ctx.card, 'event'))[0];
             if (selected) {
               checkNextBox(ctx.card);
