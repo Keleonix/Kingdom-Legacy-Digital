@@ -71,6 +71,11 @@ export type TranslationKeys =
   // Expansions
   | 'ridding_the_woods'
 
+  // Achievements
+  | 'achievements' | 'achievementUnlocked' | 'areYouSureResetAchievements' | 'resetAchievements'
+  | 'ach_name_first_round' | 'ach_desc_first_round'
+  | 'ach_name_first_game' | 'ach_desc_first_game'
+
   // Cards Names
   | 'welcome'
   | 'wild_grass' | 'plains' | 'food_barns' | 'farmlands'
@@ -803,6 +808,16 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
 
     // Expansions
     ridding_the_woods: 'La Forêt des Brigands',
+
+    // Achievements
+    achievements: "Succès",
+    achievementUnlocked: 'Succès Obtenu',
+    areYouSureResetAchievements: 'Voulez-vous vraiment réinitialiser vos Succès ?',
+    resetAchievements: 'Réinitialiser vos Succès',
+    ach_name_first_round: 'Première Manche',
+    ach_desc_first_round: 'Jouez votre première manche !',
+    ach_name_first_game: 'Première Partie',
+    ach_desc_first_game: 'Jouez votre première partie !',
 
     // Cards Names
     welcome: "Bienvenue",
@@ -1734,6 +1749,16 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     // Expansions
     ridding_the_woods: 'Ridding the Woods',
 
+    // Achievements
+    achievements: 'achievements',
+    achievementUnlocked: 'Achievement Unlocked',
+    areYouSureResetAchievements: 'Are you sure you want to reset your Achievements ?',
+    resetAchievements: 'Reset Achievements',
+    ach_name_first_round: 'First Round',
+    ach_desc_first_round: 'Play your first round !',
+    ach_name_first_game: 'First Game',
+    ach_desc_first_game: 'Play your first game !',
+    
     // Cards Names
     welcome: "Welcome",
     wild_grass: "Wild Grass",

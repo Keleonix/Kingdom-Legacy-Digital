@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useMemo } from "react";
+import React, { useRef, useState, useEffect, useMemo, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
@@ -15,6 +15,9 @@ import { DEFAULT_TUTORIAL_STEPS, tutorial, TutorialOverlay, type TutorialStep } 
 import { Preferences } from '@capacitor/preferences';
 import { CustomKeyboard } from './customKeyboard'
 import { parseEffects } from "./utils";
+import { AchievementsModal, type Achievement } from "./AchievementsModal";
+import { ACHIEVEMENTS } from "./achievements";
+import { AchievementToast } from "./AchievementsToast";
 
 const ZONE_MIN_HEIGHT = "300px";
 
@@ -2928,6 +2931,16 @@ export default function Game() {
     return window.matchMedia('(pointer: coarse)').matches;
   };
 
+  const [unlockedAchievements, setUnlockedAchievements] = useState<Set<string>>(() => {
+    const saved = localStorage.getItem('kl_achievements');
+    return saved ? new Set(JSON.parse(saved)) : new Set();
+  });
+  const [showAchievements, setShowAchievements] = useState(false);
+  const pendingToastsRef = useRef<Set<string>>(new Set());
+
+  const [toastQueue, setToastQueue] = useState<{ achievement: Achievement; id: number }[]>([]);
+  const toastCounterRef = useRef(0);
+
   // Recharger la liste quand le menu s'ouvre
   useEffect(() => {
     if (showSettings) {
@@ -3404,6 +3417,9 @@ export default function Game() {
     await handleEffectsEndOfTurn();
 
     if (endRound) {
+      // Achievement : First Round
+      unlockAchievement('first_round');
+
       const endOfRoundCardList = await gatherEffectsEndOfRound();
       
       setDeckImmediate((d) => [...d, ...playAreaRef.current, ...blockedZoneRef.current, ...discardRef.current]);
@@ -3645,8 +3661,9 @@ export default function Game() {
       } else {
         setScores((prev) => ({ ...prev, baseGame: totalFame }));
       }
+
+      unlockAchievement('first_game');
       
-      setResources(prev => ({ ...prev, fame: totalFame }));
       setHasEndedBaseGame(true);
       setIsChoosingExpansion(true);
       setShouldComputeFame(false);
@@ -5524,6 +5541,41 @@ export default function Game() {
     }
   }
 
+  const unlockAchievement = useCallback((id: string) => {
+    if (pendingToastsRef.current.has(id)) return;
+    
+    setUnlockedAchievements(prev => {
+      if (prev.has(id)) return prev;
+      const next = new Set(prev);
+      next.add(id);
+      localStorage.setItem('kl_achievements', JSON.stringify([...next]));
+      return next;
+    });
+
+    pendingToastsRef.current.add(id);
+    const achievement = ACHIEVEMENTS.find(a => a.id === id);
+    if (achievement) {
+      const toastId = ++toastCounterRef.current;
+      setToastQueue(q => [...q, { achievement, id: toastId }]);
+    }
+  }, []);
+
+  const dismissToast = useCallback((toastId: number) => {
+    setToastQueue(q => q.filter(t => t.id !== toastId));
+  }, []);
+
+  const resetAchievements = () => {
+    setConfirmationPopup({
+      message: t('areYouSureResetAchievements'),
+      onConfirm: () => {
+        localStorage.removeItem('kl_achievements');
+        setUnlockedAchievements(new Set());
+        setConfirmationPopup(null);
+      },
+      onCancel: () => setConfirmationPopup(null),
+    });
+  };
+
   // -------------------
   // Memory management
   // -------------------
@@ -5910,12 +5962,13 @@ export default function Game() {
               <div className="flex flex-col gap-2">
                 {/* Language Selection */}
                 <LanguageSelector />
-                <Button onClick={resetGame}>{t('resetFullGame')}</Button>
-                <Button onClick={() => { setShowGuide(true); setShowSettings(false); }}>Guide</Button>
-
+                <div className="flex flex-row gap-2">
+                  <Button onClick={resetGame}>{t('resetFullGame')}</Button>
+                  <Button onClick={() => { setShowGuide(true); setShowSettings(false); }}>Guide</Button>
+                  <Button onClick={() => setShowAchievements(true)}>🏆</Button>
+                </div>
+                <div className="border-t"/>
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm">{t('kingdomSaveLoad')}</label>
-                  
                   <div className="flex flex-col gap-1 max-h-40 overflow-y-auto border rounded">
                     <div
                       className={`p-2 cursor-pointer hover:bg-blue-50 ${selectedKingdom === t('newKingdom') ? "bg-blue-100 font-bold" : ""}`}
@@ -5995,6 +6048,11 @@ export default function Game() {
                       {t('continue')}
                     </Button>
                     <Button onClick={() => { setShowAbout(true); setShowSettings(false); }}>{t('about')}</Button>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button onClick={() => { resetAchievements(); setShowSettings(false); }}>
+                      {t('resetAchievements')}
+                    </Button>
                   </div>
                 </div>
                 <div className="border-t pt-4 mt-4">
@@ -6477,6 +6535,15 @@ export default function Game() {
         </div>
       )}
 
+      {showAchievements && (
+        <AchievementsModal
+          achievements={ACHIEVEMENTS}
+          unlockedIds={unlockedAchievements}
+          onClose={() => setShowAchievements(false)}
+          t={t}
+        />
+      )}
+
       {slidingCards.size > 0 && createPortal(
         <svg
           style={{
@@ -6576,6 +6643,11 @@ export default function Game() {
         onNext={tutorialNext}
         onPrevious={tutorialPrev}
         onStop={stopTutorial}
+        t={t}
+      />
+      <AchievementToast
+        queue={toastQueue}
+        onDismiss={dismissToast}
         t={t}
       />
     </DndProvider>
