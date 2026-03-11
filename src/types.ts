@@ -279,4 +279,10 @@ export interface SavedGame {
   completedExpansions: string[];
   currentExpansion: string | null;
   scores: GameScore;
+  numberOfRounds: number;
+  numberDrawn: number;
+  numberDiscarded: number;
+  numberDeleted: number;
+  numberDiscovered: number;
+  discoveredCards: Array<number>;
 }

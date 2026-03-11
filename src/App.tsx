@@ -2773,7 +2773,7 @@ export default function Game() {
 
   const [campaignDeck, setCampaignDeck] = useState<GameCard[]>(() =>
     allCards
-      .filter((c) => c.id > 10) // TODO: Change Back => && c.id <= 138
+      .filter((c) => c.id > 10 && c.id <= 138) // TODO: Change Back => && c.id <= 138
       .sort((a, b) => a.id - b.id)
       .map((c) => cloneGameCard(c))
   );
@@ -2931,6 +2931,14 @@ export default function Game() {
     return window.matchMedia('(pointer: coarse)').matches;
   };
 
+  // Achievements
+  const [numberOfRounds, setNumberOfRounds] = useState(0);
+  const [numberDrawn, setNumberDrawn] = useState(0);
+  const [numberDiscarded, setNumberDiscarded] = useState(0);
+  const [numberDeleted, setNumberDeleted] = useState(0);
+  const [numberDiscovered, setNumberDiscovered] = useState(0);
+  const [discoveredCards, setDiscoveredCards] = useState(Array<number>);
+
   const [unlockedAchievements, setUnlockedAchievements] = useState<Set<string>>(() => {
     const saved = localStorage.getItem('kl_achievements');
     return saved ? new Set(JSON.parse(saved)) : new Set();
@@ -2941,7 +2949,6 @@ export default function Game() {
   const [toastQueue, setToastQueue] = useState<{ achievement: Achievement; id: number }[]>([]);
   const toastCounterRef = useRef(0);
 
-  // Recharger la liste quand le menu s'ouvre
   useEffect(() => {
     if (showSettings) {
       getSavedKingdoms().then(setSavedKingdoms);
@@ -3419,6 +3426,8 @@ export default function Game() {
     if (endRound) {
       // Achievement : First Round
       unlockAchievement('first_round');
+
+      setNumberOfRounds((prev) => prev + 1);
 
       const endOfRoundCardList = await gatherEffectsEndOfRound();
       
@@ -4277,12 +4286,20 @@ export default function Game() {
     return blockedZone.filter(c => ids.includes(c.id));
   }
 
+  function upgradeAchievementCheck(card: GameCard) {
+    if (card.GetName(t) === t('headquarters') && numberOfRounds === 1) {
+      unlockAchievement('town_hall_gambit');
+    }
+  }
+
   async function upgradeCard(card: GameCard, nextSide: number, forced?: boolean): Promise<boolean> {
     if (card.name[nextSide - 1] === "" || (turnEndFlag && !forced)) {
       return false;
     }
 
     await handleEffectsUpgrade(card);
+
+    upgradeAchievementCheck(card);
 
     const blockedIds = blockMap.get(card.id);
     const cardsToUnblock = blockedIds ? blockedZoneRef.current.filter(c => blockedIds.includes(c.id)) : [];
@@ -4620,8 +4637,16 @@ export default function Game() {
     const cards: GameCard[] = [];
 
     if (toZone === t('playArea') && checkPlayRestrictions()) {
-        return;
+      return;
+    }
+
+    if (fromZone === t('campaign')) {
+      const allBaseIds = new Array(125).fill(null).map((_, i) => i + 11);
+      const newDiscoveredCards = [...new Set([...discoveredCards, ...cardIds])];
+      if (newDiscoveredCards.length >= allBaseIds.length && allBaseIds.every((val) => newDiscoveredCards.includes(val))) {
+        unlockAchievement('know_your_basics');
       }
+    }
 
     for(const id of cardIds) {
       const cardToCheck = fetchCardsInZone((c) => c.id === id, fromZone)[0];
@@ -4686,6 +4711,8 @@ export default function Game() {
       if (fromZone === t('campaign')) {
         setCampaignDeckImmediate((g) => removeById(g, id));
         setAvailableDiscoverableCards(prev => prev.filter(cardId => cardId !== id));
+        setNumberDiscovered((prev) => prev + 1);
+        setDiscoveredCards((prev) => [...prev, id]);
       }
       if (fromZone === t('blocked')) setBlockedZoneImmediate((b) => removeById(b, id));
       if (fromZone === t('permanentZone')) setPermanentZone((pe) => removeById(pe, id));
@@ -4706,6 +4733,9 @@ export default function Game() {
       });
     }
     if (toZone === t('playArea')) {
+      if (fromZone === t('discard')) {
+        setNumberDrawn((prev) => prev + cards.length);
+      }
       const effects = cards.flatMap(c =>
         getCardEffects(c.id, c.currentSide, "played").map(effect => [effect, c] as [CardEffect, GameCard])
       ).sort(([a], [b]) => ((b.priority ?? 0) - (a.priority ?? 0))
@@ -4721,6 +4751,7 @@ export default function Game() {
       }
     }
     if (toZone === t('discard') && (fromZone === t('playArea') || fromZone === t('blocked'))) {
+      setNumberDiscarded((prev) => prev + cards.length);
       for (const card of cards) {
         await triggerOnCardDiscarded(fetchCardsInZone((c) => c.id === card.id, t('discard')));
       }
@@ -5105,6 +5136,8 @@ export default function Game() {
     if (!canDestroy) {
       return;
     }
+
+    setNumberDeleted((prev) => prev + 1);
     
     // Procède à la destruction
     if (zone === t('deck')) setDeck((d) => d.filter(c => c.id !== id));
@@ -5542,6 +5575,7 @@ export default function Game() {
   }
 
   const unlockAchievement = useCallback((id: string) => {
+    if (unlockedAchievements.has(id)) return;
     if (pendingToastsRef.current.has(id)) return;
     
     setUnlockedAchievements(prev => {
@@ -5600,6 +5634,12 @@ export default function Game() {
       completedExpansions,
       currentExpansion,
       scores,
+      numberOfRounds,
+      numberDrawn,
+      numberDiscarded,
+      numberDeleted,
+      numberDiscovered,
+      discoveredCards,
     };
     try {
       await Preferences.set({ key: `citysave:${name}`, value: JSON.stringify(payload) });
@@ -5654,6 +5694,12 @@ export default function Game() {
       setCompletedExpansions(parsed.completedExpansions || []);
       setCurrentExpansion(parsed.currentExpansion || null);
       setScores(parsed.scores || { baseGame: 0, expansions: {} });
+      setNumberOfRounds(parsed.numberOfRounds);
+      setNumberDrawn(parsed.numberDrawn);
+      setNumberDiscarded(parsed.numberDiscarded);
+      setNumberDeleted(parsed.numberDeleted);
+      setNumberDiscovered(parsed.numberDiscovered);
+      setDiscoveredCards(parsed.discoveredCards);
       
       setShowSettings(false);
       setConfirmationPopup({
@@ -5691,6 +5737,7 @@ export default function Game() {
             setResources({ ...emptyResource });
             setShowSettings(false);
             setConfirmationPopup(null);
+            setNumberOfRounds(0);
           },
           onCancel: () => setConfirmationPopup(null)
         });
@@ -5894,6 +5941,9 @@ export default function Game() {
                 </div>
               </div>
             </div>
+            <span className="absolute top-3 right-17 text-sm text-gray-500">
+              {t('round')} : {numberOfRounds + 1}
+            </span>
             <Zone
               name={t('playArea')}
               cards={playArea}
@@ -5939,7 +5989,7 @@ export default function Game() {
               onClick={handleDebugClick}
               className="absolute -bottom-7 -right-98 text-xs text-gray-700 whitespace-nowrap cursor-pointer select-none z-50"
             >
-              Kingdom Legacy - Digital by Keleonix | v0.10.0 {debugMode && '🐛'}
+              Kingdom Legacy - Digital by Keleonix | v0.10.1 {debugMode && '🐛'}
             </div>
           </div>
         </div>
@@ -6254,10 +6304,7 @@ export default function Game() {
                       availableDiscoverableCards.includes(card.id)
                     );
                     
-                    for (const card of cardsToAdd) {
-                      dropToDeck({ id: card.id, fromZone: t('campaign') });
-                    }
-                    await new Promise(resolve => setTimeout(resolve, 300));
+                    await dropToDeck({ id: cardsToAdd.map((c) => c.id), fromZone: t('campaign') });
                     
                     shuffleDeck();
                     setShowEndRound(false);

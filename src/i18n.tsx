@@ -13,7 +13,7 @@ export type TranslationKeys =
   | 'select' | 'id' | 'preview' | 'endGame' | 'seeDeck' | 'seeDiscard' | 'cardsList' | 'triggeredCard'
   | 'selectCardToPurge' | 'chooseExpansion' | 'expansionCard' | 'expansionBlock' | 'scores' | 'baseGame'
   | 'totalScore' | 'endExpansion' | 'seePurged' | 'add' | 'top' | 'bottom' | 'aboutContent'
-  | 'guideTitle' | 'guideRulesLink' | 'guideContent' | 'remaining' | 'areYouSureDelete'
+  | 'guideTitle' | 'guideRulesLink' | 'guideContent' | 'remaining' | 'areYouSureDelete' | 'round'
   
   // Cards Elements
   | 'frontUp' | 'frontDown' | 'backUp' | 'backDown'
@@ -75,6 +75,8 @@ export type TranslationKeys =
   | 'achievements' | 'achievementUnlocked' | 'areYouSureResetAchievements' | 'resetAchievements'
   | 'ach_name_first_round' | 'ach_desc_first_round'
   | 'ach_name_first_game' | 'ach_desc_first_game'
+  | 'ach_name_town_hall_gambit' | 'ach_desc_town_hall_gambit'
+  | 'ach_name_know_your_basics' | 'ach_desc_know_your_basics'
 
   // Cards Names
   | 'welcome'
@@ -679,6 +681,7 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
   </ul>`,
     remaining: 'Reste',
     areYouSureDelete: 'Êtes-vous sûr de vouloir supprimer',
+    round: 'Manche',
     
     // Cards Elements
     frontUp: 'Recto Haut',
@@ -818,6 +821,10 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     ach_desc_first_round: 'Jouez votre première manche !',
     ach_name_first_game: 'Première Partie',
     ach_desc_first_game: 'Jouez votre première partie !',
+    ach_name_town_hall_gambit: 'La Manoeuvre de l\'Hôtel de Ville',
+    ach_desc_town_hall_gambit: 'Améliorer votre Quartier Général à la 2ème Manche.',
+    ach_name_know_your_basics: 'Le B.A-BA',
+    ach_desc_know_your_basics: 'Découvrir toutes les cartes du Jeu de Base.',
 
     // Cards Names
     welcome: "Bienvenue",
@@ -1619,6 +1626,7 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
   </ul>`,
     remaining: 'Remaining',
     areYouSureDelete: 'Are you sure you want to delete',
+    round: 'Round',
 
     // Cards Elements
     frontUp: 'Front Up',
@@ -1758,6 +1766,10 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     ach_desc_first_round: 'Play your first round !',
     ach_name_first_game: 'First Game',
     ach_desc_first_game: 'Play your first game !',
+    ach_name_town_hall_gambit: 'The Town Hall Gambit',
+    ach_desc_town_hall_gambit: 'Upgrade your Headquarters during the 2nd Round.',
+    ach_name_know_your_basics: 'Know your Basics',
+    ach_desc_know_your_basics: 'Discover all cards from Base Game.',
     
     // Cards Names
     welcome: "Welcome",

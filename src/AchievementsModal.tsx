@@ -6,6 +6,7 @@ export interface Achievement {
   iconPath: string;
   titleKey: TranslationKeys;
   descKey: TranslationKeys;
+  value: number;
 }
 
 interface AchievementsModalProps {
