@@ -940,30 +940,37 @@ function CardView({
                 }
                 
                 const icons = RESOURCE_KEYS.flatMap((k) => {
-                  const baseCount = opt[k] ?? 0;
-                  const bonusCount = (idx < baseOptions.length && productionBonus) ? (productionBonus[k] ?? 0) : 0;
-                  const totalCount = baseCount + bonusCount;
-                  
-                  if (totalCount === 0 || k === 'fame') return [];
-                  
-                  return [
-                    <div key={`${idx}-${k}`} className="flex items-center gap-1">
-                      <img src={resourceIconPath(k)} alt={k} title={`${k} x${totalCount}`} className="w-8 h-8" />
-                      {totalCount !== 1 && (
-                        <span className="text-xs">
-                          {baseCount > 0 && bonusCount > 0 ? (
-                            <>
-                              {baseCount}
-                              <span className="text-green-600 font-bold">+{bonusCount}</span>
-                            </>
-                          ) : (
-                            `x${totalCount}`
-                          )}
-                        </span>
+                const baseCount = opt[k] ?? 0;
+                const bonusCount = (idx < baseOptions.length && productionBonus) ? (productionBonus[k] ?? 0) : 0;
+                const totalCount = baseCount + bonusCount;
+
+                if (totalCount === 0 || k === 'fame') return [];
+
+                return [
+                  <div
+                    key={`${idx}-${k}`}
+                    className="flex items-center gap-1"
+                    style={{ fontSize: 12 }}
+                  >
+                    <span className="font-medium text-primary">
+                      {baseCount > 0 && bonusCount > 0 ? (
+                        <>
+                          {baseCount}
+                          <span className="text-green-600 font-bold">+{bonusCount}</span>
+                        </>
+                      ) : (
+                        totalCount
                       )}
-                    </div>
-                  ];
-                });
+                    </span>
+                    <img
+                      src={resourceIconPath(k)}
+                      alt={k}
+                      title={`${k} x${totalCount}`}
+                      className="w-6 h-6"
+                    />
+                  </div>
+                ];
+              });
 
                 if (icons.length === 0) return null;
 
@@ -978,9 +985,9 @@ function CardView({
                       }}
                       className="
                         relative overflow-hidden
-                        text-[10px] px-2 py-1 rounded-md
-                        flex items-center gap-1.5
-                        border-blue-300
+                        text-[10px] px-2 py-1.5 rounded-md
+                        flex items-center
+                        border border-blue-300
                         bg-gradient-to-br from-slate-200 via-blue-200 to-slate-300
                         text-slate-700
                         shadow-blue-100
@@ -994,7 +1001,7 @@ function CardView({
                     >
                       {/* Brillance */}
                       <span className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent pointer-events-none rounded-md" />
-                      <div className="relative flex items-center gap-1">
+                      <div className="relative flex flex-wrap gap-1 items-center max-w-[200px]">
                         {icons}
                       </div>
                     </button>
@@ -1090,13 +1097,14 @@ function CardView({
                 >
                   {/* Brillance */}
                   <span className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent pointer-events-none rounded-md" />
-
-                  <div className="flex items-center gap-1 relative">
+                  
+                  {/* Ressources wrappables */}
+                  <div className="relative flex flex-wrap gap-0.5 items-center max-w-[120px]">
                     {upg.cost ? (
                       Object.entries(upg.cost).map(([k, v]) => (
                         <span key={k} className="flex items-center gap-0.5">
+                          <span>{v}</span>
                           <img src={resourceIconPath(k as keyof ResourceMap)} alt={k} className="w-3 h-3" />
-                          <span>x{v}</span>
                         </span>
                       ))
                     ) : (
@@ -1106,8 +1114,10 @@ function CardView({
                       <span className="italic">{t(upg.otherCost as TranslationKeys)}</span>
                     )}
                   </div>
-                  <span className="relative opacity-60">→</span>
-                  <span className="relative">{t(card.name[upg.nextSide - 1] as TranslationKeys)}</span>
+
+                  {/* Flèche et nom : toujours sur leur propre ligne si ça dépasse */}
+                  <span className="relative opacity-60 shrink-0">→</span>
+                  <span className="relative shrink-0">{t(card.name[upg.nextSide - 1] as TranslationKeys)}</span>
                 </button>
               ))}
             </div>
@@ -4286,9 +4296,12 @@ export default function Game() {
     return blockedZone.filter(c => ids.includes(c.id));
   }
 
-  function upgradeAchievementCheck(card: GameCard) {
+  function upgradeAchievementCheck(card: GameCard, nextSide: number) {
     if (card.GetName(t) === t('headquarters') && numberOfRounds === 1) {
       unlockAchievement('town_hall_gambit');
+    }
+    if (card.GetName(t) === t('young_princess') && nextSide === 2) {
+      unlockAchievement('furious_child');
     }
   }
 
@@ -4299,7 +4312,7 @@ export default function Game() {
 
     await handleEffectsUpgrade(card);
 
-    upgradeAchievementCheck(card);
+    upgradeAchievementCheck(card, nextSide);
 
     const blockedIds = blockMap.get(card.id);
     const cardsToUnblock = blockedIds ? blockedZoneRef.current.filter(c => blockedIds.includes(c.id)) : [];
@@ -4641,10 +4654,22 @@ export default function Game() {
     }
 
     if (fromZone === t('campaign')) {
-      const allBaseIds = new Array(125).fill(null).map((_, i) => i + 11);
+      const stopCards = new Set([23, 30, 37, 47, 68]);
+      const allBaseIds = new Array(125).fill(null).map((_, i) => i + 11).filter(n => !stopCards.has(n));
+
+      const allBaseSeafarings = [22, 74, 75, 76, 77, 91, 93, 98, 100, 102];
+      const allShrines = [82, 83];
       const newDiscoveredCards = [...new Set([...discoveredCards, ...cardIds])];
+      const allAvailableCards = new Set([...[...playAreaRef.current, ...blockedZoneRef.current, ...permanentZoneRef.current, ...discardRef.current, ...deckRef.current].map((c) => c.id), ...cardIds]);
+
       if (newDiscoveredCards.length >= allBaseIds.length && allBaseIds.every((val) => newDiscoveredCards.includes(val))) {
         unlockAchievement('know_your_basics');
+      }
+      if (allBaseSeafarings.every(n => allAvailableCards.has(n))) {
+        unlockAchievement('going_at_sea');
+      }
+      if (allShrines.every(n => allAvailableCards.has(n))) {
+        unlockAchievement('wishing_for_religion');
       }
     }
 
@@ -4759,6 +4784,11 @@ export default function Game() {
         if(playAreaRef.current.includes(card) || (permanentZoneRef.current.includes(card) && card.GetType(t).includes(t('permanent')))) {
           await handleExecuteCardEffect(card, t('playArea'), "onPlayAreaUpdated", cards);
         }
+      }
+    }
+    if (toZone === t('blocked')) {
+      if (playAreaRef.current.filter((c) => !c.negative[c.currentSide - 1]).length === 0) {
+        unlockAchievement('fully_blocked');
       }
     }
   };
@@ -5134,7 +5164,12 @@ export default function Game() {
     const canDestroy = await triggerOnCardDestroy([sourceCard]);
     
     if (!canDestroy) {
+      unlockAchievement('can_t_touch_this');
       return;
+    }
+
+    if (!sourceCard.negative[sourceCard.currentSide - 1] && !sourceCard.GetType(t).includes(t('scroll'))) {
+      unlockAchievement('destroy_and_conquer');
     }
 
     setNumberDeleted((prev) => prev + 1);
@@ -5374,13 +5409,25 @@ export default function Game() {
         Object.entries(modularResources).forEach(([k, v]) => {
           const key = k as keyof ResourceMap;
           if(key !== "fame" && Number(v) !== 0){
+            if (Number(v) >= 10) {
+              unlockAchievement('nice_card');
+            }
             next[key] = (Number(next[key]) || 0) + (Number(v) || 0);
           }
         });
         return next;
       });
     }
-    
+
+    let resTot = 0;
+      for (const key in resourcesRef.current) {
+      const resourceKey = key as keyof ResourceMap;
+      resTot += (resourcesRef.current[resourceKey] ?? 0);
+    }
+    if (resTot >= 10) {
+      unlockAchievement('nice_production');
+    }
+
     if (onlyFame || toZone === t('none')) {
       return;
     }
@@ -5640,6 +5687,14 @@ export default function Game() {
       numberDeleted,
       numberDiscovered,
       discoveredCards,
+      availableDiscoverableCards,
+      blockMap: Array.from(blockMap),
+      usedEffectsThisTurn: Array.from(usedEffectsThisTurn),
+      hasEndedBaseGame,
+      turnEndFlag,
+      isChoosingExpansion,
+      cityNameInput,
+      selectedKingdom,
     };
     try {
       await Preferences.set({ key: `citysave:${name}`, value: JSON.stringify(payload) });
@@ -5674,7 +5729,7 @@ export default function Game() {
         return;
       }
       const parsed: SavedGame = JSON.parse(raw);
-      
+
       const reconstructCards = (cards: GameCard[]): GameCard[] => {
         return (cards || []).map(cardData => {
           const card = new GameCard({});
@@ -5682,7 +5737,7 @@ export default function Game() {
           return card;
         });
       };
-      
+
       setDeck(reconstructCards(parsed.deck));
       setCampaignDeckImmediate(reconstructCards(parsed.campaignDeck));
       setPlayArea(reconstructCards(parsed.playArea));
@@ -5700,7 +5755,15 @@ export default function Game() {
       setNumberDeleted(parsed.numberDeleted);
       setNumberDiscovered(parsed.numberDiscovered);
       setDiscoveredCards(parsed.discoveredCards);
-      
+      setAvailableDiscoverableCards(parsed.availableDiscoverableCards || []);
+      setBlockMap(parsed.blockMap ? new Map(parsed.blockMap) : new Map());
+      setUsedEffectsThisTurn(parsed.usedEffectsThisTurn ? new Map(parsed.usedEffectsThisTurn) : new Map());
+      setHasEndedBaseGame(parsed.hasEndedBaseGame ?? false);
+      setTurnEndFlag(parsed.turnEndFlag ?? true);
+      setIsChoosingExpansion(parsed.isChoosingExpansion ?? false);
+      setCityNameInput(parsed.cityNameInput || "");
+      setSelectedKingdom(parsed.selectedKingdom || t('newKingdom'));
+
       setShowSettings(false);
       setConfirmationPopup({
         message: t('loadSuccess') + ": " + name,
@@ -5734,10 +5797,27 @@ export default function Game() {
             setDiscard([]);
             setBlockedZone([]);
             setPermanentZone([]);
+            setPurgedCards([]);
             setResources({ ...emptyResource });
+            setAvailableDiscoverableCards([]);
+            setBlockMap(new Map());
+            setUsedEffectsThisTurn(new Map());
+            setHasEndedBaseGame(false);
+            setTurnEndFlag(true);
+            setIsChoosingExpansion(false);
+            setCityNameInput("");
+            setSelectedKingdom(t('newKingdom'));
+            setCompletedExpansions([]);
+            setCurrentExpansion(null);
+            setScores({ baseGame: 0, expansions: {} });
+            setNumberOfRounds(0);
+            setNumberDrawn(0);
+            setNumberDiscarded(0);
+            setNumberDeleted(0);
+            setNumberDiscovered(0);
+            setDiscoveredCards([]);
             setShowSettings(false);
             setConfirmationPopup(null);
-            setNumberOfRounds(0);
           },
           onCancel: () => setConfirmationPopup(null)
         });
@@ -5989,7 +6069,7 @@ export default function Game() {
               onClick={handleDebugClick}
               className="absolute -bottom-7 -right-98 text-xs text-gray-700 whitespace-nowrap cursor-pointer select-none z-50"
             >
-              Kingdom Legacy - Digital by Keleonix | v0.10.1 {debugMode && '🐛'}
+              Kingdom Legacy - Digital by Keleonix | v0.10.2 {debugMode && '🐛'}
             </div>
           </div>
         </div>

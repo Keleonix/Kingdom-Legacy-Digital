@@ -1265,12 +1265,10 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                   ctx.registerEndRoundEffect(
                     ctx.t('export') + ctx.t('eor_export_10'),
                     async () => {
-                      let choice = null;
-                      while (choice === null) {
-                        choice = await ctx.selectResourceChoice({ coin: 1, wood: 1, stone: 1 }, 1);
-                      }
-                      if(choice) {
-                        await ctx.boostProductivity((card: GameCard) => (card.GetType(ctx.t) === ctx.t('land')), ctx.t('deck'), ctx.t('eor_export_10'), choice, ctx.card);
+                      const choice = await ctx.selectResourceChoice({ coin: 1, wood: 1, stone: 1 }, 1);
+                      const card = (await ctx.selectCardsFromZone((c) => c.GetType(ctx.t).includes(ctx.t('land')), ctx.t('deck'), ctx.t('eor_export_10'), 1, ctx.card, 0, 'land'))[0];
+                      if(choice && card) {
+                        await addResourceMapToCard(card, choice);
                       }
                     },
                     false
@@ -1306,12 +1304,10 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                   ctx.registerEndRoundEffect(
                     ctx.t('export') + ctx.t('eor_export_40'),
                     async () => {
-                      let choice = null;
-                      while (choice === null) {
-                        choice = await ctx.selectResourceChoice({ metal: 1, sword: 1, tradegood: 1 }, 1);
-                      }
-                      if(choice) {
-                        await ctx.boostProductivity((card: GameCard) => (card.GetType(ctx.t) === ctx.t('building')), ctx.t('deck'), ctx.t('eor_export_40'), choice, ctx.card);
+                      const choice = await ctx.selectResourceChoice({ metal: 1, sword: 1, tradegood: 1 }, 1);
+                      const card = (await ctx.selectCardsFromZone((c) => c.GetType(ctx.t).includes(ctx.t('building')), ctx.t('deck'), ctx.t('eor_export_40'), 1, ctx.card, 0, 'building'))[0];
+                      if(choice && card) {
+                        await addResourceMapToCard(card, choice);
                       }
                     },
                     false
@@ -1321,12 +1317,10 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                   ctx.registerEndRoundEffect(
                     ctx.t('export') + ctx.t('eor_export_55'),
                     async () => {
-                      let choice = null;
-                      while (choice === null) {
-                        choice = await ctx.selectResourceChoice({ wood: 1, stone: 1, metal: 1, sword: 1 }, 1);
-                      }
-                      if(choice) {
-                        await ctx.boostProductivity(() => (true), ctx.t('deck'), ctx.t('eor_export_55'), choice, ctx.card);
+                      const choice = await ctx.selectResourceChoice({ wood: 1, stone: 1, metal: 1, sword: 1 }, 1);
+                      const card = (await ctx.selectCardsFromZone(() => true, ctx.t('deck'), ctx.t('eor_export_55'), 1, ctx.card, 0))[0];
+                      if(choice && card) {
+                        await addResourceMapToCard(card, choice);
                       }
                     },
                     false
@@ -1336,7 +1330,10 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                   ctx.registerEndRoundEffect(
                     ctx.t('export') + ctx.t('eor_export_75'),
                     async () => {
-                      await ctx.boostProductivity(() => (true), ctx.t('deck'), ctx.t('eor_export_75'), { fame: 5 }, ctx.card);
+                      const card = (await ctx.selectCardsFromZone(() => true, ctx.t('deck'), ctx.t('eor_export_75'), 1, ctx.card, 0))[0];
+                      if(card) {
+                        await addResourceMapToCard(card, { fame: 5 });
+                      }
                     },
                     false
                   );
@@ -1376,8 +1373,16 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                   ctx.registerEndRoundEffect(
                     ctx.t('export') + ctx.t('eor_mass_export_25'),
                     async () => {
-                      await ctx.boostProductivity((card) => (card.GetType(ctx.t).includes(ctx.t('land'))), ctx.t('deck'), ctx.t('eor_mass_export_25'), { fame: 1 }, ctx.card);
-                      await ctx.boostProductivity((card) => (card.GetType(ctx.t).includes(ctx.t('land'))), ctx.t('deck'), ctx.t('eor_mass_export_25'), { fame: 1 }, ctx.card);
+                      const cards = (await ctx.selectCardsFromZone((c) => c.GetType(ctx.t).includes(ctx.t('land')), ctx.t('deck'), ctx.t('eor_mass_export_25'), 1, ctx.card, 1, 'land'));
+                      if(cards) {
+                        if (cards.length === 2) {
+                          await addResourceMapToCard(cards[0], { fame: 1 });
+                          await addResourceMapToCard(cards[1], { fame: 1 });
+                        }
+                        else {
+                          await addResourceMapToCard(cards[0], { fame: 2 });
+                        }
+                      }
                     },
                     false
                   );
@@ -1386,7 +1391,10 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                   ctx.registerEndRoundEffect(
                     ctx.t('export') + ctx.t('eor_mass_export_50'),
                     async () => {
-                      await ctx.boostProductivity((card) => (card.GetType(ctx.t).includes(ctx.t('person'))), ctx.t('deck'), ctx.t('eor_mass_export_50'), { fame: 5 }, ctx.card);
+                      const card = (await ctx.selectCardsFromZone((c) => c.GetType(ctx.t).includes(ctx.t('person')), ctx.t('deck'), ctx.t('eor_mass_export_50'), 1, ctx.card, 0, 'person'))[0];
+                      if (card) {
+                        await addResourceMapToCard(card, { fame: 5 });
+                      }
                     },
                     false
                   );
@@ -1411,7 +1419,10 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                   ctx.registerEndRoundEffect(
                     ctx.t('export') + ctx.t('eor_mass_export_100'),
                     async () => {
-                      await ctx.boostProductivity((card) => (card.GetType(ctx.t).includes(ctx.t('building'))), ctx.t('deck'), ctx.t('eor_mass_export_100'), { fame: 5 }, ctx.card);
+                      const card = (await ctx.selectCardsFromZone((c) => c.GetType(ctx.t).includes(ctx.t('building')), ctx.t('deck'), ctx.t('eor_mass_export_100'), 1, ctx.card, 0, 'building'))[0];
+                      if (card) {
+                        await addResourceMapToCard(card, { fame: 5 });
+                      }
                     },
                     false
                   );
@@ -1421,7 +1432,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                     ctx.t('export') + ctx.t('eor_mass_export_150'),
                     async () => {
                       const card = (await ctx.selectCardsFromZone(
-                          (card) => (card.id !== ctx.card.id && card.checkboxes.length !== 0),
+                          (card) => (card.id !== ctx.card.id && card.checkboxes[card.currentSide - 1].length !== 0 && card.GetType(ctx.t).includes(ctx.t('permanent'))),
                           ctx.t('permanentZone'),
                           ctx.t('export') + ctx.t('eor_mass_export_150'),
                           1,
@@ -1440,7 +1451,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                     ctx.t('export') + ctx.t('eor_mass_export_200'),
                     async () => {
                       const cards = ctx.fetchCardsInZone(
-                        (card) => (card.id !== ctx.card.id && card.checkboxes.length !== 0),
+                        (card) => (card.id !== ctx.card.id && card.checkboxes[card.currentSide - 1].length !== 0 && card.GetType(ctx.t).includes(ctx.t('permanent'))),
                         ctx.t('permanentZone')
                       );
                       const subCtx = ctx;
@@ -3788,7 +3799,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     ],
     3: [
-      { // Faveur
+      { // Rénovations
         description: (t) => parseEffects(t('staysInPlay')).effects[0].text,
         timing: "staysInPlay",
         execute: async function (ctx) {
@@ -3799,7 +3810,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => parseEffects(t('effect_description_favor')).effects[1].text,
+        description: (t) => parseEffects(t('effect_description_renovation')).effects[1].text,
         timing: "endOfRound",
         execute: async function (ctx) {
           let choice1;

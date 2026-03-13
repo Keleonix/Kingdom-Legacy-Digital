@@ -77,6 +77,14 @@ export type TranslationKeys =
   | 'ach_name_first_game' | 'ach_desc_first_game'
   | 'ach_name_town_hall_gambit' | 'ach_desc_town_hall_gambit'
   | 'ach_name_know_your_basics' | 'ach_desc_know_your_basics'
+  | 'ach_name_nice_production' | 'ach_desc_nice_production'
+  | 'ach_name_nice_card' | 'ach_desc_nice_card'
+  | 'ach_name_fully_blocked' | 'ach_desc_fully_blocked'
+  | 'ach_name_furious_child' | 'ach_desc_furious_child'
+  | 'ach_name_going_at_sea' | 'ach_desc_going_at_sea'
+  | 'ach_name_destroy_and_conquer' | 'ach_desc_destroy_and_conquer'
+  | 'ach_name_can_t_touch_this' | 'ach_desc_can_t_touch_this'
+  | 'ach_name_wishing_for_religion' | 'ach_desc_wishing_for_religion'
 
   // Cards Names
   | 'welcome'
@@ -825,6 +833,22 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     ach_desc_town_hall_gambit: 'Améliorer votre Quartier Général à la 2ème Manche.',
     ach_name_know_your_basics: 'Le B.A-BA',
     ach_desc_know_your_basics: 'Découvrir toutes les cartes du Jeu de Base.',
+    ach_name_nice_production: 'Bonne Prod !',
+    ach_desc_nice_production: 'Obtenez 10 ressources en un tour.',
+    ach_name_nice_card: 'Quelle carte',
+    ach_desc_nice_card: 'Gagnez 10 ressources avec une seule carte.',
+    ach_name_fully_blocked: 'Bloqué',
+    ach_desc_fully_blocked: 'Ayez toutes vos cartes alliées en jeu bloquées.',
+    ach_name_furious_child: 'Gros Caprice',
+    ach_desc_furious_child: 'Votre jeune princesse a été pourrie gâtée...',
+    ach_name_going_at_sea: 'Face à la Mer',
+    ach_desc_going_at_sea: 'Récupérer toutes les cartes Maritimes du jeu de Base en une partie.',
+    ach_name_destroy_and_conquer: 'Détruire et Reigner',
+    ach_desc_destroy_and_conquer: 'Détruisez votre première carte alliée.',
+    ach_name_can_t_touch_this: 'Intouchable',
+    ach_desc_can_t_touch_this: 'Essayez de détruire une carte indestructible.',
+    ach_name_wishing_for_religion: 'Religion Grandissante',
+    ach_desc_wishing_for_religion: 'Obtenir les deux Autels en une partie.',
 
     // Cards Names
     welcome: "Bienvenue",
@@ -1770,6 +1794,22 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     ach_desc_town_hall_gambit: 'Upgrade your Headquarters during the 2nd Round.',
     ach_name_know_your_basics: 'Know your Basics',
     ach_desc_know_your_basics: 'Discover all cards from Base Game.',
+    ach_name_nice_production: 'Nice Prod !',
+    ach_desc_nice_production: 'Obtain 10 resources in a single turn.',
+    ach_name_nice_card: 'Nice Card',
+    ach_desc_nice_card: 'Gain 10 resources with a single card.',
+    ach_name_fully_blocked: 'Fully Blocked',
+    ach_desc_fully_blocked: 'Have all your friendly cards in game blocked.',
+    ach_name_furious_child: 'Furious Child',
+    ach_desc_furious_child: 'Your youg princess was a spoiled...',
+    ach_name_going_at_sea: 'Going at Sea',
+    ach_desc_going_at_sea: 'Gather all Seafaring cards from base Game in one game.',
+    ach_name_destroy_and_conquer: 'Destroy and Conquer',
+    ach_desc_destroy_and_conquer: 'Destroy your first friendly card.',
+    ach_name_can_t_touch_this: 'Can\'t Touch This',
+    ach_desc_can_t_touch_this: 'Try to destroy an indestructible card.',
+    ach_name_wishing_for_religion: 'Wishing for Religion',
+    ach_desc_wishing_for_religion: 'Obtain the two Shrines in one game',
     
     // Cards Names
     welcome: "Welcome",

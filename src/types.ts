@@ -285,4 +285,12 @@ export interface SavedGame {
   numberDeleted: number;
   numberDiscovered: number;
   discoveredCards: Array<number>;
+  availableDiscoverableCards: number[];
+  blockMap: [number, number[]][];
+  usedEffectsThisTurn: [string, number][];
+  hasEndedBaseGame: boolean;
+  turnEndFlag: boolean;
+  isChoosingExpansion: boolean;
+  cityNameInput: string;
+  selectedKingdom: string;
 }
