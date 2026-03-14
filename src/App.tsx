@@ -2846,7 +2846,7 @@ export default function Game() {
     const discoverableCards = campaignDeck
       .filter(card => card.discoverable === true)
       .sort((a, b) => a.id - b.id)
-      .slice(0, 2)
+      .slice(0, getMaxDiscoverCount())
       .map(card => card.id);
     
     setAvailableDiscoverableCards(discoverableCards);
@@ -2948,6 +2948,8 @@ export default function Game() {
   const [numberDeleted, setNumberDeleted] = useState(0);
   const [numberDiscovered, setNumberDiscovered] = useState(0);
   const [discoveredCards, setDiscoveredCards] = useState(Array<number>);
+  const [enemiesDefeatedThisTurn, setEnemiesDefeatedThisTurn] = useState(Array<number>);
+  const [effectsActivatedThisTurn, setEffectsActivatedThisTurn] = useState(0);
 
   const [unlockedAchievements, setUnlockedAchievements] = useState<Set<string>>(() => {
     const saved = localStorage.getItem('kl_achievements');
@@ -3001,6 +3003,8 @@ export default function Game() {
   const campaignDeckRef = useRef<GameCard[]>([]);
   const resourcesRef = useRef<ResourceMap>({ ...emptyResource });
   const turnEndFlagRef = useRef<boolean>(true);
+  const currentExpansionRef = useRef<string | null>(null);
+  const availableDiscoverableCardsRef = useRef<number[]>([]);
 
   // Keep refs in sync if other code uses setPlayArea / setDiscard directly
   useEffect(() => { deckRef.current = deck; }, [deck]);
@@ -3011,6 +3015,8 @@ export default function Game() {
   useEffect(() => { purgedCardsRef.current = purgedCards; }, [purgedCards]);
   useEffect(() => { campaignDeckRef.current = campaignDeck; }, [campaignDeck]);
   useEffect(() => { turnEndFlagRef.current = turnEndFlag; }, [turnEndFlagRef]);
+  useEffect(() => { currentExpansionRef.current = currentExpansion; }, [currentExpansionRef]);
+  useEffect(() => { availableDiscoverableCardsRef.current = availableDiscoverableCards; }, [availableDiscoverableCardsRef]);
 
   function setPlayAreaImmediate(next: React.SetStateAction<GameCard[]>) {
     if (typeof next === "function") {
@@ -3097,6 +3103,28 @@ export default function Game() {
     } else {
       turnEndFlagRef.current = next as boolean;
       setTurnEndFlag(next as boolean);
+    }
+  }
+
+  function setCurrentExpansionImmediate(next: React.SetStateAction<string | null>) {
+    if (typeof next === "function") {
+      const v = (next as (prev: string | null) => string | null)(currentExpansionRef.current);
+      currentExpansionRef.current = v;
+      setCurrentExpansion(v);
+    } else {
+      currentExpansionRef.current = next as string | null;
+      setCurrentExpansion(next as string | null);
+    }
+  }
+  
+  function setAvailableDiscoverableCardsImmediate(next: React.SetStateAction<number[]>) {
+    if (typeof next === "function") {
+      const v = (next as (prev: number[]) => number[])(availableDiscoverableCardsRef.current);
+      availableDiscoverableCardsRef.current = v;
+      setAvailableDiscoverableCards(v);
+    } else {
+      availableDiscoverableCardsRef.current = next as number[];
+      setAvailableDiscoverableCards(next as number[]);
     }
   }
 
@@ -3433,6 +3461,9 @@ export default function Game() {
     setTurnEndFlagImmediate(true);
     await handleEffectsEndOfTurn();
 
+    setEnemiesDefeatedThisTurn(() => []);
+    setEffectsActivatedThisTurn(() => 0);
+
     if (endRound) {
       // Achievement : First Round
       unlockAchievement('first_round');
@@ -3458,56 +3489,67 @@ export default function Game() {
     else {
       const cardsToDiscard: GameCard[] = [];
       const cardsToKeep: GameCard[] = [];
-
       const currentPlayArea = playAreaRef.current;
+
       currentPlayArea.forEach(card => {
         const effects = getCardEffects(card.id, card.currentSide);
         const hasStayInPlay = effects.some(eff => eff.timing === "staysInPlay");
         const isInTemporaryList = temporaryCardListRef.current.some(tempCard => tempCard.id === card.id);
-
         if (hasStayInPlay || isInTemporaryList) cardsToKeep.push(card);
         else cardsToDiscard.push(card);
       });
 
       const blockersStayingInPlay = cardsToKeep.map(c => c.id);
-      
+
       const blockedToKeep: GameCard[] = [];
+      const blockedToPlay: GameCard[] = [];
       const blockedToDiscard: GameCard[] = [];
-      
+
       blockedZoneRef.current.forEach(blockedCard => {
-        const isStillBlocked = Array.from(blockMap.entries()).some(([blockerId, blockedIds]) => 
-          blockersStayingInPlay.includes(blockerId) && blockedIds.includes(blockedCard.id)
+        const isStillBlocked = Array.from(blockMap.entries()).some(
+          ([blockerId, blockedIds]) =>
+            blockersStayingInPlay.includes(blockerId) && blockedIds.includes(blockedCard.id)
         );
-        
+
         if (isStillBlocked) {
           blockedToKeep.push(blockedCard);
-        } else if(!blockedCard.GetType(t).includes(t('scroll'))) {
-          blockedToDiscard.push(blockedCard);
+        } else {
+          const effects = getCardEffects(blockedCard.id, blockedCard.currentSide);
+          const hasStayInPlay = effects.some(eff => eff.timing === "staysInPlay");
+
+          if (hasStayInPlay) {
+            blockedToPlay.push(blockedCard);
+          } else if (!blockedCard.GetType(t).includes(t('scroll'))) {
+            blockedToDiscard.push(blockedCard);
+          }
         }
       });
-      
+
       const allToDiscard = [
         ...cardsToDiscard.map(c => ({ card: c, zone: t('playArea') })),
         ...blockedToDiscard.map(c => ({ card: c, zone: t('blocked') }))
       ];
-
       for (let i = 0; i < allToDiscard.length; i++) {
         const { card, zone } = allToDiscard[i];
         await new Promise(resolve => setTimeout(resolve, 100));
         dropToDiscard({ id: card.id, fromZone: zone });
       }
-      await new Promise(resolve => setTimeout(resolve, 300));
 
-      setPlayAreaImmediate(cardsToKeep);
+      await new Promise(resolve => setTimeout(resolve, 300));
+      setPlayAreaImmediate([...cardsToKeep, ...blockedToPlay]);  // ajout des cartes libérées
       setBlockedZoneImmediate(blockedToKeep);
-      
+
       const allDiscarded = [...cardsToDiscard, ...blockedToDiscard];
       if (allDiscarded.length > 0) {
         await triggerOnCardDiscarded(allDiscarded);
       }
-      
+
       setTemporaryCardListImmediate([]);
       temporaryCardListRef.current = [];
+    }
+
+    if (playAreaRef.current.length >= 10) {
+      unlockAchievement('freeze')!
     }
   };
 
@@ -3676,7 +3718,7 @@ export default function Game() {
             [currentExpansion]: totalFame
           }
         }));
-        setCurrentExpansion(null);
+        setCurrentExpansionImmediate(null);
       } else {
         setScores((prev) => ({ ...prev, baseGame: totalFame }));
       }
@@ -4400,7 +4442,7 @@ export default function Game() {
   };
 
   const getMaxDiscoverCount = (): number => {
-    const expansion = EXPANSIONS.find(e => e.id === currentExpansion);
+    const expansion = EXPANSIONS.find(e => e.id === currentExpansionRef.current);
     return expansion?.discoverValue ?? 2;
   };
 
@@ -4444,17 +4486,17 @@ export default function Game() {
       .sort((a, b) => a.id - b.id);
     
     if (allDiscoverable.length === 0) {
-      setAvailableDiscoverableCards([]);
+      setAvailableDiscoverableCardsImmediate([]);
       return;
     }
     
     const firstCard = allDiscoverable[0];
     if (firstCard.GetName(t).includes(t('stop'))) {
-      setAvailableDiscoverableCards([firstCard.id]);
+      setAvailableDiscoverableCardsImmediate([firstCard.id]);
       return;
     }
     else {
-      setAvailableDiscoverableCards(allDiscoverable
+      setAvailableDiscoverableCardsImmediate(allDiscoverable
         .slice(0, getMaxDiscoverCount())
         .map(card => card.id));
     }
@@ -4478,6 +4520,20 @@ export default function Game() {
       return newMap;
     });
   };
+
+  const effectAchievementCheck = async (
+    card: GameCard
+  ) => {
+    if (card.id === 25 && card.currentSide === 3 && card.checkboxes[card.currentSide - 1].every((ch) => ch.checked)) {
+      unlockAchievement('peace_was_never_an_option');
+    }
+    if (card.id === 26 && card.currentSide === 3 && card.checkboxes[card.currentSide - 1].every((ch) => ch.checked)) {
+      unlockAchievement('richer_than_cresus');
+    }
+    if (effectsActivatedThisTurn + 1 >= 10) {
+      unlockAchievement('adhd');
+    }
+  }
 
   const handleExecuteCardEffect = async (
     card: GameCard,
@@ -4581,6 +4637,10 @@ export default function Game() {
       if (eff.usesPerTurn) {
         markAsUsedThisTurn(card.id, effectIndex);
       }
+
+      setEffectsActivatedThisTurn((prev) => prev + 1);
+
+      effectAchievementCheck(card);
       return;
     }
 
@@ -4659,6 +4719,7 @@ export default function Game() {
 
       const allBaseSeafarings = [22, 74, 75, 76, 77, 91, 93, 98, 100, 102];
       const allShrines = [82, 83];
+      const allMines = [84, 85];
       const newDiscoveredCards = [...new Set([...discoveredCards, ...cardIds])];
       const allAvailableCards = new Set([...[...playAreaRef.current, ...blockedZoneRef.current, ...permanentZoneRef.current, ...discardRef.current, ...deckRef.current].map((c) => c.id), ...cardIds]);
 
@@ -4670,6 +4731,12 @@ export default function Game() {
       }
       if (allShrines.every(n => allAvailableCards.has(n))) {
         unlockAchievement('wishing_for_religion');
+      }
+      if (allMines.every(n => allAvailableCards.has(n))) {
+        unlockAchievement('digging_a_hole');
+      }
+      if ([117].every(n => allAvailableCards.has(n))) {
+        unlockAchievement('trading_imperialism');
       }
     }
 
@@ -4758,6 +4825,9 @@ export default function Game() {
       });
     }
     if (toZone === t('playArea')) {
+      if (playAreaRef.current.length >= 30) {
+        unlockAchievement('let_them_cook');
+      }
       if (fromZone === t('discard')) {
         setNumberDrawn((prev) => prev + cards.length);
       }
@@ -5065,7 +5135,7 @@ export default function Game() {
     
     await discardEndTurn(true);
     
-    setCurrentExpansion(expansionId);
+    setCurrentExpansionImmediate(expansionId);
     
     if (expansion.type === 'card') {
       const expansionCard = allCards.find(c => c.id === expansion.cardId);
@@ -5090,6 +5160,7 @@ export default function Game() {
       setCampaignDeckImmediate(prev => [...prev, ...newCampaignCards].sort((a, b) => a.id - b.id));
       
       refreshDiscoverableCards();
+      setShowEndRound(true);
 
       // Set tutorial card
       const tutorialCard = expansion.campaignCardIds?.map(() => allCards.find(c => expansion.campaignCardIds ? c.id === expansion.campaignCardIds[0] : false)).filter(Boolean).map(c => cloneGameCard(c!))[0];
@@ -5101,6 +5172,8 @@ export default function Game() {
         }
       }
     }
+
+    unlockAchievement('there_is_more');
     
     setIsChoosingExpansion(false);
   };
@@ -5610,7 +5683,12 @@ export default function Game() {
     replaceCardInZone(zone, updatedCard.id, updatedCard);
   };
 
-  const handleEnemyDefeated = async (card: GameCard, zone: string): Promise<void> => {    
+  const handleEnemyDefeated = async (card: GameCard, zone: string): Promise<void> => {
+    if ([...enemiesDefeatedThisTurn, card.id].length >= 3) {
+      unlockAchievement('the_hunter');
+    }
+    setEnemiesDefeatedThisTurn((prev) => [...prev, card.id]);
+
     for (const cardInPlay of [...playAreaRef.current]) {
       await handleExecuteCardEffect(cardInPlay, zone, "onEnemyDefeated", [card]);
     }
@@ -6069,7 +6147,7 @@ export default function Game() {
               onClick={handleDebugClick}
               className="absolute -bottom-7 -right-98 text-xs text-gray-700 whitespace-nowrap cursor-pointer select-none z-50"
             >
-              Kingdom Legacy - Digital by Keleonix | v0.10.2 {debugMode && '🐛'}
+              Kingdom Legacy - Digital by Keleonix | v0.10.3 {debugMode && '🐛'}
             </div>
           </div>
         </div>

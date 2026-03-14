@@ -63,7 +63,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     iconPath: 'achievements/going_at_sea.png',
     titleKey: 'ach_name_going_at_sea',
     descKey: 'ach_desc_going_at_sea',
-    value: 10
+    value: 100
   },
   {
     id: 'destroy_and_conquer',
@@ -85,5 +85,68 @@ export const ACHIEVEMENTS: Achievement[] = [
     titleKey: 'ach_name_wishing_for_religion',
     descKey: 'ach_desc_wishing_for_religion',
     value: 30
+  },
+  {
+    id: 'digging_a_hole',
+    iconPath: 'achievements/digging_a_hole.png',
+    titleKey: 'ach_name_digging_a_hole',
+    descKey: 'ach_desc_digging_a_hole',
+    value: 30
+  },
+  {
+    id: 'let_them_cook',
+    iconPath: 'achievements/let_them_cook.png',
+    titleKey: 'ach_name_let_them_cook',
+    descKey: 'ach_desc_let_them_cook',
+    value: 30
+  },
+  {
+    id: 'there_is_more',
+    iconPath: 'achievements/there_is_more.png',
+    titleKey: 'ach_name_there_is_more',
+    descKey: 'ach_desc_there_is_more',
+    value: 50
+  },
+  {
+    id: 'the_hunter',
+    iconPath: 'achievements/the_hunter.png',
+    titleKey: 'ach_name_the_hunter',
+    descKey: 'ach_desc_the_hunter',
+    value: 50
+  },
+  {
+    id: 'trading_imperialism',
+    iconPath: 'achievements/trading_imperialism.png',
+    titleKey: 'ach_name_trading_imperialism',
+    descKey: 'ach_desc_trading_imperialism',
+    value: 50
+  },
+  {
+    id: 'peace_was_never_an_option',
+    iconPath: 'achievements/peace_was_never_an_option.png',
+    titleKey: 'ach_name_peace_was_never_an_option',
+    descKey: 'ach_desc_peace_was_never_an_option',
+    value: 100
+  },
+  {
+    id: 'richer_than_cresus',
+    iconPath: 'achievements/richer_than_cresus.png',
+    titleKey: 'ach_name_richer_than_cresus',
+    descKey: 'ach_desc_richer_than_cresus',
+    value: 100
+  },
+  {
+    id: 'adhd',
+    iconPath: 'achievements/adhd.png',
+    titleKey: 'ach_name_adhd',
+    descKey: 'ach_desc_adhd',
+    value: 50
+  },
+  {
+    id: 'freeze',
+    iconPath: 'achievements/freeze.png',
+    titleKey: 'ach_name_freeze',
+    descKey: 'ach_desc_freeze',
+    value: 100
   },
 ];
