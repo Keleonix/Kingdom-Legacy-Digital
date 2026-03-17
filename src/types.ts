@@ -2,6 +2,7 @@
 // Types
 // -------------------
 
+import type { GameContext } from "./cardEffects";
 import type { TranslationKeys } from "./i18n";
 import type { TutorialStep } from "./tutorial";
 
@@ -257,6 +258,9 @@ export interface ExpansionData {
   
   // For tutorial
   tutorialSteps?: TutorialStep[];
+
+  // Other check function
+  checkExpansionEnd?: ((ctx: GameContext) => boolean);
 }
 
 export interface GameScore {

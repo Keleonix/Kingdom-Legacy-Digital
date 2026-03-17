@@ -848,6 +848,22 @@ function CardView({
     );
   }
 
+  function isColorLight(bgStyle: React.CSSProperties): boolean {
+    const raw = (bgStyle.backgroundColor || bgStyle.background || "") as string;
+    const hex = raw.match(/#([0-9a-f]{6})/i);
+    if (hex) {
+      const r = parseInt(hex[1].slice(0,2), 16);
+      const g = parseInt(hex[1].slice(2,4), 16);
+      const b = parseInt(hex[1].slice(4,6), 16);
+      return (r * 0.299 + g * 0.587 + b * 0.114) > 155;
+    }
+    const rgb = raw.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+    if (rgb) {
+      return (parseInt(rgb[1]) * 0.299 + parseInt(rgb[2]) * 0.587 + parseInt(rgb[3]) * 0.114) > 155;
+    }
+    return false;
+  }
+
   useEffect(() => {
     const styleElement = document.createElement('style');
     styleElement.textContent = cardHighlightStyle;
@@ -860,23 +876,13 @@ function CardView({
 
   const currentSideIdx = (card.currentSide || 1) - 1;
   const sideCheckboxes = card.checkboxes?.[currentSideIdx] ?? [];
-  const lastTap = useRef<number>(0);
+  const bgStyle = getBackgroundStyle(card, currentSideIdx);
+  const lightBg = isColorLight(bgStyle);
 
   return (
     <div
       className="relative select-none"
       style={{ WebkitUserSelect: 'none', userSelect: 'none' }}
-      onTouchEnd={(e) => {
-        const now = Date.now();
-        if (now - lastTap.current < 300) {
-          e.preventDefault();
-          setShowPreview(prev => !prev);
-        }
-        lastTap.current = now;
-      }}
-      onDoubleClick={() => {
-        setShowPreview(prev => !prev);
-      }}
       onMouseLeave={() => {
         setShowPreview(false);
       }}
@@ -893,32 +899,176 @@ function CardView({
           if (onTapAction) onTapAction(card, fromZone);
         }}
         style={{
+          width: "196px",
+          height: "280px",
+          flexShrink: 0,
+          position: "relative",
           ...getBackgroundStyle(card, currentSideIdx),
           animation: isHighlighted ? 'cardPulse 0.6s ease-in-out' : undefined,
         }}
-        className={`w-49 h-70 m-0 flex flex-col items-center justify-between border-2 shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 
-          ${!interactable ? "opacity-60 cursor-not-allowed" : "cursor-pointer hover:border-blue-400"}
-          ${isHighlighted ? "ring-4 ring-4 ring-blue-400 border-blue-500" : ""}`}
+        className={`m-0 flex flex-col items-center justify-between border-2 shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 
+          ${!interactable ? "opacity-60 cursor-not-allowed" : "cursor-pointer"}
+          ${isHighlighted ? "ring-2 ring-amber-400 border-amber-500"
+            : card.GetType(t).includes(t('permanent')) ? "border-violet-600/60"
+            : card.choice && fromZone === t('campaign') ? "border-amber-700/60"
+            : "border-stone-400/30"
+          }`}
       >
-
-        <CardContent className="text-center p-2 overflow-auto flex flex-col h-full w-full">
-          <div className="flex justify-between items-start w-full">
-            <div className="flex flex-col">
-              {card.GetType(t).includes(t('permanent')) && <img src={"effects/permanent.png"} alt={t('permanentZone')} title={t('permanentZone')} className="w-49 h-2" />}
-              {card.choice && fromZone === t('campaign') &&(card.currentSide == 1 || card.currentSide == 3) && <button><img src={"effects/choice.png"} alt={t('choice')} title={t('choice')} className="w-49 h-2" /></button>}
+        {interactable && (
+          <div
+            style={{
+              position: "absolute",
+              bottom: "6px",
+              right: "6px",
+              top: "auto",
+              width: "14px",
+              height: "14px",
+              opacity: 1,
+              zIndex: 2,
+            }}
+            onClick={() => {
+              setShowPreview(prev => !prev);
+            }}
+          >
+            <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="8" cy="8" r="5.5" stroke="#786a8f" strokeWidth="1.2"/>
+              <circle cx="8" cy="8" r="2" fill="#786a8f"/>
+            </svg>
+          </div>
+        )}
+        {/* Coin replié permanent */}
+          {card.GetType(t).includes(t('permanent')) && (
+            <div
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: 0,
+                height: 0,
+                borderStyle: "solid",
+                borderWidth: "36px 36px 0 0",
+                borderColor: "#7c3aed transparent transparent transparent",
+                borderRadius: "10px 0 0 0",
+                zIndex: 10,
+                pointerEvents: "none",
+              }}
+            >
+              <svg
+                viewBox="0 0 14 14"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                style={{
+                  position: "absolute",
+                  top: "-33px",
+                  left: "2px",
+                  width: "14px",
+                  height: "14px",
+                  pointerEvents: "none",
+                }}
+              >
+                {/* Icône ancre/permanent : losange avec point central */}
+                <path d="M7 2 L12 7 L7 12 L2 7 Z" stroke="white" strokeWidth="1.2" fill="none"/>
+                <circle cx="7" cy="7" r="1.5" fill="white"/>
+              </svg>
+            </div>
+          )}
+          {/* Coin replié choice */}
+          {card.choice && fromZone === t('campaign') && (card.currentSide == 1 || card.currentSide == 3) && (
+            <div
+              style={{
+                position: "absolute",
+                top: 0,
+                right: 0,        // ← droite
+                left: "auto",
+                width: 0,
+                height: 0,
+                borderStyle: "solid",
+                borderWidth: "0 36px 36px 0",   // ← inversé pour coin droit
+                borderColor: "transparent #b45309 transparent transparent",  // ← couleur sur le bon côté
+                borderRadius: "0 10px 0 0",
+                zIndex: 10,
+                pointerEvents: "none",
+              }}
+            >
+              <svg
+                viewBox="0 0 14 14"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                style={{
+                  position: "absolute",
+                  top: "2px",
+                  right: "-33px",   // ← aligné à droite
+                  left: "auto",
+                  width: "14px",
+                  height: "14px",
+                  pointerEvents: "none",
+                }}
+              >
+                <path d="M5.5 5 C5.5 3.5 8.5 3.5 8.5 5.5 C8.5 7 7 7 7 8.5" stroke="white" strokeWidth="1.3" strokeLinecap="round" fill="none"/>
+                <circle cx="7" cy="10.5" r="1" fill="white"/>
+              </svg>
+            </div>
+          )}
+        <CardContent className="relative text-center p-2 overflow-auto flex flex-col h-full w-full">
+          {/* Pixel art*/}
+          <div
+            style={{
+              background: lightBg
+                ? "linear-gradient(180deg, rgba(255,255,255,0.55) 0%, transparent 100%)"
+                : "linear-gradient(180deg, rgba(0,0,0,0.55) 0%, transparent 100%)",
+              borderRadius: "10px 10px 0 0",
+              margin: "-8px -8px 0 -8px",
+              padding: "8px 8px 0px",
+              marginBottom: "4px",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              zIndex: 20,
+            }}
+          >
+            <img
+              src={`/badges/${card.name[card.currentSide - 1]}.png`}
+              alt=""
+              style={{ width: "40px", height: "40px", imageRendering: "pixelated", flexShrink: 0 }}
+              onError={(e) => { e.currentTarget.style.display = 'none'; }}
+            />
+            <div style={{ flex: 1, overflow: "hidden" }}>
+              <p style={{
+                fontWeight: 700,
+                fontSize: "13px",
+                color: lightBg ? "#2a1f0e" : "#f5edd8",
+                textShadow: lightBg ? "0 1px 0 rgba(255,255,255,0.5)" : "0 1px 3px rgba(0,0,0,0.9)",
+                lineHeight: 1.2,
+                margin: 0,
+              }}>
+                {name}
+              </p>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "4px", marginTop: "1px" }}>
+                <p style={{
+                  fontSize: "9px",
+                  color: lightBg ? "rgba(60,40,10,0.7)" : "rgba(255,255,255,0.6)",
+                  margin: 0,
+                  letterSpacing: "0.5px",
+                }}>
+                  {type}
+                </p>
+                {card.negative[card.currentSide - 1] && (
+                <img
+                  src="/effects/negative.png"
+                  alt=""
+                  style={{
+                    width: "17px",
+                    height: "17px",
+                    imageRendering: "pixelated",
+                    flexShrink: 0,
+                    opacity: 1,
+                  }}
+                  onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                />
+              )}
+              </div>
             </div>
           </div>
-          <div>
-          </div>
-          <div>
-            <p className="font-bold text-[16px] line-clamp-2 text-center">
-              {name}
-            </p>
-            <p className="font-bold text-[9px] line-clamp-2 text-center">
-              {type}
-            </p>
-          </div>
-
           {/* Normal (in-play) resources */}
           <div className="mt-2 flex flex-wrap justify-center gap-2 items-center">
             {(() => {
@@ -1124,44 +1274,33 @@ function CardView({
           </div>
         </CardContent>
         <div className="relative bottom-1 right-19">
-            {/* Pixel art bottom left */}
-            <div className="w-8 h-8">
-              {/* Première image - taille normale */}
-              <img 
-                src={`/badges/${card.name[card.currentSide - 1]}.png`}
-                alt={' '}
-                className="w-full h-full object-contain"
-                style={{ imageRendering: 'pixelated' }}
-                onError={(e) => { e.currentTarget.style.display = 'none'; }}
-              />
-            </div>
-
-            {/* Deuxième image - centrée horizontalement, à droite */}
-            {card.negative[card.currentSide - 1] ? (
-              <div className="absolute w-4 h-4 -right-17 top-3 -translate-y-1/2">
-                <img 
-                  src={`/effects/negative.png`}
-                  alt={' '}
-                  className="w-full h-full object-contain"
-                  style={{ imageRendering: 'pixelated' }}
-                  onError={(e) => { e.currentTarget.style.display = 'none'; }}
-                />
-              </div>
-            ) : (
-              <p/>
-            )}
             {/* Fame badge */}
             {(() => {
               const fameTotal = resOptions.reduce((sum, opt) => sum + (opt.fame ?? 0), 0);
               if (fameTotal === 0) return null;
               return (
-                <div className="absolute left-33 top-2 flex items-center gap-0.5 bg-yellow-100 border border-yellow-400 rounded-full px-1.5 py-0.5">
-                  <img src={resourceIconPath('fame')} alt="fame" className="relative w-4 h-4 min-w-4 flex-shrink-0 object-contain" />
-                  <span className="relative text-[10px] font-bold text-yellow-700">{fameTotal}</span>
+                <div
+                  style={{
+                    position: "absolute",
+                    bottom: "0px",
+                    left: "-12px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "3px",
+                    background: "rgba(20, 14, 2, 0.85)",
+                    border: "1px solid rgba(200, 160, 30, 0.6)",
+                    borderRadius: "12px",
+                    padding: "2px 6px",
+                    zIndex: 10,
+                    pointerEvents: "none",
+                  }}
+                >
+                  <img src={resourceIconPath('fame')} alt="fame" style={{ width: "12px", height: "12px", flexShrink: 0 }} />
+                  <span style={{ fontSize: "10px", fontWeight: 600, color: "#f0d060" }}>{fameTotal}</span>
                 </div>
               );
             })()}
-            <div className="absolute bottom-0 left-22 text-[8px]">
+            <div className="absolute bottom-0 ml-18 text-[8px]">
               {card.id > 0 ? card.id : ""}
             </div>
           </div>
@@ -1474,70 +1613,98 @@ function Zone({
   };
 
   return (
-  <div 
-    ref={(el) => {
-      ref.current = el;
-      if (onZoneRef && el) onZoneRef(el);
-    }}
-    className="p-4 border-2 rounded-xl shadow-lg bg-gradient-to-br from-gray-50 to-gray-100 hover:shadow-xl transition-shadow duration-300"
-    onClick={handleZoneClick}
-  >
-    <h2 className="text-xl font-bold mb-3 text-gray-800">
-      {name}
-    </h2>
-    <div
-      className={containerClass}
-      style={{...(
-        isPermanentZone || isBlockedZone || isPlayArea || name.includes(t('deck')) || name.includes(t('discard'))
-          ? getContainerStyle()
-          : {gridTemplateColumns: gridTemplate, alignItems: "start" }
-        ),
-        transition: 'all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)'}}
+    <div 
+      ref={(el) => {
+        ref.current = el;
+        if (onZoneRef && el) onZoneRef(el);
+      }}
+      className="p-4 border rounded-xl transition-shadow duration-300"
+      style={{
+        background: "rgba(18, 12, 30, 0.72)",
+        backdropFilter: "blur(8px)",
+        WebkitBackdropFilter: "blur(8px)",
+        border: "1px solid rgba(120, 80, 180, 0.3)",
+        boxShadow: "0 4px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06)",
+      }}
+      onClick={handleZoneClick}
     >
-      {displayCards.length > 0 ? (
-        displayCards.map((c, index) => (
-          <div
-            key={`${name}-${c.id}-${c.currentSide}`}
-            style={{
-                ...getCardStyle(index),
-                transition: 'all 0.3s ease-out',
+      <h2
+        className="text-xl font-bold tracking-wide uppercase"
+        style={{
+          color: "#c8b4e8",
+          textShadow: "0 0 20px rgba(160, 100, 255, 0.4)",
+          fontSize: "13px",
+          letterSpacing: "0.12em",
+          marginBottom: "2rem",
+        }}
+      >
+        {name}
+      </h2>
+      <div
+        className={containerClass}
+        style={{...(
+          isPermanentZone || isBlockedZone || isPlayArea || name.includes(t('deck')) || name.includes(t('discard'))
+            ? getContainerStyle()
+            : {gridTemplateColumns: gridTemplate, alignItems: "start" }
+          ),
+          transition: 'all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)'}}
+      >
+        {displayCards.length > 0 ? (
+          displayCards.map((c, index) => (
+            <div
+              key={`${name}-${c.id}-${c.currentSide}`}
+              style={{
+                  ...getCardStyle(index),
+                  transition: 'all 0.3s ease-out',
+                }}
+              className={(isPermanentZone || isBlockedZone || isPlayArea) ? "group" : ""}
+              onMouseEnter={(e) => {
+                if (isPermanentZone || isBlockedZone || isPlayArea) {
+                  e.currentTarget.style.zIndex = '1000';
+                }
               }}
-            className={(isPermanentZone || isBlockedZone || isPlayArea) ? "group" : ""}
-            onMouseEnter={(e) => {
-              if (isPermanentZone || isBlockedZone || isPlayArea) {
-                e.currentTarget.style.zIndex = '1000';
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (isPermanentZone || isBlockedZone || isPlayArea) {
-                e.currentTarget.style.zIndex = String(index);
-              }
+              onMouseLeave={(e) => {
+                if (isPermanentZone || isBlockedZone || isPlayArea) {
+                  e.currentTarget.style.zIndex = String(index);
+                }
+              }}
+            >
+              <div className={(isPermanentZone || isBlockedZone || isPlayArea) ? "group-hover:scale-105 transition-transform duration-300" : ""}>
+                <CardView
+                  card={c}
+                  fromZone={name}
+                  onRightClick={onRightClick}
+                  interactable={interactable}
+                  debugMode={debugMode}
+                  onTapAction={onTapAction}
+                  onUpgrade={onUpgrade}
+                  onGainResources={onGainResources}
+                  onCardUpdate={onCardUpdate}
+                  onExecuteCardEffect={onExecuteCardEffect}
+                  gatherProductionBonus={gatherProductionBonus}
+                  gatherAdditionalProductionOptions={gatherAdditionalProductionOptions}
+                  isHighlighted={highlightedCardId === c.id}
+                />
+              </div>
+            </div>
+          ))
+        ) : (
+          <div
+            className="m-2 flex items-center justify-center rounded-xl"
+            style={{
+              width: "196px",
+              height: "280px",
+              border: "1.5px dashed rgba(120, 80, 180, 0.3)",
+              background: "rgba(255,255,255,0.02)",
+              color: "rgba(180, 150, 220, 0.4)",
+              fontSize: "12px",
+              fontStyle: "italic",
+              letterSpacing: "0.05em",
             }}
           >
-            <div className={(isPermanentZone || isBlockedZone || isPlayArea) ? "group-hover:scale-105 transition-transform duration-300" : ""}>
-              <CardView
-                card={c}
-                fromZone={name}
-                onRightClick={onRightClick}
-                interactable={interactable}
-                debugMode={debugMode}
-                onTapAction={onTapAction}
-                onUpgrade={onUpgrade}
-                onGainResources={onGainResources}
-                onCardUpdate={onCardUpdate}
-                onExecuteCardEffect={onExecuteCardEffect}
-                gatherProductionBonus={gatherProductionBonus}
-                gatherAdditionalProductionOptions={gatherAdditionalProductionOptions}
-                isHighlighted={highlightedCardId === c.id}
-              />
-            </div>
+            {t('none')}
           </div>
-        ))
-      ) : (
-        <Card className="w-49 h-70 m-2 flex items-center justify-center border bg-gray-100">
-          <CardContent className="text-center text-gray-400">{t('none')}</CardContent>
-        </Card>
-      )}
+        )}
       </div>
     </div>
   );
@@ -1902,8 +2069,7 @@ function CardSelectionPopup({
   optionalCount,
   searchType,
   triggeringCard,
-  onConfirm,
-  onCancel,
+  onConfirm
 }: {
   cards: GameCard[];
   effectDescription: string;
@@ -2026,18 +2192,45 @@ function CardSelectionPopup({
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[80]">
-      <div className="bg-white p-4 rounded-xl max-w-5xl max-h-[80vh] overflow-auto flex flex-col">
-        <h2 className="font-bold mb-3">{displayMessage}</h2>
+      <div
+        className="p-4 rounded-xl max-w-5xl max-h-[80vh] overflow-auto flex flex-col"
+        style={{
+          background: "rgba(18, 12, 30, 0.72)",
+          backdropFilter: "blur(8px)",
+          WebkitBackdropFilter: "blur(8px)",
+          border: "1px solid rgba(120, 80, 180, 0.3)",
+          boxShadow: "0 4px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06)",
+        }}
+      >
+        <h2
+          className="text-xl font-bold mb-3 tracking-wide uppercase"
+          style={{
+            color: "#c8b4e8",
+            textShadow: "0 0 20px rgba(160, 100, 255, 0.4)",
+            fontSize: "13px",
+            letterSpacing: "0.12em",
+          }}
+        >
+          {displayMessage}
+        </h2>
 
         <div className="flex flex-1 gap-4 overflow-auto">
           {triggeringCard && (
             <div className="w-[220px] flex-shrink-0 border rounded p-3 flex flex-col items-center">
-            <h3 className="text-sm font-semibold mb-2 text-center">{t('triggeredCard')}</h3>
+            <h3
+              className="text-xl font-bold mb-3 tracking-wide uppercase"
+              style={{
+                color: "#c8b4e8",
+                textShadow: "0 0 20px rgba(160, 100, 255, 0.4)",
+                fontSize: "13px",
+                letterSpacing: "0.12em",
+              }}>
+                {t('triggeredCard')}
+              </h3>
               <CardView
                 card={triggeringCard}
                 fromZone={zone}
                 onRightClick={() => {}}
-                interactable={false}
               />
             </div>
           )}
@@ -2060,8 +2253,16 @@ function CardSelectionPopup({
                         ? "ring-4 ring-blue-500 scale-105" 
                         : "hover:ring-2 hover:ring-gray-300"
                     }`}
-                    onMouseEnter={() => setHoveredCard(card)}
-                    onMouseLeave={() => setHoveredCard(null)}
+                    onDoubleClick={() => {
+                      setHoveredCard(hoveredCard?.id == card.id ? null : card);
+                    }}
+                    onMouseLeave={() => {
+                      setHoveredCard(null);
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleCard(card);
+                    }}
                   >
                     {cardValue > 1 && (
                       <div className="absolute top-2 right-2 z-20 bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold text-sm">
@@ -2087,22 +2288,12 @@ function CardSelectionPopup({
                       </button>
                     )}
                     
-                    {/* Zone clickable pour la sélection */}
-                    <div 
-                      className="absolute inset-0 z-10"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleCard(card);
-                      }}
-                    />
-                    
                     {/* La carte elle-même - pas d'interaction directe */}
                     <div style={{ pointerEvents: 'none' }}>
                       <CardView
                         card={card}
                         fromZone={zone}
                         onRightClick={() => {}}
-                        interactable={false}
                       />
                     </div>
                   </div>
@@ -2114,13 +2305,18 @@ function CardSelectionPopup({
 
         {/* Footer */}
         <div className="flex justify-between items-center pt-2 mt-3 border-t">
-          <span className="text-sm text-gray-600">
+          <span
+            className="text-xl font-bold mb-3 tracking-wide uppercase"
+            style={{
+              color: "#c8b4e8",
+              textShadow: "0 0 20px rgba(160, 100, 255, 0.4)",
+              fontSize: "13px",
+              letterSpacing: "0.12em",
+            }}
+          >
             {selectedValue} / {optionalCount ? `${requiredCount}-${maxCount}` : requiredCount}
           </span>
           <div className="flex gap-2">
-            <Button onClick={onCancel} variant="secondary" hidden={zone === t('campaign') || requiredCount !== 0}>
-              {t('cancel')}
-            </Button>
             <Button 
               onClick={() => onConfirm(selectedCards)}
               disabled={!canConfirm}
@@ -2144,6 +2340,93 @@ function CardSelectionPopup({
 }
 
 // -------------------
+// Cards Show Popup
+// -------------------
+function CardUpgradePopup({
+  card,
+  prevSide,
+  zone,
+  onConfirm
+}: {
+  card: GameCard;
+  prevSide: number;
+  zone: string;
+  onConfirm: () => void;
+}) {
+  const { t } = useTranslation();
+
+  const prevSideCard = cloneGameCard(card);
+  prevSideCard.currentSide = prevSide;
+
+  return (
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[80]">
+      <div
+        className="p-4 rounded-xl max-w-5xl max-h-[80vh] overflow-auto flex flex-col items-center"
+        style={{
+          background: "rgba(18, 12, 30, 0.72)",
+          backdropFilter: "blur(8px)",
+          WebkitBackdropFilter: "blur(8px)",
+          border: "1px solid rgba(120, 80, 180, 0.3)",
+          boxShadow: "0 4px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06)",
+        }}
+      >
+        <h2
+          className="text-xl font-bold mb-3 tracking-wide uppercase"
+          style={{
+            color: "#c8b4e8",
+            textShadow: "0 0 20px rgba(160, 100, 255, 0.4)",
+            fontSize: "13px",
+            letterSpacing: "0.12em",
+          }}
+        >
+          {t('upgraded_card')}
+        </h2>
+
+        <div className="flex flex-1 gap-4 overflow-auto">
+          {card && (
+            <div
+              className="flex-shrink-0 rounded p-3 flex flex-row items-center"
+            >
+              <CardView
+                card={prevSideCard}
+                fromZone={zone}
+                onRightClick={() => {}}
+              />
+              <span style={{
+                fontSize: "48px",
+                lineHeight: 1,
+                padding: "0 24px",
+                color: "#c8a020",
+                textShadow: "0 0 16px rgba(200, 160, 30, 0.5)",
+                flexShrink: 0,
+              }}>
+                →
+              </span>
+              <CardView
+                card={card}
+                fromZone={zone}
+                onRightClick={() => {}}
+              />
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="flex justify-between items-center pt-2 mt-3 border-t">
+          <div className="flex gap-2">
+            <Button 
+              onClick={() => onConfirm()}
+            >
+              {t('confirm')}
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// -------------------
 // Effect Confirmation Popup
 // -------------------
 function EffectConfirmationPopup({
@@ -2159,10 +2442,37 @@ function EffectConfirmationPopup({
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[80]">
-      <div className="bg-white p-6 rounded-xl space-y-4 max-w-md">
-        <h2 className="font-bold text-lg">{t('endOfRoundEffect')}</h2>
+      <div
+        className="p-6 rounded-xl space-y-4 max-w-md"
+        style={{
+          background: "rgba(18, 12, 30, 0.72)",
+          backdropFilter: "blur(8px)",
+          WebkitBackdropFilter: "blur(8px)",
+          border: "1px solid rgba(120, 80, 180, 0.3)",
+          boxShadow: "0 4px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06)",
+        }}
+      >
+        <h2
+          className="font-bold text-lg"
+          style={{
+            color: "#c8b4e8",
+            textShadow: "0 0 20px rgba(160, 100, 255, 0.4)",
+            fontSize: "13px",
+            letterSpacing: "0.12em",
+            marginBottom: "2rem",
+          }}
+        >{t('endOfRoundEffect')}</h2>
         
-        <div className="text-sm py-4">
+        <div
+          className="text-sm py-4"
+          style={{
+            color: "#c8b4e8",
+            textShadow: "0 0 20px rgba(160, 100, 255, 0.4)",
+            fontSize: "13px",
+            letterSpacing: "0.12em",
+            marginBottom: "2rem",
+          }}
+        >
           <p>{renderEffectText(description, t)}</p>
         </div>
 
@@ -2209,9 +2519,27 @@ const CheckboxSelectionPopup: React.FC<{
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex justify-center items-center">
-      <div className="bg-white p-4 rounded shadow-lg max-w-sm w-full">
-        <h2 className="text-lg font-bold mb-2">
+    <div className="fixed inset-0 z-50 bg-black/70 flex justify-center items-center">
+      <div 
+        className="p-4 rounded shadow-lg max-w-sm w-full"
+        style={{
+          background: "rgba(18, 12, 30, 0.72)",
+          backdropFilter: "blur(8px)",
+          WebkitBackdropFilter: "blur(8px)",
+          border: "1px solid rgba(120, 80, 180, 0.3)",
+          boxShadow: "0 4px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06)",
+        }}
+      >
+        <h2
+          className="text-lg font-bold mb-2"
+          style={{
+          color: "#c8b4e8",
+          textShadow: "0 0 20px rgba(160, 100, 255, 0.4)",
+          fontSize: "13px",
+          letterSpacing: "0.12em",
+          marginBottom: "2rem",
+        }}
+        >
           {t('selectBetween')} {requiredCount} {t('and')} {requiredCount + optionalCount} {t('checkboxes')}
         </h2>
         {available.length === 0 ? (
@@ -2224,7 +2552,7 @@ const CheckboxSelectionPopup: React.FC<{
                 return (
                   <label
                     key={i}
-                    className="flex items-center gap-2 bg-gray-50 p-2 rounded cursor-pointer"
+                    className="flex items-center gap-2 bg-gray-50 p-2 cursor-pointer"
                   >
                     <input
                       type="checkbox"
@@ -2334,9 +2662,38 @@ const ResourceSelectionPopup: React.FC<{
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[70]">
-      <div className="bg-white p-4 rounded-xl space-y-4 max-w-md w-full">
-        <h2 className="font-bold">{t('chooseResource')}</h2>
-        <p className="text-sm text-gray-500">
+      <div
+        className="p-4 rounded-xl space-y-4 max-w-md w-full"
+        style={{
+          background: "rgba(18, 12, 30, 0.72)",
+          backdropFilter: "blur(8px)",
+          WebkitBackdropFilter: "blur(8px)",
+          border: "1px solid rgba(120, 80, 180, 0.3)",
+          boxShadow: "0 4px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06)",
+        }}
+      >
+        <h2
+          className="font-bold"
+          style={{
+            color: "#c8b4e8",
+            textShadow: "0 0 20px rgba(160, 100, 255, 0.4)",
+            fontSize: "13px",
+            letterSpacing: "0.12em",
+            marginBottom: "2rem",
+          }}
+        >
+          {t('chooseResource')}
+        </h2>
+        <p
+          className="text-sm text-gray-500"
+          style={{
+            color: "#c8b4e8",
+            textShadow: "0 0 20px rgba(160, 100, 255, 0.4)",
+            fontSize: "13px",
+            letterSpacing: "0.12em",
+            marginBottom: "2rem",
+          }}
+        >
           {t('remaining')}:{' '}
           <span className={(isOptionMode ? remainingChoices : remaining) === 0 ? 'text-green-600 font-bold' : 'font-semibold'}>
             {isOptionMode ? remainingChoices : remaining} / {totalLevel}
@@ -2363,7 +2720,7 @@ const ResourceSelectionPopup: React.FC<{
                   <div className="flex items-center gap-2 flex-wrap flex-1">
                     {entries.map(([resource, value]) => (
                       <div key={resource} className="flex items-center gap-1">
-                        <img src={resourceIconPath(resource)} alt={resource} className="w-6 h-6" />
+                        <img src={resourceIconPath(resource)} alt={t(resource)} className="w-6 h-6" />
                         <span className="text-sm font-semibold">×{value}</span>
                       </div>
                     ))}
@@ -2376,8 +2733,8 @@ const ResourceSelectionPopup: React.FC<{
             // --- Rendu quantités ---
             resourceKeys.map((resource) => (
               <div key={resource} className="flex items-center gap-3 bg-gray-50 p-2 rounded-lg">
-                <img src={resourceIconPath(resource)} alt={resource} className="w-7 h-7" />
-                <span className="text-sm flex-1 capitalize">{resource}</span>
+                <img src={resourceIconPath(resource)} alt={t(resource)} className="w-7 h-7" />
+                <span className="text-sm flex-1 capitalize">{t(resource)}</span>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => handleChange(resource, (amounts[resource] ?? 0) - 1)}
@@ -2442,9 +2799,27 @@ const CardSideSelectionPopup: React.FC<{
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex justify-center items-center">
-      <div className="bg-white p-4 rounded shadow-lg max-w-md w-full">
-        <h2 className="text-lg font-bold mb-2">
+    <div className="fixed inset-0 z-50 bg-black/70 flex justify-center items-center">
+      <div
+        className="bg-white p-4 rounded shadow-lg max-w-md w-full"
+        style={{
+        background: "rgba(18, 12, 30, 0.72)",
+        backdropFilter: "blur(8px)",
+        WebkitBackdropFilter: "blur(8px)",
+        border: "1px solid rgba(120, 80, 180, 0.3)",
+        boxShadow: "0 4px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06)",
+      }}
+      >
+        <h2
+          className="text-lg font-bold mb-2"
+          style={{
+            color: "#c8b4e8",
+            textShadow: "0 0 20px rgba(160, 100, 255, 0.4)",
+            fontSize: "13px",
+            letterSpacing: "0.12em",
+            marginBottom: "2rem",
+          }}
+        >
           {t('selectBetween')} {requiredCount} {t('and')} {requiredCount + optionalCount} {t('side')}(s)
         </h2>
         <div className="flex flex-col gap-2 mb-4">
@@ -2517,9 +2892,27 @@ const UpgradeCostSelectionPopup: React.FC<{
   const currentUpgrades = card.GetUpgrades();
 
   return (
-    <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex justify-center items-center">
-      <div className="bg-white p-4 rounded shadow-lg max-w-md w-full">
-        <h2 className="text-lg font-bold mb-2">
+    <div className="fixed inset-0 z-50 bg-black/70 flex justify-center items-center">
+      <div
+        className="p-4 rounded shadow-lg max-w-md w-full"
+        style={{
+          background: "rgba(18, 12, 30, 0.72)",
+          backdropFilter: "blur(8px)",
+          WebkitBackdropFilter: "blur(8px)",
+          border: "1px solid rgba(120, 80, 180, 0.3)",
+          boxShadow: "0 4px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06)",
+        }}
+      >
+        <h2
+          className="text-lg font-bold mb-2"
+          style={{
+            color: "#c8b4e8",
+            textShadow: "0 0 20px rgba(160, 100, 255, 0.4)",
+            fontSize: "13px",
+            letterSpacing: "0.12em",
+            marginBottom: "2rem",
+          }}
+        >
           {t('selectUpgrade')}
         </h2>
         
@@ -2528,7 +2921,18 @@ const UpgradeCostSelectionPopup: React.FC<{
         ) : (
           <>
             <div className="flex flex-col gap-2 mb-4">
-              <h3 className="text-sm font-medium">1. {t('selectAnUpgrade')} :</h3>
+              <h3
+                className="text-sm font-medium"
+                style={{
+                  color: "#c8b4e8",
+                  textShadow: "0 0 20px rgba(160, 100, 255, 0.4)",
+                  fontSize: "13px",
+                  letterSpacing: "0.12em",
+                  marginBottom: "2rem",
+                }}
+              >
+                1. {t('selectAnUpgrade')} :
+              </h3>
               {currentUpgrades.map((upg, idx) => (
                 <button
                   key={idx}
@@ -2579,7 +2983,18 @@ const UpgradeCostSelectionPopup: React.FC<{
 
             {selectResource && selectedUpgradeIndex !== null && currentUpgrades[selectedUpgradeIndex].cost && (
               <div className="flex flex-col gap-2 mb-4">
-                <h3 className="text-sm font-medium">2. {t('selectAResource')} :</h3>
+                <h3
+                  className="text-sm font-medium"
+                  style={{
+                    color: "#c8b4e8",
+                    textShadow: "0 0 20px rgba(160, 100, 255, 0.4)",
+                    fontSize: "13px",
+                    letterSpacing: "0.12em",
+                    marginBottom: "2rem",
+                  }}
+                >
+                  2. {t('selectAResource')} :
+                </h3>
                 <div className="grid grid-cols-3 gap-2">
                   {Object.entries(currentUpgrades[selectedUpgradeIndex].cost || {})
                     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -2657,15 +3072,40 @@ const TextInputPopup: React.FC<{
   const [inputText, setInputText] = useState("");
 
   return (
-    <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex justify-center items-center">
-      <div className="bg-white p-4 rounded shadow-lg max-w-md w-full">
-        <h2 className="text-lg font-bold mb-2">
+    <div className="fixed inset-0 z-50 bg-black/70 flex justify-center items-center">
+      <div
+        className="bg-white p-4 rounded shadow-lg max-w-md w-full"
+        style={{
+          background: "rgba(18, 12, 30, 0.72)",
+          backdropFilter: "blur(8px)",
+          WebkitBackdropFilter: "blur(8px)",
+          border: "1px solid rgba(120, 80, 180, 0.3)",
+          boxShadow: "0 4px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06)",
+        }}
+      >
+        <h2
+          className="text-lg font-bold mb-2"
+          style={{
+            color: "#c8b4e8",
+            textShadow: "0 0 20px rgba(160, 100, 255, 0.4)",
+            fontSize: "13px",
+            letterSpacing: "0.12em",
+            marginBottom: "2rem",
+          }}
+        >
           {renderEffectText(description, t)}
         </h2>
         
         <input
           type="text"
           className="w-full border rounded px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          style={{
+            color: "#c8b4e8",
+            textShadow: "0 0 20px rgba(160, 100, 255, 0.4)",
+            fontSize: "13px",
+            letterSpacing: "0.12em",
+            marginBottom: "2rem",
+          }}
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
           placeholder="Entrez votre texte..."
@@ -2715,9 +3155,27 @@ const StringChoicePopup: React.FC<{
   const [selectedChoice, setSelectedChoice] = useState<string | null>(null);
 
   return (
-    <div className="fixed inset-0 z-[90] bg-black bg-opacity-50 flex justify-center items-center">
-      <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full">
-        <h2 className="text-lg font-bold mb-4">
+    <div className="fixed inset-0 z-[90] bg-black/70 flex justify-center items-center">
+      <div
+        className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full"
+        style={{
+          background: "rgba(18, 12, 30, 0.72)",
+          backdropFilter: "blur(8px)",
+          WebkitBackdropFilter: "blur(8px)",
+          border: "1px solid rgba(120, 80, 180, 0.3)",
+          boxShadow: "0 4px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06)",
+        }}
+      >
+        <h2
+          className="text-lg font-bold mb-4"
+          style={{
+            color: "#c8b4e8",
+            textShadow: "0 0 20px rgba(160, 100, 255, 0.4)",
+            fontSize: "13px",
+            letterSpacing: "0.12em",
+            marginBottom: "2rem",
+          }}
+        >
           {renderEffectText(description, t)}
         </h2>
         
@@ -2838,6 +3296,13 @@ export default function Game() {
     searchType?: string;
     triggeringCard?: GameCard;
     resolve: (selectedCards: GameCard[]) => void;
+  } | null>(null);
+
+  const [cardUpgradePopup, setCardUpgradePopup] = useState<{
+    card: GameCard;
+    prevSide: number;
+    zone: string;
+    resolve: () => void;
   } | null>(null);
 
   useEffect(() => {
@@ -4351,6 +4816,7 @@ export default function Game() {
     if (card.name[nextSide - 1] === "" || (turnEndFlag && !forced)) {
       return false;
     }
+    const prevSide = card.currentSide;
 
     await handleEffectsUpgrade(card);
 
@@ -4365,6 +4831,13 @@ export default function Game() {
       await dropToPlayArea({id: cardsToUnblock.map((c) => c.id), fromZone: t('blocked')});
       updateBlocks(card.id, null);
     }
+
+    setCardUpgradePopup({
+      card: card,
+      prevSide: prevSide,
+      zone: getCardZone(card.id),
+      resolve: async () => {}
+    });
 
     return true;
   }
@@ -5190,7 +5663,62 @@ export default function Game() {
       return !permanentZoneRef.current.find(c => c.id === expansion.cardId);
     }
     else {
-      if (campaignDeckRef.current.filter((c) => c.discoverable).length === 0) {
+      const zone = t('campaign');
+      const card = new GameCard();
+      const context: GameContext = {
+        card,
+        zone,
+        resources:resourcesRef.current,
+        filterZone,
+        setResources,
+        handleGainResources,
+        handlePayResources,
+        draw,
+        effectEndTurn,
+        dropToPlayArea,
+        dropToBlocked,
+        dropToDeck,
+        dropToDiscard,
+        dropToCampaign,
+        dropToPermanent,
+        setDeck: setDeckImmediate,
+        setPlayArea: setPlayAreaImmediate,
+        setDiscard: setDiscardImmediate,
+        setPermanentZone,
+        setCampaignDeck,
+        setTemporaryCardList,
+        setTemporaryCardListImmediate,
+        setBlockedZone,
+        setPurgedCards: setPurgedCardsImmediate,
+        deleteCardInZone,
+        replaceCardInZone,
+        mill,
+        openCheckboxPopup,
+        selectResourceChoice,
+        selectCardsFromZone,
+        selectCardsFromArray,
+        discoverCard,
+        boostProductivity,
+        registerEndRoundEffect,
+        addCardEffect,
+        fetchCardsInZone,
+        selectCardSides,
+        selectUpgradeCost,
+        selectTextInput,
+        selectStringChoice,
+        updateBlocks,
+        getBlockedBy,
+        getCardZone,
+        upgradeCard,
+        handleCardUpdate,
+        handleEnemyDefeated,
+        addDiscoverableCard,
+        getCardProduction,
+        hasBeenUsedThisTurn,
+        markAsUsedThisTurn,
+        t,
+      };
+      if (campaignDeckRef.current.filter((c) => c.discoverable).length === 0 || (expansion.checkExpansionEnd??(context))) {
         return true
       }
     }
@@ -5198,7 +5726,6 @@ export default function Game() {
     return false;
   };
 
-  // Dans handleEndBaseGame, ajoute :
   const handleEndExpansion = async () => {
     setShouldComputeFame(true);
     
@@ -5210,9 +5737,6 @@ export default function Game() {
     }
   };
 
-  // -------------------
-  // Replace card in zone by id (used by popup apply)
-  // -------------------
   function replaceCardInZone(zone: string, id: number, newCard: GameCard): void {
     if (zone === t('deck')) {
       setDeck((d) => d.map((c) => (c.id === id ? cloneGameCard(newCard) : c)));
@@ -5927,27 +6451,32 @@ export default function Game() {
   }, [language]);
 
   useEffect(() => {
-    const isMobile = window.innerWidth < 768 || /Android|iPad|iPhone/i.test(navigator.userAgent);
-    
-    const attachment = isMobile ? "fixed" : "fixed";
-    const bgSize = "cover";
-    const bgPosition = "center";
-    
-    document.documentElement.style.background = "linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)";
-    document.documentElement.style.backgroundAttachment = attachment;
-    document.documentElement.style.backgroundSize = bgSize;
-    document.documentElement.style.backgroundPosition = bgPosition;
-    document.documentElement.style.minHeight = "100vh";
-    document.documentElement.style.backgroundRepeat = "no-repeat";
-    
+    const root = document.documentElement;
+
+    root.style.background = "#c8b89a";
+    root.style.backgroundImage = `
+      radial-gradient(ellipse at 15% 10%, rgba(180, 140, 80, 0.35) 0%, transparent 45%),
+      radial-gradient(ellipse at 85% 90%, rgba(100, 120, 90, 0.25) 0%, transparent 45%),
+      radial-gradient(ellipse at 50% 50%, rgba(200, 185, 155, 0.4) 0%, transparent 70%),
+      url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 2 L22 12 L12 22 L2 12 Z' fill='none' stroke='%2300000012' stroke-width='0.6'/%3E%3C/svg%3E")
+    `;
+    root.style.backgroundAttachment = "fixed";
+    root.style.backgroundSize = "cover, cover, cover, 24px 24px";
+    root.style.backgroundRepeat = "no-repeat, no-repeat, no-repeat, repeat";
+    root.style.minHeight = "100vh";
     document.body.style.background = "transparent";
-    document.body.style.backgroundAttachment = "unset";
     document.body.style.minHeight = "100vh";
-    
+
     return () => {
-      document.documentElement.style.background = "";
-      document.documentElement.style.backgroundSize = "";
-      document.documentElement.style.backgroundPosition = "";
+      root.style.background = "";
+      root.style.backgroundImage = "";
+      root.style.backgroundAttachment = "";
+      root.style.backgroundSize = "";
+      root.style.backgroundRepeat = "";
+      root.style.backgroundPosition = "";
+      root.style.minHeight = "";
+      document.body.style.background = "";
+      document.body.style.minHeight = "";
     };
   }, []);
 
@@ -5959,20 +6488,34 @@ export default function Game() {
             {/* Deck */}
             <div className="min-w-[200px]">
               <div className="relative">
-                <Button disabled={deck.length === 0} onClick={() => setShowDeck(true)}className="absolute mt-4 right-2">
+                <Button disabled={deck.length === 0} onClick={() => setShowDeck(true)}
+                  className="absolute mt-2 right-2"
+                  style={{ zIndex: 20 }}
+                >
                   {t('seeDeck')}
                 </Button>
-                <Zone
-                  name={t('deck')}
-                  cards={deck}
-                  onDrop={(p) => dropToDeck(p)}
-                  onRightClick={() => {}}
-                  showAll={false}
-                  onTapAction={debugMode ? handleTapAction : undefined}
-                  onZoneRef={(el) => { if (el) zoneRefsMap.current.set(t('deck'), el);}}
-                  debugMode={debugMode}
-                />
-                <span className="absolute bottom-3 right-5 text-sm text-gray-500">
+                <div style={{ position: "relative", zIndex: 1, isolation: "isolate" }}>
+                  <Zone
+                    name={t('deck')}
+                    cards={deck}
+                    onDrop={(p) => dropToDeck(p)}
+                    onRightClick={() => {}}
+                    showAll={false}
+                    onTapAction={debugMode ? handleTapAction : undefined}
+                    onZoneRef={(el) => { if (el) zoneRefsMap.current.set(t('deck'), el);}}
+                    debugMode={debugMode}
+                  />
+                </div>
+                <span
+                  className="absolute bottom-0 right-5 text-sm font-bold mb-3 tracking-wide uppercase"
+                  style={{
+                    zIndex: 20,
+                    color: "#c8b4e8",
+                    textShadow: "0 0 20px rgba(160, 100, 255, 0.4)",
+                    fontSize: "13px",
+                    letterSpacing: "0.12em",
+                  }}
+                >
                   {deck.length}
                 </span>
               </div>
@@ -5981,7 +6524,10 @@ export default function Game() {
             {/* Discard */}
             <div className="min-w-[200px]">
               <div className="relative">
-                <Button disabled={discard.length === 0} onClick={() => setShowDiscard(true)}className="absolute mt-4 right-2">
+                <Button disabled={discard.length === 0} onClick={() => setShowDiscard(true)}
+                  className="absolute mt-2 right-2"
+                  style={{ zIndex: 20 }}
+                >
                   {t('seeDiscard')}
                 </Button>
                 <Zone
@@ -5994,7 +6540,16 @@ export default function Game() {
                   onZoneRef={(el) => { if (el) zoneRefsMap.current.set(t('discard'), el);}}
                   debugMode={debugMode}
                 />
-                <span className="absolute bottom-3 right-5 text-sm text-gray-500">
+                <span
+                  className="absolute bottom-0 right-5 text-sm font-bold mb-3 tracking-wide uppercase"
+                  style={{
+                    zIndex: 20,
+                    color: "#c8b4e8",
+                    textShadow: "0 0 20px rgba(160, 100, 255, 0.4)",
+                    fontSize: "13px",
+                    letterSpacing: "0.12em",
+                  }}
+                >
                   {discard.length}
                 </span>
               </div>
@@ -6071,54 +6626,105 @@ export default function Game() {
         <div className="relative flex flex-col flex-row gap-4 max-w-[1300px]">
           {/* Play Area */}
           <div className="flex-1 max-w-[1300px]">
-            {/* Resource Pool et Infos sur une seune ligne */}
-            <div className="flex gap-4 items-center -mb-13 ml-93">
-              {/* Resource Pool au centre */}
-              <div className="bg-white/80 backdrop-blur-sm p-2 rounded-xl shadow-lg border-2 border-gray-200 flex-shrink-0" ref={(el) => { if (el) zoneRefsMap.current.set(t('resourcePool'), el);}}>
+            {/* Resource Pool */}
+            <div className="flex gap-4 items-center -mb-13 ml-93" style={{ position: "relative", zIndex: 20 }}>
+              <div
+                className="flex-shrink-0 p-2 rounded-xl"
+                style={{
+                  background: "rgba(245, 235, 210, 0.82)",
+                  backdropFilter: "blur(8px)",
+                  WebkitBackdropFilter: "blur(8px)",
+                  border: "1.5px solid rgba(160, 120, 50, 0.35)",
+                  boxShadow: "0 4px 16px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.6)",
+                }}
+                ref={(el) => { if (el) zoneRefsMap.current.set(t('resourcePool'), el); }}
+              >
                 <div className="grid grid-cols-6 gap-2">
                   {RESOURCE_KEYS.filter((key) => key !== 'fame').map((key) => (
-                    <div key={key} className="flex items-center gap-1 p-1 bg-gradient-to-br from-white to-gray-50 rounded-lg shadow-sm border border-gray-200">
-                      <img src={resourceIconPath(key)} alt={key} title={key} className="w-5 h-5 flex-shrink-0" />
+                    <div
+                      key={key}
+                      className="flex items-center gap-1 p-1 rounded-lg"
+                      style={{
+                        background: "rgba(255, 248, 230, 0.7)",
+                        border: "1px solid rgba(160, 120, 50, 0.2)",
+                        boxShadow: "inset 0 1px 2px rgba(0,0,0,0.06)",
+                      }}
+                    >
+                      <img
+                        src={resourceIconPath(key)}
+                        alt={key}
+                        title={key}
+                        className="w-5 h-5 flex-shrink-0"
+                      />
                       <div className="flex items-center gap-1">
-                        {debugMode?(
+                        {debugMode ? (
                           <input
                             type="number"
-                            className="w-10 text-center border rounded text-xs py-0.5"
                             value={resources[key]}
-                            onChange={(e) => setResources((r) => ({ ...r, [key]: parseInt(e.target.value || "0", 10) || 0 }))}
+                            onChange={(e) =>
+                              setResources((r) => ({
+                                ...r,
+                                [key]: parseInt(e.target.value || "0", 10) || 0,
+                              }))
+                            }
+                            className="w-10 text-center text-xs py-0.5 rounded"
+                            style={{
+                              background: "rgba(255,248,230,0.9)",
+                              border: "1px solid rgba(160,120,50,0.3)",
+                              color: "#3d2a0a",
+                              outline: "none",
+                            }}
                           />
                         ) : (
-                          <div className="w-10 text-center border rounded text-xs py-0.5">
+                          <div
+                            className="w-10 text-center text-xs py-0.5 rounded font-medium"
+                            style={{
+                              background: "rgba(255,248,230,0.9)",
+                              border: "1px solid rgba(160,120,50,0.3)",
+                              color: "#3d2a0a",
+                            }}
+                          >
                             {resources[key]}
                           </div>
                         )}
-                        
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
+              {/* Round Count */}
+              <span
+                className="mt-2 ml-60 text-sm font-bold mb-3 tracking-wide uppercase"
+                style={{
+                  zIndex: 20,
+                  color: "#c8b4e8",
+                  textShadow: "0 0 20px rgba(160, 100, 255, 0.4)",
+                  fontSize: "13px",
+                  letterSpacing: "0.12em",
+                }}
+              >
+                {t('round')} : {numberOfRounds + 1}
+              </span>
             </div>
-            <span className="absolute top-3 right-17 text-sm text-gray-500">
-              {t('round')} : {numberOfRounds + 1}
-            </span>
-            <Zone
-              name={t('playArea')}
-              cards={playArea}
-              onDrop={(p) => dropToPlayArea(p)}
-              onRightClick={() => {}}
-              onTapAction={debugMode ? handleTapAction : undefined}
-              onCardUpdate={handleCardUpdate}
-              onUpgrade={handleUpgrade}
-              onGainResources={handleGainResources}
-              onExecuteCardEffect={(card, zone, timing, effectIndex) => handleExecuteCardEffect(card, zone, timing, undefined, effectIndex)}
-              gatherProductionBonus={gatherProductionBonus}
-              gatherAdditionalProductionOptions={gatherAdditionalProductionOptions}
-              highlightedCardId={highlightedCardId}
-              onReorderCards={(cardIds) => reorderCardsInZone(t('playArea'), cardIds)}
-              onZoneRef={(el) => { if (el) zoneRefsMap.current.set(t('playArea'), el);}}
-              debugMode={debugMode}
-            />
+            <div style={{ position: "relative", zIndex: 1, isolation: "isolate" }}>
+              <Zone
+                name={t('playArea')}
+                cards={playArea}
+                onDrop={(p) => dropToPlayArea(p)}
+                onRightClick={() => {}}
+                onTapAction={debugMode ? handleTapAction : undefined}
+                onCardUpdate={handleCardUpdate}
+                onUpgrade={handleUpgrade}
+                onGainResources={handleGainResources}
+                onExecuteCardEffect={(card, zone, timing, effectIndex) => handleExecuteCardEffect(card, zone, timing, undefined, effectIndex)}
+                gatherProductionBonus={gatherProductionBonus}
+                gatherAdditionalProductionOptions={gatherAdditionalProductionOptions}
+                highlightedCardId={highlightedCardId}
+                onReorderCards={(cardIds) => reorderCardsInZone(t('playArea'), cardIds)}
+                onZoneRef={(el) => { if (el) zoneRefsMap.current.set(t('playArea'), el);}}
+                debugMode={debugMode}
+              />
+            </div>
           </div>
 
           {/* Blocked zone */}
@@ -6147,7 +6753,7 @@ export default function Game() {
               onClick={handleDebugClick}
               className="absolute -bottom-7 -right-98 text-xs text-gray-700 whitespace-nowrap cursor-pointer select-none z-50"
             >
-              Kingdom Legacy - Digital by Keleonix | v0.10.3 {debugMode && '🐛'}
+              Kingdom Legacy - Digital by Keleonix | v0.10.4 {debugMode && '🐛'}
             </div>
           </div>
         </div>
@@ -6156,69 +6762,107 @@ export default function Game() {
         <div className="relative flex flex-wrap gap-2 flex-shrink-0" ref={(el) => { if (el) zoneRefsMap.current.set(t('actionButtons'), el);}}>
           <Button onClick={drawNewTurn} disabled={deck.length === 0 || isChoosingExpansion || isAnimating}>{t('newTurn')}</Button>
           <Button onClick={async () => { setIsAnimating(true); await advance(); setIsAnimating(false); }} disabled={deck.length === 0 || isChoosingExpansion || turnEndFlag || isPlayBlocked || isAnimating || checkAdvanceRestrictions()}>{t('advance')}</Button>
-          <Button disabled={deck.length !== 0 || (deck.length === 0 && campaignDeck.filter(card => card.id === 70).length === 0 && (!hasEndedBaseGame || (hasEndedBaseGame && currentExpansion !== null && checkExpansionEnd())))} className="bg-red-600 hover:bg-red-500 text-white" onClick={handleEndRound}>{t('endRound')}</Button>
-          <Button hidden={purgedCards.length === 0} onClick={() => setShowPurged(true)} className="bg-blue-600 hover:bg-blue-500 text-white">{t('seePurged')}</Button>
-          <Button hidden={(hasEndedBaseGame || campaignDeck.some(card => card.id === 70)) || (currentExpansion !== null && !checkExpansionEnd())} disabled={deck.length !== 0 || isAnimating} className="bg-red-600 hover:bg-red-500 text-white" onClick={currentExpansion ? handleEndExpansion : handleEndBaseGame}>{currentExpansion ? t('endExpansion') : t('endGame')}</Button>
-          <Button onClick={() => setShowExpansionChoice(true)} hidden={!isChoosingExpansion || completedExpansions.length >= 9} disabled={isAnimating} className="bg-purple-600 hover:bg-purple-500 text-white">{t('chooseExpansion')}</Button>
+          <Button disabled={deck.length !== 0 || (deck.length === 0 && campaignDeck.filter(card => card.id === 70).length === 0 && (!hasEndedBaseGame || (hasEndedBaseGame && currentExpansion !== null && checkExpansionEnd())))} variant="destructive" onClick={handleEndRound}>{t('endRound')}</Button>
+          <Button hidden={purgedCards.length === 0} onClick={() => setShowPurged(true)} variant="blue">{t('seePurged')}</Button>
+          <Button hidden={(hasEndedBaseGame || campaignDeck.some(card => card.id === 70)) || (currentExpansion !== null && !checkExpansionEnd())} disabled={deck.length !== 0 || isAnimating} variant="destructive" onClick={currentExpansion ? handleEndExpansion : handleEndBaseGame}>{currentExpansion ? t('endExpansion') : t('endGame')}</Button>
+          <Button onClick={() => setShowExpansionChoice(true)} hidden={!isChoosingExpansion || completedExpansions.length >= 9} disabled={isAnimating} variant="purple">{t('chooseExpansion')}</Button>
         </div>
 
-        {/* Settings Modal */}
         {showSettings && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 animate-[fadeIn_0.2s_ease-out]">
-          <div className="bg-white p-6 rounded-2xl shadow-2xl space-y-4 max-w-md w-full mx-4 animate-[slideUp_0.3s_ease-out]">
-            <h2 className="font-bold text-2xl text-gray-800 border-b-2 border-blue-500 pb-2">{t('settings')}</h2>
-              <div className="flex flex-col gap-2">
-                {/* Language Selection */}
+          <div className="fixed inset-0 flex items-center justify-center z-50 animate-[fadeIn_0.2s_ease-out]"
+            style={{ background: "rgba(10, 6, 20, 0.75)", backdropFilter: "blur(6px)" }}
+          >
+            <div
+              className="p-6 rounded-2xl space-y-4 max-w-md w-full mx-4 animate-[slideUp_0.3s_ease-out]"
+              style={{
+                background: "rgba(245, 235, 210, 0.96)",
+                border: "1.5px solid rgba(160, 120, 50, 0.4)",
+                boxShadow: "0 8px 48px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.7)",
+              }}
+            >
+              {/* Titre */}
+              <h2
+                className="font-bold tracking-wide uppercase pb-3"
+                style={{
+                  fontSize: "15px",
+                  letterSpacing: "0.12em",
+                  color: "#3d2a0a",
+                  borderBottom: "1.5px solid rgba(160, 120, 50, 0.3)",
+                }}
+              >
+                {t('settings')}
+              </h2>
+
+              <div className="flex flex-col gap-3">
+                {/* Language + actions principales */}
                 <LanguageSelector />
-                <div className="flex flex-row gap-2">
+                <div className="flex flex-row gap-2 flex-wrap">
                   <Button onClick={resetGame}>{t('resetFullGame')}</Button>
                   <Button onClick={() => { setShowGuide(true); setShowSettings(false); }}>Guide</Button>
                   <Button onClick={() => setShowAchievements(true)}>🏆</Button>
                 </div>
-                <div className="border-t"/>
-                <div className="flex flex-col gap-2">
-                  <div className="flex flex-col gap-1 max-h-40 overflow-y-auto border rounded">
-                    <div
-                      className={`p-2 cursor-pointer hover:bg-blue-50 ${selectedKingdom === t('newKingdom') ? "bg-blue-100 font-bold" : ""}`}
-                      onClick={() => setSelectedKingdom(t('newKingdom'))}
-                    >
-                      {t('newKingdom')}
-                    </div>
-                    {savedKingdoms.map(kingdom => (
-                      <div
-                        key={kingdom}
-                        className={`flex items-center p-2 hover:bg-blue-50 ${selectedKingdom === kingdom ? "bg-blue-100 font-bold" : ""}`}
-                      >
-                        <span
-                          className="flex-1 cursor-pointer"
-                          onClick={() => setSelectedKingdom(kingdom)}
-                        >
-                          {kingdom}
-                        </span>
-                        <button
-                          onClick={() => deleteGame(kingdom)}
-                          className="ml-2 text-red-400 hover:text-red-600 font-bold text-lg leading-none px-1"
-                        >
-                          ✕
-                        </button>
-                      </div>
-                    ))}
-                  </div>
 
-                  {selectedKingdom === t('newKingdom') && (
+                <div style={{ borderTop: "1px solid rgba(160, 120, 50, 0.25)", margin: "4px 0" }} />
+
+                {/* Liste des royaumes sauvegardés */}
+                <div className="flex flex-col gap-1 max-h-40 overflow-y-auto rounded-lg"
+                  style={{ border: "1px solid rgba(160, 120, 50, 0.25)", background: "rgba(255,248,230,0.6)" }}
+                >
+                  <div
+                    className="p-2 cursor-pointer rounded-t-lg transition-colors"
+                    style={{
+                      background: selectedKingdom === t('newKingdom') ? "rgba(180, 130, 40, 0.2)" : "transparent",
+                      fontWeight: selectedKingdom === t('newKingdom') ? 600 : 400,
+                      color: "#3d2a0a",
+                      fontSize: "13px",
+                    }}
+                    onClick={() => setSelectedKingdom(t('newKingdom'))}
+                  >
+                    {t('newKingdom')}
+                  </div>
+                  {savedKingdoms.map(kingdom => (
+                    <div
+                      key={kingdom}
+                      className="flex items-center p-2 transition-colors"
+                      style={{
+                        background: selectedKingdom === kingdom ? "rgba(180, 130, 40, 0.2)" : "transparent",
+                        fontWeight: selectedKingdom === kingdom ? 600 : 400,
+                        color: "#3d2a0a",
+                        fontSize: "13px",
+                      }}
+                    >
+                      <span className="flex-1 cursor-pointer" onClick={() => setSelectedKingdom(kingdom)}>
+                        {kingdom}
+                      </span>
+                      <button
+                        onClick={() => deleteGame(kingdom)}
+                        className="ml-2 px-1 transition-colors"
+                        style={{ color: "rgba(160, 60, 40, 0.6)", fontSize: "14px", fontWeight: 700, lineHeight: 1 }}
+                        onMouseEnter={e => (e.currentTarget.style.color = "#9a1c1c")}
+                        onMouseLeave={e => (e.currentTarget.style.color = "rgba(160, 60, 40, 0.6)")}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Input nouveau royaume */}
+                {selectedKingdom === t('newKingdom') && (
                   <>
                     {isTouchDevice() ? (
                       <>
                         <div
-                          className="border p-2 rounded bg-white cursor-pointer text-center"
+                          className="p-2 rounded-lg cursor-pointer text-center text-sm"
+                          style={{
+                            background: "rgba(255,248,230,0.9)",
+                            border: "1px solid rgba(160,120,50,0.3)",
+                            color: cityNameInput ? "#3d2a0a" : "rgba(100,80,40,0.4)",
+                          }}
                           onClick={() => setShowKeyboard(true)}
                         >
-                          {cityNameInput 
-                            ? cityNameInput 
-                            : <span className="text-gray-400">{t('enterKingdomName')}</span>
-                          }
+                          {cityNameInput || t('enterKingdomName')}
                         </div>
-
                         {showKeyboard && (
                           <CustomKeyboard
                             value={cityNameInput}
@@ -6229,69 +6873,94 @@ export default function Game() {
                         )}
                       </>
                     ) : (
-                      <input 
-                        className="border p-1 rounded" 
-                        value={cityNameInput} 
-                        onChange={(e) => setCityNameInput(e.target.value)} 
-                        placeholder={t('enterKingdomName')} 
+                      <input
+                        className="p-2 rounded-lg text-sm outline-none"
+                        style={{
+                          background: "rgba(255,248,230,0.9)",
+                          border: "1px solid rgba(160,120,50,0.3)",
+                          color: "#3d2a0a",
+                        }}
+                        value={cityNameInput}
+                        onChange={(e) => setCityNameInput(e.target.value)}
+                        placeholder={t('enterKingdomName')}
                       />
                     )}
                   </>
                 )}
 
-                  <div className="flex gap-2">
-                    <Button onClick={() => {
-                      if (selectedKingdom === t('newKingdom')) {
-                        saveGame(cityNameInput);
-                      } else {
-                        saveGame(selectedKingdom);
-                      }
-                    }}>
-                      {t('save')}
-                    </Button>
-                    <Button 
-                      disabled={selectedKingdom === t('newKingdom')}
-                      onClick={() => loadGame(selectedKingdom)}
-                    >
-                      {t('continue')}
-                    </Button>
-                    <Button onClick={() => { setShowAbout(true); setShowSettings(false); }}>{t('about')}</Button>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button onClick={() => { resetAchievements(); setShowSettings(false); }}>
-                      {t('resetAchievements')}
-                    </Button>
-                  </div>
+                {/* Actions sauvegarde */}
+                <div className="flex gap-2 flex-wrap">
+                  <Button onClick={() => saveGame(selectedKingdom === t('newKingdom') ? cityNameInput : selectedKingdom)}>
+                    {t('save')}
+                  </Button>
+                  <Button disabled={selectedKingdom === t('newKingdom')} onClick={() => loadGame(selectedKingdom)}>
+                    {t('continue')}
+                  </Button>
+                  <Button onClick={() => { setShowAbout(true); setShowSettings(false); }}>
+                    {t('about')}
+                  </Button>
                 </div>
-                <div className="border-t pt-4 mt-4">
-                  <h3 className="font-bold mb-2">{t('scores')}</h3>
-                  
-                  {/* Score du jeu de base */}
-                  <div className="flex items-center gap-2 mb-2 p-2 bg-gray-50 rounded">
-                    <img src="seals/baseGame.png" alt="Base Game" className="w-8 h-8" />
-                    <span className="flex-1">{t('baseGame')}</span>
-                    <span className="font-bold text-lg">{scores.baseGame} {t('fame')}</span>
+
+                <div className="flex gap-2">
+                  <Button onClick={() => { resetAchievements(); setShowSettings(false); }}>
+                    {t('resetAchievements')}
+                  </Button>
+                </div>
+
+                <div style={{ borderTop: "1px solid rgba(160, 120, 50, 0.25)", paddingTop: "12px" }}>
+                  <h3
+                    className="font-bold mb-3 uppercase tracking-wide"
+                    style={{ fontSize: "11px", letterSpacing: "0.1em", color: "rgba(100,70,20,0.7)" }}
+                  >
+                    {t('scores')}
+                  </h3>
+
+                  {/* Score jeu de base */}
+                  <div
+                    className="flex items-center gap-2 mb-2 p-2 rounded-lg"
+                    style={{
+                      background: "rgba(255,248,230,0.7)",
+                      border: "1px solid rgba(160,120,50,0.2)",
+                    }}
+                  >
+                    <img src="seals/baseGame.png" alt="Base Game" className="w-8 h-8" style={{ imageRendering: "pixelated" }} />
+                    <span className="flex-1 text-sm" style={{ color: "#3d2a0a" }}>{t('baseGame')}</span>
+                    <span className="font-bold text-sm" style={{ color: "#7c5c10" }}>
+                      {scores.baseGame} {t('fame')}
+                    </span>
                   </div>
-                  
-                  {/* Scores des extensions */}
+
+                  {/* Scores extensions */}
                   {Object.entries(scores.expansions).map(([expId, score]) => {
                     const expansion = EXPANSIONS.find(e => e.id === expId);
                     if (!expansion) return null;
-                    
                     return (
-                      <div key={expId} className="flex items-center gap-2 mb-2 p-2 bg-purple-50 rounded">
-                        <img 
+                      <div
+                        key={expId}
+                        className="flex items-center gap-2 mb-2 p-2 rounded-lg"
+                        style={{
+                          background: "rgba(240, 230, 255, 0.6)",
+                          border: "1px solid rgba(120, 80, 180, 0.2)",
+                        }}
+                      >
+                        <img
                           src={'seals/' + expansion.iconPath}
-                          alt={t(expansion.name as TranslationKeys)} 
-                          className="w-8 h-8" 
+                          alt={t(expansion.name as TranslationKeys)}
+                          className="w-8 h-8"
+                          style={{ imageRendering: "pixelated" }}
                         />
-                        <span className="flex-1">{t(expansion.name as TranslationKeys)}</span>
-                        <span className="font-bold text-lg">{score as number} {t('fame')}</span>
+                        <span className="flex-1 text-sm" style={{ color: "#3d2a0a" }}>
+                          {t(expansion.name as TranslationKeys)}
+                        </span>
+                        <span className="font-bold text-sm" style={{ color: "#5a3a8a" }}>
+                          {score as number} {t('fame')}
+                        </span>
                       </div>
                     );
                   })}
                 </div>
 
+                {/* Fermer */}
                 <Button onClick={() => setShowSettings(false)}>{t('close')}</Button>
               </div>
             </div>
@@ -6349,8 +7018,27 @@ export default function Game() {
         {/* Campaign Preview Popup */}
         {campaignPreview && (
           <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-            <div className="bg-white p-4 rounded-xl space-y-4">
-              <h2 className="font-bold">{t('campaign')} {t('card')} #{campaignPreview.id}</h2>
+            <div
+              className="p-4 rounded-xl space-y-4"
+              style={{
+                background: "rgba(18, 12, 30, 0.72)",
+                backdropFilter: "blur(8px)",
+                WebkitBackdropFilter: "blur(8px)",
+                border: "1px solid rgba(120, 80, 180, 0.3)",
+                boxShadow: "0 4px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06)",
+              }}
+            >
+              <h2
+                className="font-bold"
+                style={{
+                  color: "#c8b4e8",
+                  textShadow: "0 0 20px rgba(160, 100, 255, 0.4)",
+                  fontSize: "13px",
+                  letterSpacing: "0.12em",
+                }}
+              >
+                {t('campaign')} {t('card')} #{campaignPreview.id}
+              </h2>
               <div className="flex gap-4">
                 <Zone
                   name={t('campaign')}
@@ -6371,8 +7059,27 @@ export default function Game() {
         {/* Full Discard Modal */}
         {showDiscard && (
           <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-2">
-            <div className="bg-white p-4 rounded-xl space-y-4 w-full h-full max-w-[300vw] max-h-[300vh] overflow-auto flex flex-col">
-              <h2 className="font-bold text-xl">{t('discard')}</h2>
+            <div
+              className="bg-white p-4 rounded-xl space-y-4 w-full h-full max-w-[300vw] max-h-[300vh] overflow-auto flex flex-col"
+              style={{
+                background: "rgba(18, 12, 30, 0.72)",
+                backdropFilter: "blur(8px)",
+                WebkitBackdropFilter: "blur(8px)",
+                border: "1px solid rgba(120, 80, 180, 0.3)",
+                boxShadow: "0 4px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06)",
+              }}
+            >
+              <h2
+                className="font-bold text-xl"
+                style={{
+                  color: "#c8b4e8",
+                  textShadow: "0 0 20px rgba(160, 100, 255, 0.4)",
+                  fontSize: "13px",
+                  letterSpacing: "0.12em",
+                }}
+              >
+                {t('discard')}
+              </h2>
               <div className="flex flex-col flex-row gap-4 flex-1 min-h-0">
                 <div className="flex-1 overflow-y-auto p-2 border rounded">
                   {debugMode ? (
@@ -6418,8 +7125,27 @@ export default function Game() {
         {/* End Round Modal */}
         {showEndRound && (
           <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-            <div className="bg-white p-4 rounded-xl space-y-4">
-              <h2 className="font-bold">{t('endRound')}</h2>
+            <div
+              className="bg-white p-4 rounded-xl space-y-4"
+              style={{
+                background: "rgba(18, 12, 30, 0.72)",
+                backdropFilter: "blur(8px)",
+                WebkitBackdropFilter: "blur(8px)",
+                border: "1px solid rgba(120, 80, 180, 0.3)",
+                boxShadow: "0 4px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06)",
+              }}
+            >
+              <h2
+                className="font-bold"
+                style={{
+                  color: "#c8b4e8",
+                  textShadow: "0 0 20px rgba(160, 100, 255, 0.4)",
+                  fontSize: "13px",
+                  letterSpacing: "0.12em",
+                }}
+              >
+                {t('endRound')}
+              </h2>
               <div className="flex gap-4">
                 <div className="flex-1">
                   <p className="font-bold">{t('campaign')} {t('deck')}</p>
@@ -6478,8 +7204,27 @@ export default function Game() {
         {/* Full Deck Modal */}
         {showDeck && (
           <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-2">
-            <div className="bg-white p-4 rounded-xl space-y-4 w-full h-full max-w-[300vw] max-h-[300vh] overflow-auto flex flex-col">
-              <h2 className="font-bold text-xl">{t('deck')}</h2>
+            <div
+              className="bg-white p-4 rounded-xl space-y-4 w-full h-full max-w-[300vw] max-h-[300vh] overflow-auto flex flex-col"
+              style={{
+                background: "rgba(18, 12, 30, 0.72)",
+                backdropFilter: "blur(8px)",
+                WebkitBackdropFilter: "blur(8px)",
+                border: "1px solid rgba(120, 80, 180, 0.3)",
+                boxShadow: "0 4px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06)",
+              }}
+            >
+              <h2
+                className="font-bold text-xl"
+                style={{
+                  color: "#c8b4e8",
+                  textShadow: "0 0 20px rgba(160, 100, 255, 0.4)",
+                  fontSize: "13px",
+                  letterSpacing: "0.12em",
+                }}
+              >
+                {t('deck')}
+              </h2>
               <div className="flex flex-col flex-row gap-4 flex-1 min-h-0">
                 <div className="flex-1 overflow-y-auto p-2 border rounded">
                   {debugMode ? (
@@ -6523,8 +7268,27 @@ export default function Game() {
         {/* Purged Modal */}
         {showPurged && (
           <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-2">
-            <div className="bg-white p-4 rounded-xl space-y-4 w-full h-full max-w-[300vw] max-h-[300vh] overflow-auto flex flex-col">
-              <h2 className="font-bold text-xl">{t('purged')}</h2>
+            <div
+              className="bg-white p-4 rounded-xl space-y-4 w-full h-full max-w-[300vw] max-h-[300vh] overflow-auto flex flex-col"
+              style={{
+                background: "rgba(18, 12, 30, 0.72)",
+                backdropFilter: "blur(8px)",
+                WebkitBackdropFilter: "blur(8px)",
+                border: "1px solid rgba(120, 80, 180, 0.3)",
+                boxShadow: "0 4px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06)",
+              }}
+            >
+              <h2
+                className="font-bold text-xl"
+                style={{
+                  color: "#c8b4e8",
+                  textShadow: "0 0 20px rgba(160, 100, 255, 0.4)",
+                  fontSize: "13px",
+                  letterSpacing: "0.12em",
+                }}
+              >
+                {t('purged')}
+              </h2>
               <div className="flex flex-col flex-row gap-4 flex-1 min-h-0">
                 <div className="flex-1 overflow-y-auto p-2 border rounded">
                   <div className="grid grid-cols-6 gap-2">
@@ -6577,6 +7341,15 @@ export default function Game() {
             setCardSelectionPopup(null);
           }}
           onCancel={() => setCardSelectionPopup(null)}
+        />
+      )}
+
+      {cardUpgradePopup && (
+        <CardUpgradePopup
+          card={cardUpgradePopup.card}
+          prevSide={cardUpgradePopup.prevSide}
+          zone={cardUpgradePopup.zone}
+          onConfirm={() => setCardUpgradePopup(null)}
         />
       )}
 
@@ -6672,8 +7445,27 @@ export default function Game() {
 
       {confirmationPopup && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[100]">
-          <div className="bg-white p-6 rounded-xl space-y-4 max-w-md mx-4">
-            <p className="text-center">{confirmationPopup.message}</p>
+          <div
+            className="bg-white p-6 rounded-xl space-y-4 max-w-md mx-4"
+            style={{
+              background: "rgba(18, 12, 30, 0.72)",
+              backdropFilter: "blur(8px)",
+              WebkitBackdropFilter: "blur(8px)",
+              border: "1px solid rgba(120, 80, 180, 0.3)",
+              boxShadow: "0 4px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06)",
+            }}
+          >
+            <p
+              className="text-center"
+              style={{
+                color: "#c8b4e8",
+                textShadow: "0 0 20px rgba(160, 100, 255, 0.4)",
+                fontSize: "13px",
+                letterSpacing: "0.12em",
+              }}
+            >
+              {confirmationPopup.message}
+            </p>
             <div className="flex justify-center gap-3">
               {confirmationPopup.onCancel && (
                 <Button onClick={confirmationPopup.onCancel} variant="secondary">
@@ -6690,10 +7482,37 @@ export default function Game() {
 
       {showExpansionChoice && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-xl space-y-4 max-w-2xl">
-            <h2 className="font-bold text-xl">{t('chooseExpansion')}</h2>
+          <div
+            className="bg-white p-6 rounded-xl space-y-4 max-w-2xl"
+            style={{
+              background: "rgba(18, 12, 30, 0.72)",
+              backdropFilter: "blur(8px)",
+              WebkitBackdropFilter: "blur(8px)",
+              border: "1px solid rgba(120, 80, 180, 0.3)",
+              boxShadow: "0 4px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06)",
+            }}
+          >
+            <h2
+              className="font-bold text-xl"
+              style={{
+                color: "#c8b4e8",
+                textShadow: "0 0 20px rgba(160, 100, 255, 0.4)",
+                fontSize: "13px",
+                letterSpacing: "0.12em",
+              }}
+            >
+              {t('chooseExpansion')}
+            </h2>
             
-            <div className="grid grid-cols-3 gap-4">
+            <div
+              className="grid grid-cols-3 gap-4"
+              style={{
+                color: "#c8b4e8",
+                textShadow: "0 0 20px rgba(160, 100, 255, 0.4)",
+                fontSize: "13px",
+                letterSpacing: "0.12em",
+              }}
+            >
               {EXPANSIONS
                 .filter(exp => !completedExpansions.includes(exp.id))
                 .map(expansion => (

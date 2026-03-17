@@ -40,7 +40,26 @@ export const EXPANSIONS: ExpansionData[] = [
         title: 'tutorialRiddingTheWoodsWelcomeTitle',
         text: 'tutorialRiddingTheWoodsWelcomeText',
         position: "auto",
-    },
-  ]
+      },
+    ]
   },
+  // {
+  //   id: 'merchants',
+  //   name: 'merchants',
+  //   type: 'block',
+  //   iconPath: 'merchants.png',
+  //   campaignCardIds: new Array(25).fill(null).map((_, i) => i + 169),
+  //   deckPurgeValue: 7,
+  //   permanentPurgeValue: 2,
+  //   discoverValue: 0,
+  //   tutorialSteps: [
+  //     {
+  //       zone: null,
+  //       title: 'tutorialMerchantsWelcomeTitle',
+  //       text: 'tutorialMerchantsWelcomeText',
+  //       position: "auto",
+  //     },
+  //   ],
+  //   checkExpansionEnd: (ctx) => (ctx.fetchCardsInZone((c) => [170, 179].includes(c.id), ctx.t('campaign')).length === 0)
+  // },
 ];

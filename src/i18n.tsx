@@ -13,7 +13,7 @@ export type TranslationKeys =
   | 'select' | 'id' | 'preview' | 'endGame' | 'seeDeck' | 'seeDiscard' | 'cardsList' | 'triggeredCard'
   | 'selectCardToPurge' | 'chooseExpansion' | 'expansionCard' | 'expansionBlock' | 'scores' | 'baseGame'
   | 'totalScore' | 'endExpansion' | 'seePurged' | 'add' | 'top' | 'bottom' | 'aboutContent'
-  | 'guideTitle' | 'guideRulesLink' | 'guideContent' | 'remaining' | 'areYouSureDelete' | 'round'
+  | 'guideTitle' | 'guideRulesLink' | 'guideContent' | 'remaining' | 'areYouSureDelete' | 'round' | 'upgraded_card'
   
   // Cards Elements
   | 'frontUp' | 'frontDown' | 'backUp' | 'backDown'
@@ -25,7 +25,7 @@ export type TranslationKeys =
   | 'land' | 'building' | 'person' | 'knight' | 'lady' | 'seafaring'
   | 'ship' | 'event' | 'enemy' | 'permanent' | 'scroll' | 'choice'
   | 'potion' | 'item' | 'invention' | 'artefact' | 'livestock'
-  | 'horse' | 'wagon' | 'state'
+  | 'horse' | 'wagon' | 'state' | 'goal'
   
   // Resources
   | 'coin' | 'wood' | 'stone' | 'sword' | 'metal' | 'tradegood' | 'fame'
@@ -70,6 +70,7 @@ export type TranslationKeys =
 
   // Expansions
   | 'ridding_the_woods'
+  | 'merchants'
 
   // Achievements
   | 'achievements' | 'achievementUnlocked' | 'areYouSureResetAchievements' | 'resetAchievements'
@@ -272,6 +273,9 @@ export type TranslationKeys =
   | 'pallisade'
   | 'walled_outpost'
   | 'forest_outpost'
+
+  // Merchants
+  | 'welcome_to_merchants'
 
   // Cards Effects Descriptions
   | 'staysInPlay'
@@ -560,6 +564,9 @@ export type TranslationKeys =
   | 'effect_description_walled_outpost'
   | 'effect_description_forest_outpost'
 
+  // Merchants
+  | 'effect_description_welcome_to_merchants'
+
   // Other costs
   | 'other_cost_destroy_stone_bridge'
   | 'other_cost_one_person'
@@ -631,7 +638,7 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     none: 'Rien',
     cardNames: "Noms de la carte",
     autoSelected: " - Pré-sélectionné",
-    side: "Side",
+    side: "Côté",
     selectUpgrade: 'Sélectionnez une amélioration',
     noUpgradeAvailable: 'Aucun upgrade disponible.',
     selectAnUpgrade: 'Choisissez une amélioration',
@@ -699,6 +706,7 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     remaining: 'Reste',
     areYouSureDelete: 'Êtes-vous sûr de vouloir supprimer',
     round: 'Manche',
+    upgraded_card: 'Carte Améliorée',
     
     // Cards Elements
     frontUp: 'Recto Haut',
@@ -738,6 +746,7 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     horse: 'Cheval',
     wagon: 'Chariot',
     state: 'État',
+    goal: 'Objectif',
     
     // Resources
     coin: 'Or',
@@ -828,6 +837,7 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
 
     // Expansions
     ridding_the_woods: 'La Forêt des Brigands',
+    merchants: 'Marchands',
 
     // Achievements
     achievements: "Succès",
@@ -1255,6 +1265,9 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     walled_outpost: 'Muraille Avant-Poste',
     forest_outpost: 'Avant-Poste Forestier',
 
+    // Merchants
+    welcome_to_merchants: 'Bienvenue aux Marchands',
+
     // Cards Effects Descriptions
     staysInPlay: "effects/passive Reste en jeu.",
     effect_description_welcome: "Les règles complètes sont disponibles dans Paramètres → Guide. effects/passive Lancer le Tutoriel.",
@@ -1542,6 +1555,9 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     effect_description_walled_outpost: "effects/optional Fin du tour: Défaussez cette carte pour faire rester tous les Terrains en jeu. effects/forced Purgée: Vaut +2 resources/fame pour chaque carte purgée avec celle-ci.",
     effect_description_forest_outpost: "effects/optional Fin du tour: Défaussez cette carte pour faire rester 3 Terrains en jeu.",
 
+    // Merchants
+    effect_description_welcome_to_merchants: '',
+
     // Other costs
     other_cost_destroy_stone_bridge: 'Détruisez le Pont de Pierre (12)',
     other_cost_one_person: '1 Personne',
@@ -1678,6 +1694,7 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     remaining: 'Remaining',
     areYouSureDelete: 'Are you sure you want to delete',
     round: 'Round',
+    upgraded_card: 'Upgraded Card',
 
     // Cards Elements
     frontUp: 'Front Up',
@@ -1717,6 +1734,7 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     horse: 'Horse',
     wagon: 'Wagon',
     state: 'State',
+    goal: 'Goal',
 
     // Resources
     coin: 'Gold',
@@ -1807,6 +1825,7 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
 
     // Expansions
     ridding_the_woods: 'Ridding the Woods',
+    merchants: 'Merchants',
 
     // Achievements
     achievements: 'achievements',
@@ -2234,6 +2253,9 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     walled_outpost: 'Walled Outpost',
     forest_outpost: 'Forest Outpost',
 
+    // Merchants
+    welcome_to_merchants: 'Welcome to Merchants',
+
     // Cards Effects Descriptions
     staysInPlay: "effects/passive Stays in play.",
     effect_description_welcome: "The full rules are accessible in Settings → Guide. effects/passive Launch Tutorial.",
@@ -2520,6 +2542,9 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     effect_description_pallisade: "effects/optional End of Turn: Discard this card to make 2 Lands stay in play.",
     effect_description_walled_outpost: "effects/optional End of Turn: Discard this card to make all Lands stay in play. effects/forced When Purged: Worth +2 resources/fame for each other card purged with it.",
     effect_description_forest_outpost: "effects/optional End of Turn: Discard this card to make 3 Lands stay in play.",
+
+    // Merchants
+    effect_description_welcome_to_merchants: '',
 
     // Other costs
     other_cost_destroy_stone_bridge: 'Destroy the Stone Bridge (12)',
