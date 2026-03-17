@@ -937,78 +937,95 @@ function CardView({
           </div>
         )}
         {/* Coin replié permanent */}
-          {card.GetType(t).includes(t('permanent')) && (
-            <div
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: 0,
-                height: 0,
-                borderStyle: "solid",
-                borderWidth: "36px 36px 0 0",
-                borderColor: "#7c3aed transparent transparent transparent",
-                borderRadius: "10px 0 0 0",
-                zIndex: 10,
-                pointerEvents: "none",
-              }}
-            >
-              <svg
-                viewBox="0 0 14 14"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                style={{
-                  position: "absolute",
-                  top: "-33px",
-                  left: "2px",
-                  width: "14px",
-                  height: "14px",
-                  pointerEvents: "none",
-                }}
-              >
-                {/* Icône ancre/permanent : losange avec point central */}
-                <path d="M7 2 L12 7 L7 12 L2 7 Z" stroke="white" strokeWidth="1.2" fill="none"/>
-                <circle cx="7" cy="7" r="1.5" fill="white"/>
-              </svg>
-            </div>
-          )}
-          {/* Coin replié choice */}
-          {card.choice && fromZone === t('campaign') && (card.currentSide == 1 || card.currentSide == 3) && (
-            <div
-              style={{
-                position: "absolute",
-                top: 0,
-                right: 0,        // ← droite
-                left: "auto",
-                width: 0,
-                height: 0,
-                borderStyle: "solid",
-                borderWidth: "0 36px 36px 0",   // ← inversé pour coin droit
-                borderColor: "transparent #b45309 transparent transparent",  // ← couleur sur le bon côté
-                borderRadius: "0 10px 0 0",
-                zIndex: 10,
-                pointerEvents: "none",
-              }}
-            >
-              <svg
-                viewBox="0 0 14 14"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                style={{
-                  position: "absolute",
-                  top: "2px",
-                  right: "-33px",   // ← aligné à droite
-                  left: "auto",
-                  width: "14px",
-                  height: "14px",
-                  pointerEvents: "none",
-                }}
-              >
-                <path d="M5.5 5 C5.5 3.5 8.5 3.5 8.5 5.5 C8.5 7 7 7 7 8.5" stroke="white" strokeWidth="1.3" strokeLinecap="round" fill="none"/>
-                <circle cx="7" cy="10.5" r="1" fill="white"/>
-              </svg>
-            </div>
-          )}
+        {card.GetType(t).includes(t('permanent')) && (
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: 0,
+              height: 0,
+              borderStyle: "solid",
+              borderWidth: "36px 36px 0 0",
+              borderColor: "#7c3aed transparent transparent transparent",
+              borderRadius: "10px 0 0 0",
+              zIndex: 10,
+              pointerEvents: "none",
+            }}
+          >
+          <svg
+            viewBox="0 0 14 14"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            style={{
+              position: "absolute",
+              top: "-33px",
+              left: "2px",
+              width: "14px",
+              height: "14px",
+              pointerEvents: "none",
+            }}
+          >
+            <path
+              d="M2 7 C2 4.5 3.5 3.5 5.5 3.5 C7 3.5 7 5 7 7 C7 9 7 10.5 8.5 10.5 C10.5 10.5 12 9.5 12 7 C12 4.5 10.5 3.5 8.5 3.5 C7 3.5 7 5 7 7 C7 9 7 10.5 5.5 10.5 C3.5 10.5 2 9.5 2 7 Z"
+              stroke="white"
+              strokeWidth="1.2"
+              fill="none"
+              strokeLinecap="round"
+            />
+          </svg>
+          </div>
+        )}
+        {/* Coin replié choice */}
+        {card.choice && fromZone === t('campaign') && (card.currentSide == 1 || card.currentSide == 3) && (
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              right: 0,
+              left: "auto",
+              width: 0,
+              height: 0,
+              borderStyle: "solid",
+              borderWidth: "0 36px 36px 0",
+              borderColor: "transparent #b45309 transparent transparent",
+              borderRadius: "0 10px 0 0",
+              zIndex: 10,
+              pointerEvents: "none",
+            }}
+          >
+          <svg
+            viewBox="0 0 14 14"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            style={{
+              position: "absolute",
+              top: "2px",
+              right: "-33px",
+              left: "auto",
+              width: "14px",
+              height: "14px",
+              pointerEvents: "none",
+            }}
+          >
+            <path
+              d="M3 10 C3 6 6 4 10 4"
+              stroke="white"
+              strokeWidth="1.2"
+              strokeLinecap="round"
+              fill="none"
+            />
+            <path
+              d="M8 2.5 L10.5 4 L8.5 6"
+              stroke="white"
+              strokeWidth="1.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              fill="none"
+            />
+          </svg>
+          </div>
+        )}
         <CardContent className="relative text-center p-2 overflow-auto flex flex-col h-full w-full">
           {/* Pixel art*/}
           <div
@@ -1284,19 +1301,35 @@ function CardView({
                     position: "absolute",
                     bottom: "0px",
                     left: "-12px",
-                    display: "flex",
-                    alignItems: "center",
+                    display: "inline-flex",
+                    alignItems: "left",
                     gap: "3px",
                     background: "rgba(20, 14, 2, 0.85)",
                     border: "1px solid rgba(200, 160, 30, 0.6)",
                     borderRadius: "12px",
-                    padding: "2px 6px",
+                    padding: "2px 6px 2px 4px",
                     zIndex: 10,
                     pointerEvents: "none",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
                   }}
                 >
-                  <img src={resourceIconPath('fame')} alt="fame" style={{ width: "12px", height: "12px", flexShrink: 0 }} />
-                  <span style={{ fontSize: "10px", fontWeight: 600, color: "#f0d060" }}>{fameTotal}</span>
+                  <img
+                    src={resourceIconPath('fame')}
+                    alt="fame"
+                    style={{
+                      width: "12px",
+                      height: "12px",
+                      minWidth: "12px",
+                      maxWidth: "12px",
+                      display: "block",
+                      objectFit: "contain",
+                      flexShrink: 0,
+                    }}
+                  />
+                  <span style={{ fontSize: "10px", fontWeight: 600, color: "#f0d060", lineHeight: 1 }}>
+                    {fameTotal}
+                  </span>
                 </div>
               );
             })()}
