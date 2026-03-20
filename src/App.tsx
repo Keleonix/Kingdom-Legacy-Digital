@@ -3300,6 +3300,7 @@ export default function Game() {
   const [resources, setResourcesState] = useState<ResourceMap>({ ...emptyResource });
   const [showSettings, setShowSettings] = useState(false);
   const [showGuide, setShowGuide] = useState(false);
+  const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
   const [selectedCampaignId, setSelectedCampaignId] = useState<number | null>(null);
   const [availableDiscoverableCards, setAvailableDiscoverableCards] = useState<number[]>([]);
@@ -3337,6 +3338,8 @@ export default function Game() {
     zone: string;
     resolve: () => void;
   } | null>(null);
+
+  const [showUpgradePopup, setShowUpgradePopup] = useState(true);
 
   useEffect(() => {
     if (availableDiscoverableCards.length > 0) return;
@@ -4865,13 +4868,18 @@ export default function Game() {
       updateBlocks(card.id, null);
     }
 
-    setCardUpgradePopup({
-      card: card,
-      prevSide: prevSide,
-      zone: getCardZone(card.id),
-      resolve: async () => {}
-    });
+    if (showUpgradePopup) {
+      await new Promise<void>((resolve) => {
+        setCardUpgradePopup({
+          card: card,
+          prevSide: prevSide,
+          zone: getCardZone(card.id),
+          resolve,
+        });
+      });
+    } 
 
+    setCardUpgradePopup(null);
     return true;
   }
 
@@ -6786,7 +6794,7 @@ export default function Game() {
               onClick={handleDebugClick}
               className="absolute -bottom-7 -right-98 text-xs text-gray-700 whitespace-nowrap cursor-pointer select-none z-50"
             >
-              Kingdom Legacy - Digital by Keleonix | v0.10.4 {debugMode && '🐛'}
+              Kingdom Legacy - Digital by Keleonix | v0.10.5 {debugMode && '🐛'}
             </div>
           </div>
         </div>
@@ -6830,8 +6838,8 @@ export default function Game() {
                 {/* Language + actions principales */}
                 <LanguageSelector />
                 <div className="flex flex-row gap-2 flex-wrap">
-                  <Button onClick={resetGame}>{t('resetFullGame')}</Button>
-                  <Button onClick={() => { setShowGuide(true); setShowSettings(false); }}>Guide</Button>
+                  <Button onClick={() => { setShowAdvancedSettings(true); setShowSettings(false); }}>{t('advancedSettings')}</Button>
+                  <Button onClick={() => { setShowGuide(true); setShowSettings(false); }}>{t('guide')}</Button>
                   <Button onClick={() => setShowAchievements(true)}>🏆</Button>
                 </div>
 
@@ -6938,6 +6946,9 @@ export default function Game() {
                   <Button onClick={() => { resetAchievements(); setShowSettings(false); }}>
                     {t('resetAchievements')}
                   </Button>
+                  <Button onClick={resetGame}>
+                    {t('resetFullGame')}
+                  </Button>
                 </div>
 
                 <div style={{ borderTop: "1px solid rgba(160, 120, 50, 0.25)", paddingTop: "12px" }}>
@@ -7033,6 +7044,72 @@ export default function Game() {
               </div>
               <div className="flex justify-end gap-2">
                 <Button onClick={() => setShowGuide(false)}>{t('close')}</Button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Advanced Settings Modal */}
+        {showAdvancedSettings && (
+          <div className="fixed inset-0 flex items-center justify-center z-50 animate-[fadeIn_0.2s_ease-out]"
+            style={{ background: "rgba(10, 6, 20, 0.75)", backdropFilter: "blur(6px)" }}
+          >
+            <div
+              className="p-6 rounded-2xl space-y-4 max-w-md w-full mx-4 animate-[slideUp_0.3s_ease-out]"
+              style={{
+                background: "rgba(245, 235, 210, 0.96)",
+                border: "1.5px solid rgba(160, 120, 50, 0.4)",
+                boxShadow: "0 8px 48px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.7)",
+              }}
+            >
+              {/* Titre */}
+              <h2
+                className="font-bold tracking-wide uppercase pb-3"
+                style={{
+                  fontSize: "15px",
+                  letterSpacing: "0.12em",
+                  color: "#3d2a0a",
+                  borderBottom: "1.5px solid rgba(160, 120, 50, 0.3)",
+                }}
+              >
+                {t('advancedSettings')}
+              </h2>
+
+              {/* Options */}
+              <div className="space-y-3">
+                {/* showUpgradePopup toggle */}
+                <div className="flex items-center justify-between">
+                  <span style={{ fontSize: "13px", color: "#3d2a0a" }}>
+                    {t('showUpgradePopup')}
+                  </span>
+                  <button
+                    onClick={() => setShowUpgradePopup((prev) => !prev) }
+                    className="relative inline-flex items-center rounded-full transition-colors duration-200 focus:outline-none"
+                    style={{
+                      width: "44px",
+                      height: "24px",
+                      background: showUpgradePopup
+                        ? "rgba(100, 160, 80, 0.85)"
+                        : "rgba(160, 120, 50, 0.3)",
+                      border: "1.5px solid rgba(160, 120, 50, 0.4)",
+                    }}
+                  >
+                    <span
+                      className="inline-block rounded-full transition-transform duration-200"
+                      style={{
+                        width: "18px",
+                        height: "18px",
+                        background: showUpgradePopup ? "#fff" : "rgba(245, 235, 210, 0.9)",
+                        boxShadow: "0 1px 4px rgba(0,0,0,0.25)",
+                        transform: showUpgradePopup ? "translateX(22px)" : "translateX(2px)",
+                      }}
+                    />
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2" style={{ borderTop: "1.5px solid rgba(160, 120, 50, 0.3)" }}>
+                <Button onClick={() => {setShowAdvancedSettings(false); setShowSettings(true);}}>{t('close')}</Button>
               </div>
             </div>
           </div>
@@ -7382,7 +7459,10 @@ export default function Game() {
           card={cardUpgradePopup.card}
           prevSide={cardUpgradePopup.prevSide}
           zone={cardUpgradePopup.zone}
-          onConfirm={() => setCardUpgradePopup(null)}
+          onConfirm={() => {
+            cardUpgradePopup.resolve();
+            setCardUpgradePopup(null);
+          }}
         />
       )}
 

@@ -14,6 +14,7 @@ export type TranslationKeys =
   | 'selectCardToPurge' | 'chooseExpansion' | 'expansionCard' | 'expansionBlock' | 'scores' | 'baseGame'
   | 'totalScore' | 'endExpansion' | 'seePurged' | 'add' | 'top' | 'bottom' | 'aboutContent'
   | 'guideTitle' | 'guideRulesLink' | 'guideContent' | 'remaining' | 'areYouSureDelete' | 'round' | 'upgraded_card'
+  | 'advancedSettings' | 'showUpgradePopup'
   
   // Cards Elements
   | 'frontUp' | 'frontDown' | 'backUp' | 'backDown'
@@ -707,6 +708,8 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     areYouSureDelete: 'Êtes-vous sûr de vouloir supprimer',
     round: 'Manche',
     upgraded_card: 'Carte Améliorée',
+    advancedSettings: 'Options Avancées',
+    showUpgradePopup: 'Afficher les Popups d\'Amélioratoin',
     
     // Cards Elements
     frontUp: 'Recto Haut',
@@ -1695,6 +1698,8 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     areYouSureDelete: 'Are you sure you want to delete',
     round: 'Round',
     upgraded_card: 'Upgraded Card',
+    advancedSettings: 'Advanced Settings',
+    showUpgradePopup: 'Show Upgrade Popup',
 
     // Cards Elements
     frontUp: 'Front Up',
