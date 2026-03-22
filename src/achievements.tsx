@@ -128,4 +128,10 @@ export const ACHIEVEMENTS: Achievement[] = [
     descKey: 'ach_desc_freeze',
     value: 100
   },
+  { id: 'a_weird_artifact',
+    iconPath: 'achievements/a_weird_artifact.png',
+    titleKey: 'ach_name_a_weird_artifact',
+    descKey: 'ach_desc_a_weird_artifact',
+    value: 25
+  },
 ];

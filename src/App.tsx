@@ -190,7 +190,7 @@ export function renderEffectText(effect: string, t: (key: TranslationKeys) => st
       return <span key={idx}>{part}</span>;
     }
     if (part.startsWith("resources/") || part.startsWith("effects/")) {
-      const isWide = part.includes('effects/choice') || part.includes('effects/permanent');
+      const isWide = false;
       return (
         <img
           key={idx}
@@ -1421,6 +1421,8 @@ function Zone({
   onReorderCards,
   onZoneRef,
   debugMode,
+  onZoneSort,
+  onCardHover,
 }: {
   name: string;
   cards: GameCard[];
@@ -1435,31 +1437,49 @@ function Zone({
   showAll?: boolean;
   interactable?: boolean;
   onTapAction?: (card: GameCard, zone: string) => void;
-  highlightedCardId?: number | null;
+  highlightedCardId?: number | number[] | null;
   onReorderCards?: (cardIds: number[]) => void;
   onZoneRef?: (el: HTMLDivElement | null) => void;
   debugMode?: boolean;
+  onZoneSort?: (registerSort: () => void) => void;
+  onCardHover?: (card: GameCard | null) => void;
 }) {
   const { t } = useTranslation();
   const ref = useRef<HTMLDivElement | null>(null);
-  const [clickCount, setClickCount] = useState(0);
   const [sortMode, setSortMode] = useState<SortMode>(null);
-  const clickTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [draggedOverIndex, setDraggedOverIndex] = useState<number | null>(null);
-
-  const sortableZones = [t('playArea'), t('permanentZone'), t('blocked')];
+  const sortModeRef = useRef(sortMode);
 
   let displayCards = cards;
   if (!showAll && cards.length > 0) {
     displayCards = [cards[cards.length - 1]];
   }
 
+  const displayCardsRef = useRef(displayCards);
+  useEffect(() => { displayCardsRef.current = displayCards; }, [displayCards]);
+
+  useEffect(() => { sortModeRef.current = sortMode; }, [sortMode]);
+
+  useEffect(() => {
+    onZoneSort?.(() => {
+      const modes: SortMode[] = ['byId', 'byType'];
+      const currentIndex = modes.indexOf(sortModeRef.current);
+      const nextMode = modes[(currentIndex + 1) % modes.length];
+      applySorting(nextMode);
+      setSortMode(nextMode);
+    });
+  }, []);
+
+  useEffect(() => {
+    onZoneSort?.(applySortCycle);
+  }, [sortMode]);
+
   const [, drop] = useDrop(
     () => ({
       accept: "CARD",
       drop: (item: { id: number; fromZone: string }) => {
-        if (!debugMode) return;
         if (item.fromZone !== name) {
+          if (!debugMode) return;
           onDrop(item);
           return;
         }
@@ -1475,7 +1495,6 @@ function Zone({
         setDraggedOverIndex(null);
       },
       hover: (item: { id: number; fromZone: string }, monitor) => {
-        if (!debugMode) return;
         if (item.fromZone === name && ref.current) {
           const hoverIndex = Math.floor(
             (displayCards.length * monitor.getClientOffset()!.x) / ref.current.offsetWidth
@@ -1483,7 +1502,11 @@ function Zone({
           setDraggedOverIndex(hoverIndex);
         }
       },
-      canDrop: () => interactable && !!debugMode,
+      canDrop: (item: { id: number; fromZone: string }) => {
+        if (!interactable) return false;
+        if (item.fromZone !== name) return !!debugMode;
+        return true;
+      },
     }),
     [displayCards, draggedOverIndex, name, interactable, onDrop, onReorderCards, debugMode]
   );
@@ -1599,29 +1622,27 @@ function Zone({
     };
   };
 
-  const handleZoneClick = () => {
-    if (!sortableZones.includes(name)) return;
-
-    const newCount = clickCount + 1;
-    setClickCount(newCount);
-
-    if (clickTimerRef.current) clearTimeout(clickTimerRef.current);
-
-    if (newCount === 2) {
-      // Appliquer le tri suivant
-      const modes: SortMode[] = ['byId', 'byType'];
-      const currentIndex = modes.indexOf(sortMode);
-      const nextMode = modes[(currentIndex + 1) % modes.length];
-      
-      applySorting(nextMode);
-      setSortMode(nextMode);
-      setClickCount(0);
-    } else {
-      // Réinitialiser après 800ms
-      clickTimerRef.current = setTimeout(() => {
-        setClickCount(0);
-      }, 800);
+  const applySortCycle = () => {
+    const modes: SortMode[] = ['byId', 'byType'];
+    const currentIndex = modes.indexOf(sortModeRef.current);
+    const nextMode = modes[(currentIndex + 1) % modes.length];
+    
+    const sorted = [...displayCardsRef.current]; // utilise le ref, pas la closure
+    
+    switch (nextMode) {
+      case 'byId':
+        sorted.sort((a, b) => a.id - b.id);
+        break;
+      case 'byType':
+        sorted.sort((a, b) => {
+          const typeA = a.GetType(t).split(' - ')[0].toLowerCase();
+          const typeB = b.GetType(t).split(' - ')[0].toLowerCase();
+          return typeA.localeCompare(typeB);
+        });
+        break;
     }
+    onReorderCards?.(sorted.map(c => c.id));
+    setSortMode(nextMode);
   };
 
   const applySorting = (mode: SortMode) => {
@@ -1659,7 +1680,6 @@ function Zone({
         border: "1px solid rgba(120, 80, 180, 0.3)",
         boxShadow: "0 4px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06)",
       }}
-      onClick={handleZoneClick}
     >
       <h2
         className="text-xl font-bold tracking-wide uppercase"
@@ -1695,11 +1715,13 @@ function Zone({
                 if (isPermanentZone || isBlockedZone || isPlayArea) {
                   e.currentTarget.style.zIndex = '1000';
                 }
+                onCardHover?.(c);
               }}
               onMouseLeave={(e) => {
                 if (isPermanentZone || isBlockedZone || isPlayArea) {
                   e.currentTarget.style.zIndex = String(index);
                 }
+                onCardHover?.(null);
               }}
             >
               <div className={(isPermanentZone || isBlockedZone || isPlayArea) ? "group-hover:scale-105 transition-transform duration-300" : ""}>
@@ -1716,7 +1738,11 @@ function Zone({
                   onExecuteCardEffect={onExecuteCardEffect}
                   gatherProductionBonus={gatherProductionBonus}
                   gatherAdditionalProductionOptions={gatherAdditionalProductionOptions}
-                  isHighlighted={highlightedCardId === c.id}
+                  isHighlighted={
+                    Array.isArray(highlightedCardId)
+                      ? highlightedCardId.includes(c.id)
+                      : highlightedCardId === c.id
+                  }
                 />
               </div>
             </div>
@@ -2281,20 +2307,14 @@ function CardSelectionPopup({
                     ref={(el) => {
                       if (el) cardRefs.current.set(card.id, el);
                     }}
-                    className={`cursor-pointer transition-all relative ${
+                    className={`relative overflow-hidden transition-all ${
                       isSelected 
-                        ? "ring-4 ring-blue-500 scale-105" 
+                        ? "ring-4 ring-blue-500" 
                         : "hover:ring-2 hover:ring-gray-300"
                     }`}
-                    onDoubleClick={() => {
-                      setHoveredCard(hoveredCard?.id == card.id ? null : card);
-                    }}
+                    style={{ width: '196px', height: '280px' }}
                     onMouseLeave={() => {
                       setHoveredCard(null);
-                    }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleCard(card);
                     }}
                   >
                     {cardValue > 1 && (
@@ -2302,33 +2322,40 @@ function CardSelectionPopup({
                         {cardValue}
                       </div>
                     )}
-                    
-                    {/* Zone clickable pour le choix */}
+
                     {canSwitch && (
                       <button
-                        className="absolute top-0 left-0 right-0 h-12 z-30 bg-transparent transition-colors cursor-pointer border-b-2 border-transparent"
+                        className="absolute top-0 left-0 right-0 h-14 z-30 bg-transparent cursor-pointer"
                         onClick={(e) => {
                           e.stopPropagation();
                           const newSide = card.currentSide === 1 ? 3 : 1;
                           const updatedCard = cloneGameCard(card);
                           updatedCard.currentSide = newSide;
-                          
                           setLocalCards(prev => prev.map(c => c.id === card.id ? updatedCard : c));
                           setSelectedCards(prev => prev.map(c => c.id === card.id ? updatedCard : c));
                         }}
                         title={t('choice')}
-                      >
-                      </button>
-                    )}
-                    
-                    {/* La carte elle-même - pas d'interaction directe */}
-                    <div style={{ pointerEvents: 'none' }}>
-                      <CardView
-                        card={card}
-                        fromZone={zone}
-                        onRightClick={() => {}}
                       />
-                    </div>
+                    )}
+
+                    {/* Rectangle 1 : toute la hauteur, toute la largeur sauf les 40px de droite */}
+                    <div
+                      className="absolute top-0 left-0 z-40 cursor-pointer"
+                      style={{ width: 'calc(100% - 40px)', bottom: 0 }}
+                      onClick={(e) => { e.stopPropagation(); toggleCard(card); }}
+                    />
+
+                    {/* Rectangle 2 : bande droite, entre les deux coins (choice en haut, preview en bas) */}
+                    <div
+                      className="absolute right-0 z-40 cursor-pointer"
+                      style={{ width: '40px', top: '40px', bottom: '30px' }}
+                      onClick={(e) => { e.stopPropagation(); toggleCard(card); }}
+                    />
+                    <CardView
+                      card={card}
+                      fromZone={zone}
+                      onRightClick={() => {}}
+                    />
                   </div>
                 );
               })}
@@ -3442,6 +3469,11 @@ export default function Game() {
     return window.matchMedia('(pointer: coarse)').matches;
   };
 
+  const sortPlayAreaRef = useRef<(() => void) | null>(null);
+
+  const [highlightedBlocker, setHighlightedBlocker] = useState<number | null>(null);
+  const [highlightedBlockedIds, setHighlightedBlockedIds] = useState<number[]>([]);
+
   // Achievements
   const [numberOfRounds, setNumberOfRounds] = useState(0);
   const [numberDrawn, setNumberDrawn] = useState(0);
@@ -3693,9 +3725,9 @@ export default function Game() {
   const reorderCardsInZone = (zone: string, cardIds: number[]) => {
     const reorderedCards = cardIds
       .map(id => {
-        if (zone === t('playArea')) return playArea.find(c => c.id === id);
-        if (zone === t('permanentZone')) return permanentZone.find(c => c.id === id);
-        if (zone === t('blocked')) return blockedZone.find(c => c.id === id);
+        if (zone === t('playArea')) return playAreaRef.current.find(c => c.id === id);
+        if (zone === t('permanentZone')) return permanentZoneRef.current.find(c => c.id === id);
+        if (zone === t('blocked')) return blockedZoneRef.current.find(c => c.id === id);
         return null;
       })
       .filter((card): card is GameCard => card !== null);
@@ -4813,6 +4845,13 @@ export default function Game() {
     });
   };
 
+  function getBlockerOf(cardId: number): number | null {
+    for (const [blocker, blockedCards] of blockMap.entries()) {
+      if (blockedCards.includes(cardId)) return blocker;
+    }
+    return null;
+  }
+
   function updateBlocks(blocker: number, blockedCards: number[] | null) {
     if(blockedCards === null) {
       blockMap.delete(blocker);
@@ -5234,6 +5273,7 @@ export default function Game() {
       const allBaseSeafarings = [22, 74, 75, 76, 77, 91, 93, 98, 100, 102];
       const allShrines = [82, 83];
       const allMines = [84, 85];
+      // const allArtifacts = [108, 165];
       const newDiscoveredCards = [...new Set([...discoveredCards, ...cardIds])];
       const allAvailableCards = new Set([...[...playAreaRef.current, ...blockedZoneRef.current, ...permanentZoneRef.current, ...discardRef.current, ...deckRef.current].map((c) => c.id), ...cardIds]);
 
@@ -5251,6 +5291,9 @@ export default function Game() {
       }
       if ([117].every(n => allAvailableCards.has(n))) {
         unlockAchievement('trading_imperialism');
+      }
+      if ([108].every(n => allAvailableCards.has(n))) {
+        unlockAchievement('a_weird_artifact');
       }
     }
 
@@ -6733,9 +6776,27 @@ export default function Game() {
                   ))}
                 </div>
               </div>
+              {/* Sort Button */}
+              <button
+                onClick={() => {
+                  sortPlayAreaRef.current?.();
+                }}
+                title="Trier"
+                style={{
+                  background: "rgba(120, 80, 180, 0.15)",
+                  border: "1px solid rgba(120, 80, 180, 0.3)",
+                  borderRadius: "8px",
+                  padding: "8px",
+                  cursor: "pointer",
+                }}
+              >
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M2 4h14M5 9h8M8 14h2" stroke="#c8b4e8" strokeWidth="1.5" strokeLinecap="round"/>
+                </svg>
+              </button>
               {/* Round Count */}
               <span
-                className="mt-2 ml-60 text-sm font-bold mb-3 tracking-wide uppercase"
+                className="mt-2 ml-50 text-sm font-bold mb-3 tracking-wide uppercase"
                 style={{
                   zIndex: 20,
                   color: "#c8b4e8",
@@ -6760,10 +6821,18 @@ export default function Game() {
                 onExecuteCardEffect={(card, zone, timing, effectIndex) => handleExecuteCardEffect(card, zone, timing, undefined, effectIndex)}
                 gatherProductionBonus={gatherProductionBonus}
                 gatherAdditionalProductionOptions={gatherAdditionalProductionOptions}
-                highlightedCardId={highlightedCardId}
+                highlightedCardId={highlightedBlocker ?? highlightedCardId}
                 onReorderCards={(cardIds) => reorderCardsInZone(t('playArea'), cardIds)}
                 onZoneRef={(el) => { if (el) zoneRefsMap.current.set(t('playArea'), el);}}
                 debugMode={debugMode}
+                onZoneSort={(fn) => { sortPlayAreaRef.current = fn; }}
+                onCardHover={(card) => {
+                  if (card) {
+                    setHighlightedBlockedIds(blockMap.get(card.id) ?? []);
+                  } else {
+                    setHighlightedBlockedIds([]);
+                  }
+                }}
               />
             </div>
           </div>
@@ -6788,13 +6857,15 @@ export default function Game() {
               onReorderCards={(cardIds) => reorderCardsInZone(t('blocked'), cardIds)}
               onZoneRef={(el) => { if (el) zoneRefsMap.current.set(t('blocked'), el);}}
               debugMode={debugMode}
+              onCardHover={(card) => setHighlightedBlocker(card ? getBlockerOf(card.id) : null)}
+              highlightedCardId={highlightedBlockedIds}
             />
             {/* Infos à droite */}
             <div 
               onClick={handleDebugClick}
               className="absolute -bottom-7 -right-98 text-xs text-gray-700 whitespace-nowrap cursor-pointer select-none z-50"
             >
-              Kingdom Legacy - Digital by Keleonix | v0.10.5 {debugMode && '🐛'}
+              Kingdom Legacy - Digital by Keleonix | v0.10.6 {debugMode && '🐛'}
             </div>
           </div>
         </div>
@@ -6838,9 +6909,20 @@ export default function Game() {
                 {/* Language + actions principales */}
                 <LanguageSelector />
                 <div className="flex flex-row gap-2 flex-wrap">
-                  <Button onClick={() => { setShowAdvancedSettings(true); setShowSettings(false); }}>{t('advancedSettings')}</Button>
-                  <Button onClick={() => { setShowGuide(true); setShowSettings(false); }}>{t('guide')}</Button>
-                  <Button onClick={() => setShowAchievements(true)}>🏆</Button>
+                  <Button onClick={() => { setShowAdvancedSettings(true); setShowSettings(false); }}>
+                    {t('advancedSettings')}
+                  </Button>
+                  <Button onClick={() => setShowAchievements(true)}>
+                    🏆
+                  </Button>
+                </div>
+                <div className="flex flex-row gap-2 flex-wrap">
+                  <Button onClick={() => { setShowGuide(true); setShowSettings(false); }}>
+                    {t('guide')}
+                  </Button>
+                  <Button onClick={() => { setShowAbout(true); setShowSettings(false); }}>
+                    {t('about')}
+                  </Button>
                 </div>
 
                 <div style={{ borderTop: "1px solid rgba(160, 120, 50, 0.25)", margin: "4px 0" }} />
@@ -6937,17 +7019,14 @@ export default function Game() {
                   <Button disabled={selectedKingdom === t('newKingdom')} onClick={() => loadGame(selectedKingdom)}>
                     {t('continue')}
                   </Button>
-                  <Button onClick={() => { setShowAbout(true); setShowSettings(false); }}>
-                    {t('about')}
-                  </Button>
                 </div>
 
                 <div className="flex gap-2">
-                  <Button onClick={() => { resetAchievements(); setShowSettings(false); }}>
-                    {t('resetAchievements')}
-                  </Button>
                   <Button onClick={resetGame}>
                     {t('resetFullGame')}
+                  </Button>
+                  <Button onClick={() => { resetAchievements(); setShowSettings(false); }}>
+                    {t('resetAchievements')}
                   </Button>
                 </div>
 

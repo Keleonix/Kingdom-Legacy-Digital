@@ -96,6 +96,7 @@ export type TranslationKeys =
   | 'ach_name_richer_than_cresus' | 'ach_desc_richer_than_cresus'
   | 'ach_name_adhd' | 'ach_desc_adhd'
   | 'ach_name_freeze' | 'ach_desc_freeze'
+  | 'ach_name_a_weird_artifact' | 'ach_desc_a_weird_artifact'
 
   // Cards Names
   | 'welcome'
@@ -770,7 +771,7 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     tutorialDiscardTitle: "La Défausse",
     tutorialDiscardText: "Les cartes défaussées arrivent ici (suite à un effet ou à la fin d'un tour). Vous pouvez les consulter en cliquant sur « i18n/seeDiscard ».",
     tutorialPermanentTitle: "Zone Permanente",
-    tutorialPermanentText: "Les cartes permanentes ont un bandeau effects/permanent et restent visibles ici. Leurs effets peuvent être activés.",
+    tutorialPermanentText: "Les cartes permanentes ont une icône effects/permanent et restent visibles ici. Leurs effets peuvent être activés.",
     tutorialPlayAreaTitle: "Zone de Jeu",
     tutorialPlayAreaText: "Les cartes piochées sont jouées ici. Vous pouvez les améliorer, déclencher leurs effets ou les réordonner (les bouger ou cliquer 2 fois dans la zone pour les ordonner).",
     tutorialBlockedTitle: "Zone de Blocage",
@@ -780,7 +781,7 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     tutorialResourcePoolTitle: "Ressources",
     tutorialResourcePoolText: "Voici votre réserve de ressources. Chaque icône représente un type de ressource. ATTENTION : Si une carte arrive en jeu, les ressources que vous conserviez seront détruites.",
     tutorialCardTitle: "Cartes",
-    tutorialCardText: "Les cartes ont différents éléments, dont certains communs : Un nom, un type, une icône, un identifiant (id). Certaines cartes produisent des ressources ( resources/coin , resources/metal , resources/stone , resources/sword , resources/tradegood et resources/wood ). Ces ressources peuvent servir à améliorer vos cartes (ce qui terminera votre tour). Quand vous découvrez une carte avec effects/choice , vous pouvez cliquer sur le bandeau pour choisir son côté lorsque vous l'ajoutez à votre deck.",
+    tutorialCardText: "Les cartes ont différents éléments, dont certains communs : Un nom, un type, une icône, un identifiant (id). Certaines cartes produisent des ressources ( resources/coin , resources/metal , resources/stone , resources/sword , resources/tradegood et resources/wood ). Ces ressources peuvent servir à améliorer vos cartes (ce qui terminera votre tour). Quand vous découvrez une carte avec effects/choice , vous pouvez cliquer sur l'icône pour choisir son côté lorsque vous l'ajoutez à votre deck.",
     tutorialEffectsTitle: "Effets",
     tutorialEffectsText: "Les cartes ont des capacitées activables depuis la zone de jeu : effects/activate défausse la carte, effects/time met fin au tour, effects/passive peut être activé autant de fois que vous le voulez, effects/destroy détruit la carte et effects/oneTime peut être utilisé une seule fois. Les effets peuvent aussi se déclencher: effects/optional sont optionnels et effects/forced sont obligatoires.",
     tutorialReadyTitle: "Vous êtes prêt !",
@@ -819,7 +820,7 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     loadSuccess: 'Royaume chargé avec succès',
     noSaveFound: 'Aucune sauvegarde trouvée nommée',
     language: 'Langage',
-    resetFullGame: 'Réinitialiser (partie en cours)',
+    resetFullGame: 'Réinitialiser la partie',
     
     // Guide
     guideTitle: 'Guide & Contrôles',
@@ -889,6 +890,8 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     ach_desc_adhd: 'Activez 10 effets en un tour.',
     ach_name_freeze: 'Plus un Geste !',
     ach_desc_freeze: 'Gardez 10+ cartes en jeu à la fin d\'un tour.',
+    ach_name_a_weird_artifact: 'Un Etrange Artefact...',
+    ach_desc_a_weird_artifact: 'Découvrez un étrange artefact.',
 
     // Cards Names
     welcome: "Bienvenue",
@@ -1760,7 +1763,7 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     tutorialDiscardTitle: "Discard",
     tutorialDiscardText: "Your discarded cards are put in this zone (discarded because of an effect or at the end of the turn). Click on « i18n/seeDiscard » to review your discard.",
     tutorialPermanentTitle: "Permanent Zone",
-    tutorialPermanentText: "Permanent cards have the specific banner effects/permanent and stay visible here. Their effects can be activated normally.",
+    tutorialPermanentText: "Permanent cards have the specific icone effects/permanent and stay visible here. Their effects can be activated normally.",
     tutorialPlayAreaTitle: "Play Area",
     tutorialPlayAreaText: "Drawn cards are put in this zone. You can upgrade them (will end the turn), activate their effect or reorder them (drag them or click 2 times in the zone).",
     tutorialBlockedTitle: "Blocked Zone",
@@ -1770,7 +1773,7 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     tutorialResourcePoolTitle: "Resources Pool",
     tutorialResourcePoolText: "This is your Resources Pool. Each icon represent a type of resource and how much you currently hold. WARNING : If a card enters the Play Area, all held resources will be removed.",
     tutorialCardTitle: "Cards",
-    tutorialCardText: "Cards are composed of different elements, some are common to all cards : A name, a type, an icon, an id. Some will produce resources ( resources/coin , resources/metal , resources/stone , resources/sword , resources/tradegood et resources/wood ). Those can be used to upgrade your cards (will end your turn). When you discover a card with effects/choice , you can click on the banner which side to add to your deck.",
+    tutorialCardText: "Cards are composed of different elements, some are common to all cards : A name, a type, an icon, an id. Some will produce resources ( resources/coin , resources/metal , resources/stone , resources/sword , resources/tradegood et resources/wood ). Those can be used to upgrade your cards (will end your turn). When you discover a card with effects/choice , you can click on the icone which side to add to your deck.",
     tutorialEffectsTitle: "Effects",
     tutorialEffectsText: "Cards may have effects that can be activated : effects/activate discard the card, effects/time end the turn, effects/passive can be activated multiple times, effects/destroy destroys the card and effects/oneTime can only be used one time. effects may also be triggered : effects/optional may be used et effects/forced must be used.",
     tutorialReadyTitle: "You are ready !",
@@ -1809,7 +1812,7 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     loadSuccess: 'Kingdom loaded successfully',
     noSaveFound: 'No save found named',
     language: 'Language',
-    resetFullGame: 'Reset (current game)',
+    resetFullGame: 'Reset game',
 
     // Guide
     guideTitle: 'Guide & Controls',
@@ -1879,6 +1882,9 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     ach_desc_adhd: 'Activate 10 effects in a single turn.',
     ach_name_freeze: 'Freeze !',
     ach_desc_freeze: 'Keep 10+ cards in play at the end of your turn.',
+    ach_name_a_weird_artifact: 'A Weird Artifact...',
+    ach_desc_a_weird_artifact: 'Discover a weird artifact.',
+    
     
     // Cards Names
     welcome: "Welcome",
