@@ -2170,7 +2170,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           ctx.addDiscoverableCard(card.id, true);
         }
         
-        for (const id of ids) {
+        for (const id of ids.filter(id => cards.filter(c => c.id === id).length === 0)) {
           ctx.deleteCardInZone(ctx.t('campaign'), id);
         }
 
@@ -4656,7 +4656,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         if (ctx.resources.coin >= 2 && cards.length !== 0) {
           const card = (await ctx.selectCardsFromArray(cards, ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card))[0];
           
-          await new Promise<void>((resolve) => {
+          effectSuccessfull = await new Promise<boolean>((resolve) => {
             ctx.selectUpgradeCost(card, false, async (upgradeIndex) => {
               const upgrade: Upgrade = card.upgrades[card.currentSide - 1][upgradeIndex];
               let upgradeable = true;
@@ -4666,7 +4666,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                   const resourceKey = key as keyof ResourceMap;
                   const amount = upgrade.cost[resourceKey] ?? 0;
                   if (ctx.resources[resourceKey] < amount) {
-                    resolve();
+                    upgradeable = false;
+                    break;
                   }
                 }
 
@@ -4691,10 +4692,10 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                   await ctx.upgradeCard(card, upgrade.nextSide, true);
                   ctx.replaceCardInZone(ctx.t('playArea'), card.id, card);
                   await ctx.dropToDiscard({id: card.id, fromZone: ctx.t('playArea')});
-                  effectSuccessfull = true;
+                  resolve(true);
                 }
               }
-              resolve();
+              resolve(false);
             });
           });
 
@@ -4711,7 +4712,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         if (cards.length !== 0) {
           const card = (await ctx.selectCardsFromArray(cards, ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card))[0];
           
-          await new Promise<void>((resolve) => {
+          effectSuccessfull = await new Promise<boolean>((resolve) => {
             ctx.selectUpgradeCost(card, false, async (upgradeIndex) => {
               const upgrade: Upgrade = card.upgrades[card.currentSide - 1][upgradeIndex];
               let upgradeable = true;
@@ -4721,7 +4722,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                   const resourceKey = key as keyof ResourceMap;
                   const amount = upgrade.cost[resourceKey] ?? 0;
                   if (ctx.resources[resourceKey] < amount) {
-                    resolve();
+                    upgradeable = false;
+                    break;
                   }
                 }
 
@@ -4745,10 +4747,10 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                   await ctx.upgradeCard(card, upgrade.nextSide, true);
                   ctx.replaceCardInZone(ctx.t('playArea'), card.id, card);
                   await ctx.dropToDiscard({id: card.id, fromZone: ctx.t('playArea')});
-                  effectSuccessfull = true;
+                  resolve(true);
                 }
               }
-              resolve();
+              resolve(false);
             });
           });
 
