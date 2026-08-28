@@ -1572,7 +1572,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           ctx.addDiscoverableCard(card.id, true);
         }
         
-        for (const id of ids) {
+        for (const id of ids.filter(id => cards.filter(c => c.id === id).length === 0)) {
           ctx.deleteCardInZone(ctx.t('campaign'), id);
         }
 
