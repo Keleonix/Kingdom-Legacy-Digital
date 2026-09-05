@@ -604,6 +604,8 @@ export type TranslationKeys =
   | 'string_choice_add_one_check'
   | 'string_choice_upgrade'
   | 'string_choice_pass'
+  | 'string_choice_discard_to_gain_2_resources'
+  | 'string_choice_discard_to_gain_3_resources'
   | 'string_choice_discard_to_keep_lands'
   ;
 
@@ -1537,8 +1539,8 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     effect_description_impatient_guard: "effects/forced Défaussez cette carte s'il n'y a pas d'Ennemi en jeu.",
     effect_description_brave_knight: "effects/forced Carte jouée: Jouez un Ennemi depuis la défausse.",
     effect_description_treasure_wagon: "effects/forced Carte jouée: Si un Ennemi est en jeu, enlevez une production de cette carte. effects/forced Quand un Ennemi est joué, enlevez une production de cette carte. effects/forced Purgée: Cette carte vaut 5 resources/fame pour chaque production sur celle-ci. ",
-    effect_description_powerful_prince: "Les ressources sont perdues quand une nouvelle carte entre en jeu. effects/passive Dépensez resources/coin resources/coin resources/coin pour enlever 1 resources/coin du coût d'amléioration de cette carte. effects/forced Carte jouée: Gagnez 2 ressources au choix.",
-    effect_description_prince__: "Les ressources sont perdues quand une nouvelle carte entre en jeu. effects/forced Carte jouée: Gagnez 3 ressources au choix. effects/time Découvrez le Trésor (167).",
+    effect_description_powerful_prince: "Les ressources sont perdues quand une nouvelle carte entre en jeu. effects/passive Dépensez resources/coin resources/coin resources/coin pour enlever 1 resources/coin du coût d'amléioration de cette carte. effects/optional Carte jouée: Gagnez 2 ressources au choix.",
+    effect_description_prince__: "Les ressources sont perdues quand une nouvelle carte entre en jeu. effects/optional Carte jouée: Gagnez 3 ressources au choix. effects/time Découvrez le Trésor (167).",
     effect_description_robber_saboteur: "effects/forced Carte jouée: Enlevez 1 production d'1 Bâtiment en jeu. effects/time Dépensez resources/sword resources/sword resources/sword pour vaincre → i18n/prisoner .",
     effect_description_rebellious_monk: "effects/forced Carte jouée: Bloque 3 cartes alliées. effects/time Dépensez resources/tradegood resources/tradegood resources/tradegood resources/tradegood pour vaincre → i18n/prisoner .",
     effect_description_bard_of_the_people: "effects/forced Carte jouée: Jouez un Ennemi depuis la défausse.",
@@ -1554,7 +1556,7 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     effect_description_keeper_of_secrets: "effects/forced Carte jouée: Défaussez toutes les autres cartes en jeu, puis → i18n/the_chase .",
     effect_description_the_chase: "effects/activate Défaussez 6 cartes alliées pour effects/check 1 le prochain '✓'. effects/forced Fin du tour: effects/check le prochain 'X'.",
     effect_description_sheriff: "effects/passive Dépensez resources/tradegood resources/tradegood resources/tradegood pour enlever 1 resources/tradegood du coût d'amléioration de cette carte. effects/activate Défaussez 1 Terrain pour gagner 2 ressources au choix.",
-    effect_description_feared_sheriff: "effects/passive Défaussez 1 Terrain pour gagner 2 ressources au choix.",
+    effect_description_feared_sheriff: "effects/activate Défaussez n'importe quel nombre de Terrains pour gagner 2 ressources au choix par Terrain défaussé.",
     effect_description_treasury: "effects/time dépensez les resources/coin (1 à 12, incrément de 1) pour effects/check suivant, à la dernière carte → i18n/famed_treasury .",
     effect_description_famed_treasury: "effects/time dépensez les resources/coin (13 à 20, incrément de 1, puis 25 et 30) pour effects/check suivant.",
     effect_description_pallisade: "effects/optional Fin du tour: Défaussez cette carte pour faire rester 2 Terrains en jeu.",
@@ -1595,9 +1597,11 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     string_choice_top_or_bottom: "Dessus ou dessous?",
     string_choice_health_potion: "Défausser la Potion de Soin pour garder une Personne en jeu ?",
     string_choice_thriving_countryside: "Depuis la Zone de Jeu ou la Défausse?",
-    string_choice_discard_two_other_cards: "Défaussez 2 cartes?",
+    string_choice_discard_two_other_cards: "Défausser 2 cartes?",
     string_choice_add_one_check: "Ajoutez 1 check?",
     string_choice_upgrade: "Améliorer",
+    string_choice_discard_to_gain_2_resources: "Défausser cette carte pour gagner 2 ressources au choix?",
+    string_choice_discard_to_gain_3_resources: "Défausser cette carte pour gagner 3 ressources au choix?",
     string_choice_pass: "Passer",
     string_choice_discard_to_keep_lands: "Défausser la Muraille d'Avant-Poste pour faire rester en jeu les Terrains?",
   },
@@ -2530,8 +2534,8 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     effect_description_impatient_guard: "effects/forced Discard this card if there is no Enemy in play.",
     effect_description_brave_knight: "effects/forced Card Played: Play 1 Enemy from the discard.",
     effect_description_treasure_wagon: "effects/forced Card Played: If an Enemy is in play, remove a production from this card. effects/forced When an Enemy is played, remove a production from this card. effects/forced: When Purged: This card is worth 5 resources/fame for each production on it.",
-    effect_description_powerful_prince: "Resources are lost when a new card enters play. effects/passive Spend resources/coin resources/coin resources/coin to remove 1 resources/coin from this card's upgrade cost. effects/forced Card Played: Gain any 2 resources.",
-    effect_description_prince__: "Resources are lost when a new card enters play. effects/forced Card Played: Gain any 3 resources. effects/time Discover the Treasury (167).",
+    effect_description_powerful_prince: "Resources are lost when a new card enters play. effects/passive Spend resources/coin resources/coin resources/coin to remove 1 resources/coin from this card's upgrade cost. effects/optional Card Played: Gain any 2 resources.",
+    effect_description_prince__: "Resources are lost when a new card enters play. effects/optional Card Played: Gain any 3 resources. effects/time Discover the Treasury (167).",
     effect_description_robber_saboteur: "effects/forced Carte jouée: Remove 1 production from 1 Building in play. effects/time Spend resources/sword resources/sword resources/sword to defeat → i18n/prisoner .",
     effect_description_rebellious_monk: "effects/forced Card Played: Blocks 3 friendly cards. effects/time Spend resources/tradegood resources/tradegood resources/tradegood resources/tradegood to defeat → i18n/prisoner .",
     effect_description_bard_of_the_people: "effects/forced Card Played: Play 1 Enemy from the discard.",
@@ -2547,7 +2551,7 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     effect_description_keeper_of_secrets: "effects/forced Card Played: Discard all cards in play, then → i18n/the_chase .",
     effect_description_the_chase: "effects/activate Discard 6 friendly cards to effects/check 1 the next '✓'. effects/forced End of Turn: effects/check the next 'X'.",
     effect_description_sheriff: "effects/passive Spend resources/tradegood resources/tradegood resources/tradegood to remove 1 resources/tradegood from this card's upgrade cost. effects/activate Discard 1 Land to gain any 2 resources.",
-    effect_description_feared_sheriff: "effects/passive Discard 1 land to gain any 2 resources.",
+    effect_description_feared_sheriff: "effects/activate Discard any number of Lands to gain any 2 resources per Land discarded.",
     effect_description_treasury: "effects/time Spend resources/coin (1 to 12, increment of 1) to effects/check , after the last one → i18n/famed_treasury .",
     effect_description_famed_treasury: "effects/time Spend resources/coin (13 to 20, increment of 1, then 25 and 30) to effects/check .",
     effect_description_pallisade: "effects/optional End of Turn: Discard this card to make 2 Lands stay in play.",
@@ -2591,6 +2595,8 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     string_choice_discard_two_other_cards: "Discard 2 cards?",
     string_choice_add_one_check: "Add 1 check?",
     string_choice_upgrade: "Upgrade",
+    string_choice_discard_to_gain_2_resources: "Discard this card to gain 2 resources?",
+    string_choice_discard_to_gain_3_resources: "Discard this card to gain 3 resources?",
     string_choice_pass: "Pass",
     string_choice_discard_to_keep_lands: "Défausser la Muraille d'Avant-Poste pour faire rester en jeu les Terrains?",
   }

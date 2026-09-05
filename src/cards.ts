@@ -7657,7 +7657,7 @@ export const allCards: GameCard[] = [
     resources: [
       [],
       [],
-      [ { fame: -12 } ],
+      [ { fame: -7 } ],
       [],
     ],
     effects: [

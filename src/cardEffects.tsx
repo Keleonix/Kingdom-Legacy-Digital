@@ -7025,12 +7025,16 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         description: (t) => parseEffects(t('effect_description_powerful_prince')).effects[1].text, 
         timing: "played",
         execute: async function (ctx) {
+          const discardChoice = await ctx.selectStringChoice(this.description(ctx.t), [ctx.t('string_choice_discard_to_gain_2_resources'), ctx.t('string_choice_pass')]);
+          if (discardChoice === ctx.t('string_choice_pass')) {
+            return false;
+          }
           const choice = await ctx.selectResourceChoice({ coin: 1, wood: 1, stone: 1, sword: 1, metal: 1, tradegood: 1 }, 2);
           if (!choice) {
             return false;
           }
           await applyResourceMapDelta(ctx, choice);
-          return false;
+          return true;
         }
       },
     ],
@@ -7039,12 +7043,16 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         description: (t) => parseEffects(t('effect_description_powerful_prince')).effects[0].text, 
         timing: "played",
         execute: async function (ctx) {
+          const discardChoice = await ctx.selectStringChoice(this.description(ctx.t), [ctx.t('string_choice_discard_to_gain_3_resources'), ctx.t('string_choice_pass')]);
+          if (discardChoice === ctx.t('string_choice_pass')) {
+            return false;
+          }
           const choice = await ctx.selectResourceChoice({ coin: 1, wood: 1, stone: 1, sword: 1, metal: 1, tradegood: 1 }, 3);
           if (!choice) {
             return false;
           }
           await applyResourceMapDelta(ctx, choice);
-          return false;
+          return true;
         }
       },
       {
@@ -7601,17 +7609,17 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         if (lands.length === 0) {
           return false;
         }
-        const land = (await ctx.selectCardsFromArray(lands, ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card, 'land'))[0];
-        if (!land) {
+        const selectedLands = (await ctx.selectCardsFromArray(lands, ctx.t('playArea'), this.description(ctx.t), 0, lands.length, ctx.card, 'land'));
+        if (!selectedLands || selectedLands.length === 0) {
           return false;
         }
-        const choice = await ctx.selectResourceChoice({ coin: 1, wood: 1, stone: 1, sword: 1, metal: 1, tradegood: 1 }, 2);
+        const choice = await ctx.selectResourceChoice({ coin: 1, wood: 1, stone: 1, sword: 1, metal: 1, tradegood: 1 }, 2 * selectedLands.length);
         if (!choice) {
           return false;
         }
         await applyResourceMapDelta(ctx, choice);
-        await ctx.dropToDiscard({id: land.id, fromZone: ctx.t('playArea')});
-        return false;
+        await ctx.dropToDiscard({id: selectedLands.map((c) => c.id), fromZone: ctx.t('playArea')});
+        return true;
       }
     }],
   },
