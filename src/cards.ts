@@ -1334,7 +1334,7 @@ export const allCards: GameCard[] = [
       [ emptyResource ],
       [ emptyResource ],
       [ { fame: -2 } ],
-      [ emptyResource ],
+      [ { fame: 1 } ],
     ],
     effects: [
       'effect_description_volcanic_eruption',
@@ -2000,7 +2000,7 @@ export const allCards: GameCard[] = [
     resources: [
       [ emptyResource ],
       [],
-      [ emptyResource ],
+      [ { fame: 1} ],
       [],
     ],
     effects: [
@@ -2336,7 +2336,7 @@ export const allCards: GameCard[] = [
     resources: [
       [ emptyResource ],
       [ emptyResource ],
-      [ emptyResource ],
+      [ { fame: 2 } ],
       [ emptyResource ],
     ],
     effects: [
@@ -2544,9 +2544,9 @@ export const allCards: GameCard[] = [
   { id: 55,
     name: ['lord_aethan', '', 'lord_nimrod', ''],
     resources: [
-      [ { coin: 1, wood: 1, stone: 1 } ],
+      [ { coin: 1, wood: 1, stone: 1, fame: 2 } ],
       [],
-      [ { sword: 1 } ],
+      [ { sword: 1, fame: 5 } ],
       [],
     ],
     effects: [
@@ -2694,9 +2694,9 @@ export const allCards: GameCard[] = [
     name: ['city_fire', '', 'ashlands', 'young_forest'],
     resources: [
       [ emptyResource ],
-      [],
+      [ emptyResource ],
       [ { fame: -2 } ],
-      [ { ...emptyResource }  ],
+      [ { fame: 1 }  ],
     ],
     effects: [
       'effect_description_city_fire',
@@ -3091,7 +3091,7 @@ export const allCards: GameCard[] = [
     resources: [
       [ { fame: -8 } ],
       [ { fame: -2 } ],
-      [ emptyResource ],
+      [ { fame: 2 } ],
       [],
     ],
     effects: [
@@ -3102,7 +3102,7 @@ export const allCards: GameCard[] = [
     ],
     upgrades: [
       [
-        {cost: {tradegood: 6}, nextSide: 3},
+        {cost: {tradegood: 7}, nextSide: 3},
         {cost: {coin: 1}, nextSide: 2}
       ],
       [],
@@ -3218,7 +3218,7 @@ export const allCards: GameCard[] = [
   { id: 70,
     name: ['royal_visit', '', 'inquisitor', ''],
     resources: [
-      [ emptyResource ],
+      [ { fame: 2 } ],
       [],
       [ { coin: 1 } ],
       [],
@@ -3562,7 +3562,7 @@ export const allCards: GameCard[] = [
       [ { coin: 1 } ],
       [ emptyResource ],
       [ { sword: 1, fame: 3 } ],
-      [ { coin: 2, tradegood: 1 } ],
+      [ { coin: 2, tradegood: 1, fame: 1 } ],
     ],
     effects: [
       '',
@@ -4377,7 +4377,7 @@ export const allCards: GameCard[] = [
       [ {cost: {}, nextSide: 3, otherCost: 'other_cost_two_seafarings' } ],
     ],
     currentSide: 1,
-    type: ['seafaring', 'seafaring', 'event', 'seafaring'],
+    type: ['seafaring', 'seafaring', 'item - loot', 'seafaring'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
@@ -5013,7 +5013,7 @@ export const allCards: GameCard[] = [
   { id: 107,
     name: ['royal_visit', '', 'inquisitor', ''],
     resources: [
-      [ emptyResource ],
+      [ { fame: 2 } ],
       [],
       [ { coin: 1 } ],
       [],
@@ -5861,9 +5861,9 @@ export const allCards: GameCard[] = [
     name: ['pine_forest', 'pine_forest', 'pond', 'fish_pond'],
     resources: [
       [ { wood: 1 } ],
-      [ { wood: 2 } ],
+      [ { wood: 2, fame: 1 } ],
       [ { coin: 1 } ],
-      [ { coin: 2, tradegood: 1 } ],
+      [ { coin: 2, tradegood: 1, fame: 1 } ],
     ],
     effects: [
       '',
@@ -5903,7 +5903,7 @@ export const allCards: GameCard[] = [
     name: ['boulders', 'boulders', 'mushrooms', 'mushrooms'],
     resources: [
       [ { stone: 1 } ],
-      [ { stone: 2 } ],
+      [ { stone: 2, fame: 1 } ],
       [ { tradegood: 1 } ],
       [ { tradegood: 1 } ],
     ],
@@ -6279,7 +6279,7 @@ export const allCards: GameCard[] = [
       'effect_description_unruly_towns',
     ],
     upgrades: [
-      [ { cost: { sword: 12 }, nextSide: 2 } ],
+      [ { cost: { sword: 10 }, nextSide: 2 } ],
       [ { cost: { sword: 9 }, nextSide: 4 } ],
       [],
       [ { cost: { sword: 8 }, nextSide: 3 } ],
@@ -7806,5 +7806,173 @@ export const allCards: GameCard[] = [
     GetUpgrades: function (): Upgrade[] {
       throw new Error("Function not implemented.");
     }
-  }
+  },
+  { id: 140,
+    name: ['welcome_to_merchants', '', '', ''],
+    resources: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    effects: [
+      'effect_description_welcome_to_merchants',
+      '',
+      '',
+      '',
+    ],
+    upgrades: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    currentSide: 1,
+    type: ['scroll', '', '', ''],
+    choice: false,
+    checkboxes: [],
+    negative: [false, false, false, false],
+    discoverable: false,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 166,
+    name: ['welcome_to_adventures', '', '', ''],
+    resources: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    effects: [
+      'effect_description_welcome_to_adventures',
+      '',
+      '',
+      '',
+    ],
+    upgrades: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    currentSide: 1,
+    type: ['scroll', '', '', ''],
+    choice: false,
+    checkboxes: [],
+    negative: [false, false, false, false],
+    discoverable: false,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 195,
+    name: ['welcome_to_distant_lands', '', '', ''],
+    resources: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    effects: [
+      'effect_description_welcome_to_distant_lands',
+      '',
+      '',
+      '',
+    ],
+    upgrades: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    currentSide: 1,
+    type: ['scroll', '', '', ''],
+    choice: false,
+    checkboxes: [],
+    negative: [false, false, false, false],
+    discoverable: false,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 354,
+    name: ['welcome_to_foundations', '', '', ''],
+    resources: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    effects: [
+      'effect_description_welcome_to_foundations',
+      '',
+      '',
+      '',
+    ],
+    upgrades: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    currentSide: 1,
+    type: ['scroll', '', '', ''],
+    choice: false,
+    checkboxes: [],
+    negative: [false, false, false, false],
+    discoverable: false,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
 ];
