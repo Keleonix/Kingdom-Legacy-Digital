@@ -2832,7 +2832,7 @@ export const allCards: GameCard[] = [
       [ { fame: -7 } ],
       [],
       [ emptyResource ],
-      [ { fame: 3 } ],
+      [ { sword: 1, fame: 3 } ],
     ],
     effects: [
       'effect_description_dark_prince',
