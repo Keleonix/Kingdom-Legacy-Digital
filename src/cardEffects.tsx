@@ -7752,6 +7752,68 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
   },
+  // Distant Lands
+  214: {
+    1: [{ // Bienvenue dans les Terres Lointaines
+      description: (t) => parseEffects(t('none')).effects[0].text,
+      timing: "onClick",
+      execute: async function(ctx)  {
+        if (ctx.startTutorial) {
+          await ctx.startTutorial();
+        }
+        return false;
+      }
+    }]
+  },
+  215: {
+    2: [{ // Récifs Coralliens
+      description: (t) => parseEffects(t('effect_description_coral_reef')).effects[0].text,
+      timing: "onClick",
+      execute: async function(ctx)  {
+        const choice = await ctx.selectResourceChoice({ coin: 1, wood: 1, stone: 1, sword: 1, metal: 1, tradegood: 1 }, 3);
+        if (!choice) {
+          return false;
+        }
+        await applyResourceMapDelta(ctx, choice);
+        await ctx.upgradeCard(ctx.card, 1, true);
+        return true;
+      }
+    }],
+    3: [
+      { // Chatier Naval
+        description: (t) => parseEffects(t('effect_description_shipyard_1')).effects[0].text,
+        timing: "onClick",
+        execute: async function(ctx)  {
+          return await ctx.discoverCard((card) => ([308].includes(card.id)), this.description(ctx.t), 1, ctx.card);
+        }
+      },
+      {
+        description: (t) => parseEffects(t('effect_description_shipyard_1')).effects[1].text,
+        timing: "onClick",
+        execute: async function(ctx)  {
+          let completed: boolean = getLastCheckboxChecked(ctx.card); // Check card is not completed
+          if (!completed) {
+            const ships = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('ship')), ctx.t('playArea'));
+            if (ships.length === 0) {
+              return false;
+            }
+            const selected = (await ctx.selectCardsFromArray(ships, ctx.t('playArea'), this.description(ctx.t), 1))[0];
+            if (!selected) {
+              return false;
+            }
+            const resourcesChoice = await ctx.selectResourceChoice({ coin: 1, wood: 1, stone: 1, sword: 1, metal: 1, tradegood: 1 }, 1);
+            if (!resourcesChoice) {
+              return false;
+            }
+            addResourceMapToCard(selected, resourcesChoice);
+            ctx.replaceCardInZone(ctx.t('playArea'), selected.id, selected);
+          }
+          await ctx.upgradeCard(ctx.card, 1, true);
+          return true;
+        }
+      }
+    ]
+  },
 };
 
 export const cardFameValueRegistry: Record<number, Record<number, CardFameValue>> = {

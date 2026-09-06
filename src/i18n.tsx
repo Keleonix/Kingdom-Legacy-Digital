@@ -48,6 +48,7 @@ export type TranslationKeys =
 
   // Tutorial Expansions
   | 'tutorialRiddingTheWoodsWelcomeTitle' | 'tutorialRiddingTheWoodsWelcomeText'
+  | 'tutorialDistantLandsWelcomeTitle' | 'tutorialDistantLandsWelcomeText' | 'tutorialDistantLandsPreparationTitle' | 'tutorialDistantLandsPreparationText' | 'tutorialDistantLandsExplorationTitle' | 'tutorialDistantLandsExplorationText'
   
   // Actions & Messages
   | 'selectCards' | 'chooseResource' | 'discoverCard' | 'destroyCard'
@@ -72,6 +73,7 @@ export type TranslationKeys =
   // Expansions
   | 'ridding_the_woods'
   | 'merchants'
+  | 'distant_lands'
 
   // Achievements
   | 'achievements' | 'achievementUnlocked' | 'areYouSureResetAchievements' | 'resetAchievements'
@@ -278,6 +280,11 @@ export type TranslationKeys =
 
   // Merchants
   | 'welcome_to_merchants'
+
+  // Distant Lands
+  | 'welcome_to_distant_lands'
+  | 'coastline'
+  | 'coral_reef'
 
   // Cards Effects Descriptions
   | 'staysInPlay'
@@ -569,6 +576,11 @@ export type TranslationKeys =
   // Merchants
   | 'effect_description_welcome_to_merchants'
 
+  // Distant Lands
+  | 'effect_description_welcome_to_distant_lands'
+  | 'effect_description_coral_reef'
+  | 'effect_description_shipyard_1'
+
   // Other costs
   | 'other_cost_destroy_stone_bridge'
   | 'other_cost_one_person'
@@ -796,6 +808,12 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     // Tutorial Expansions
     tutorialRiddingTheWoodsWelcomeTitle: "La Forêt des Brigands",
     tutorialRiddingTheWoodsWelcomeText: "Dans cette extension, vous découvrirez 5 cartes au lieu de 2 à chaque tour. La forêt regorge de ressources et comme vous vous en doutez, de bandits...",
+    tutorialDistantLandsWelcomeTitle: "Les Terres Lointaines",
+    tutorialDistantLandsWelcomeText: "Dans cette extension, prévoyez 2 étapes distinctes qui se dérouleront l'une après l'autre. De ce fait, cette extension comptera pour 2 dans la complétion de votre campagne.",
+    tutorialDistantLandsPreparationTitle: "Partie Préparation",
+    tutorialDistantLandsPreparationText: "En premier lieu, vous passerez 6 manches à découvrir 2 cartes qui vous permettront de construire le plus de cartes Maritimes que possible en plus que de remplir des cartes de Cargaison. Vous aurez besoin de Maritimes pour revenir et de Cargaison pour survivre sur place! ",
+    tutorialDistantLandsExplorationTitle: "Partie Exploration",
+    tutorialDistantLandsExplorationText: "Vous partez en voyage en mer vers des terres inconnues. Vos Cargaisons, Maritimes et 6 Personnes vous seront bien utiles...",
     
     // Actions & Messages
     selectCards: 'Sélectionner des cartes',
@@ -844,6 +862,7 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     // Expansions
     ridding_the_woods: 'La Forêt des Brigands',
     merchants: 'Marchands',
+    distant_lands: 'Terres Lointaines',
 
     // Achievements
     achievements: "Succès",
@@ -1276,6 +1295,11 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     // Merchants
     welcome_to_merchants: 'Bienvenue aux Marchands',
 
+    // Distant Lands
+    welcome_to_distant_lands: 'Bienvenue en Terres Lointaines',
+    coastline: 'Littoral',
+    coral_reef: 'Récif Corallien',
+
     // Cards Effects Descriptions
     staysInPlay: "effects/passive Reste en jeu.",
     effect_description_welcome: "Les règles complètes sont disponibles dans Paramètres → Guide. effects/passive Lancer le Tutoriel.",
@@ -1566,6 +1590,11 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     // Merchants
     effect_description_welcome_to_merchants: '',
 
+    // Distant Lands
+    effect_description_welcome_to_distant_lands: 'Jouez comme d\'habitude, en découvrant 2 cartes par manche. Récupérez autant de caartes maritimes que possible et de cargaison en 6 rounds. effects/passive Lancer le Tutoriel.',
+    effect_description_coral_reef: 'effects/activate Réinitialisez pour gagner 3 ressources au choix.',
+    effect_description_shipyard_1: 'effects/activate Réinitialisez pour découvrir le Charpentier de Marine (308). effects/activate Réinitialisez pour ajouter un effects/check et ajouter une ressource au choix sur un Navire en jeu.',
+
     // Other costs
     other_cost_destroy_stone_bridge: 'Détruisez le Pont de Pierre (12)',
     other_cost_one_person: '1 Personne',
@@ -1790,6 +1819,12 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     // Tutorial Expansions
     tutorialRiddingTheWoodsWelcomeTitle: "Ridding the Woods",
     tutorialRiddingTheWoodsWelcomeText: "In this expansion, you will discover 5 new cards every round instead 2. The forest holds a lot of resources and as you might have guessed, a famous bandit...",
+    tutorialDistantLandsWelcomeTitle: "Distant Lands",
+    tutorialDistantLandsWelcomeText: "In this extension, prepare for 2 distinct parts that will go one after the other. Thus, this extension will count as 2 for your campaign.",
+    tutorialDistantLandsPreparationTitle: "Preparation Part",
+    tutorialDistantLandsPreparationText: "In the first part, you will do 6 rounds discovering 2 cards, which will help you contruct a lot of Seafaring cardsand sotring resources in Cargo. You will need Seafaring to return and Cargp to survive! ",
+    tutorialDistantLandsExplorationTitle: "Exploration Part",
+    tutorialDistantLandsExplorationText: "You go forth to adventure on the sea. Your Cargos, Seafarings and 6 Persons will help you, very much...",
 
     // Actions & Messages
     selectCards: 'Select cards',
@@ -1838,6 +1873,7 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     // Expansions
     ridding_the_woods: 'Ridding the Woods',
     merchants: 'Merchants',
+    distant_lands: 'Distant Lands',
 
     // Achievements
     achievements: 'achievements',
@@ -2271,6 +2307,11 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     // Merchants
     welcome_to_merchants: 'Welcome to Merchants',
 
+    // Distant Lands
+    welcome_to_distant_lands: 'Welcome to Distant Lands',
+    coastline: 'Coastline',
+    coral_reef: 'Coral Reef',
+
     // Cards Effects Descriptions
     staysInPlay: "effects/passive Stays in play.",
     effect_description_welcome: "The full rules are accessible in Settings → Guide. effects/passive Launch Tutorial.",
@@ -2560,6 +2601,11 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
 
     // Merchants
     effect_description_welcome_to_merchants: '',
+
+    // Distant Lands
+    effect_description_welcome_to_distant_lands: 'Play as usual, discovering 2 cards per round. Collect as mush Seafaring as possible in 6 rounds and gather resources on cargo cards. effects/passive Launch Tutorial.',
+    effect_description_coral_reef: 'effects/activate Reset to gain any 3 resources.',
+    effect_description_shipyard_1: 'effects/activate Reset to discover shipwright (308). effects/activate Reset to add effects/check and add any resource to a Ship in play.',
 
     // Other costs
     other_cost_destroy_stone_bridge: 'Destroy the Stone Bridge (12)',

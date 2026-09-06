@@ -7807,7 +7807,7 @@ export const allCards: GameCard[] = [
       throw new Error("Function not implemented.");
     }
   },
-  { id: 140,
+  { id: 169,
     name: ['welcome_to_merchants', '', '', ''],
     resources: [
       [],
@@ -7849,7 +7849,7 @@ export const allCards: GameCard[] = [
       throw new Error("Function not implemented.");
     }
   },
-  { id: 166,
+  { id: 185,
     name: ['welcome_to_adventures', '', '', ''],
     resources: [
       [],
@@ -7891,7 +7891,7 @@ export const allCards: GameCard[] = [
       throw new Error("Function not implemented.");
     }
   },
-  { id: 195,
+  { id: 214,
     name: ['welcome_to_distant_lands', '', '', ''],
     resources: [
       [],
@@ -7933,7 +7933,62 @@ export const allCards: GameCard[] = [
       throw new Error("Function not implemented.");
     }
   },
-  { id: 354,
+  { id: 215,
+    name: ['coastline', 'coral_reef', 'shipyard', ''],
+    resources: [
+      [ { coin: 1 } ],
+      [ { coin: 1,  tradegood: 1 } ],
+      [ emptyResource ],
+      [],
+    ],
+    effects: [
+      '',
+      'effect_description_coral_reef',
+      'effect_description_shipyard_1',
+      '',
+    ],
+    upgrades: [
+      [
+        {cost: { coin: 2 }, nextSide: 2},
+        {cost: { wood: 3 }, nextSide: 3}
+      ],
+      [],
+      [],
+      [],
+    ],
+    currentSide: 1,
+    type: ['land', 'land', 'building', ''],
+    choice: false,
+    checkboxes: [
+      [],
+      [],
+      [
+        {content: "", checked: false},
+        {content: "", checked: false},
+        {content: "", checked: false},
+        {content: "", checked: false}
+      ],
+      []
+    ],
+    negative: [false, false, false, false],
+    discoverable: false,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 373,
     name: ['welcome_to_foundations', '', '', ''],
     resources: [
       [],
