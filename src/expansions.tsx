@@ -1,4 +1,4 @@
-import { type ExpansionData, type ResourceMap } from './types';
+import { emptyResource, type ExpansionData, type ResourceMap } from './types';
 
 export const FOCUS_KEYS = ['coin', 'wood', 'stone', 'sword', 'metal', 'tradegood'] as (keyof Omit<ResourceMap, 'fame'>)[];
 
@@ -62,4 +62,36 @@ export const EXPANSIONS: ExpansionData[] = [
   //   ],
   //   checkExpansionEnd: (ctx) => (ctx.fetchCardsInZone((c) => [170, 179].includes(c.id), ctx.t('campaign')).length === 0)
   // },
+  {
+    id: 'distant_lands',
+    name: 'distant_lands',
+    type: 'block',
+    iconPath: 'distantLands.png',
+    campaignCardIds: new Array(159).fill(null).map((_, i) => i + 214),
+    deckPurgeValue: 6,
+    focus: emptyResource,
+    permanentPurgeValue: 2,
+    discoverValue: 2,
+    expansionValue: 2, // Counts as 2 expansions
+    tutorialSteps: [
+      {
+        zone: null,
+        title: 'tutorialDistantLandsWelcomeTitle',
+        text: 'tutorialDistantLandsWelcomeText',
+        position: "auto",
+      },
+      {
+        zone: null,
+        title: 'tutorialDistantLandsPreparationTitle',
+        text: 'tutorialDistantLandsPreparationText',
+        position: "auto",
+      },
+      {
+        zone: null,
+        title: 'tutorialDistantLandsExplorationTitle',
+        text: 'tutorialDistantLandsExplorationText',
+        position: "auto",
+      },
+    ]
+  },
 ];

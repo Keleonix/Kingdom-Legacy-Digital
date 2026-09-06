@@ -255,6 +255,7 @@ export interface ExpansionData {
   focus?: Partial<ResourceMap>;
   permanentPurgeValue?: number;
   discoverValue?: number;
+  expansionValue?: number;
   
   // For tutorial
   tutorialSteps?: TutorialStep[];
