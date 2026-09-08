@@ -299,7 +299,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       timing: "onClick",
       execute: async function(ctx)  {
         if (ctx.startTutorial) {
-          await ctx.dropToPlayArea({id: 41, fromZone: 'campaign'});
+          await ctx.dropToPlayArea({id: 41, fromZone: ctx.t('campaign')});
           await ctx.startTutorial();
           ctx.setPlayArea(() => []);
         }
@@ -7818,7 +7818,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             if (ships.length === 0) {
               return false;
             }
-            const selected = (await ctx.selectCardsFromArray(ships, ctx.t('playArea'), this.description(ctx.t), 1))[0];
+            const selected = (await ctx.selectCardsFromArray(ships, ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card, 'ship'))[0];
             if (!selected) {
               return false;
             }
@@ -7852,7 +7852,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (ships.length === 0) {
             return false;
           }
-          const selected = (await ctx.selectCardsFromArray(ships, ctx.t('playArea'), this.description(ctx.t), 1))[0];
+          const selected = (await ctx.selectCardsFromArray(ships, ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card, 'ship'))[0];
           if (!selected) {
             return false;
           }
@@ -8308,7 +8308,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (events.length <= 0) {
             return false;
           }
-          const selected = (await ctx.selectCardsFromArray(events, ctx.t('playArea'), this.description(ctx.t), 0, 1, ctx.card))[0];
+          const selected = (await ctx.selectCardsFromArray(events, ctx.t('playArea'), this.description(ctx.t), 0, 1, ctx.card, 'event'))[0];
           if (selected) {
             if (ctx.otherEffects) {
               ctx.setEffectsListImmediate(ctx.otherEffects.filter(ce => ce.card.id !== selected.id));
@@ -8330,7 +8330,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (events.length <= 0) {
             return false;
           }
-          const selected = (await ctx.selectCardsFromArray(events, ctx.t('playArea'), this.description(ctx.t), 0, 1, ctx.card))[0];
+          const selected = (await ctx.selectCardsFromArray(events, ctx.t('playArea'), this.description(ctx.t), 0, 1, ctx.card, 'event'))[0];
           if (selected) {
             ctx.deleteCardInZone(ctx.t('playArea'), selected.id);
             ctx.deleteCardInZone(ctx.t('playArea'), ctx.card.id);
@@ -8339,6 +8339,86 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
     ],
+  },
+  230: {
+    1: [{ // STOP
+      description: (t) => parseEffects(t('effect_description_stop_distant_lands_2')).effects[0].text,
+      timing: "onClick",
+      execute: async function (ctx) {
+        const cardsIds = [231, 232];
+        for (const id of cardsIds) {
+          ctx.addDiscoverableCard(id, true);
+        }
+        ctx.deleteCardInZone(ctx.zone, ctx.card.id);
+        return false;
+      }
+    }],
+  },
+  231: {
+    1: [{ // Diplomate
+      description: (t) => parseEffects(t('effect_description_diplomat_distant_lands')).effects[0].text,
+      timing: "onClick",
+      execute: async function (ctx) {
+        const t_to_s = "resources/tradegood → resources/sword";
+        const s_to_t = "resources/sword → resources/tradegood";
+        const choice = await ctx.selectStringChoice(ctx.t('string_choice_tradegood_or_sword'), [t_to_s, s_to_t]);
+        if (choice === t_to_s && ctx.resources.tradegood > 0) {
+          const maxTradegoodForSelect = ctx.resources.tradegood < 3 ? ctx.resources.tradegood : 3;
+          const selectedResources = await ctx.selectResourceChoice( {tradegood: 1}, 0, false, maxTradegoodForSelect);
+          if (!selectedResources || !selectedResources.tradegood) {
+            return false;
+          }
+          applyResourceMapDelta(ctx, selectedResources, true);
+          applyResourceMapDelta(ctx, {sword: selectedResources.tradegood}, false);
+          return true;
+        }
+        else if (choice === s_to_t && ctx.resources.sword > 0) {
+          const maxSwordForSelect = ctx.resources.sword < 3 ? ctx.resources.sword : 3;
+          const selectedResources = await ctx.selectResourceChoice( {sword: 1}, 0, false, maxSwordForSelect);
+          if (!selectedResources || !selectedResources.sword) {
+            return false;
+          }
+          applyResourceMapDelta(ctx, selectedResources, true);
+          applyResourceMapDelta(ctx, {tradegood: selectedResources.sword}, false);
+          return true;
+        }
+        return false;
+      }
+    }],
+  },
+  232: {
+    1: [{ // Vaisseau Royal
+      description: (t) => parseEffects(t('effect_description_royal_ship')).effects[0].text,
+      timing: "onTravel",
+      execute: async function (ctx) {
+        const people = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('person')), ctx.t('sideDeck'));
+        if (people.length === 0) {
+          return false;
+        }
+        const selected = (await ctx.selectCardsFromArray(people, ctx.t('sideDeck'), this.description(ctx.t), 1, 0, ctx.card, 'person'))[0];
+        if (!selected) {
+          return false;
+        }
+        ctx.dropToDeck({id: selected.id, fromZone: ctx.t('sideDeck')});
+        return false;
+      }
+    }],
+    3: [{ // Navire Cargo
+      description: (t) => parseEffects(t('effect_description_cargo_ship')).effects[0].text,
+      timing: "played",
+      execute: async function (ctx) {
+        const cargos = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('cargo')), ctx.t('discard'));
+        if (cargos.length === 0) {
+          return false;
+        }
+        const selected = await ctx.selectCardsFromArray(cargos, ctx.t('discard'), this.description(ctx.t), 0, 2, ctx.card, 'cargo');
+        if (!selected || selected.length === 0) {
+          return false;
+        }
+        await ctx.dropToPlayArea({id: selected.map(c => c.id), fromZone: ctx.t('discard')});
+        return false;
+      }
+    }],
   },
 };
 

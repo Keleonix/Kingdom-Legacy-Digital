@@ -3371,7 +3371,7 @@ export default function Game() {
 
   const [campaignDeck, setCampaignDeck] = useState<GameCard[]>(() =>
     allCards
-      .filter((c) => c.id > 214 && c.id <= 229 || c.id === 44) // TODO: Change Back => && c.id <= 138
+      .filter((c) => c.id > 10 && c.id <= 138) // TODO: Change Back => c > 10 && c.id <= 138
       .sort((a, b) => a.id - b.id)
       .map((c) => cloneGameCard(c))
   );
@@ -5436,6 +5436,14 @@ export default function Game() {
       if ([108].every(n => allAvailableCards.has(n))) {
         unlockAchievement('a_weird_artifact');
       }
+    }
+
+    // TODO : Distant Lands handling of Side Deck
+    if (fromZone === t('sideDeck')) {
+      
+    }
+    else if (toZone === t('sideDeck')) {
+
     }
 
     for(const id of cardIds) {

@@ -7971,7 +7971,7 @@ export const allCards: GameCard[] = [
       []
     ],
     negative: [false, false, false, false],
-    discoverable: false,
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -8018,7 +8018,7 @@ export const allCards: GameCard[] = [
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
-    discoverable: false,
+    discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");
     },
@@ -8705,6 +8705,132 @@ export const allCards: GameCard[] = [
     ],
     currentSide: 1,
     type: ['person - seafaring', '', 'person', ''],
+    choice: true,
+    checkboxes: [],
+    negative: [false, false, false, false],
+    discoverable: true,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 230,
+    name: ['stop', '', '', ''],
+    resources: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    effects: [
+      'effect_description_stop_distant_lands_2',
+      '',
+      '',
+      '',
+    ],
+    upgrades: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    currentSide: 1,
+    type: ['scroll', '', '', ''],
+    choice: false,
+    checkboxes: [],
+    negative: [false, false, false, false],
+    discoverable: true,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 231,
+    name: ['diplomat', '', 'warrior', ''],
+    resources: [
+      [ emptyResource ],
+      [],
+      [ { sword: 2 } ],
+      [],
+    ],
+    effects: [
+      'effect_description_diplomat_distant_lands',
+      '',
+      '',
+      '',
+    ],
+    upgrades: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    currentSide: 1,
+    type: ['person', '', 'person - knight', ''],
+    choice: true,
+    checkboxes: [],
+    negative: [false, false, false, false],
+    discoverable: true,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 232,
+    name: ['royal_ship', '', 'cargo_ship', ''],
+    resources: [
+      [ { coin: 1 } ],
+      [],
+      [ { tradegood: 1 } ],
+      [],
+    ],
+    effects: [
+      'effect_description_royal_ship',
+      '',
+      'effect_description_cargo_ship',
+      '',
+    ],
+    upgrades: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    currentSide: 1,
+    type: ['seafaring - ship', '', 'seafaring - ship', ''],
     choice: true,
     checkboxes: [],
     negative: [false, false, false, false],

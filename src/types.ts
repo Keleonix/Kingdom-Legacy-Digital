@@ -121,6 +121,7 @@ export type EffectTiming =
   | "modifyProduction"
   | "onEnemyDefeated"
   | "onPlayAreaUpdated"
+  | "onTravel" // Distant Lands only
 ;
 
 export class GameCard {

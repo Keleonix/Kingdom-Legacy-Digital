@@ -15,6 +15,9 @@ export type TranslationKeys =
   | 'totalScore' | 'endExpansion' | 'seePurged' | 'add' | 'top' | 'bottom' | 'aboutContent'
   | 'guideTitle' | 'guideRulesLink' | 'guideContent' | 'remaining' | 'areYouSureDelete' | 'round' | 'upgraded_card'
   | 'advancedSettings' | 'showUpgradePopup'
+
+  // Expansions UI Elements
+  | 'sideDeck'
   
   // Cards Elements
   | 'frontUp' | 'frontDown' | 'backUp' | 'backDown'
@@ -299,6 +302,9 @@ export type TranslationKeys =
   | 'weapon_supply'
   | 'captain'
   | 'trail_scout'
+  | 'warrior'
+  | 'royal_ship'
+  | 'cargo_ship'
 
   // Cards Effects Descriptions
   | 'staysInPlay'
@@ -613,6 +619,10 @@ export type TranslationKeys =
   | 'effect_description_captain'
   | 'effect_description_trail_scout'
   | 'effect_description_trail_scout_at_destination'
+  | 'effect_description_stop_distant_lands_2'
+  | 'effect_description_diplomat_distant_lands'
+  | 'effect_description_royal_ship'
+  | 'effect_description_cargo_ship'
 
   // Other costs
   | 'other_cost_destroy_stone_bridge'
@@ -652,6 +662,7 @@ export type TranslationKeys =
   | 'string_choice_discard_to_gain_2_resources'
   | 'string_choice_discard_to_gain_3_resources'
   | 'string_choice_discard_to_keep_lands'
+  | 'string_choice_tradegood_or_sword'
 
   // Expansion Effects
   | 'specific_targets_distant_lands'
@@ -761,6 +772,9 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     upgraded_card: 'Carte Améliorée',
     advancedSettings: 'Options Avancées',
     showUpgradePopup: 'Afficher les Popups d\'Amélioratoin',
+
+    // Expansions UI Elements
+    sideDeck: 'Deck Secondaire',
     
     // Cards Elements
     frontUp: 'Recto Haut',
@@ -1350,6 +1364,9 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     weapon_supply: 'Réserve d\'Armes',
     captain: 'Capitaine',
     trail_scout: 'Eclaireur',
+    warrior: 'Guerrier',
+    royal_ship: 'Vaisseau Royal',
+    cargo_ship: 'Navire Cargo',
 
     // Cards Effects Descriptions
     staysInPlay: "effects/passive Reste en jeu.",
@@ -1664,6 +1681,10 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     effect_description_captain: 'effects/optional Evénement joué : effects/destroy cette carte pour effects/destroy l\'Evénement et annuler l\'effet. effects/destroy : effects/destroy un Evénement.',
     effect_description_trail_scout: 'Débloquera la capacité de découvrir des expéditions à destination.',
     effect_description_trail_scout_at_destination: 'effects/time Découvrez 1 expédition (352/353/354/355).',
+    effect_description_stop_distant_lands_2: 'effects/destroy C\'est la dernière manche avant le départ: découvrez 2 cartes (231) et (232), après ça, vous n\'emporterez que vos cartes Maritimie, Cargaison et 6 Personnes.',
+    effect_description_diplomat_distant_lands: 'effects/activate Convertissez jusqu\'à 3 resources/tradegood en antant d\' resources/sword ou inverssement.',
+    effect_description_royal_ship: 'effects/passive Embarquez 1 Personne supplémentaire vers les terres lointaines.',
+    effect_description_cargo_ship: 'effects/optional Carte jouée : jouez jusqu\'à 2 Cargaisons depuis la défausse.',
 
     // Other costs
     other_cost_destroy_stone_bridge: 'Détruisez le Pont de Pierre (12)',
@@ -1703,9 +1724,10 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     string_choice_discard_to_gain_3_resources: "Défausser cette carte pour gagner 3 ressources au choix?",
     string_choice_pass: "Passer",
     string_choice_discard_to_keep_lands: "Défausser la Muraille d'Avant-Poste pour faire rester en jeu les Terrains?",
+    string_choice_tradegood_or_sword: "Convertir des resources/tradegood en resources/sword , ou l'inverse?",
 
-  // Expansion Effects
-    specific_targets_distant_lands: 'Enlevez " i18n/staysInPlay " à 2 cartes.',
+    // Expansion Effects
+    specific_targets_distant_lands: 'Enlevez " effects/passive Reste en jeu. " à 2 cartes.',
   },
   en: {
     // UI Elements
@@ -1809,6 +1831,9 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     upgraded_card: 'Upgraded Card',
     advancedSettings: 'Advanced Settings',
     showUpgradePopup: 'Show Upgrade Popup',
+
+    // Expansions UI Elements
+    sideDeck: 'Side Deck',
 
     // Cards Elements
     frontUp: 'Front Up',
@@ -2399,6 +2424,9 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     weapon_supply: 'Weapon Supply',
     captain: 'Captain',
     trail_scout: 'Trail Scout',
+    warrior: 'warrior',
+    royal_ship: 'Royal Ship',
+    cargo_ship: 'Cargo Ship',
 
     // Cards Effects Descriptions
     staysInPlay: "effects/passive Stays in play.",
@@ -2713,6 +2741,10 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     effect_description_captain: 'effects/optional Event played : effects/destroy this card to effects/destroy the Event and cancel its effect. effects/destroy : effects/destroy an Event.',
     effect_description_trail_scout: 'Will unlock the ability to discover expeditions at destination.',
     effect_description_trail_scout_at_destination: 'effects/time Discover 1 expedition (352/353/354/355).',
+    effect_description_stop_distant_lands_2: 'effects/destroy It\'s your last round before your journey: discover 2 cards (231) et (232), after that you will only take your Seafaring, Cargo and 6 People with you.',
+    effect_description_diplomat_distant_lands: 'effects/activate Trade up to 3 resources/tradegood for that many resources/sword or vice versa.',
+    effect_description_royal_ship: 'effects/passive Bring 1 additional Person on your journey towards the distant lands.',
+    effect_description_cargo_ship: 'effects/optional Card Played : play up to 2 Cargo from the discard.',
 
     // Other costs
     other_cost_destroy_stone_bridge: 'Destroy the Stone Bridge (12)',
@@ -2751,10 +2783,11 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     string_choice_discard_to_gain_2_resources: "Discard this card to gain 2 resources?",
     string_choice_discard_to_gain_3_resources: "Discard this card to gain 3 resources?",
     string_choice_pass: "Pass",
-    string_choice_discard_to_keep_lands: "Défausser la Muraille d'Avant-Poste pour faire rester en jeu les Terrains?",
+    string_choice_discard_to_keep_lands: "Discard Walled Outpost to keep all Lands in play?",
+    string_choice_tradegood_or_sword: "Trade resources/tradegood for resources/sword , or the opposite?",
 
-  // Expansion Effects
-    specific_targets_distant_lands: 'Remove " i18n/staysInPlay " from 2 cards.',
+    // Expansion Effects
+    specific_targets_distant_lands: 'Remove " effects/passive Stays in play. " from 2 cards.',
   }
 };
 
