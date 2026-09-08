@@ -1,4 +1,5 @@
 import { emptyResource, type ExpansionData, type ResourceMap } from './types';
+import { stayInPlayEffect } from './cardEffects';
 
 export const FOCUS_KEYS = ['coin', 'wood', 'stone', 'sword', 'metal', 'tradegood'] as (keyof Omit<ResourceMap, 'fame'>)[];
 
@@ -73,6 +74,18 @@ export const EXPANSIONS: ExpansionData[] = [
     permanentPurgeValue: 2,
     discoverValue: 2,
     expansionValue: 2, // Counts as 2 expansions
+    specificTargets: [
+      {
+        effect: {
+          text: 'staysInPlay',
+          count: 2,
+          effect: stayInPlayEffect,
+          description: 'specific_targets_distant_lands',
+          purge: false,
+          remove: true
+        }
+      }
+    ],
     tutorialSteps: [
       {
         zone: null,

@@ -5,9 +5,9 @@ import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { TouchBackend } from 'react-dnd-touch-backend';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { MouseTransition, TouchTransition, MultiBackend } from 'react-dnd-multi-backend';
-import { emptyResource, GameCard, RESOURCE_KEYS, TYPE_COLORS, type ResourceMap, type PopupPayload, type DropPayload, type Checkbox, type Upgrade, type EffectTiming, type SavedGame, type GameScore, type SortMode } from "./types";
+import { emptyResource, GameCard, RESOURCE_KEYS, TYPE_COLORS, type ResourceMap, type PopupPayload, type DropPayload, type Checkbox, type Upgrade, type EffectTiming, type SavedGame, type GameScore, type SortMode, type ExpansionSpecificTargetEffect } from "./types";
 import { allCards } from "./cards";
-import { getCardEffects, type GameContext, type CardEffect, cardEffectsRegistry, getCardFameValue, getCardUpgradeAdditionalCost, getCardSelectionValue } from "./cardEffects";
+import { getCardEffects, type GameContext, type CardEffect, type TimingEntry, cardEffectsRegistry, getCardFameValue, getCardUpgradeAdditionalCost, getCardSelectionValue } from "./cardEffects";
 import { useTranslation, type Language, LanguageSelector, type TranslationKeys } from './i18n';
 import { createPortal } from 'react-dom';
 import { EXPANSIONS, FOCUS_KEYS } from "./expansions";
@@ -385,6 +385,23 @@ function CardPreviewPopup({
                     {renderEffectText(card.GetEffect(t, 0), t)}
                   </div>
                 )}
+                {card.checkboxes[0]?.length > 0 && (
+                  <div className="mt-2 border-t pt-2">
+                    <div className="grid grid-cols-8 gap-1 justify-items-center">
+                      {card.checkboxes[0].map((box, idx) => (
+                        <div
+                          key={idx}
+                          className={`w-5 h-5 border rounded flex items-center justify-center p-0.5 text-[8px] ${
+                            box.checked ? "bg-green-100 border-green-400" : "bg-white border-gray-300"
+                          }`}
+                          title={box.content || t('emptyCheckbox')}
+                        >
+                          {renderCheckboxContent(box.content, t)}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 {card.upgrades[0]?.length > 0 && (
                   <div className="mt-2 border-t pt-2">
                     <div className="text-[9px] font-semibold mb-1">{t('upgrades')}:</div>
@@ -430,6 +447,23 @@ function CardPreviewPopup({
                 {card.effects[2] && (
                   <div className="text-[9px] mt-1 border-t pt-2">
                     {renderEffectText(card.GetEffect(t, 2), t)}
+                  </div>
+                )}
+                {card.checkboxes[2]?.length > 0 && (
+                  <div className="mt-2 border-t pt-2">
+                    <div className="grid grid-cols-8 gap-1 justify-items-center">
+                      {card.checkboxes[2].map((box, idx) => (
+                        <div
+                          key={idx}
+                          className={`w-5 h-5 border rounded flex items-center justify-center p-0.5 text-[8px] ${
+                            box.checked ? "bg-green-100 border-green-400" : "bg-white border-gray-300"
+                          }`}
+                          title={box.content || t('emptyCheckbox')}
+                        >
+                          {renderCheckboxContent(box.content, t)}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
                 {card.upgrades[2]?.length > 0 && (
@@ -479,6 +513,23 @@ function CardPreviewPopup({
                     {renderEffectText(card.GetEffect(t, 1), t)}
                   </div>
                 )}
+                {card.checkboxes[1]?.length > 0 && (
+                  <div className="mt-2 border-t pt-2">
+                    <div className="grid grid-cols-8 gap-1 justify-items-center">
+                      {card.checkboxes[1].map((box, idx) => (
+                        <div
+                          key={idx}
+                          className={`w-5 h-5 border rounded flex items-center justify-center p-0.5 text-[8px] ${
+                            box.checked ? "bg-green-100 border-green-400" : "bg-white border-gray-300"
+                          }`}
+                          title={box.content || t('emptyCheckbox')}
+                        >
+                          {renderCheckboxContent(box.content, t)}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 {card.upgrades[1]?.length > 0 && (
                   <div className="mt-2 border-t pt-2">
                     <div className="text-[9px] font-semibold mb-1">{t('upgrades')}:</div>
@@ -524,6 +575,23 @@ function CardPreviewPopup({
                 {card.effects[3] && (
                   <div className="text-[9px] mt-1 border-t pt-2">
                     {renderEffectText(card.GetEffect(t, 3), t)}
+                  </div>
+                )}
+                {card.checkboxes[3]?.length > 0 && (
+                  <div className="mt-2 border-t pt-2">
+                    <div className="grid grid-cols-8 gap-1 justify-items-center">
+                      {card.checkboxes[3].map((box, idx) => (
+                        <div
+                          key={idx}
+                          className={`w-5 h-5 border rounded flex items-center justify-center p-0.5 text-[8px] ${
+                            box.checked ? "bg-green-100 border-green-400" : "bg-white border-gray-300"
+                          }`}
+                          title={box.content || t('emptyCheckbox')}
+                        >
+                          {renderCheckboxContent(box.content, t)}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
                 {card.upgrades[3]?.length > 0 && (
@@ -2659,9 +2727,10 @@ const CheckboxSelectionPopup: React.FC<{
 const ResourceSelectionPopup: React.FC<{
   resources: Partial<ResourceMap> | Partial<ResourceMap>[];
   totalLevel: number;
+  optionalCount?: number;
   onConfirm: (selected: Partial<ResourceMap>) => void;
   onCancel: () => void;
-}> = ({ resources, totalLevel, onConfirm }) => {
+}> = ({ resources, totalLevel, optionalCount, onConfirm }) => {
   const { t } = useTranslation();
 
   const isOptionMode = Array.isArray(resources);
@@ -2669,14 +2738,14 @@ const ResourceSelectionPopup: React.FC<{
   // --- Mode options (array) ---
   const options = isOptionMode ? resources : [];
   const [selectedOptions, setSelectedOptions] = useState<number[]>([]); // indices des options choisies
-  const remainingChoices = totalLevel - selectedOptions.length;
+  const remainingChoices = totalLevel + (optionalCount ?? 0) - selectedOptions.length;
 
   const handleOptionToggle = (index: number) => {
     setSelectedOptions((prev) => {
       if (prev.includes(index)) {
         return prev.filter((i) => i !== index);
       }
-      if (prev.length >= totalLevel) return prev;
+      if (prev.length >= totalLevel + (optionalCount ?? 0)) return prev;
       return [...prev, index];
     });
   };
@@ -2703,7 +2772,7 @@ const ResourceSelectionPopup: React.FC<{
     Object.fromEntries(resourceKeys.map((r) => [r, 0])) as Partial<ResourceMap>
   );
   const totalSelected = Object.values(amounts).reduce((sum, v) => sum + (v ?? 0), 0);
-  const remaining = totalLevel - totalSelected;
+  const remaining = totalLevel + (optionalCount ?? 0) - totalSelected;
 
   const handleChange = (resource: keyof ResourceMap, value: number) => {
     const current = amounts[resource] ?? 0;
@@ -2717,8 +2786,8 @@ const ResourceSelectionPopup: React.FC<{
     : resourceKeys.length > 0;
 
   const isConfirmDisabled = !hasAnyResource ? false : isOptionMode
-    ? selectedOptions.length === 0 || selectedOptions.length > totalLevel
-    : totalSelected === 0 || totalSelected > totalLevel;
+    ? selectedOptions.length < totalLevel || selectedOptions.length > totalLevel + (optionalCount ?? 0)
+    : totalSelected < totalLevel || totalSelected > totalLevel + (optionalCount ?? 0);
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[70]">
@@ -2757,6 +2826,7 @@ const ResourceSelectionPopup: React.FC<{
           {t('remaining')}:{' '}
           <span className={(isOptionMode ? remainingChoices : remaining) === 0 ? 'text-green-600 font-bold' : 'font-semibold'}>
             {isOptionMode ? remainingChoices : remaining} / {totalLevel}
+            {optionalCount ? ` (+${optionalCount})` : ''}
           </span>
         </p>
 
@@ -3301,7 +3371,7 @@ export default function Game() {
 
   const [campaignDeck, setCampaignDeck] = useState<GameCard[]>(() =>
     allCards
-      .filter((c) => c.id > 10 && c.id <= 138) // TODO: Change Back => && c.id <= 138
+      .filter((c) => c.id > 214 && c.id <= 229 || c.id === 44) // TODO: Change Back => && c.id <= 138
       .sort((a, b) => a.id - b.id)
       .map((c) => cloneGameCard(c))
   );
@@ -3342,9 +3412,11 @@ export default function Game() {
   const [blockMap, setBlockMap] = useState<Map<number, number[]>>(new Map());
 
   // Effects handling
+  const [effectsList, setEffectsList] = useState<TimingEntry[]>([]);
   const [resourceChoicePopup, setResourceChoicePopup] = useState<{
     options: Partial<ResourceMap> | Partial<ResourceMap>[];
     totalLevel: number;
+    optionalCount?: number;
     resolve: (choice: Partial<ResourceMap> | null) => void;
   } | null>(null);
 
@@ -3538,6 +3610,7 @@ export default function Game() {
   const turnEndFlagRef = useRef<boolean>(true);
   const currentExpansionRef = useRef<string | null>(null);
   const availableDiscoverableCardsRef = useRef<number[]>([]);
+  const effectsListRef = useRef<TimingEntry[]>([]);
 
   // Keep refs in sync if other code uses setPlayArea / setDiscard directly
   useEffect(() => { deckRef.current = deck; }, [deck]);
@@ -3550,6 +3623,7 @@ export default function Game() {
   useEffect(() => { turnEndFlagRef.current = turnEndFlag; }, [turnEndFlagRef]);
   useEffect(() => { currentExpansionRef.current = currentExpansion; }, [currentExpansionRef]);
   useEffect(() => { availableDiscoverableCardsRef.current = availableDiscoverableCards; }, [availableDiscoverableCardsRef]);
+  useEffect(() => { effectsListRef.current = effectsList; }, [effectsListRef]);
 
   function setPlayAreaImmediate(next: React.SetStateAction<GameCard[]>) {
     if (typeof next === "function") {
@@ -3658,6 +3732,17 @@ export default function Game() {
     } else {
       availableDiscoverableCardsRef.current = next as number[];
       setAvailableDiscoverableCards(next as number[]);
+    }
+  }
+
+    function setEffectsListImmediate(next: React.SetStateAction<TimingEntry[]>) {
+    if (typeof next === "function") {
+      const v = (next as (prev: TimingEntry[]) => TimingEntry[])(effectsListRef.current);
+      effectsListRef.current = v;
+      setEffectsList(v);
+    } else {
+      effectsListRef.current = next as TimingEntry[];
+      setEffectsList(next as TimingEntry[]);
     }
   }
 
@@ -3847,6 +3932,7 @@ export default function Game() {
             setTemporaryCardListImmediate,
             setBlockedZone,
             setPurgedCards: setPurgedCardsImmediate,
+            setEffectsListImmediate,
             deleteCardInZone,
             replaceCardInZone,
             mill,
@@ -3952,6 +4038,7 @@ export default function Game() {
           setTemporaryCardListImmediate,
           setBlockedZone,
           setPurgedCards: setPurgedCardsImmediate,
+          setEffectsListImmediate,
           deleteCardInZone,
           replaceCardInZone,
           mill,
@@ -4137,6 +4224,7 @@ export default function Game() {
               setTemporaryCardListImmediate,
               setBlockedZone,
               setPurgedCards: setPurgedCardsImmediate,
+              setEffectsListImmediate,
               deleteCardInZone,
               replaceCardInZone,
               mill,
@@ -4208,6 +4296,7 @@ export default function Game() {
               setTemporaryCardListImmediate,
               setBlockedZone,
               setPurgedCards: setPurgedCardsImmediate,
+              setEffectsListImmediate,
               deleteCardInZone,
               replaceCardInZone,
               mill,
@@ -4327,11 +4416,12 @@ export default function Game() {
   const selectResourceChoice = (
     options: Partial<ResourceMap> | Partial<ResourceMap>[],
     totalLevel: number,
-    rawInput?: boolean
+    rawInput?: boolean,
+    optionalCount?: number
   ): Promise<Partial<ResourceMap> | null> => {
     return new Promise((resolve) => {
       if (!Array.isArray(options)) {
-        setResourceChoicePopup({ options, totalLevel, resolve });
+        setResourceChoicePopup({ options, totalLevel, resolve, optionalCount });
         return;
       }
 
@@ -4611,6 +4701,7 @@ export default function Game() {
             setTemporaryCardListImmediate,
             setBlockedZone,
             setPurgedCards: setPurgedCardsImmediate,
+            setEffectsListImmediate,
             deleteCardInZone,
             replaceCardInZone,
             mill,
@@ -4815,6 +4906,52 @@ export default function Game() {
     }
   };
 
+  const removeCardEffect = (
+    id: number,
+    face: number,
+    zone: string,
+    effect: CardEffect,
+    effectText: string
+  ) => {
+    const updated = fetchCardsInZone(c => c.id === id, t(zone as TranslationKeys))[0];
+    if (!updated) {
+      return;
+    }
+
+    if (!cardEffectsRegistry[id]) {
+      cardEffectsRegistry[id] = {};
+    }
+    if (!cardEffectsRegistry[id][face]) {
+      cardEffectsRegistry[id][face] = [];
+    }
+    
+    /* Only remove 1, not all — removes the right-most matching entry */
+    const list = cardEffectsRegistry[id][face];
+    const targetDescription = effect.description(t);
+    const lastIndex = list.map(e => e.description(t)).lastIndexOf(targetDescription);
+
+    if (lastIndex === -1) {
+      return;
+    }
+
+    list.splice(lastIndex, 1);
+    cardEffectsRegistry[id][face] = list;
+    
+    const currentEffect = updated.effects[updated.currentSide - 1];
+    if (currentEffect && currentEffect.trim() !== '') {
+      const pattern = new RegExp(`(?: \\[\\+\\] )?${effectText}`);
+
+      updated.effects[updated.currentSide - 1] = currentEffect
+        .replace(pattern, '')
+        // collapse any resulting double spaces / blank lines left behind
+        .replace(/[ \t]{2,}/g, ' ')
+        .replace(/\n\s*\n/g, '\n')
+        .trim();
+    }
+    
+    replaceCardInZone(t(zone as TranslationKeys), id, updated);
+  };
+
   function selectCardSides(card: GameCard, requiredCount: number, optionalCount: number, callback: (selectedSides: number[]) => void) {
     setCardSidePopupCard(card);
     setCardSideRequiredCount(requiredCount);
@@ -4954,6 +5091,7 @@ export default function Game() {
             setTemporaryCardListImmediate,
             setBlockedZone,
             setPurgedCards: setPurgedCardsImmediate,
+            setEffectsListImmediate,
             deleteCardInZone,
             replaceCardInZone,
             mill,
@@ -5093,7 +5231,8 @@ export default function Game() {
     zone: string,
     timing: EffectTiming,
     cardsForTrigger?: GameCard[],
-    effectIndex?: number
+    effectIndex?: number,
+    otherEffects?: TimingEntry[]
   ) => {
     const effects = getCardEffects(card.id, card.currentSide);
 
@@ -5102,6 +5241,7 @@ export default function Game() {
     const context: GameContext = {
       card,
       cardsForTrigger,
+      otherEffects,
       zone,
       resources:resourcesRef.current,
       filterZone,
@@ -5125,6 +5265,7 @@ export default function Game() {
       setTemporaryCardListImmediate,
       setBlockedZone,
       setPurgedCards: setPurgedCardsImmediate,
+      setEffectsListImmediate,
       deleteCardInZone,
       replaceCardInZone,
       mill,
@@ -5388,18 +5529,34 @@ export default function Game() {
       if (fromZone === t('discard')) {
         setNumberDrawn((prev) => prev + cards.length);
       }
-      const effects = cards.flatMap(c =>
-        getCardEffects(c.id, c.currentSide, "played").map(effect => [effect, c] as [CardEffect, GameCard])
-      ).sort(([a], [b]) => ((b.priority ?? 0) - (a.priority ?? 0))
-      ).map((eff) => eff[1]);
-      for (const card of effects) {
-        await handleExecuteCardEffect(card, t('playArea'), "played");
-      }
-      for (const card of [...playAreaRef.current, ...permanentZoneRef.current]) {
-        if(playAreaRef.current.includes(card) || (permanentZoneRef.current.includes(card) && card.GetType(t).includes(t('permanent')))) {
-          await handleExecuteCardEffect(card, t('playArea'), "otherCardPlayed", cards);
-          await handleExecuteCardEffect(card, t('playArea'), "onPlayAreaUpdated", cards);
+
+      const candidateCards = [...playAreaRef.current, ...permanentZoneRef.current].filter(card =>
+        playAreaRef.current.includes(card) ||
+        (permanentZoneRef.current.includes(card) && card.GetType(t).includes(t('permanent')))
+      );
+
+      effectsListRef.current = [
+        ...cards.flatMap(c =>
+          getCardEffects(c.id, c.currentSide, "played").map(effect => ({ effect, card: c, timing: "played" as const }))
+        ),
+        ...candidateCards.flatMap(c =>
+          getCardEffects(c.id, c.currentSide, "otherCardPlayed").map(effect => ({ effect, card: c, timing: "otherCardPlayed" as const }))
+        ),
+        ...candidateCards.flatMap(c =>
+          getCardEffects(c.id, c.currentSide, "onPlayAreaUpdated").map(effect => ({ effect, card: c, timing: "onPlayAreaUpdated" as const }))
+        ),
+      ];
+
+      effectsListRef.current.sort((a, b) => (b.effect.priority ?? 0) - (a.effect.priority ?? 0));
+
+      while (effectsListRef.current.length > 0) {
+        const entry = effectsListRef.current[0];
+        if (entry.timing === "played") {
+          await handleExecuteCardEffect(entry.card, t('playArea'), "played", [], -1, effectsListRef.current);
+        } else {
+          await handleExecuteCardEffect(entry.card, t('playArea'), entry.timing, cards, -1, effectsListRef.current);
         }
+        effectsListRef.current = effectsListRef.current.filter(ce => ce != entry);
       }
     }
     if (toZone === t('discard') && (fromZone === t('playArea') || fromZone === t('blocked'))) {
@@ -5537,6 +5694,7 @@ export default function Game() {
               setTemporaryCardListImmediate,
               setBlockedZone,
               setPurgedCards: setPurgedCardsImmediate,
+              setEffectsListImmediate,
               deleteCardInZone,
               replaceCardInZone,
               mill,
@@ -5617,6 +5775,7 @@ export default function Game() {
         setTemporaryCardListImmediate,
         setBlockedZone,
         setPurgedCards: setPurgedCardsImmediate,
+        setEffectsListImmediate,
         deleteCardInZone,
         replaceCardInZone,
         mill,
@@ -5709,6 +5868,92 @@ export default function Game() {
         await startPurgeProcess('permanent', expansion.permanentPurgeValue);
       }
 
+      if (expansion.specificTargets) {
+        for (const target of expansion.specificTargets) {
+          if (target.effect) {
+            const effect: ExpansionSpecificTargetEffect = target.effect;
+            const foundTargets = fetchCardsInZone(c => c.GetEffect(t).includes(t(effect.text as TranslationKeys)), t('deck'));
+            const selected = await selectCardsFromArray(foundTargets, t('deck'), t(effect.description as TranslationKeys), target.effect.count);
+            if (selected.length > 0) {
+              if (effect.purge) {
+                setPurgedCardsImmediate(prev => [...prev, ...selected]);
+
+                // Trigger onPurge effects
+                for (const card of selected) {
+                  const effects = getCardEffects(card.id, card.currentSide);
+                  for (const effect of effects) {
+                    if (effect.timing === 'onPurge') {
+                      const context: GameContext = {
+                          card,
+                          zone: t('deck'),
+                          resources:resourcesRef.current,
+                          cardsForTrigger: purgedCardsRef.current,
+                          filterZone,
+                          setResources,
+                          handleGainResources,
+                          handlePayResources,
+                          draw,
+                          effectEndTurn,
+                          dropToPlayArea,
+                          dropToBlocked,
+                          dropToDeck,
+                          dropToDiscard,
+                          dropToCampaign,
+                          dropToPermanent,
+                          setDeck: setDeckImmediate,
+                          setPlayArea: setPlayAreaImmediate,
+                          setDiscard: setDiscardImmediate,
+                          setPermanentZone,
+                          setCampaignDeck,
+                          setTemporaryCardList,
+                          setTemporaryCardListImmediate,
+                          setBlockedZone,
+                          setPurgedCards: setPurgedCardsImmediate,
+                          setEffectsListImmediate,
+                          deleteCardInZone,
+                          replaceCardInZone,
+                          mill,
+                          openCheckboxPopup,
+                          selectResourceChoice,
+                          selectCardsFromZone,
+                          selectCardsFromArray,
+                          discoverCard,
+                          boostProductivity,
+                          registerEndRoundEffect,
+                          addCardEffect,
+                          fetchCardsInZone,
+                          selectCardSides,
+                          selectUpgradeCost,
+                          selectTextInput,
+                          selectStringChoice,
+                          updateBlocks,
+                          getBlockedBy,
+                          getCardZone,
+                          upgradeCard,
+                          handleCardUpdate,
+                          handleEnemyDefeated,
+                          addDiscoverableCard,
+                          getCardProduction,
+                          hasBeenUsedThisTurn,
+                          markAsUsedThisTurn,
+                          t,
+                        };
+                      await effect.execute(context);
+                    }
+                  }
+                  deleteCardInZone(t('deck'), card.id);
+                }
+              }
+              if (effect.remove) {
+                for (const card of selected) {
+                  removeCardEffect(card.id, card.currentSide, t('deck'), effect.effect, effect.text);
+                }
+              }
+            }
+          }
+        }
+      }
+
       const newCampaignCards = expansion.campaignCardIds
         ?.map(id => allCards.find(c => c.id === id && (expansion.campaignCardIds ? c.id !== expansion.campaignCardIds[0] : true)))
         .filter(Boolean)
@@ -5774,6 +6019,7 @@ export default function Game() {
         setTemporaryCardListImmediate,
         setBlockedZone,
         setPurgedCards: setPurgedCardsImmediate,
+        setEffectsListImmediate,
         deleteCardInZone,
         replaceCardInZone,
         mill,
@@ -5942,6 +6188,7 @@ export default function Game() {
           setTemporaryCardListImmediate,
           setBlockedZone,
           setPurgedCards: setPurgedCardsImmediate,
+          setEffectsListImmediate,
           deleteCardInZone,
           replaceCardInZone,
           mill,
@@ -6047,6 +6294,7 @@ export default function Game() {
           setTemporaryCardListImmediate,
           setBlockedZone,
           setPurgedCards: setPurgedCardsImmediate,
+          setEffectsListImmediate,
           deleteCardInZone,
           replaceCardInZone,
           mill,
@@ -6154,6 +6402,7 @@ export default function Game() {
           setTemporaryCardListImmediate,
           setBlockedZone,
           setPurgedCards: setPurgedCardsImmediate,
+          setEffectsListImmediate,
           deleteCardInZone,
           replaceCardInZone,
           mill,
@@ -6250,6 +6499,7 @@ export default function Game() {
             setTemporaryCardListImmediate,
             setBlockedZone,
             setPurgedCards: setPurgedCardsImmediate,
+            setEffectsListImmediate,
             deleteCardInZone,
             replaceCardInZone,
             mill,
@@ -7505,6 +7755,7 @@ export default function Game() {
           <ResourceSelectionPopup
             resources={resourceChoicePopup.options}
             totalLevel={resourceChoicePopup.totalLevel}
+            optionalCount={resourceChoicePopup.optionalCount}
             onConfirm={(selected) => {
               resourceChoicePopup.resolve(selected);
               setResourceChoicePopup(null);

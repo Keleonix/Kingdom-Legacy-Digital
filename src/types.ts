@@ -2,7 +2,7 @@
 // Types
 // -------------------
 
-import type { GameContext } from "./cardEffects";
+import type { CardEffect, GameContext } from "./cardEffects";
 import type { TranslationKeys } from "./i18n";
 import type { TutorialStep } from "./tutorial";
 
@@ -240,6 +240,19 @@ export type SortMode = 'byId' | 'byType' | null;
 
 export type ExpansionType = 'card' | 'block';
 
+export interface ExpansionSpecificTargetEffect {
+  text: string;
+  count: number;
+  description: string;
+  effect: CardEffect;
+  purge?: boolean;
+  remove?: boolean;
+};
+
+export interface ExpansionSpecificTarget {
+  effect?: ExpansionSpecificTargetEffect;
+};
+
 export interface ExpansionData {
   id: string;
   name: string;
@@ -256,6 +269,7 @@ export interface ExpansionData {
   permanentPurgeValue?: number;
   discoverValue?: number;
   expansionValue?: number;
+  specificTargets?: ExpansionSpecificTarget[];
   
   // For tutorial
   tutorialSteps?: TutorialStep[];
