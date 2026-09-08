@@ -26,7 +26,7 @@ export type TranslationKeys =
   | 'land' | 'building' | 'person' | 'knight' | 'lady' | 'seafaring'
   | 'ship' | 'event' | 'enemy' | 'permanent' | 'scroll' | 'choice'
   | 'potion' | 'item' | 'invention' | 'artefact' | 'livestock'
-  | 'horse' | 'wagon' | 'state' | 'goal'
+  | 'horse' | 'wagon' | 'state' | 'goal' | 'cargo'
   
   // Resources
   | 'coin' | 'wood' | 'stone' | 'sword' | 'metal' | 'tradegood' | 'fame'
@@ -285,6 +285,20 @@ export type TranslationKeys =
   | 'welcome_to_distant_lands'
   | 'coastline'
   | 'coral_reef'
+  | 'beach'
+  | 'harbour'
+  | 'loading_dock'
+  | 'construction_site'
+  | 'ship_hull'
+  | 'reinforced_ship'
+  | 'stone_cargo'
+  | 'wood_cargo'
+  | 'supply_barrel'
+  | 'wine_barrel'
+  | 'metal_supply'
+  | 'weapon_supply'
+  | 'captain'
+  | 'trail_scout'
 
   // Cards Effects Descriptions
   | 'staysInPlay'
@@ -580,6 +594,25 @@ export type TranslationKeys =
   | 'effect_description_welcome_to_distant_lands'
   | 'effect_description_coral_reef'
   | 'effect_description_shipyard_1'
+  | 'effect_description_shipyard_2'
+  | 'effect_description_harbour'
+  | 'effect_description_loading_dock'
+  | 'effect_description_stop_distant_lands_1'
+  | 'effect_description_stone_cargo_1'
+  | 'effect_description_stone_cargo_2'
+  | 'effect_description_wood_cargo_1'
+  | 'effect_description_wood_cargo_2'
+  | 'effect_description_supply_barrel_1'
+  | 'effect_description_supply_barrel_2'
+  | 'effect_description_wine_barrel_1'
+  | 'effect_description_wine_barrel_2'
+  | 'effect_description_metal_supply_1'
+  | 'effect_description_metal_supply_2'
+  | 'effect_description_weapon_supply_1'
+  | 'effect_description_weapon_supply_2'
+  | 'effect_description_captain'
+  | 'effect_description_trail_scout'
+  | 'effect_description_trail_scout_at_destination'
 
   // Other costs
   | 'other_cost_destroy_stone_bridge'
@@ -619,6 +652,9 @@ export type TranslationKeys =
   | 'string_choice_discard_to_gain_2_resources'
   | 'string_choice_discard_to_gain_3_resources'
   | 'string_choice_discard_to_keep_lands'
+
+  // Expansion Effects
+  | 'specific_targets_distant_lands'
   ;
 
 // Dictionnaire de traductions
@@ -765,6 +801,7 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     wagon: 'Chariot',
     state: 'État',
     goal: 'Objectif',
+    cargo: 'Cargaison',
     
     // Resources
     coin: 'Or',
@@ -1299,6 +1336,20 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     welcome_to_distant_lands: 'Bienvenue en Terres Lointaines',
     coastline: 'Littoral',
     coral_reef: 'Récif Corallien',
+    beach: 'Plage',
+    harbour: 'Port',
+    loading_dock: 'Quai de Chargement',
+    construction_site: 'Site de Construction',
+    ship_hull: 'Coque de Navire',
+    reinforced_ship: 'Navire Renforcé',
+    stone_cargo: 'Cargaison de Pierre',
+    wood_cargo: 'Cargaison de Bois',
+    supply_barrel: 'Réserve d\'Or',
+    wine_barrel: 'Tonneaux de Vin',
+    metal_supply: 'Stock de Métal',
+    weapon_supply: 'Réserve d\'Armes',
+    captain: 'Capitaine',
+    trail_scout: 'Eclaireur',
 
     // Cards Effects Descriptions
     staysInPlay: "effects/passive Reste en jeu.",
@@ -1591,9 +1642,28 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     effect_description_welcome_to_merchants: '',
 
     // Distant Lands
-    effect_description_welcome_to_distant_lands: 'Jouez comme d\'habitude, en découvrant 2 cartes par manche. Récupérez autant de caartes maritimes que possible et de cargaison en 6 rounds. effects/passive Lancer le Tutoriel.',
+    effect_description_welcome_to_distant_lands: 'Jouez comme d\'habitude, en découvrant 2 cartes par manche. Récupérez autant de cartes maritimes que possible et de cargaison en 6 rounds. effects/passive Lancer le Tutoriel.',
     effect_description_coral_reef: 'effects/activate Réinitialisez pour gagner 3 ressources au choix.',
     effect_description_shipyard_1: 'effects/activate Réinitialisez pour découvrir le Charpentier de Marine (308). effects/activate Réinitialisez pour ajouter un effects/check et ajouter une ressource au choix sur un Navire en jeu.',
+    effect_description_shipyard_2: 'effects/activate Découvrez le Charpentier de Marine (311). effects/destroy Ajoutez 2 ressources au choix sur un Navire en jeu.',
+    effect_description_harbour: 'effects/time Découvrez 4 Cargaisons (317-320).',
+    effect_description_loading_dock: 'effects/activate Ajoutez 1 effects/check à chaque Cargaison en jeu et dans votre défausse.',
+    effect_description_stop_distant_lands_1: 'Vous feriez mieux de commencer à stocker des ressources pour le voyage... effects/destroy Découvrez les 6 prochaines cartes (222-227), des cartes de Cargaison.',
+    effect_description_stone_cargo_1: 'effects/activate Dépensez jusqu\'à 4 resources/stone pour marquer autant de effects/check .',
+    effect_description_stone_cargo_2: 'Quand la carte est complète, effects/destroy . effects/activate Marquez autant de effects/check que vous voulez.',
+    effect_description_wood_cargo_1: 'effects/activate Dépensez jusqu\'à 4 resources/wood pour marquer autant de effects/check .',
+    effect_description_wood_cargo_2: 'Quand la carte est complète, effects/destroy . effects/activate Marquez autant de effects/check que vous voulez.',
+    effect_description_supply_barrel_1: 'effects/activate Dépensez jusqu\'à 4 resources/coin pour marquer autant de effects/check .',
+    effect_description_supply_barrel_2: 'Quand la carte est complète, effects/destroy . effects/activate Marquez autant de effects/check que vous voulez.',
+    effect_description_wine_barrel_1: 'effects/activate Dépensez jusqu\'à 4 resources/tradegood pour marquer autant de effects/check .',
+    effect_description_wine_barrel_2: 'Quand la carte est complète, effects/destroy . effects/activate Marquez autant de effects/check que vous voulez.',
+    effect_description_metal_supply_1: 'effects/activate Dépensez jusqu\'à 4 resources/metal pour marquer autant de effects/check .',
+    effect_description_metal_supply_2: 'Quand la carte est complète, effects/destroy . effects/activate Marquez autant de effects/check que vous voulez.',
+    effect_description_weapon_supply_1: 'effects/activate Dépensez jusqu\'à 4 resources/sword pour marquer autant de effects/check .',
+    effect_description_weapon_supply_2: 'Quand la carte est complète, effects/destroy . effects/activate Pour chaque Personne en jeu, vous pouvez effects/check 1.',
+    effect_description_captain: 'effects/optional Evénement joué : effects/destroy cette carte pour effects/destroy l\'Evénement et annuler l\'effet. effects/destroy : effects/destroy un Evénement.',
+    effect_description_trail_scout: 'Débloquera la capacité de découvrir des expéditions à destination.',
+    effect_description_trail_scout_at_destination: 'effects/time Découvrez 1 expédition (352/353/354/355).',
 
     // Other costs
     other_cost_destroy_stone_bridge: 'Détruisez le Pont de Pierre (12)',
@@ -1633,6 +1703,9 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     string_choice_discard_to_gain_3_resources: "Défausser cette carte pour gagner 3 ressources au choix?",
     string_choice_pass: "Passer",
     string_choice_discard_to_keep_lands: "Défausser la Muraille d'Avant-Poste pour faire rester en jeu les Terrains?",
+
+  // Expansion Effects
+    specific_targets_distant_lands: 'Enlevez " i18n/staysInPlay " à 2 cartes.',
   },
   en: {
     // UI Elements
@@ -1776,6 +1849,7 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     wagon: 'Wagon',
     state: 'State',
     goal: 'Goal',
+    cargo: 'Cargo',
 
     // Resources
     coin: 'Gold',
@@ -2311,6 +2385,20 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     welcome_to_distant_lands: 'Welcome to Distant Lands',
     coastline: 'Coastline',
     coral_reef: 'Coral Reef',
+    beach: 'Beach',
+    harbour: 'Harbour',
+    loading_dock: 'Loading Dock',
+    construction_site: 'Contruction Site',
+    ship_hull: 'Ship Hull',
+    reinforced_ship: 'Reinforced Ship',
+    stone_cargo: 'Stone Cargo',
+    wood_cargo: 'Wood Cargo',
+    supply_barrel: 'Supply Barrel',
+    wine_barrel: 'Wine Barrel',
+    metal_supply: 'Metal Supply',
+    weapon_supply: 'Weapon Supply',
+    captain: 'Captain',
+    trail_scout: 'Trail Scout',
 
     // Cards Effects Descriptions
     staysInPlay: "effects/passive Stays in play.",
@@ -2606,6 +2694,25 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     effect_description_welcome_to_distant_lands: 'Play as usual, discovering 2 cards per round. Collect as mush Seafaring as possible in 6 rounds and gather resources on cargo cards. effects/passive Launch Tutorial.',
     effect_description_coral_reef: 'effects/activate Reset to gain any 3 resources.',
     effect_description_shipyard_1: 'effects/activate Reset to discover shipwright (308). effects/activate Reset to add effects/check and add any resource to a Ship in play.',
+    effect_description_shipyard_2: 'effects/activate Discover Shipwright (311). effects/destroy Add any 2 resources to a Ship in play.',
+    effect_description_harbour: 'effects/time Discover 4 Cargos (317-320).',
+    effect_description_loading_dock: 'effects/activate Add 1 effects/check to each Cargo in play and in the discard.',
+    effect_description_stop_distant_lands_1: 'You\'d better start storing up your resources to send along on the journey... effects/destroy Discover the 6 next cards (222-227), they are Cargos.',
+    effect_description_stone_cargo_1: 'effects/activate Spend up to 4 resources/stone to mark as many effects/check .',
+    effect_description_stone_cargo_2: 'When complete, effects/destroy . effects/activate effects/check as many as you want.',
+    effect_description_wood_cargo_1: 'effects/activate Spend up to 4 resources/wood to mark as many effects/check .',
+    effect_description_wood_cargo_2: 'When complete, effects/destroy . effects/activate effects/check as many as you want.',
+    effect_description_supply_barrel_1: 'effects/activate Spend up to 4 resources/coin to mark as many effects/check .',
+    effect_description_supply_barrel_2: 'When complete, effects/destroy . effects/activate effects/check as many as you want.',
+    effect_description_wine_barrel_1: 'effects/activate Spend up to 4 resources/tradegood to mark as many effects/check .',
+    effect_description_wine_barrel_2: 'When complete, effects/destroy . effects/activate effects/check as many as you want.',
+    effect_description_metal_supply_1: 'effects/activate Spend up to 4 resources/metal to mark as many effects/check .',
+    effect_description_metal_supply_2: 'When complete, effects/destroy . effects/activate effects/check as many as you want.',
+    effect_description_weapon_supply_1: 'effects/activate Spend up to 4 resources/sword to mark as many effects/check .',
+    effect_description_weapon_supply_2: 'When complete, effects/destroy . effects/activate For each Person in play, you may effects/check 1.',
+    effect_description_captain: 'effects/optional Event played : effects/destroy this card to effects/destroy the Event and cancel its effect. effects/destroy : effects/destroy an Event.',
+    effect_description_trail_scout: 'Will unlock the ability to discover expeditions at destination.',
+    effect_description_trail_scout_at_destination: 'effects/time Discover 1 expedition (352/353/354/355).',
 
     // Other costs
     other_cost_destroy_stone_bridge: 'Destroy the Stone Bridge (12)',
@@ -2645,6 +2752,9 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     string_choice_discard_to_gain_3_resources: "Discard this card to gain 3 resources?",
     string_choice_pass: "Pass",
     string_choice_discard_to_keep_lands: "Défausser la Muraille d'Avant-Poste pour faire rester en jeu les Terrains?",
+
+  // Expansion Effects
+    specific_targets_distant_lands: 'Remove " i18n/staysInPlay " from 2 cards.',
   }
 };
 
