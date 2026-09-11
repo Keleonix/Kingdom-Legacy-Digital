@@ -7216,7 +7216,7 @@ export default function Game() {
               onClick={handleDebugClick}
               className="absolute -bottom-7 -right-98 text-xs text-gray-700 whitespace-nowrap cursor-pointer select-none z-50"
             >
-              Kingdom Legacy - Digital by Keleonix | v0.10.6 {debugMode && '🐛'}
+              Kingdom Legacy - Digital by Keleonix | v0.11.0 {debugMode && '🐛'}
             </div>
           </div>
         </div>
