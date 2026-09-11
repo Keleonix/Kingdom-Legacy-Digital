@@ -12,7 +12,7 @@ export type TranslationKeys =
   | 'noUpgradeAvailable' | 'selectAnUpgrade' | 'selectAResource' | 'failedToSave' | 'failedToLoad'
   | 'select' | 'id' | 'preview' | 'endGame' | 'seeDeck' | 'seeDiscard' | 'cardsList' | 'triggeredCard'
   | 'selectCardToPurge' | 'chooseExpansion' | 'expansionCard' | 'expansionBlock' | 'scores' | 'baseGame'
-  | 'totalScore' | 'endExpansion' | 'seePurged' | 'add' | 'top' | 'bottom' | 'aboutContent'
+  | 'totalScore' | 'endExpansion' | 'seePurged'  | 'seeSideDeck' | 'add' | 'top' | 'bottom' | 'aboutContent'
   | 'guideTitle' | 'guideRulesLink' | 'guideContent' | 'remaining' | 'areYouSureDelete' | 'round' | 'upgraded_card'
   | 'advancedSettings' | 'showUpgradePopup'
 
@@ -623,6 +623,8 @@ export type TranslationKeys =
   | 'effect_description_diplomat_distant_lands'
   | 'effect_description_royal_ship'
   | 'effect_description_cargo_ship'
+  | 'effect_description_stop_distant_lands_3'
+  | 'effect_description_stop_distant_lands_4'
 
   // Other costs
   | 'other_cost_destroy_stone_bridge'
@@ -725,6 +727,7 @@ const translations: Record<Language, Record<TranslationKeys, string>> = {
     totalScore: 'Score Total',
     endExpansion: 'Fin d\'Extension',
     seePurged: 'Voir les Purgées',
+    seeSideDeck: 'Voir le Deck Secondaire',
     add: 'Ajouter',
     top: 'Dessus',
     bottom: 'Dessous',
@@ -1685,6 +1688,8 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     effect_description_diplomat_distant_lands: 'effects/activate Convertissez jusqu\'à 3 resources/tradegood en antant d\' resources/sword ou inverssement.',
     effect_description_royal_ship: 'effects/passive Embarquez 1 Personne supplémentaire vers les terres lointaines.',
     effect_description_cargo_ship: 'effects/optional Carte jouée : jouez jusqu\'à 2 Cargaisons depuis la défausse.',
+    effect_description_stop_distant_lands_3: 'effects/destroy Si vous n\'avez pas 4 Bâteaux, vous devez améliorez des cartes qui peuvent devenir des Bâteaux en détruisant une carte qui produit du resources/wood , jusqu\'à en avoir 4.',
+    effect_description_stop_distant_lands_4: 'effects/destroy Votre deck ne contiendra maintenant que vos cartes Maritimes et 6 Personnes, puis → toutes les Cargaisons (ça inversera chaque effects/check sur cells-ci) et enfin découvrez 7 cartes (235-241).',
 
     // Other costs
     other_cost_destroy_stone_bridge: 'Détruisez le Pont de Pierre (12)',
@@ -1784,6 +1789,7 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     totalScore: 'Total Score',
     endExpansion: 'Expansion End',
     seePurged: 'See Purged',
+    seeSideDeck: 'See Side Deck',
     add: 'Add',
     top: 'Top',
     bottom: 'Bottom',
@@ -2745,6 +2751,8 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     effect_description_diplomat_distant_lands: 'effects/activate Trade up to 3 resources/tradegood for that many resources/sword or vice versa.',
     effect_description_royal_ship: 'effects/passive Bring 1 additional Person on your journey towards the distant lands.',
     effect_description_cargo_ship: 'effects/optional Card Played : play up to 2 Cargo from the discard.',
+    effect_description_stop_distant_lands_3: 'effects/destroy If you do not have 4 Ships, you must upgrade cards that can become Ships by destroying a card that produces resources/wood , until you have 4.',
+    effect_description_stop_distant_lands_4: 'effects/destroy Your deck will now only contain all your Seafaring cards and 6 People, then → all Cargos (this will invert the effects/check on each card) and finally discover 7 cards (235-241).',
 
     // Other costs
     other_cost_destroy_stone_bridge: 'Destroy the Stone Bridge (12)',

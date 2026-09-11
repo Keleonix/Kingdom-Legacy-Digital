@@ -141,45 +141,121 @@ function getBackgroundStyle(card: GameCard, sideIdx: number) {
 function renderCheckboxContent(content: string | undefined, t: (key: TranslationKeys) => string, outOfBox?: boolean) {
   if (!content || content.trim() === "") return <span className="text-xs text-gray-400"></span>;
   if (content.trim() === "*") return <span className="font-bold text-sm">*</span>;
-  
-  // Parse resources: handle both "resource" and "resource x5" formats
+
   const resources = content.split(",").map((s) => s.trim()).filter(Boolean);
   const parsedResources: Array<{name: string, count: number}> = [];
 
   resources.forEach(resource => {
     const match = resource.match(/^(\w+)\s*x(\d+)$/i);
     if (match && RESOURCE_KEYS.includes(match[1] as keyof ResourceMap)) {
-      // Format: "coin x5"
       parsedResources.push({ name: match[1], count: parseInt(match[2]) });
     }
     else if (RESOURCE_KEYS.includes(resource as keyof ResourceMap)) {
-      // Format: "coin" (default count = 1)
       parsedResources.push({ name: resource, count: 1 });
     }
   });
 
   if (parsedResources.length === 0) {
-    // Fallback: render as plain text
     return (<span className="text-[8px] font-bold">{renderEffectText(content, t)}</span>);
   }
 
+  const iconSize = outOfBox ? "w-5 h-5" : "w-4 h-4";
+  const badgeSize = outOfBox ? "min-w-[11px] h-[11px] text-[9px]" : "min-w-[10px] h-[10px] text-[8px]";
+
   return (
-    <div className="flex items-center justify-center flex-wrap">
+    <div className="flex items-center justify-center gap-1 flex-wrap w-full h-full">
       {parsedResources.map((res, i) => (
-        <div key={i} className="flex items-center">
-          <img 
-            src={resourceIconPath(res.name as keyof ResourceMap)} 
-            alt={res.name} 
-            className="w-full h-full object-contain" 
-            style={{ marginBottom: res.count > 1 && !outOfBox ? '-8px' : undefined, marginLeft: outOfBox ? '-16px' : undefined }}
+        <div key={i} className={`relative flex items-center justify-center ${iconSize} shrink-0`}>
+          <img
+            src={resourceIconPath(res.name as keyof ResourceMap)}
+            alt={res.name}
+            className="w-full h-full object-contain"
           />
           {res.count > 1 && (
-            <span className="relative text-xxs font-medium" style={{ marginLeft: !outOfBox ? '-10px' : '6px', marginTop: !outOfBox ? '-16px' : undefined }}>{res.count}</span>
+            <span
+              className={`absolute -bottom-1 -right-1 flex items-center justify-center rounded-full bg-black/80 text-white font-bold leading-none px-[2px] ${badgeSize}`}
+            >
+              {res.count}
+            </span>
           )}
         </div>
       ))}
     </div>
   );
+}
+
+function renderCheckboxCount(count?: number, size: "card" | "preview" = "card") {
+  if (!count || count <= 0) return null;
+  const display = count > 99 ? "99" : String(count);
+  const dims = size === "card"
+    ? { w: "16px", h: "16px", fs: "9px" }
+    : { w: "13px", h: "13px", fs: "7px" };
+
+  return (
+    <div
+      className="flex items-center justify-center rounded-full border border-amber-400 bg-gradient-to-br from-amber-300 via-yellow-400 to-amber-500 text-amber-900 font-bold shadow-sm shadow-amber-200/60"
+      style={{ width: dims.w, height: dims.h, fontSize: dims.fs, lineHeight: 1 }}
+    >
+      {display}
+    </div>
+  );
+}
+
+function renderCheckboxesGrid(
+  checkboxes: Checkbox[],
+  t: (key: TranslationKeys) => string,
+  size: "card" | "preview" = "card",
+  onToggle?: (box: Checkbox) => void
+) {
+  const rows = chunkArray(checkboxes, 8);
+  const boxSize = size === "card" 
+    ? "w-6 h-6 text-[10px] p-1" 
+    : "w-5 h-5 text-[8px] p-0.5";
+  const badgeRowHeight = size === "card" ? "h-4" : "h-3.5";
+  const Tag = onToggle ? "button" : "div";
+
+  return (
+    <div className="flex flex-col gap-2">
+      {rows.map((rowBoxes, rowIdx) => {
+        const rowHasCount = rowBoxes.some((b) => b.count && b.count > 0);
+        return (
+          <div key={rowIdx} className="flex flex-col gap-0.5">
+            {rowHasCount && (
+              <div className="grid grid-cols-8 gap-x-1 justify-items-center">
+                {rowBoxes.map((box, i) => (
+                  <div key={i} className={`${badgeRowHeight} flex items-center justify-center`}>
+                    {renderCheckboxCount(box.count, size)}
+                  </div>
+                ))}
+              </div>
+            )}
+            <div className="grid grid-cols-8 gap-x-1 justify-items-center">
+              {rowBoxes.map((box, i) => (
+                <Tag
+                  key={i}
+                  {...(onToggle ? { onClick: (ev: React.MouseEvent) => { ev.stopPropagation(); onToggle(box); } } : {})}
+                  className={`${boxSize} border rounded flex items-center justify-center ${
+                    box.checked ? "bg-green-100 border-green-400" : "bg-white border-gray-300"
+                  } ${onToggle ? "hover:border-gray-400 transition-colors" : ""}`}
+                  title={box.content || t('emptyCheckbox')}
+                >
+                  {renderCheckboxContent(box.content, t)}
+                </Tag>
+              ))}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function chunkArray<T>(arr: T[], size: number): T[][] {
+  const chunks: T[][] = [];
+  for (let i = 0; i < arr.length; i += size) {
+    chunks.push(arr.slice(i, i + size));
+  }
+  return chunks;
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -387,19 +463,7 @@ function CardPreviewPopup({
                 )}
                 {card.checkboxes[0]?.length > 0 && (
                   <div className="mt-2 border-t pt-2">
-                    <div className="grid grid-cols-8 gap-1 justify-items-center">
-                      {card.checkboxes[0].map((box, idx) => (
-                        <div
-                          key={idx}
-                          className={`w-5 h-5 border rounded flex items-center justify-center p-0.5 text-[8px] ${
-                            box.checked ? "bg-green-100 border-green-400" : "bg-white border-gray-300"
-                          }`}
-                          title={box.content || t('emptyCheckbox')}
-                        >
-                          {renderCheckboxContent(box.content, t)}
-                        </div>
-                      ))}
-                    </div>
+                    {renderCheckboxesGrid(card.checkboxes[0], t, "preview")}
                   </div>
                 )}
                 {card.upgrades[0]?.length > 0 && (
@@ -451,19 +515,7 @@ function CardPreviewPopup({
                 )}
                 {card.checkboxes[2]?.length > 0 && (
                   <div className="mt-2 border-t pt-2">
-                    <div className="grid grid-cols-8 gap-1 justify-items-center">
-                      {card.checkboxes[2].map((box, idx) => (
-                        <div
-                          key={idx}
-                          className={`w-5 h-5 border rounded flex items-center justify-center p-0.5 text-[8px] ${
-                            box.checked ? "bg-green-100 border-green-400" : "bg-white border-gray-300"
-                          }`}
-                          title={box.content || t('emptyCheckbox')}
-                        >
-                          {renderCheckboxContent(box.content, t)}
-                        </div>
-                      ))}
-                    </div>
+                    {renderCheckboxesGrid(card.checkboxes[2], t, "preview")}
                   </div>
                 )}
                 {card.upgrades[2]?.length > 0 && (
@@ -515,19 +567,7 @@ function CardPreviewPopup({
                 )}
                 {card.checkboxes[1]?.length > 0 && (
                   <div className="mt-2 border-t pt-2">
-                    <div className="grid grid-cols-8 gap-1 justify-items-center">
-                      {card.checkboxes[1].map((box, idx) => (
-                        <div
-                          key={idx}
-                          className={`w-5 h-5 border rounded flex items-center justify-center p-0.5 text-[8px] ${
-                            box.checked ? "bg-green-100 border-green-400" : "bg-white border-gray-300"
-                          }`}
-                          title={box.content || t('emptyCheckbox')}
-                        >
-                          {renderCheckboxContent(box.content, t)}
-                        </div>
-                      ))}
-                    </div>
+                    {renderCheckboxesGrid(card.checkboxes[1], t, "preview")}
                   </div>
                 )}
                 {card.upgrades[1]?.length > 0 && (
@@ -579,19 +619,7 @@ function CardPreviewPopup({
                 )}
                 {card.checkboxes[3]?.length > 0 && (
                   <div className="mt-2 border-t pt-2">
-                    <div className="grid grid-cols-8 gap-1 justify-items-center">
-                      {card.checkboxes[3].map((box, idx) => (
-                        <div
-                          key={idx}
-                          className={`w-5 h-5 border rounded flex items-center justify-center p-0.5 text-[8px] ${
-                            box.checked ? "bg-green-100 border-green-400" : "bg-white border-gray-300"
-                          }`}
-                          title={box.content || t('emptyCheckbox')}
-                        >
-                          {renderCheckboxContent(box.content, t)}
-                        </div>
-                      ))}
-                    </div>
+                    {renderCheckboxesGrid(card.checkboxes[0], t, "preview")}
                   </div>
                 )}
                 {card.upgrades[3]?.length > 0 && (
@@ -1252,27 +1280,11 @@ function CardView({
 
           {/* Checkboxes - Fixed size and layout */}
           <div className="mt-2">
-            <div className="grid grid-cols-8 gap-1 justify-items-center">
-              {sideCheckboxes.map((box: Checkbox, idx: number) => (
-                <button
-                  key={idx}
-                  onClick={(ev) => {
-                    ev.stopPropagation();
-                    if (!interactable || !debugMode) return;
-                    if (onCardUpdate) {
-                      box.checked = !box.checked;
-                      onCardUpdate(card, fromZone);
-                    }
-                  }}
-                  className={`w-6 h-6 border rounded flex items-center justify-center p-1 text-[10px] ${
-                    box.checked ? "bg-green-100 border-green-400" : "bg-white border-gray-300"
-                  } hover:border-gray-400 transition-colors`}
-                  title={box.content || t('emptyCheckbox')}
-                >
-                  {renderCheckboxContent(box.content, t)}
-                </button>
-              ))}
-            </div>
+            {renderCheckboxesGrid(sideCheckboxes, t, "card", (box) => {
+              if (!interactable || !debugMode || !onCardUpdate) return;
+              box.checked = !box.checked;
+              onCardUpdate(card, fromZone);
+            })}
           </div>
 
           {/* Upgrades */}
@@ -2084,7 +2096,7 @@ function CardPopup({
 
           {currentCheckboxes.map((box: Checkbox, idx: number) => (
             <div key={idx} className="border rounded p-2 my-2 flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-1">
                 <input
                   type="checkbox"
                   checked={!!box.checked}
@@ -2095,7 +2107,7 @@ function CardPopup({
                 />
                 <input
                   type="text"
-                  className="border rounded px-2 py-1 text-sm"
+                  className="border rounded px-2 py-1 text-sm flex-1"
                   value={box.content}
                   onChange={(e) => {
                     box.content = e.target.value;
@@ -2103,6 +2115,27 @@ function CardPopup({
                   }}
                   placeholder="'*' or comma-separated resource keys (e.g. coin,silver)"
                 />
+                <div className="flex items-center gap-1">
+                  <label className="text-xs text-gray-500 whitespace-nowrap">Count</label>
+                  <input
+                    type="number"
+                    min={0}
+                    max={99}
+                    className="w-14 text-center border rounded px-1 py-1 text-sm"
+                    value={box.count ?? ""}
+                    onChange={(e) => {
+                      const raw = e.target.value;
+                      if (raw === "") {
+                        box.count = undefined;
+                      } else {
+                        const val = Math.max(0, Math.min(99, parseInt(raw, 10) || 0));
+                        box.count = val;
+                      }
+                      setLocalCard(cloneGameCard(localCard));
+                    }}
+                    placeholder="—"
+                  />
+                </div>
               </div>
             </div>
           ))}
@@ -3371,7 +3404,7 @@ export default function Game() {
 
   const [campaignDeck, setCampaignDeck] = useState<GameCard[]>(() =>
     allCards
-      .filter((c) => c.id > 10 && c.id <= 138) // TODO: Change Back => c > 10 && c.id <= 138
+      .filter((c) => c.id === 70) // TODO: Change Back => c > 10 && c.id <= 138
       .sort((a, b) => a.id - b.id)
       .map((c) => cloneGameCard(c))
   );
@@ -3386,12 +3419,14 @@ export default function Game() {
   const [playArea, setPlayArea] = useState<GameCard[]>([]);
   const [permanentZone, setPermanentZone] = useState<GameCard[]>([]);
   const [temporaryCardList, setTemporaryCardList] = useState<GameCard[]>([]);
+  const [sideDeck, setSideDeck] = useState<GameCard[]>([]);
   // eslint-disable-next-line @typescript-eslint/no-unused-expressions
   temporaryCardList;
   const [popupCard, setPopupCard] = useState<PopupPayload | null>(null);
   const [showDiscard, setShowDiscard] = useState(false);
   const [showDeck, setShowDeck] = useState(false);
   const [showPurged, setShowPurged] = useState(false);
+  const [showSideDeck, setShowSideDeck] = useState(false);
   const [showEndRound, setShowEndRound] = useState(false);
   const [campaignPreview, setCampaignPreview] = useState<GameCard | null>(null);
   const [resources, setResourcesState] = useState<ResourceMap>({ ...emptyResource });
@@ -3604,6 +3639,7 @@ export default function Game() {
   const blockedZoneRef = useRef<GameCard[]>([]);
   const permanentZoneRef = useRef<GameCard[]>([]);
   const temporaryCardListRef = useRef<GameCard[]>([]);
+  const sideDeckRef = useRef<GameCard[]>([]);
   const purgedCardsRef = useRef<GameCard[]>([]);
   const campaignDeckRef = useRef<GameCard[]>([]);
   const resourcesRef = useRef<ResourceMap>({ ...emptyResource });
@@ -3618,6 +3654,7 @@ export default function Game() {
   useEffect(() => { discardRef.current = discard; }, [discard]);
   useEffect(() => { blockedZoneRef.current = blockedZone; }, [blockedZone]);
   useEffect(() => { permanentZoneRef.current = permanentZone; }, [permanentZone]);
+  useEffect(() => { sideDeckRef.current = sideDeck; }, [sideDeck]);
   useEffect(() => { purgedCardsRef.current = purgedCards; }, [purgedCards]);
   useEffect(() => { campaignDeckRef.current = campaignDeck; }, [campaignDeck]);
   useEffect(() => { turnEndFlagRef.current = turnEndFlag; }, [turnEndFlagRef]);
@@ -3677,6 +3714,17 @@ export default function Game() {
     } else {
       temporaryCardListRef.current = [...temporaryCardListRef.current, ...next];
       setTemporaryCardList((prev) => [...prev, ...next]);
+    }
+  }
+
+  function setSideDeckImmediate(next: React.SetStateAction<GameCard[]>) {
+    if (typeof next === "function") {
+      const v = (next as (prev: GameCard[]) => GameCard[])(sideDeckRef.current);
+      sideDeckRef.current = v;
+      setSideDeck(v);
+    } else {
+      sideDeckRef.current = next as GameCard[];
+      setSideDeck(next as GameCard[]);
     }
   }
 
@@ -3920,10 +3968,12 @@ export default function Game() {
             dropToPlayArea,
             dropToBlocked,
             dropToDeck,
+            dropToSideDeck,
             dropToDiscard,
             dropToCampaign,
             dropToPermanent,
             setDeck: setDeckImmediate,
+            setSideDeck: setSideDeckImmediate,
             setPlayArea: setPlayAreaImmediate,
             setDiscard: setDiscardImmediate,
             setPermanentZone,
@@ -4026,10 +4076,12 @@ export default function Game() {
           dropToPlayArea,
           dropToBlocked,
           dropToDeck,
+          dropToSideDeck,
           dropToDiscard,
           dropToCampaign,
           dropToPermanent,
           setDeck: setDeckImmediate,
+          setSideDeck: setSideDeckImmediate,
           setPlayArea: setPlayAreaImmediate,
           setDiscard: setDiscardImmediate,
           setPermanentZone,
@@ -4212,10 +4264,12 @@ export default function Game() {
               dropToPlayArea,
               dropToBlocked,
               dropToDeck,
+              dropToSideDeck,
               dropToDiscard,
               dropToCampaign,
               dropToPermanent,
               setDeck: setDeckImmediate,
+              setSideDeck: setSideDeckImmediate,
               setPlayArea: setPlayAreaImmediate,
               setDiscard: setDiscardImmediate,
               setPermanentZone,
@@ -4284,10 +4338,12 @@ export default function Game() {
               dropToPlayArea,
               dropToBlocked,
               dropToDeck,
+              dropToSideDeck,
               dropToDiscard,
               dropToCampaign,
               dropToPermanent,
               setDeck: setDeckImmediate,
+              setSideDeck: setSideDeckImmediate,
               setPlayArea: setPlayAreaImmediate,
               setDiscard: setDiscardImmediate,
               setPermanentZone,
@@ -4400,6 +4456,9 @@ export default function Game() {
         break;
       case t('campaign'):
         filteredCards = campaignDeck.filter(filter);
+        break;
+      case t('sideDeck'):
+        filteredCards = sideDeck.filter(filter);
         break;
     }
     return filteredCards;
@@ -4689,10 +4748,12 @@ export default function Game() {
             dropToPlayArea,
             dropToBlocked,
             dropToDeck,
+            dropToSideDeck,
             dropToDiscard,
             dropToCampaign,
             dropToPermanent,
             setDeck: setDeckImmediate,
+            setSideDeck: setSideDeckImmediate,
             setPlayArea: setPlayAreaImmediate,
             setDiscard: setDiscardImmediate,
             setPermanentZone,
@@ -5079,10 +5140,12 @@ export default function Game() {
             dropToPlayArea,
             dropToBlocked,
             dropToDeck,
+            dropToSideDeck,
             dropToDiscard,
             dropToCampaign,
             dropToPermanent,
             setDeck: setDeckImmediate,
+            setSideDeck: setSideDeckImmediate,
             setPlayArea: setPlayAreaImmediate,
             setDiscard: setDiscardImmediate,
             setPermanentZone,
@@ -5172,7 +5235,7 @@ export default function Game() {
   };
 
   const refreshDiscoverableCards = () => {
-    const allDiscoverable = campaignDeck
+    const allDiscoverable = campaignDeckRef.current
       .filter(card => card.discoverable === true)
       .sort((a, b) => a.id - b.id);
     
@@ -5253,10 +5316,12 @@ export default function Game() {
       dropToPlayArea,
       dropToBlocked,
       dropToDeck,
+      dropToSideDeck,
       dropToDiscard,
       dropToCampaign,
       dropToPermanent,
       setDeck: setDeckImmediate,
+      setSideDeck: setSideDeckImmediate,
       setPlayArea: setPlayAreaImmediate,
       setDiscard: setDiscardImmediate,
       setPermanentZone,
@@ -5373,6 +5438,7 @@ export default function Game() {
       campaignDeck?: GameCard[];
       blockedZone?: GameCard[];
       permanentZone?: GameCard[];
+      sideDeck?: GameCard[];
     }
   ) => {
     const sources = snap ?? {
@@ -5382,6 +5448,7 @@ export default function Game() {
       campaignDeck,
       blockedZone,
       permanentZone,
+      sideDeck,
     };
     const find = (arr?: GameCard[]) =>
       arr ? arr.find((c) => c.id === id) ?? null : null;
@@ -5392,6 +5459,7 @@ export default function Game() {
       find(sources.campaignDeck) ||
       find(sources.blockedZone) ||
       find(sources.permanentZone) ||
+      find(sources.sideDeck) ||
       null
     );
   };
@@ -5438,14 +5506,6 @@ export default function Game() {
       }
     }
 
-    // TODO : Distant Lands handling of Side Deck
-    if (fromZone === t('sideDeck')) {
-      
-    }
-    else if (toZone === t('sideDeck')) {
-
-    }
-
     for(const id of cardIds) {
       const cardToCheck = fetchCardsInZone((c) => c.id === id, fromZone)[0];
       if (cardToCheck && cardToCheck.GetType(t).includes(t('scroll')) && toZone !== t('destroy')) {
@@ -5464,7 +5524,8 @@ export default function Game() {
       const sourceCard = findCardInAllZones(id, {
         deck: deckRef.current, playArea: playAreaRef.current,
         discard: discardRef.current, blockedZone: blockedZoneRef.current,
-        campaignDeck: campaignDeck, permanentZone: permanentZoneRef.current
+        campaignDeck: campaignDeck, permanentZone: permanentZoneRef.current,
+        sideDeck: sideDeckRef.current
       });
       if (!sourceCard) {
         setSlidingCards(prev => {
@@ -5485,6 +5546,9 @@ export default function Game() {
         if (toZone === t('deck')) {
           setDeckImmediate((d) => [cloneGameCard(toAdd), ...d]);
         }
+        if (toZone === t('sideDeck')) {
+          setSideDeckImmediate((d) => [cloneGameCard(toAdd), ...d]);
+        }
         if (toZone === t('discard')) {
           setDiscardImmediate((f) => [...f, cloneGameCard(toAdd)]);
         }
@@ -5504,6 +5568,7 @@ export default function Game() {
       }
 
       if (fromZone === t('deck')) setDeckImmediate((d) => removeById(d, id));
+      if (fromZone === t('sideDeck')) setSideDeckImmediate((d) => removeById(d, id));
       if (fromZone === t('playArea')) setPlayAreaImmediate((p) => removeById(p, id));
       if (fromZone === t('discard')) setDiscardImmediate((f) => removeById(f, id));
       if (fromZone === t('campaign')) {
@@ -5586,6 +5651,7 @@ export default function Game() {
   };
 
   const dropToDeck = (payload: DropPayload) => handleDropToZone(t('deck'))(payload);
+  const dropToSideDeck = (payload: DropPayload) => handleDropToZone(t('sideDeck'))(payload);
   const dropToPlayArea = (payload: DropPayload) => handleDropToZone(t('playArea'))(payload);
   const dropToDiscard = (payload: DropPayload) => handleDropToZone(t('discard'))(payload);
   const dropToCampaign = (payload: DropPayload) => handleDropToZone(t('campaign'))(payload);
@@ -5631,6 +5697,7 @@ export default function Game() {
     if (campaignDeck.some(c => c.id === id)) return t('campaign');
     if (blockedZone.some(c => c.id === id)) return t('blocked');
     if (permanentZone.some(c => c.id === id)) return t('permanentZone');
+    if (sideDeck.some(c => c.id === id)) return t('sideDeck');
     return "Deleted";
   };
 
@@ -5690,10 +5757,12 @@ export default function Game() {
               dropToPlayArea,
               dropToBlocked,
               dropToDeck,
+              dropToSideDeck,
               dropToDiscard,
               dropToCampaign,
               dropToPermanent,
               setDeck: setDeckImmediate,
+              setSideDeck: setSideDeckImmediate,
               setPlayArea: setPlayAreaImmediate,
               setDiscard: setDiscardImmediate,
               setPermanentZone,
@@ -5771,10 +5840,12 @@ export default function Game() {
         dropToPlayArea,
         dropToBlocked,
         dropToDeck,
+        dropToSideDeck,
         dropToDiscard,
         dropToCampaign,
         dropToPermanent,
         setDeck: setDeckImmediate,
+        setSideDeck: setSideDeckImmediate,
         setPlayArea: setPlayAreaImmediate,
         setDiscard: setDiscardImmediate,
         setPermanentZone,
@@ -5905,10 +5976,12 @@ export default function Game() {
                           dropToPlayArea,
                           dropToBlocked,
                           dropToDeck,
+                          dropToSideDeck,
                           dropToDiscard,
                           dropToCampaign,
                           dropToPermanent,
                           setDeck: setDeckImmediate,
+                          setSideDeck: setSideDeckImmediate,
                           setPlayArea: setPlayAreaImmediate,
                           setDiscard: setDiscardImmediate,
                           setPermanentZone,
@@ -5968,9 +6041,6 @@ export default function Game() {
         .map(c => cloneGameCard(c!)) || [];
       
       setCampaignDeckImmediate(prev => [...prev, ...newCampaignCards].sort((a, b) => a.id - b.id));
-      
-      refreshDiscoverableCards();
-      setShowEndRound(true);
 
       // Set tutorial card
       const tutorialCard = expansion.campaignCardIds?.map(() => allCards.find(c => expansion.campaignCardIds ? c.id === expansion.campaignCardIds[0] : false)).filter(Boolean).map(c => cloneGameCard(c!))[0];
@@ -5981,6 +6051,10 @@ export default function Game() {
           setSteps(expansion.tutorialSteps);
         }
       }
+
+      // Refresh Discoveries
+      refreshDiscoverableCards();
+      setShowEndRound(true);
     }
 
     unlockAchievement('there_is_more');
@@ -6015,10 +6089,12 @@ export default function Game() {
         dropToPlayArea,
         dropToBlocked,
         dropToDeck,
+        dropToSideDeck,
         dropToDiscard,
         dropToCampaign,
         dropToPermanent,
         setDeck: setDeckImmediate,
+        setSideDeck: setSideDeckImmediate,
         setPlayArea: setPlayAreaImmediate,
         setDiscard: setDiscardImmediate,
         setPermanentZone,
@@ -6056,7 +6132,8 @@ export default function Game() {
         markAsUsedThisTurn,
         t,
       };
-      if (campaignDeckRef.current.filter((c) => c.discoverable).length === 0 || (expansion.checkExpansionEnd??(context))) {
+      const shouldEnd: boolean = expansion.checkExpansionEnd? expansion.checkExpansionEnd(context) : false;
+      if (campaignDeckRef.current.filter((c) => c.discoverable).length === 0 || shouldEnd) {
         return true
       }
     }
@@ -6088,6 +6165,8 @@ export default function Game() {
       setBlockedZone((b) => b.map((card) => (card.id === id ? cloneGameCard(newCard) : card)));
     } else if (zone === t('permanentZone')) {
       setPermanentZone((pe) => pe.map((card) => (card.id === id ? cloneGameCard(newCard) : card)));
+    } else if (zone === t('sideDeck')) {
+      setSideDeck((pe) => pe.map((card) => (card.id === id ? cloneGameCard(newCard) : card)));
     }
   }
 
@@ -6111,6 +6190,7 @@ export default function Game() {
     
     // Procède à la destruction
     if (zone === t('deck')) setDeck((d) => d.filter(c => c.id !== id));
+    if (zone === t('sideDeck')) setSideDeck((d) => d.filter(c => c.id !== id));
     if (zone === t('playArea')) setPlayAreaImmediate((p) => p.filter(c => c.id !== id));
     if (zone === t('discard')) setDiscardImmediate((f) => f.filter(c => c.id !== id));
     if (zone === t('campaign')) setCampaignDeckImmediate((g) => g.filter(c => c.id !== id));
@@ -6138,6 +6218,8 @@ export default function Game() {
       return blockedZoneRef.current.filter(filter);
     } else if (zone === t('permanentZone')) {
       return permanentZoneRef.current.filter(filter);
+    } else if (zone === t('sideDeck')) {
+      return sideDeckRef.current.filter(filter);
     }
     return [];
   }
@@ -6184,10 +6266,12 @@ export default function Game() {
           dropToPlayArea,
           dropToBlocked,
           dropToDeck,
+          dropToSideDeck,
           dropToDiscard,
           dropToCampaign,
           dropToPermanent,
           setDeck: setDeckImmediate,
+          setSideDeck: setSideDeckImmediate,
           setPlayArea: setPlayAreaImmediate,
           setDiscard: setDiscardImmediate,
           setPermanentZone,
@@ -6290,10 +6374,12 @@ export default function Game() {
           dropToPlayArea,
           dropToBlocked,
           dropToDeck,
+          dropToSideDeck,
           dropToDiscard,
           dropToCampaign,
           dropToPermanent,
           setDeck: setDeckImmediate,
+          setSideDeck: setSideDeckImmediate,
           setPlayArea: setPlayAreaImmediate,
           setDiscard: setDiscardImmediate,
           setPermanentZone,
@@ -6398,10 +6484,12 @@ export default function Game() {
           dropToPlayArea,
           dropToBlocked,
           dropToDeck,
+          dropToSideDeck,
           dropToDiscard,
           dropToCampaign,
           dropToPermanent,
           setDeck: setDeckImmediate,
+          setSideDeck: setSideDeckImmediate,
           setPlayArea: setPlayAreaImmediate,
           setDiscard: setDiscardImmediate,
           setPermanentZone,
@@ -6495,10 +6583,12 @@ export default function Game() {
             dropToPlayArea,
             dropToBlocked,
             dropToDeck,
+            dropToSideDeck,
             dropToDiscard,
             dropToCampaign,
             dropToPermanent,
             setDeck: setDeckImmediate,
+            setSideDeck: setSideDeckImmediate,
             setPlayArea: setPlayAreaImmediate,
             setDiscard: setDiscardImmediate,
             setPermanentZone,
@@ -6620,6 +6710,7 @@ export default function Game() {
       blockedZone,
       permanentZone,
       purgedCards,
+      sideDeck,
       resources,
       timestamp: Date.now(),
       completedExpansions,
@@ -6689,6 +6780,7 @@ export default function Game() {
       setBlockedZone(reconstructCards(parsed.blockedZone));
       setPermanentZone(reconstructCards(parsed.permanentZone));
       setPurgedCards(reconstructCards(parsed.purgedCards || []));
+      setSideDeck(reconstructCards(parsed.sideDeck));
       setResources(parsed.resources || { ...emptyResource });
       setCompletedExpansions(parsed.completedExpansions || []);
       setCurrentExpansion(parsed.currentExpansion || null);
@@ -6742,6 +6834,7 @@ export default function Game() {
             setBlockedZone([]);
             setPermanentZone([]);
             setPurgedCards([]);
+            setSideDeck([]);
             setResources({ ...emptyResource });
             setAvailableDiscoverableCards([]);
             setBlockMap(new Map());
@@ -7134,6 +7227,7 @@ export default function Game() {
           <Button onClick={async () => { setIsAnimating(true); await advance(); setIsAnimating(false); }} disabled={deck.length === 0 || isChoosingExpansion || turnEndFlag || isPlayBlocked || isAnimating || checkAdvanceRestrictions()}>{t('advance')}</Button>
           <Button disabled={deck.length !== 0 || (deck.length === 0 && campaignDeck.filter(card => card.id === 70).length === 0 && (!hasEndedBaseGame || (hasEndedBaseGame && currentExpansion !== null && checkExpansionEnd())))} variant="destructive" onClick={handleEndRound}>{t('endRound')}</Button>
           <Button hidden={purgedCards.length === 0} onClick={() => setShowPurged(true)} variant="blue">{t('seePurged')}</Button>
+          <Button hidden={sideDeck.length === 0} onClick={() => setShowSideDeck(true)} variant="blue">{t('seeSideDeck')}</Button>
           <Button hidden={(hasEndedBaseGame || campaignDeck.some(card => card.id === 70)) || (currentExpansion !== null && !checkExpansionEnd())} disabled={deck.length !== 0 || isAnimating} variant="destructive" onClick={currentExpansion ? handleEndExpansion : handleEndBaseGame}>{currentExpansion ? t('endExpansion') : t('endGame')}</Button>
           <Button onClick={() => setShowExpansionChoice(true)} hidden={!isChoosingExpansion || completedExpansions.length >= 9} disabled={isAnimating} variant="purple">{t('chooseExpansion')}</Button>
         </div>
@@ -7712,68 +7806,115 @@ export default function Game() {
           </div>
         )}
 
-        {/* Purged Modal */}
-        {showPurged && (
-          <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-2">
-            <div
-              className="bg-white p-4 rounded-xl space-y-4 w-full h-full max-w-[300vw] max-h-[300vh] overflow-auto flex flex-col"
+      {/* Purged Modal */}
+      {showPurged && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-2">
+          <div
+            className="bg-white p-4 rounded-xl space-y-4 w-full h-full max-w-[300vw] max-h-[300vh] overflow-auto flex flex-col"
+            style={{
+              background: "rgba(18, 12, 30, 0.72)",
+              backdropFilter: "blur(8px)",
+              WebkitBackdropFilter: "blur(8px)",
+              border: "1px solid rgba(120, 80, 180, 0.3)",
+              boxShadow: "0 4px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06)",
+            }}
+          >
+            <h2
+              className="font-bold text-xl"
               style={{
-                background: "rgba(18, 12, 30, 0.72)",
-                backdropFilter: "blur(8px)",
-                WebkitBackdropFilter: "blur(8px)",
-                border: "1px solid rgba(120, 80, 180, 0.3)",
-                boxShadow: "0 4px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06)",
+                color: "#c8b4e8",
+                textShadow: "0 0 20px rgba(160, 100, 255, 0.4)",
+                fontSize: "13px",
+                letterSpacing: "0.12em",
               }}
             >
-              <h2
-                className="font-bold text-xl"
-                style={{
-                  color: "#c8b4e8",
-                  textShadow: "0 0 20px rgba(160, 100, 255, 0.4)",
-                  fontSize: "13px",
-                  letterSpacing: "0.12em",
-                }}
-              >
-                {t('purged')}
-              </h2>
-              <div className="flex flex-col flex-row gap-4 flex-1 min-h-0">
-                <div className="flex-1 overflow-y-auto p-2 border rounded">
-                  <div className="grid grid-cols-6 gap-2">
-                    {[...purgedCards].sort((a, b) => a.id - b.id).map((c) => (
-                      <CardView
-                        key={`modal-${c.id}-${c.currentSide}-${Math.random()}`}
-                        card={c}
-                        fromZone={t('purged')}
-                        onRightClick={() => {}}
-                        onTapAction={debugMode ? handleTapAction : undefined}
-                      />
-                    ))}
-                  </div>
+              {t('purged')}
+            </h2>
+            <div className="flex flex-col flex-row gap-4 flex-1 min-h-0">
+              <div className="flex-1 overflow-y-auto p-2 border rounded">
+                <div className="grid grid-cols-6 gap-2">
+                  {[...purgedCards].sort((a, b) => a.id - b.id).map((c) => (
+                    <CardView
+                      key={`modal-${c.id}-${c.currentSide}-${Math.random()}`}
+                      card={c}
+                      fromZone={t('purged')}
+                      onRightClick={() => {}}
+                      onTapAction={debugMode ? handleTapAction : undefined}
+                    />
+                  ))}
                 </div>
               </div>
+            </div>
 
-              <div className="flex justify-end gap-2 pt-2 border-t">
-                <Button onClick={() => setShowPurged(false)}>{t('close')}</Button>
-              </div>
+            <div className="flex justify-end gap-2 pt-2 border-t">
+              <Button onClick={() => setShowPurged(false)}>{t('close')}</Button>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-        {resourceChoicePopup && (
-          <ResourceSelectionPopup
-            resources={resourceChoicePopup.options}
-            totalLevel={resourceChoicePopup.totalLevel}
-            optionalCount={resourceChoicePopup.optionalCount}
-            onConfirm={(selected) => {
-              resourceChoicePopup.resolve(selected);
-              setResourceChoicePopup(null);
+      {/* Side Deck Modal */}
+      {showSideDeck && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-2">
+          <div
+            className="bg-white p-4 rounded-xl space-y-4 w-full h-full max-w-[300vw] max-h-[300vh] overflow-auto flex flex-col"
+            style={{
+              background: "rgba(18, 12, 30, 0.72)",
+              backdropFilter: "blur(8px)",
+              WebkitBackdropFilter: "blur(8px)",
+              border: "1px solid rgba(120, 80, 180, 0.3)",
+              boxShadow: "0 4px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06)",
             }}
-            onCancel={() => {
-              resourceChoicePopup.resolve(null);
-              setResourceChoicePopup(null);
-            }}
-          />
-        )}
+          >
+            <h2
+              className="font-bold text-xl"
+              style={{
+                color: "#c8b4e8",
+                textShadow: "0 0 20px rgba(160, 100, 255, 0.4)",
+                fontSize: "13px",
+                letterSpacing: "0.12em",
+              }}
+            >
+              {t('sideDeck')}
+            </h2>
+            <div className="flex flex-col flex-row gap-4 flex-1 min-h-0">
+              <div className="flex-1 overflow-y-auto p-2 border rounded">
+                <div className="grid grid-cols-6 gap-2">
+                  {[...sideDeck].sort((a, b) => a.id - b.id).map((c) => (
+                    <CardView
+                      key={`modal-${c.id}-${c.currentSide}-${Math.random()}`}
+                      card={c}
+                      fromZone={t('sideDeck')}
+                      onRightClick={() => {}}
+                      onTapAction={debugMode ? handleTapAction : undefined}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2 border-t">
+              <Button onClick={() => setShowSideDeck(false)}>{t('close')}</Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {resourceChoicePopup && (
+        <ResourceSelectionPopup
+          resources={resourceChoicePopup.options}
+          totalLevel={resourceChoicePopup.totalLevel}
+          optionalCount={resourceChoicePopup.optionalCount}
+          onConfirm={(selected) => {
+            resourceChoicePopup.resolve(selected);
+            setResourceChoicePopup(null);
+          }}
+          onCancel={() => {
+            resourceChoicePopup.resolve(null);
+            setResourceChoicePopup(null);
+          }}
+        />
+      )}
 
       {cardSelectionPopup && (
         <CardSelectionPopup

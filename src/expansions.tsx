@@ -105,6 +105,7 @@ export const EXPANSIONS: ExpansionData[] = [
         text: 'tutorialDistantLandsExplorationText',
         position: "auto",
       },
-    ]
+    ],
+    checkExpansionEnd: (ctx) => (ctx.fetchCardsInZone((c) => [234].includes(c.id), ctx.t('campaign')).length === 0) // id should be higher (TBD)
   },
 ];

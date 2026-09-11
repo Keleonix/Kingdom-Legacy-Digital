@@ -19,6 +19,7 @@ export type ResourceMap = {
 export type Checkbox = {
   content: string;
   checked: boolean;
+  count?: number;
 };
 
 export type PopupPayload = {
@@ -294,6 +295,7 @@ export interface SavedGame {
   blockedZone: GameCard[];
   permanentZone: GameCard[];
   purgedCards: GameCard[];
+  sideDeck: GameCard[];
   resources: ResourceMap;
   timestamp: number;
   completedExpansions: string[];

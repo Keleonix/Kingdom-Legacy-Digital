@@ -20,10 +20,12 @@ export type GameContext = {
   dropToPlayArea: (payload: DropPayload) => Promise<void>;
   dropToBlocked: (payload: DropPayload) => Promise<void>;
   dropToDeck: (payload: DropPayload) => Promise<void>;
+  dropToSideDeck: (payload: DropPayload) => Promise<void>;
   dropToDiscard: (payload: DropPayload) => Promise<void>;
   dropToCampaign: (payload: DropPayload) => Promise<void>;
   dropToPermanent: (payload: DropPayload) => Promise<void>;
   setDeck: React.Dispatch<React.SetStateAction<GameCard[]>>;
+  setSideDeck: React.Dispatch<React.SetStateAction<GameCard[]>>;
   setPlayArea: React.Dispatch<React.SetStateAction<GameCard[]>>;
   setDiscard: React.Dispatch<React.SetStateAction<GameCard[]>>;
   setPermanentZone: React.Dispatch<React.SetStateAction<GameCard[]>>;
@@ -287,6 +289,39 @@ async function removeResourceFromCard(
       resourceMap[resourceKey] = Math.max(0, (resourceMap[resourceKey] ?? 0) - amount);
     }
   }
+}
+
+
+function findTypeUpgradePath(card: GameCard, startSideIndex: number, type: TranslationKeys, ctx: GameContext): number[] | null {
+  const visited = new Set<number>();
+  const queue: { sideIndex: number; path: number[] }[] = [
+    { sideIndex: startSideIndex, path: [startSideIndex] },
+  ];
+
+  while (queue.length > 0) {
+    const { sideIndex, path } = queue.shift()!;
+
+    if (visited.has(sideIndex)) continue;
+    visited.add(sideIndex);
+
+    if (sideIndex !== startSideIndex && card.GetType(ctx.t, sideIndex).includes(ctx.t(type))) {
+      return path;
+    }
+    const upgrades = card.GetUpgrades(sideIndex);
+    for (const upgrade of upgrades) {
+      const nextIndex = upgrade.nextSide - 1;
+      if (!visited.has(nextIndex)) {
+        queue.push({ sideIndex: nextIndex, path: [...path, nextIndex + 1] });
+      }
+    }
+  }
+
+  return null;
+}
+
+function canUpgradeToType(card: GameCard, type: TranslationKeys, ctx: GameContext): boolean {
+  const startIndex = card.currentSide - 1;
+  return findTypeUpgradePath(card, startIndex, type, ctx) !== null;
 }
 
 // -------------------
@@ -8399,7 +8434,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         if (!selected) {
           return false;
         }
-        ctx.dropToDeck({id: selected.id, fromZone: ctx.t('sideDeck')});
+        await ctx.dropToDeck({id: selected.id, fromZone: ctx.t('sideDeck')});
         return false;
       }
     }],
@@ -8416,6 +8451,94 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           return false;
         }
         await ctx.dropToPlayArea({id: selected.map(c => c.id), fromZone: ctx.t('discard')});
+        return false;
+      }
+    }],
+  },
+  233: {
+    1: [{ // STOP
+      description: (t) => parseEffects(t('effect_description_stop_distant_lands_3')).effects[0].text,
+      timing: "onClick",
+      execute: async function (ctx) {
+        const woodFilter = (card: GameCard) => (ctx.getCardProduction(card, ctx.zone).some((res) => (res.wood ?? 0) >= 1) && !card.GetType(ctx.t).includes(ctx.t('ship')));
+        const canUpgradeToShipFilter = (card: GameCard) => (canUpgradeToType(card, 'ship', ctx));
+        let ships = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('ship')), ctx.t('deck'));
+        let woodProducingCards = ctx.fetchCardsInZone(woodFilter, ctx.t('deck'));
+        let canUpgradeToShipCards = ctx.fetchCardsInZone(canUpgradeToShipFilter, ctx.t('deck')).filter(c => !c.GetType(ctx.t).includes(ctx.t('ship')));
+        while (ships.length < 4 && woodProducingCards.length !== 0 && canUpgradeToShipCards.length !== 0) {
+          const selectedToShip = (await ctx.selectCardsFromArray(canUpgradeToShipCards, ctx.t('deck'), this.description(ctx.t), 1, 0, ctx.card))[0];
+          if (!selectedToShip) {
+            break; // Break on bug
+          }
+          const selectedWoodProducingCard = (await ctx.selectCardsFromArray(woodProducingCards, ctx.t('deck'), this.description(ctx.t), 1, 0, selectedToShip))[0];
+          if (!selectedWoodProducingCard) {
+            break; // Break on bug
+          }
+          const upgradePath = findTypeUpgradePath(selectedToShip, selectedToShip.currentSide - 1, 'ship', ctx);
+          if (!upgradePath || upgradePath.length < 2) {
+            break; // Break on bug
+          }
+          ctx.deleteCardInZone(ctx.t('deck'), selectedWoodProducingCard.id);
+          await ctx.upgradeCard(selectedToShip, upgradePath[1], true);
+
+          woodProducingCards = ctx.fetchCardsInZone(woodFilter, ctx.t('deck'));
+          canUpgradeToShipCards = ctx.fetchCardsInZone(canUpgradeToShipFilter, ctx.t('deck')).filter(c => !c.GetType(ctx.t).includes(ctx.t('ship')));
+          ships = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('ship')), ctx.t('deck'));
+        }
+        ctx.addDiscoverableCard(234, true);
+        ctx.deleteCardInZone(ctx.zone, ctx.card.id);
+        return false;
+      }
+    }],
+  },
+  234: {
+    1: [{ // STOP
+      description: (t) => parseEffects(t('effect_description_stop_distant_lands_4')).effects[0].text,
+      timing: "onClick",
+      execute: async function (ctx) {
+        // 1. Create side deck
+        const seafarings = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('seafaring')), ctx.t('deck'));
+        const cargos = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('cargo')), ctx.t('deck'))
+        const people = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('person')) &&  !c.GetType(ctx.t).includes(ctx.t('seafaring')), ctx.t('deck'));
+
+        const selectedPeople = await ctx.selectCardsFromArray(people, ctx.t('deck'), this.description(ctx.t), 0, 6, ctx.card, 'person');
+
+        const deckToMove = ctx.fetchCardsInZone(c => !seafarings.includes(c) && !cargos.includes(c) && !selectedPeople.includes(c), ctx.t('deck'));
+        const permanentCards = ctx.fetchCardsInZone(() => true, ctx.t('permanentZone'));
+
+        await ctx.dropToSideDeck({id: deckToMove.map(c => c.id), fromZone: ctx.t('deck')});
+        await ctx.dropToSideDeck({id: permanentCards.map(c => c.id), fromZone: ctx.t('permanentZone')});
+
+        // 1.5 Additional travel effects
+        const ctxZone = ctx.zone;
+        const ctxCardId = ctx.card.id;
+        const onTravelCards = ctx.fetchCardsInZone(() => true, ctx.t('deck')).filter(c => cardEffectsRegistry[c.id][c.currentSide].filter(e => e.timing === "onTravel"));
+        for (const card of onTravelCards) {
+          for (const effect of cardEffectsRegistry[card.id][card.currentSide].filter(e => e.timing === "onTravel")) {
+            ctx.card = card;
+            ctx.zone = ctx.t('deck');
+            await effect.execute(ctx);
+          }
+        }
+
+        // 2. Handle cargos ->
+        for (const card of cargos) {
+          const uncheckedBoxes = card.checkboxes[ctx.card.currentSide - 1].filter(c => !c.checked).length;
+          card.currentSide = 3;
+          for (let i = 0; i < uncheckedBoxes; i++) {
+            await checkNextBox(card);
+          }
+          card.currentSide = 1;
+          await ctx.upgradeCard(card, 3, true);
+          ctx.replaceCardInZone(ctx.t('deck'), card.id, card);
+        }
+
+        // 3. Discover 7 new cars
+        const cardsIds = [235, 236, 237, 238, 239, 240, 241];
+        for (const id of cardsIds) {
+          ctx.addDiscoverableCard(id, true);
+        }
+        ctx.deleteCardInZone(ctxZone, ctxCardId);
         return false;
       }
     }],
