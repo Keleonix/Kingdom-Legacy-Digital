@@ -3404,7 +3404,7 @@ export default function Game() {
 
   const [campaignDeck, setCampaignDeck] = useState<GameCard[]>(() =>
     allCards
-      .filter((c) => c.id === 70) // TODO: Change Back => c > 10 && c.id <= 138
+      .filter((c) => c.id > 10 && c.id <= 138) // TODO: Change Back => c.id > 10 && c.id <= 138
       .sort((a, b) => a.id - b.id)
       .map((c) => cloneGameCard(c))
   );
