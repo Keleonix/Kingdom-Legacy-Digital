@@ -1327,6 +1327,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                     },
                     false
                   );
+                  await checkNextBox(ctx.card);
                   break;
                 case 20:
                   ctx.registerEndRoundEffect(
@@ -1338,6 +1339,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                     },
                     false
                   );
+                  await checkNextBox(ctx.card);
                   break;
                 case 30:
                   ctx.registerEndRoundEffect(
@@ -1354,6 +1356,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                     },
                     false
                   );
+                  await checkNextBox(ctx.card);
                   break;
                 case 40:
                   ctx.registerEndRoundEffect(
@@ -1380,6 +1383,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                     },
                     false
                   );
+                  await checkNextBox(ctx.card);
                   break;
                 case 75:
                   ctx.registerEndRoundEffect(
@@ -1392,6 +1396,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                     },
                     false
                   );
+                  await checkNextBox(ctx.card);
                   break;
                 case 100:
                   ctx.registerEndRoundEffect(
@@ -1401,10 +1406,12 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                     },
                     false
                   );
+                  await checkNextBox(ctx.card);
                   break;
               }
             }
           }
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
           return false;
         }
       }],
@@ -1441,6 +1448,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                     },
                     false
                   );
+                  await checkNextBox(ctx.card);
                   break;
                 case 50:
                   ctx.registerEndRoundEffect(
@@ -1453,6 +1461,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                     },
                     false
                   );
+                  await checkNextBox(ctx.card);
                   break;
                 case 75:
                   ctx.registerEndRoundEffect(
@@ -1469,6 +1478,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                     },
                     false
                   );
+                  await checkNextBox(ctx.card);
                   break;
                 case 100:
                   ctx.registerEndRoundEffect(
@@ -1500,6 +1510,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                     },
                     false
                   );
+                  await checkNextBox(ctx.card);
                   break;
                 case 200:
                   ctx.registerEndRoundEffect(
@@ -1517,6 +1528,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                     },
                     false
                   );
+                  await checkNextBox(ctx.card);
                   break;
                 case 250:
                   ctx.registerEndRoundEffect(
@@ -1533,10 +1545,12 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                     },
                     false
                   );
+                  await checkNextBox(ctx.card);
                   break;
               }
             }
           }
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
           return false;
         }
       }],

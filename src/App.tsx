@@ -186,10 +186,10 @@ function renderCheckboxContent(content: string | undefined, t: (key: Translation
 
 function renderCheckboxCount(count?: number, size: "card" | "preview" = "card") {
   if (!count || count <= 0) return null;
-  const display = count > 99 ? "99" : String(count);
+  const display = count > 999 ? "999" : String(count);
   const dims = size === "card"
-    ? { w: "16px", h: "16px", fs: "9px" }
-    : { w: "13px", h: "13px", fs: "7px" };
+    ? { w: "20px", h: "16px", fs: "9px" }
+    : { w: "17px", h: "13px", fs: "7px" };
 
   return (
     <div
@@ -2120,15 +2120,15 @@ function CardPopup({
                   <input
                     type="number"
                     min={0}
-                    max={99}
-                    className="w-14 text-center border rounded px-1 py-1 text-sm"
+                    max={999}
+                    className="w-16 text-center border rounded px-1 py-1 text-sm"
                     value={box.count ?? ""}
                     onChange={(e) => {
                       const raw = e.target.value;
                       if (raw === "") {
                         box.count = undefined;
                       } else {
-                        const val = Math.max(0, Math.min(99, parseInt(raw, 10) || 0));
+                        const val = Math.max(0, Math.min(999, parseInt(raw, 10) || 0));
                         box.count = val;
                       }
                       setLocalCard(cloneGameCard(localCard));
