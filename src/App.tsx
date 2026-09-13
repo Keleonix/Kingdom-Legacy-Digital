@@ -5,9 +5,9 @@ import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { TouchBackend } from 'react-dnd-touch-backend';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { MouseTransition, TouchTransition, MultiBackend } from 'react-dnd-multi-backend';
-import { emptyResource, GameCard, RESOURCE_KEYS, TYPE_COLORS, type ResourceMap, type PopupPayload, type DropPayload, type Checkbox, type Upgrade, type EffectTiming, type SavedGame, type GameScore, type SortMode, type ExpansionSpecificTargetEffect } from "./types";
+import { emptyResource, GameCard, RESOURCE_KEYS, TYPE_COLORS, CHECKBOX_COLOR_MAP, type ResourceMap, type PopupPayload, type DropPayload, type Checkbox, type Upgrade, type EffectTiming, type SavedGame, type GameScore, type SortMode, type ExpansionSpecificTargetEffect } from "./types";
 import { allCards } from "./cards";
-import { getCardEffects, type GameContext, type CardEffect, type TimingEntry, cardEffectsRegistry, getCardFameValue, getCardUpgradeAdditionalCost, getCardSelectionValue } from "./cardEffects";
+import { getCardEffects, type GameContext, type CardEffect, type TimingEntry, cardEffectsRegistry, getCardFameValue, getCardUpgradeAdditionalCost, getCardSelectionValue, type ResolvedProductionModifier } from "./cardEffects";
 import { useTranslation, type Language, LanguageSelector, type TranslationKeys } from './i18n';
 import { createPortal } from 'react-dom';
 import { EXPANSIONS, FOCUS_KEYS } from "./expansions";
@@ -159,27 +159,42 @@ function renderCheckboxContent(content: string | undefined, t: (key: Translation
     return (<span className="text-[8px] font-bold">{renderEffectText(content, t)}</span>);
   }
 
+  const n = parsedResources.length;
   const iconSize = outOfBox ? "w-5 h-5" : "w-4 h-4";
-  const badgeSize = outOfBox ? "min-w-[11px] h-[11px] text-[9px]" : "min-w-[10px] h-[10px] text-[8px]";
+  const badgeSize = outOfBox ? "min-w-[10px] h-[10px] text-[8px]" : "min-w-[8px] h-[8px] text-[6px]";
+  const hStep = outOfBox ? 8 : 6.5;   // décalage horizontal entre icônes
+  const vStep = outOfBox ? 5 : 4;     // décalage vertical entre icônes
 
   return (
-    <div className="flex items-center justify-center gap-1 flex-wrap w-full h-full">
-      {parsedResources.map((res, i) => (
-        <div key={i} className={`relative flex items-center justify-center ${iconSize} shrink-0`}>
-          <img
-            src={resourceIconPath(res.name as keyof ResourceMap)}
-            alt={res.name}
-            className="w-full h-full object-contain"
-          />
-          {res.count > 1 && (
-            <span
-              className={`absolute -bottom-1 -right-1 flex items-center justify-center rounded-full bg-black/80 text-white font-bold leading-none px-[2px] ${badgeSize}`}
-            >
-              {res.count}
-            </span>
-          )}
-        </div>
-      ))}
+    <div className="relative flex items-center justify-center w-full h-full">
+      {parsedResources.map((res, i) => {
+        // centre la pile: l'icône du milieu (ou les deux du milieu si n pair) reste à l'origine
+        const offsetIdx = i - (n - 1) / 2;
+        return (
+          <div
+            key={i}
+            className={`absolute flex items-center justify-center ${iconSize}`}
+            style={{
+              left: `calc(50% - ${outOfBox ? 10 : 8}px + ${offsetIdx * hStep}px)`,
+              top: `calc(50% - ${outOfBox ? 10 : 8}px + ${offsetIdx * vStep}px)`,
+              zIndex: i,
+            }}
+          >
+            <img
+              src={resourceIconPath(res.name as keyof ResourceMap)}
+              alt={res.name}
+              className="w-full h-full object-contain drop-shadow-sm"
+            />
+            {res.count > 1 && (
+              <span
+                className={`absolute -bottom-1 right-0 flex items-center justify-center rounded-full bg-black/80 text-white font-bold leading-none px-[1px] ${badgeSize}`}
+              >
+                {res.count}
+              </span>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -208,9 +223,7 @@ function renderCheckboxesGrid(
   onToggle?: (box: Checkbox) => void
 ) {
   const rows = chunkArray(checkboxes, 8);
-  const boxSize = size === "card" 
-    ? "w-6 h-6 text-[10px] p-1" 
-    : "w-5 h-5 text-[8px] p-0.5";
+  const boxSize = size === "card" ? "w-6 h-6 text-[10px] p-1" : "w-5 h-5 text-[8px] p-0.5";
   const badgeRowHeight = size === "card" ? "h-4" : "h-3.5";
   const Tag = onToggle ? "button" : "div";
 
@@ -230,18 +243,26 @@ function renderCheckboxesGrid(
               </div>
             )}
             <div className="grid grid-cols-8 gap-x-1 justify-items-center">
-              {rowBoxes.map((box, i) => (
-                <Tag
-                  key={i}
-                  {...(onToggle ? { onClick: (ev: React.MouseEvent) => { ev.stopPropagation(); onToggle(box); } } : {})}
-                  className={`${boxSize} border rounded flex items-center justify-center ${
-                    box.checked ? "bg-green-100 border-green-400" : "bg-white border-gray-300"
-                  } ${onToggle ? "hover:border-gray-400 transition-colors" : ""}`}
-                  title={box.content || t('emptyCheckbox')}
-                >
-                  {renderCheckboxContent(box.content, t)}
-                </Tag>
-              ))}
+              {rowBoxes.map((box, i) => {
+                const { cleaned, color } = extractCheckboxColor(box.content);
+                return (
+                  <Tag
+                    key={i}
+                    {...(onToggle ? { onClick: (ev: React.MouseEvent) => { ev.stopPropagation(); onToggle(box); } } : {})}
+                    className={`${boxSize} border rounded flex items-center justify-center ${
+                      color
+                        ? "border-gray-400"
+                        : box.checked
+                        ? "bg-green-100 border-green-400"
+                        : "bg-white border-gray-300"
+                    } ${onToggle ? "hover:border-gray-400 transition-colors" : ""}`}
+                    style={color ? { backgroundColor: color } : undefined}
+                    title={box.content || t('emptyCheckbox')}
+                  >
+                    {renderCheckboxContent(cleaned, t)}
+                  </Tag>
+                );
+              })}
             </div>
           </div>
         );
@@ -256,6 +277,31 @@ function chunkArray<T>(arr: T[], size: number): T[][] {
     chunks.push(arr.slice(i, i + size));
   }
   return chunks;
+}
+
+function extractCheckboxColor(content: string | undefined): { cleaned: string; color: string | null } {
+  if (!content) return { cleaned: content ?? "", color: null };
+
+  let color: string | null = null;
+
+  const groups = content.split(",").map((g) => g.trim()).filter(Boolean);
+
+  const cleanedGroups = groups
+    .map((group) => {
+      const words = group.split(/\s+/);
+      const remainingWords = words.filter((w) => {
+        const key = w.toLowerCase();
+        if (!color && CHECKBOX_COLOR_MAP[key]) {
+          color = CHECKBOX_COLOR_MAP[key];
+          return false; // on retire le mot couleur, on garde le reste du groupe
+        }
+        return true;
+      });
+      return remainingWords.join(" ");
+    })
+    .filter(Boolean); // enlève les groupes devenus vides (ex: "red" seul)
+
+  return { cleaned: cleanedGroups.join(", "), color };
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -471,7 +517,7 @@ function CardPreviewPopup({
                     <div className="text-[9px] font-semibold mb-1">{t('upgrades')}:</div>
                     {card.upgrades[0].map((upg, idx) => (
                       <div key={idx} className="text-[8px] mb-1 flex items-center gap-1 flex-wrap">
-                        <span className="text-blue-600">→ {t(card.name[upg.nextSide - 1] as TranslationKeys)}</span>
+                        <span className="text-blue-600">{t('effects/arrow' as TranslationKeys)} {t(card.name[upg.nextSide - 1] as TranslationKeys)}</span>
                         <span className="text-gray-600 flex items-center gap-1">
                           ({renderUpgradeCost(upg)})
                         </span>
@@ -523,7 +569,7 @@ function CardPreviewPopup({
                     <div className="text-[9px] font-semibold mb-1">{t('upgrades')}:</div>
                     {card.upgrades[2].map((upg, idx) => (
                       <div key={idx} className="text-[8px] mb-1 flex items-center gap-1 flex-wrap">
-                        <span className="text-blue-600">→ {t(card.name[upg.nextSide - 1] as TranslationKeys)}</span>
+                        <span className="text-blue-600">{t('effects/arrow' as TranslationKeys)} {t(card.name[upg.nextSide - 1] as TranslationKeys)}</span>
                         <span className="text-gray-600 flex items-center gap-1">
                           ({renderUpgradeCost(upg)})
                         </span>
@@ -575,7 +621,7 @@ function CardPreviewPopup({
                     <div className="text-[9px] font-semibold mb-1">{t('upgrades')}:</div>
                     {card.upgrades[1].map((upg, idx) => (
                       <div key={idx} className="text-[8px] mb-1 flex items-center gap-1 flex-wrap">
-                        <span className="text-blue-600">→ {t(card.name[upg.nextSide - 1] as TranslationKeys)}</span>
+                        <span className="text-blue-600">{t('effects/arrow' as TranslationKeys)} {t(card.name[upg.nextSide - 1] as TranslationKeys)}</span>
                         <span className="text-gray-600 flex items-center gap-1">
                           ({renderUpgradeCost(upg)})
                         </span>
@@ -627,7 +673,7 @@ function CardPreviewPopup({
                     <div className="text-[9px] font-semibold mb-1">{t('upgrades')}:</div>
                     {card.upgrades[3].map((upg, idx) => (
                       <div key={idx} className="text-[8px] mb-1 flex items-center gap-1 flex-wrap">
-                        <span className="text-blue-600">→ {t(card.name[upg.nextSide - 1] as TranslationKeys)}</span>
+                        <span className="text-blue-600">{t('effects/arrow' as TranslationKeys)} {t(card.name[upg.nextSide - 1] as TranslationKeys)}</span>
                         <span className="text-gray-600 flex items-center gap-1">
                           ({renderUpgradeCost(upg)})
                         </span>
@@ -760,7 +806,7 @@ function CardView({
   onGainResources?: (card: GameCard, resources: Partial<ResourceMap>, zone: string) => void;
   onCardUpdate?: (updatedCard: GameCard, zone: string) => void;
   onExecuteCardEffect?: (card: GameCard, zone: string, timing: EffectTiming, effectId: number) => Promise<void>;
-  gatherProductionBonus?: (card: GameCard, zone: string) => Partial<ResourceMap>;
+  gatherProductionBonus?: (card: GameCard, zone: string) => ResolvedProductionModifier[];
   gatherAdditionalProductionOptions?: (card: GameCard, zone: string) => Array<Partial<ResourceMap>>;
   interactable?: boolean;
   isHighlighted?: boolean;
@@ -1186,54 +1232,54 @@ function CardView({
           <div className="mt-2 flex flex-wrap justify-center gap-2 items-center">
             {(() => {
               const baseOptions = resOptions;
-              const productionBonus = gatherProductionBonus ? gatherProductionBonus(card, fromZone) : {};
-              
+              const productionMods: ResolvedProductionModifier[] = gatherProductionBonus
+                ? gatherProductionBonus(card, fromZone)
+                : [];
+
               const additionalOptions = gatherAdditionalProductionOptions ? gatherAdditionalProductionOptions(card, fromZone) : [];
-              
               const allOptions = [...baseOptions, ...additionalOptions];
-              
+
               return allOptions.map((opt, idx) => {
                 const displayOpt = { ...opt };
-                
-                if (idx < baseOptions.length && productionBonus) {
-                  Object.entries(productionBonus).forEach(([key, value]) => {
-                    const resourceKey = key as keyof ResourceMap;
-                    displayOpt[resourceKey] = (displayOpt[resourceKey] || 0) + (value || 0);
-                  });
+
+                if (idx < baseOptions.length) {
+                  for (const mod of productionMods) {
+                    if (mod.multiplier !== undefined) {
+                      Object.keys(displayOpt).forEach((k) => {
+                        if (k === 'fame') return;
+                        const key = k as keyof ResourceMap;
+                        displayOpt[key] = (displayOpt[key] || 0) * mod.multiplier!;
+                      });
+                    }
+                    if (mod.bonus) {
+                      Object.entries(mod.bonus).forEach(([key, value]) => {
+                        const resourceKey = key as keyof ResourceMap;
+                        displayOpt[resourceKey] = (displayOpt[resourceKey] || 0) + (value || 0);
+                      });
+                    }
+                  }
                 }
-                
+
                 const icons = RESOURCE_KEYS.flatMap((k) => {
-                const baseCount = opt[k] ?? 0;
-                const bonusCount = (idx < baseOptions.length && productionBonus) ? (productionBonus[k] ?? 0) : 0;
-                const totalCount = baseCount + bonusCount;
+                  const baseCount = opt[k] ?? 0;
+                  const totalCount = displayOpt[k] ?? 0;
+                  const bonusCount = totalCount - baseCount;
 
-                if (totalCount === 0 || k === 'fame') return [];
+                  if (totalCount === 0 || k === 'fame') return [];
 
-                return [
-                  <div
-                    key={`${idx}-${k}`}
-                    className="flex items-center gap-1"
-                    style={{ fontSize: 12 }}
-                  >
-                    <span className="font-medium text-primary">
-                      {baseCount > 0 && bonusCount > 0 ? (
-                        <>
-                          {baseCount}
-                          <span className="text-green-600 font-bold">+{bonusCount}</span>
-                        </>
-                      ) : (
-                        totalCount
-                      )}
-                    </span>
-                    <img
-                      src={resourceIconPath(k)}
-                      alt={k}
-                      title={`${k} x${totalCount}`}
-                      className="w-6 h-6"
-                    />
-                  </div>
-                ];
-              });
+                  return [
+                    <div key={`${idx}-${k}`} className="flex items-center gap-1" style={{ fontSize: 12 }}>
+                      <span className="font-medium text-primary">
+                        {baseCount > 0 && bonusCount > 0 ? (
+                          <>{baseCount}<span className="text-green-600 font-bold">+{bonusCount}</span></>
+                        ) : (
+                          totalCount
+                        )}
+                      </span>
+                      <img src={resourceIconPath(k)} alt={k} title={`${k} x${totalCount}`} className="w-6 h-6" />
+                    </div>
+                  ];
+                });
 
                 if (icons.length === 0) return null;
 
@@ -1512,7 +1558,7 @@ function Zone({
   onGainResources?: (card: GameCard, resources: Partial<ResourceMap>, zone: string) => void;
   onCardUpdate?: (updatedCard: GameCard, zone: string) => void;
   onExecuteCardEffect?: (card: GameCard, zone: string, timing: EffectTiming, effectId: number) => Promise<void>;
-  gatherProductionBonus?: (card: GameCard, zone: string) => Partial<ResourceMap>;
+  gatherProductionBonus?: (card: GameCard, zone: string) => ResolvedProductionModifier[];
   gatherAdditionalProductionOptions?: (card: GameCard, zone: string) => Array<Partial<ResourceMap>>;
   showAll?: boolean;
   interactable?: boolean;
@@ -3112,7 +3158,7 @@ const UpgradeCostSelectionPopup: React.FC<{
                   <div className="flex items-center gap-2 mb-1">
                     <span className="font-medium text-sm">{t('upgrades')} {idx + 1}</span>
                     <span className="text-xs text-gray-600">
-                      → {t(card.name[upg.nextSide - 1] as TranslationKeys)}
+                      {t('effects/arrow' as TranslationKeys)} {t(card.name[upg.nextSide - 1] as TranslationKeys)}
                     </span>
                   </div>
                   <div className="flex items-center gap-2 flex-wrap">
@@ -3404,7 +3450,7 @@ export default function Game() {
 
   const [campaignDeck, setCampaignDeck] = useState<GameCard[]>(() =>
     allCards
-      .filter((c) => c.id > 10 && c.id <= 138) // TODO: Change Back => c.id > 10 && c.id <= 138
+      .filter((c) => c.id > 10 && c.id <= 138 || c.id === 240) // TODO: Change Back => c.id > 10 && c.id <= 138
       .sort((a, b) => a.id - b.id)
       .map((c) => cloneGameCard(c))
   );
@@ -3530,6 +3576,7 @@ export default function Game() {
   const [onCardSideConfirm, setOnCardSideConfirm] = useState<
     ((selected: number[]) => void) | null
   >(null);
+  const [upgradeNotEndingTurn, setUpgradeNotEndingTurn] = useState(false);
 
   const [isPlayBlocked, setIsPlayBlocked] = useState(false);
   useEffect(() => {
@@ -3647,6 +3694,7 @@ export default function Game() {
   const currentExpansionRef = useRef<string | null>(null);
   const availableDiscoverableCardsRef = useRef<number[]>([]);
   const effectsListRef = useRef<TimingEntry[]>([]);
+  const usedEffectsThisTurnRef = useRef<Map<string, number>>(new Map());
 
   // Keep refs in sync if other code uses setPlayArea / setDiscard directly
   useEffect(() => { deckRef.current = deck; }, [deck]);
@@ -3661,6 +3709,7 @@ export default function Game() {
   useEffect(() => { currentExpansionRef.current = currentExpansion; }, [currentExpansionRef]);
   useEffect(() => { availableDiscoverableCardsRef.current = availableDiscoverableCards; }, [availableDiscoverableCardsRef]);
   useEffect(() => { effectsListRef.current = effectsList; }, [effectsListRef]);
+  useEffect(() => { usedEffectsThisTurnRef.current = usedEffectsThisTurn; }, [usedEffectsThisTurnRef]);
 
   function setPlayAreaImmediate(next: React.SetStateAction<GameCard[]>) {
     if (typeof next === "function") {
@@ -3783,7 +3832,7 @@ export default function Game() {
     }
   }
 
-    function setEffectsListImmediate(next: React.SetStateAction<TimingEntry[]>) {
+  function setEffectsListImmediate(next: React.SetStateAction<TimingEntry[]>) {
     if (typeof next === "function") {
       const v = (next as (prev: TimingEntry[]) => TimingEntry[])(effectsListRef.current);
       effectsListRef.current = v;
@@ -3791,6 +3840,17 @@ export default function Game() {
     } else {
       effectsListRef.current = next as TimingEntry[];
       setEffectsList(next as TimingEntry[]);
+    }
+  }
+
+  function setUsedEffectsThisTurnImmediate(next: React.SetStateAction<Map<string, number>>) {
+    if (typeof next === "function") {
+      const v = (next as (prev: Map<string, number>) => Map<string, number>)(usedEffectsThisTurnRef.current);
+      usedEffectsThisTurnRef.current = v;
+      setUsedEffectsThisTurn(v);
+    } else {
+      usedEffectsThisTurnRef.current = next as Map<string, number>;
+      setUsedEffectsThisTurn(next as Map<string, number>);
     }
   }
 
@@ -3939,7 +3999,6 @@ export default function Game() {
       if ("fame" in prev) (reset as Partial<ResourceMap>).fame = (prev as Partial<ResourceMap>).fame;
       return reset;
     });
-    setUsedEffectsThisTurn(new Map());
     await draw(4);
     setIsAnimating(false);
   }
@@ -4010,6 +4069,8 @@ export default function Game() {
             hasBeenUsedThisTurn,
             markAsUsedThisTurn,
             t,
+            setUpgradeNotEndingTurn,
+            getCardAtIndex,
           };
           
           const result = await effect.execute(context);
@@ -4118,6 +4179,8 @@ export default function Game() {
           hasBeenUsedThisTurn,
           markAsUsedThisTurn,
           t,
+          setUpgradeNotEndingTurn,
+          getCardAtIndex,
         };
         
         await effect.execute(context);
@@ -4135,6 +4198,7 @@ export default function Game() {
 
     setEnemiesDefeatedThisTurn(() => []);
     setEffectsActivatedThisTurn(() => 0);
+    setUsedEffectsThisTurnImmediate(new Map());
 
     if (endRound) {
       // Achievement : First Round
@@ -4306,6 +4370,8 @@ export default function Game() {
               hasBeenUsedThisTurn,
               markAsUsedThisTurn,
               t,
+              setUpgradeNotEndingTurn,
+              getCardAtIndex,
             };
           
           const specialFameValue = fameValueEffect.execute(context);
@@ -4380,6 +4446,8 @@ export default function Game() {
               hasBeenUsedThisTurn,
               markAsUsedThisTurn,
               t,
+              setUpgradeNotEndingTurn,
+              getCardAtIndex,
             };
           
           const specialFameValue = fameValueEffect.execute(context);
@@ -4686,17 +4754,17 @@ export default function Game() {
     });
   };
 
-  const gatherProductionBonus = (card: GameCard, zone: string): Partial<ResourceMap> => {
-    const bonus: Partial<ResourceMap> = {};
-    
+  const gatherProductionBonus = (card: GameCard, zone: string): ResolvedProductionModifier[] => {
     if (zone !== t('playArea') && zone !== t('permanentZone')) {
-      return bonus;
+      return [];
     }
-    
+
     const modifiers: Array<{
       filter: (card: GameCard, t: (key: TranslationKeys) => string) => boolean;
       zones: string[] | ((t: (key: TranslationKeys) => string) => string[]);
-      bonus?: Partial<ResourceMap> | ((card: GameContext) => Partial<ResourceMap>);
+      bonus?: Partial<ResourceMap> | ((ctx: GameContext) => Partial<ResourceMap>);
+      multiplier?: number | ((context: GameContext) => number);
+      priority: number;
       source: GameCard;
     }> = [];
 
@@ -4708,12 +4776,14 @@ export default function Game() {
             filter: effect.productionModifier.filter,
             zones: effect.productionModifier.zones,
             bonus: effect.productionModifier.bonus,
+            multiplier: effect.productionModifier.multiplier,
+            priority: effect.priority ?? 0,
             source: activeCard
           });
         }
       }
     }
-    
+
     for (const activeCard of permanentZone) {
       if (activeCard.GetType(t).includes(t('permanent'))) {
         const effects = getCardEffects(activeCard.id, activeCard.currentSide);
@@ -4723,90 +4793,52 @@ export default function Game() {
               filter: effect.productionModifier.filter,
               zones: effect.productionModifier.zones,
               bonus: effect.productionModifier.bonus,
+              multiplier: effect.productionModifier.multiplier,
+              priority: effect.priority ?? 0,
               source: activeCard
             });
           }
         }
       }
     }
-    
-    for (const modifier of modifiers) {
-      const resolvedZones = typeof modifier.zones === 'function' 
-        ? modifier.zones(t) 
-        : modifier.zones;
-      
-      const context: GameContext = {
-            card,
-            zone,
-            resources:resourcesRef.current,
-            filterZone,
-            setResources,
-            handleGainResources,
-            handlePayResources,
-            draw,
-            effectEndTurn,
-            dropToPlayArea,
-            dropToBlocked,
-            dropToDeck,
-            dropToSideDeck,
-            dropToDiscard,
-            dropToCampaign,
-            dropToPermanent,
-            setDeck: setDeckImmediate,
-            setSideDeck: setSideDeckImmediate,
-            setPlayArea: setPlayAreaImmediate,
-            setDiscard: setDiscardImmediate,
-            setPermanentZone,
-            setCampaignDeck,
-            setTemporaryCardList,
-            setTemporaryCardListImmediate,
-            setBlockedZone,
-            setPurgedCards: setPurgedCardsImmediate,
-            setEffectsListImmediate,
-            deleteCardInZone,
-            replaceCardInZone,
-            mill,
-            openCheckboxPopup,
-            selectResourceChoice,
-            selectCardsFromZone,
-            selectCardsFromArray,
-            discoverCard,
-            boostProductivity,
-            registerEndRoundEffect,
-            addCardEffect,
-            fetchCardsInZone,
-            selectCardSides,
-            selectUpgradeCost,
-            selectTextInput,
-            selectStringChoice,
-            updateBlocks,
-            getBlockedBy,
-            getCardZone,
-            upgradeCard,
-            handleCardUpdate,
-            handleEnemyDefeated,
-            addDiscoverableCard,
-            getCardProduction,
-            hasBeenUsedThisTurn,
-            markAsUsedThisTurn,
-            t,
-        };
 
-      if (resolvedZones.includes(zone) && modifier.filter(card, t) && modifier.bonus) {
-        const bonusToApply = typeof modifier.bonus === 'function'
-          ? modifier.bonus(context)
-          : modifier.bonus;
-        
-        if (bonusToApply) {
-          Object.entries(bonusToApply).forEach(([key, value]) => {
-            const resourceKey = key as keyof ResourceMap;
-            bonus[resourceKey] = (bonus[resourceKey] || 0) + (value as number);
-          });
-        }
-      }
+    const resolved: ResolvedProductionModifier[] = [];
+
+    for (const modifier of modifiers) {
+      const resolvedZones = typeof modifier.zones === 'function'
+        ? modifier.zones(t)
+        : modifier.zones;
+
+      if (!resolvedZones.includes(zone) || !modifier.filter(card, t)) continue;
+
+      const context: GameContext = {
+        card, zone, resources: resourcesRef.current, filterZone, setResources,
+        handleGainResources, handlePayResources, draw, effectEndTurn,
+        dropToPlayArea, dropToBlocked, dropToDeck, dropToSideDeck, dropToDiscard,
+        dropToCampaign, dropToPermanent, setDeck: setDeckImmediate,
+        setSideDeck: setSideDeckImmediate, setPlayArea: setPlayAreaImmediate,
+        setDiscard: setDiscardImmediate, setPermanentZone, setCampaignDeck,
+        setTemporaryCardList, setTemporaryCardListImmediate, setBlockedZone,
+        setPurgedCards: setPurgedCardsImmediate, setEffectsListImmediate,
+        deleteCardInZone, replaceCardInZone, mill, openCheckboxPopup,
+        selectResourceChoice, selectCardsFromZone, selectCardsFromArray,
+        discoverCard, boostProductivity, registerEndRoundEffect, addCardEffect,
+        fetchCardsInZone, selectCardSides, selectUpgradeCost, selectTextInput,
+        selectStringChoice, updateBlocks, getBlockedBy, getCardZone, upgradeCard,
+        handleCardUpdate, handleEnemyDefeated, addDiscoverableCard, getCardProduction,
+        hasBeenUsedThisTurn, markAsUsedThisTurn, t, setUpgradeNotEndingTurn,
+        getCardAtIndex,
+      };
+
+      const bonus = typeof modifier.bonus === 'function' ? modifier.bonus(context) : modifier.bonus;
+      const mult = typeof modifier.multiplier === 'function' ? modifier.multiplier(context) : modifier.multiplier;
+
+      resolved.push({ bonus, multiplier: mult, priority: modifier.priority });
     }
-    
-    return bonus;
+
+    resolved.sort((a, b) => b.priority - a.priority);
+
+    return resolved;
   };
 
   const gatherAdditionalProductionOptions = (card: GameCard, zone: string): Array<Partial<ResourceMap>> => {
@@ -5182,6 +5214,8 @@ export default function Game() {
             hasBeenUsedThisTurn,
             markAsUsedThisTurn,
             t,
+            setUpgradeNotEndingTurn,
+            getCardAtIndex,
           };
           
           const canDestroy = await effect.execute(context);
@@ -5259,13 +5293,13 @@ export default function Game() {
   const hasBeenUsedThisTurn = (cardId: number, effectIndex: number): number => {
     const key = `${cardId}-${effectIndex}`;
 
-    return usedEffectsThisTurn.get(key) ?? 0;
+    return usedEffectsThisTurnRef.current.get(key) ?? 0;
   };
 
   const markAsUsedThisTurn = (cardId: number, effectIndex: number): void => {
     const key = `${cardId}-${effectIndex}`;
 
-    setUsedEffectsThisTurn(prev => {
+    setUsedEffectsThisTurnImmediate(prev => {
       const safePrev = prev instanceof Map ? prev : new Map();
       const newMap = new Map(safePrev);
       const count = newMap.get(key) ?? 0;
@@ -5358,10 +5392,12 @@ export default function Game() {
       hasBeenUsedThisTurn,
       markAsUsedThisTurn,
       t,
+      setUpgradeNotEndingTurn,
+      getCardAtIndex,
       startTutorial,
     };
 
-    if (typeof effectIndex === "number" && effectIndex >= 0 && effectIndex < effects.length) {
+    if (effectIndex && effectIndex >= 0 && effectIndex < effects.length) {
       const eff = effects[effectIndex];
 
       if (eff.usesPerTurn && eff.usesPerTurn <= hasBeenUsedThisTurn(card.id, effectIndex)) {
@@ -5419,6 +5455,10 @@ export default function Game() {
     }
 
     for (const effect of matchingEffects) {
+      effectIndex = effects.indexOf(effect);
+      if (effect.usesPerTurn && effect.usesPerTurn <= hasBeenUsedThisTurn(card.id, effectIndex)) {
+        continue;
+      }
       if (await effect.execute(context)) {
         await dropToDiscard({ id: card.id, fromZone: zone });
         break;
@@ -5799,6 +5839,8 @@ export default function Game() {
               hasBeenUsedThisTurn,
               markAsUsedThisTurn,
               t,
+              setUpgradeNotEndingTurn,
+              getCardAtIndex,
             };
           await effect.execute(context);
         }
@@ -5882,6 +5924,8 @@ export default function Game() {
         hasBeenUsedThisTurn,
         markAsUsedThisTurn,
         t,
+        setUpgradeNotEndingTurn,
+        getCardAtIndex,
       };
       const cannotBePurged = effects.some(eff =>
         (eff.timing === 'removed' || eff.timing === 'purged') && 
@@ -6018,6 +6062,8 @@ export default function Game() {
                           hasBeenUsedThisTurn,
                           markAsUsedThisTurn,
                           t,
+                          setUpgradeNotEndingTurn,
+                          getCardAtIndex,
                         };
                       await effect.execute(context);
                     }
@@ -6131,6 +6177,8 @@ export default function Game() {
         hasBeenUsedThisTurn,
         markAsUsedThisTurn,
         t,
+        setUpgradeNotEndingTurn,
+        getCardAtIndex,
       };
       const shouldEnd: boolean = expansion.checkExpansionEnd? expansion.checkExpansionEnd(context) : false;
       if (campaignDeckRef.current.filter((c) => c.discoverable).length === 0 || shouldEnd) {
@@ -6308,6 +6356,8 @@ export default function Game() {
           hasBeenUsedThisTurn,
           markAsUsedThisTurn,
           t,
+          setUpgradeNotEndingTurn,
+          getCardAtIndex,
         };
         
         const additionalCostPaid = await additionalCostEffect.execute(context);
@@ -6345,7 +6395,12 @@ export default function Game() {
       updateBlocks(card.id, null);
     }
 
-    await discardEndTurn();
+    if (!upgradeNotEndingTurn) {
+      await discardEndTurn();
+    }
+    else {
+      setUpgradeNotEndingTurn(false);
+    }
   };
 
   const handleGainResources = async (card: GameCard, resources: Partial<ResourceMap>, zone: string, toZone?: string) => {
@@ -6416,8 +6471,14 @@ export default function Game() {
           hasBeenUsedThisTurn,
           markAsUsedThisTurn,
           t,
+          setUpgradeNotEndingTurn,
+          getCardAtIndex,
         };
         
+        const effectIndex = effects.map(e => e[0]).indexOf(effect);
+        if (effect.usesPerTurn && effect.usesPerTurn <= hasBeenUsedThisTurn(c.id, effectIndex)) {
+          continue;
+        }
         await effect.execute(context);
       }
     }
@@ -6526,6 +6587,8 @@ export default function Game() {
           hasBeenUsedThisTurn,
           markAsUsedThisTurn,
           t,
+          setUpgradeNotEndingTurn,
+          getCardAtIndex,
         };
         
         if (! await effect.execute(context)) {
@@ -6625,6 +6688,8 @@ export default function Game() {
             hasBeenUsedThisTurn,
             markAsUsedThisTurn,
             t,
+            setUpgradeNotEndingTurn,
+            getCardAtIndex,
           };
           
           if (await effect.execute(context)) {
@@ -6690,6 +6755,13 @@ export default function Game() {
       onCancel: () => setConfirmationPopup(null),
     });
   };
+
+  function getCardAtIndex(zone: TranslationKeys, index: number) {
+    if (zone === 'deck' && deckRef.current.length > 0 && deckRef.current.length - 1 <= index) {
+      return deck[index];
+    }
+    return undefined;
+  }
 
   // -------------------
   // Memory management

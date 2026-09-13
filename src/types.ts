@@ -86,6 +86,17 @@ export const emptyResource: ResourceMap = {
   fame: 0
 };
 
+export const CHECKBOX_COLOR_MAP: Record<string, string> = {
+  green: "#86efac",
+  red: "#fca5a5",
+  blue: "#93c5fd",
+  yellow: "#fde047",
+  purple: "#d8b4fe",
+  orange: "#fdba74",
+  gray: "#d1d5db",
+  black: "#4b5563",
+};
+
 export type Upgrade = {
   cost: Partial<ResourceMap> | null;
   nextSide: number; // 1..4

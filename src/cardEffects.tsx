@@ -58,10 +58,12 @@ export type GameContext = {
   handleCardUpdate: (updatedCard: GameCard, zone: string) => void;
   handleEnemyDefeated: (card: GameCard, zone: string) => Promise<void>;
   addDiscoverableCard: (cardId: number, force?: boolean) => void;
-  getCardProduction: (card: GameCard, zone: string) => Partial<ResourceMap>[];
+  getCardProduction: (card: GameCard, zone: string) => (Partial<ResourceMap> | ResolvedProductionModifier[])[];
   hasBeenUsedThisTurn: (cardId: number, effectIndex: number) => number;
   markAsUsedThisTurn: (cardId: number, effectIndex: number) => void;
   t: (key: TranslationKeys) => string;
+  setUpgradeNotEndingTurn: (flag: boolean) => void;
+  getCardAtIndex: (zone: TranslationKeys, index: number) => GameCard | undefined;
   startTutorial?: () => Promise<void>;
 };
 
@@ -79,8 +81,15 @@ export type CardEffect = {
     filter: (card: GameCard, t: (key: TranslationKeys) => string) => boolean;
     zones: string[] | ((t: (key: TranslationKeys) => string) => string[]);
     bonus?: Partial<ResourceMap> | ((ctx: GameContext) => Partial<ResourceMap>);
+    multiplier?: number | ((context: GameContext) => number);
     addOptions?: (card: GameCard) => Array<Partial<ResourceMap>>;
   };
+};
+
+export type ResolvedProductionModifier = {
+  bonus?: Partial<ResourceMap>;
+  multiplier?: number;
+  priority: number;
 };
 
 export type CardFameValue = {
@@ -323,6 +332,27 @@ function canUpgradeToType(card: GameCard, type: TranslationKeys, ctx: GameContex
   const startIndex = card.currentSide - 1;
   return findTypeUpgradePath(card, startIndex, type, ctx) !== null;
 }
+
+function getNonZeroResources(
+  resources: Partial<ResourceMap>
+): Partial<ResourceMap> {
+  const entries = Object.entries(resources) as [keyof ResourceMap, number | undefined][];
+  const nonZero = entries.filter(
+    ([, value]) => typeof value === "number" && value > 0
+  ) as [keyof ResourceMap, number][];
+  return Object.fromEntries(nonZero);
+}
+
+const resourceCheckboxCardsFilter = (card: GameCard) => {
+  const sideBoxes = card.checkboxes[card.currentSide - 1];
+  if (!sideBoxes || sideBoxes.length === 0) return false;
+
+  return sideBoxes.some((box) => {
+    const res = getCheckboxResources(box.content);
+    if (!res) return false;
+    return Object.entries(res).some(([key, val]) => key !== 'fame' && (val ?? 0) > 0);
+  });
+};
 
 // -------------------
 // Get Effects
@@ -767,7 +797,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           'land'
         );
         if (selectedCards.length > 0) {
-          const choice = await ctx.selectResourceChoice(ctx.getCardProduction(selectedCards[0], ctx.zone), 1);
+          const choice = await ctx.selectResourceChoice(ctx.getCardProduction(selectedCards[0], ctx.zone) as Partial<ResourceMap>, 1);
             if(choice) {
               await applyResourceMapDelta(ctx, choice);
               return true;
@@ -795,7 +825,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       timing: "played",
       execute: async function (ctx) {
         let selectedCards: GameCard[] = [];
-        const filter = (card: GameCard) => (ctx.getCardProduction(card, ctx.zone).some((res) => (res.coin ?? 0) >= 1));
+        const filter = (card: GameCard) => ((ctx.getCardProduction(card, ctx.zone)).some((res) => ((res  as Partial<ResourceMap>).coin ?? 0) >= 1));
         while (selectedCards.length == 0 && ctx.filterZone(ctx.zone, filter).length !== 0) {
           selectedCards = await ctx.selectCardsFromZone(filter, ctx.t('playArea'), this.description(ctx.t), 1, ctx.card, 0);
         }
@@ -840,7 +870,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           'building'
         );
         if (selectedCards.length > 0) {
-          const choice = await ctx.selectResourceChoice(ctx.getCardProduction(selectedCards[0], ctx.zone), 1);
+          const choice = await ctx.selectResourceChoice(ctx.getCardProduction(selectedCards[0], ctx.zone) as Partial<ResourceMap>, 1);
             if(choice) {
               await applyResourceMapDelta(ctx, choice);
               return true;
@@ -887,7 +917,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       timing: "played",
       execute: async function (ctx) {
         let selectedCards: GameCard[] = [];
-        const filter = (card: GameCard) => (ctx.getCardProduction(card, ctx.zone).some((res) => (res.coin ?? 0) >= 1));
+        const filter = (card: GameCard) => (ctx.getCardProduction(card, ctx.zone).some((res) => ((res as Partial<ResourceMap>).coin ?? 0) >= 1));
         while (selectedCards.length == 0 && ctx.filterZone(ctx.zone, filter).length !== 0) {
           selectedCards = await ctx.selectCardsFromZone(filter, ctx.t('playArea'), this.description(ctx.t), 1, ctx.card, 0);
         }
@@ -932,7 +962,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           'land'
         );
         if (selectedCards.length > 0) {
-          const choice = await ctx.selectResourceChoice(ctx.getCardProduction(selectedCards[0], ctx.zone), 1);
+          const choice = await ctx.selectResourceChoice(ctx.getCardProduction(selectedCards[0], ctx.zone) as Partial<ResourceMap>, 1);
             if(choice) {
               await applyResourceMapDelta(ctx, choice);
               return true;
@@ -2021,7 +2051,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           'land'
         );
         if (selectedCards.length > 0) {
-          const choice = await ctx.selectResourceChoice(ctx.getCardProduction(selectedCards[0], ctx.zone), 1);
+          const choice = await ctx.selectResourceChoice(ctx.getCardProduction(selectedCards[0], ctx.zone) as Partial<ResourceMap>, 1);
             if(choice) {
               await applyResourceMapDelta(ctx, choice);
               return true;
@@ -2979,7 +3009,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         let selectedCards: GameCard[] = [];
         const filter = (card: GameCard) =>
           (ctx.getCardProduction(card, ctx.zone).some(
-            (res) => ((res.coin ?? 0) + (res.wood ?? 0) + (res.stone ?? 0) + (res.metal ?? 0) + (res.sword ?? 0) + (res.tradegood ?? 0)) >= 1));
+          (res) => (((res as Partial<ResourceMap>).coin ?? 0) + ((res as Partial<ResourceMap>).wood ?? 0) + ((res as Partial<ResourceMap>).stone ?? 0) +
+                    ((res as Partial<ResourceMap>).metal ?? 0) + ((res as Partial<ResourceMap>).sword ?? 0) + ((res as Partial<ResourceMap>).tradegood ?? 0)) >= 1));
         while (selectedCards.length == 0 && ctx.filterZone(ctx.zone, filter).length !== 0) {
           selectedCards = await ctx.selectCardsFromZone(filter, ctx.t('playArea'), this.description(ctx.t), 3, ctx.card, 0);
         }
@@ -3026,7 +3057,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           'building'
         );
         if (selectedCards.length > 0) {
-          const choice = await ctx.selectResourceChoice(ctx.getCardProduction(selectedCards[0], ctx.zone), 1);
+          const choice = await ctx.selectResourceChoice(ctx.getCardProduction(selectedCards[0], ctx.zone) as Partial<ResourceMap>, 1);
             if(choice) {
               await applyResourceMapDelta(ctx, choice);
               return true;
@@ -3134,7 +3165,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         let selectedCards: GameCard[] = [];
         const filter = (card: GameCard) =>
           (ctx.getCardProduction(card, ctx.zone).some(
-            (res) => ((res.coin ?? 0) + (res.wood ?? 0) + (res.stone ?? 0) + (res.metal ?? 0) + (res.sword ?? 0) + (res.tradegood ?? 0)) >= 1));
+            (res) => (  ((res as Partial<ResourceMap>).coin ?? 0) + ((res as Partial<ResourceMap>).wood ?? 0) + ((res as Partial<ResourceMap>).stone ?? 0) + ((res as Partial<ResourceMap>).metal ?? 0) +
+                        ((res as Partial<ResourceMap>).sword ?? 0) + ((res as Partial<ResourceMap>).tradegood ?? 0)) >= 1));
         while (selectedCards.length == 0 && ctx.filterZone(ctx.zone, filter).length !== 0) {
           selectedCards = await ctx.selectCardsFromZone(filter, ctx.t('playArea'), this.description(ctx.t), 3, ctx.card, 0);
         }
@@ -3181,7 +3213,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           'land'
         );
         if (selectedCards.length > 0) {
-          const choice = await ctx.selectResourceChoice(ctx.getCardProduction(selectedCards[0], ctx.zone), 1);
+          const choice = await ctx.selectResourceChoice(ctx.getCardProduction(selectedCards[0], ctx.zone) as Partial<ResourceMap>, 1);
             if(choice) {
               await applyResourceMapDelta(ctx, choice);
               return true;
@@ -6207,7 +6239,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         timing: "onClick",
         usesPerTurn: 1,
         execute: async (ctx) => {
-          await applyResourceMapDelta(ctx, { sword: 3 });
+          await applyResourceMapDelta(ctx, { coin: 3 });
+          ctx.markAsUsedThisTurn(ctx.card.id, 0);
           return false;
         }
       },
@@ -6488,7 +6521,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: (t) => parseEffects(t('effect_description_a_certain_lady')).effects[0].text,
       timing: "played",
       execute: async function(ctx)  {
-        const card = (await ctx.selectCardsFromZone((c) => ctx.getCardProduction(c, ctx.zone).some((map) => hasEnoughResources(map, {coin: 1})), ctx.t('playArea'), this.description(ctx.t), 1, ctx.card, 0))[0];
+        const card = (await ctx.selectCardsFromZone((c) =>
+          ctx.getCardProduction(c, ctx.zone).some((map) => hasEnoughResources(map as Partial<ResourceMap>, {coin: 1})), ctx.t('playArea'), this.description(ctx.t), 1, ctx.card, 0))[0];
         if (card) {
           await removeResourceFromCard(card, {coin: 1});
           ctx.replaceCardInZone(ctx.zone, card.id, card);
@@ -6568,7 +6602,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         description: (t) => parseEffects(t('none')).effects[0].text,
         timing: "played",
         execute: async function(ctx)  {
-          const cards = ctx.fetchCardsInZone((c) => ctx.getCardProduction(c, ctx.zone).some((map) => hasEnoughResources(map, {wood: 1})), ctx.zone);
+          const cards = ctx.fetchCardsInZone((c) =>
+            ctx.getCardProduction(c, ctx.zone).some((map) => hasEnoughResources(map as Partial<ResourceMap>, {wood: 1})), ctx.zone);
           await ctx.dropToDiscard({id: cards.map((c) => c.id), fromZone: ctx.zone});
           return false;
         }
@@ -6698,7 +6733,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         description: (t) => parseEffects(t('none')).effects[0].text,
         timing: "played",
         execute: async function(ctx)  {
-          const cards = ctx.fetchCardsInZone((c) => ctx.getCardProduction(c, ctx.zone).some((map) => hasEnoughResources(map, {wood: 1})), ctx.zone);
+          const cards = ctx.fetchCardsInZone((c) =>
+            ctx.getCardProduction(c, ctx.zone).some((map) => hasEnoughResources(map as Partial<ResourceMap>, {wood: 1})), ctx.zone);
           await ctx.dropToDiscard({id: cards.map((c) => c.id), fromZone: ctx.zone});
           return false;
         }
@@ -6879,7 +6915,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         description: (t) => parseEffects(t('none')).effects[0].text,
         timing: "played",
         execute: async function(ctx)  {
-          const cards = ctx.fetchCardsInZone((c) => ctx.getCardProduction(c, ctx.zone).some((map) => hasEnoughResources(map, {coin: 1})), ctx.zone);
+          const cards = ctx.fetchCardsInZone((c) =>
+            ctx.getCardProduction(c, ctx.zone).some((map) => hasEnoughResources(map as Partial<ResourceMap>, {coin: 1})), ctx.zone);
           await ctx.dropToDiscard({id: cards.map((c) => c.id), fromZone: ctx.zone});
           return false;
         }
@@ -7591,7 +7628,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             const checkboxes = ctx.card.checkboxes[ctx.card.currentSide - 1].filter((c) => !c.checked && c.content.includes('✓'));
             await checkBoxes(ctx.card, [checkboxes[0]]);
             ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
-            if (checkboxes[0].content.includes('→')) {
+            if (checkboxes[0].content.includes('effects/arrow')) {
               await ctx.upgradeCard(ctx.card, 4, true);
               await ctx.dropToPermanent({id: ctx.card.id, fromZone: ctx.zone});
               ctx.replaceCardInZone(ctx.t('permanentZone'), ctx.card.id, ctx.card);
@@ -8408,8 +8445,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: (t) => parseEffects(t('effect_description_diplomat_distant_lands')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
-        const t_to_s = "resources/tradegood → resources/sword";
-        const s_to_t = "resources/sword → resources/tradegood";
+        const t_to_s = "resources/tradegood effects/arrow resources/sword";
+        const s_to_t = "resources/sword effects/arrow resources/tradegood";
         const choice = await ctx.selectStringChoice(ctx.t('string_choice_tradegood_or_sword'), [t_to_s, s_to_t]);
         if (choice === t_to_s && ctx.resources.tradegood > 0) {
           const maxTradegoodForSelect = ctx.resources.tradegood < 3 ? ctx.resources.tradegood : 3;
@@ -8474,7 +8511,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: (t) => parseEffects(t('effect_description_stop_distant_lands_3')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
-        const woodFilter = (card: GameCard) => (ctx.getCardProduction(card, ctx.zone).some((res) => (res.wood ?? 0) >= 1) && !card.GetType(ctx.t).includes(ctx.t('ship')));
+        const woodFilter = (card: GameCard) => (ctx.getCardProduction(card, ctx.zone).some((res) => ((res as Partial<ResourceMap>).wood ?? 0) >= 1) && !card.GetType(ctx.t).includes(ctx.t('ship')));
         const canUpgradeToShipFilter = (card: GameCard) => (canUpgradeToType(card, 'ship', ctx));
         let ships = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('ship')), ctx.t('deck'));
         let woodProducingCards = ctx.fetchCardsInZone(woodFilter, ctx.t('deck'));
@@ -8553,6 +8590,337 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           ctx.addDiscoverableCard(id, true);
         }
         ctx.deleteCardInZone(ctxZone, ctxCardId);
+        return false;
+      }
+    }],
+  },
+  235: {
+    1: [{ // Manœuvre de la Flotte
+      description: (t) => parseEffects(t('effect_description_fleet_maneuvers')).effects[0].text,
+      timing: "onClick",
+      execute: async function (ctx) {
+        const seafarings = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('seafaring')), ctx.t('playArea'));
+        const seafaringsCounts = [2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 6, 7];
+        let seafaringsToDiscard = seafaringsCounts[ctx.card.checkboxes[ctx.card.currentSide - 1].filter(c => c.checked === true).length];
+
+        // Checkbox
+        if (seafarings.length >= seafaringsToDiscard) {
+          const selected = await ctx.selectCardsFromArray(seafarings, ctx.t('playArea'), this.description(ctx.t), seafaringsToDiscard, 0, ctx.card, 'seafaring');
+          if (selected.length < seafaringsToDiscard) {
+            return false;
+          }
+
+          await checkNextBox(ctx.card);
+
+          // Apply resource effect
+          let lastCheckbox;
+          for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
+            if (!checkbox.checked) {
+              const checkboxResources = getCheckboxResources(lastCheckbox?.content);
+              if (checkboxResources) {
+                await setResourceMapToCard(ctx.card, checkboxResources);
+              }
+              break;
+            }
+            lastCheckbox = checkbox;
+          }
+
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+          ctx.effectEndTurn();
+        }
+        return false;
+      }
+    }],
+  },
+  236: {
+    1: [{ // Préparation
+      description: (t) => parseEffects(t('effect_description_planning')).effects[0].text,
+      timing: "onClick",
+      execute: async function (ctx) {
+        if (!getLastCheckboxChecked(ctx.card)) {
+          const people = await ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'));
+          if (people.length < 1) {
+            return false;
+          }
+          const selected = (await ctx.selectCardsFromArray(people, ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card, 'person'))[0];
+          if (!selected) {
+            return false;
+          }
+          await checkNextBox(ctx.card);
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+          await ctx.dropToDiscard({id: selected.id, fromZone: ctx.t('playArea')});
+          ctx.effectEndTurn();
+        }
+        return false;
+      }
+    }],
+    3: [{ // Bien Préparé
+      description: (t) => parseEffects(t('effect_description_well_prepared')).effects[0].text,
+      timing: "onClick",
+      usesPerTurn: 1,
+      execute: async function (ctx) {
+        await checkNextBox(ctx.card);
+        ctx.setUpgradeNotEndingTurn(true);
+        if (getLastCheckboxChecked(ctx.card)) {
+          ctx.deleteCardInZone(ctx.zone, ctx.card.id);
+        }
+        else {
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+        }
+        ctx.markAsUsedThisTurn(ctx.card.id, 0);
+        return false;
+      }
+    }],
+  },
+  237: {
+    1: [{ // Moments Difficiles
+      description: (t) => parseEffects(t('effect_description_hardships')).effects[0].text,
+      timing: "onClick",
+      execute: async function (ctx) {
+        const people = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'));
+        if (people.length < 2) {
+          return false;
+          }
+        const selected = await ctx.selectCardsFromArray(people, ctx.t('playArea'), this.description(ctx.t), 2, 0, ctx.card, 'person');
+        if (!selected || selected.length < 2) {
+          return false;
+        }
+        await checkNextBox(ctx.card);
+        if (getLastCheckboxChecked(ctx.card)) {
+          ctx.upgradeCard(ctx.card, 3, true);
+        }
+        ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+        await ctx.dropToDiscard({id: selected.map(c => c.id), fromZone: ctx.t('playArea')});
+        return false;
+      }
+    }],
+    3: [{ // Camaraderie
+      description: (t) => parseEffects(t('effect_description_friendship')).effects[0].text,
+      timing: "onClick",
+      execute: async function (ctx) {
+        const people = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'));
+        if (people.length < 2) {
+          return false;
+          }
+        const selected = await ctx.selectCardsFromArray(people, ctx.t('playArea'), this.description(ctx.t), 2, 0, ctx.card, 'person');
+        if (!selected || selected.length < 2) {
+          return false;
+        }
+        const resource = await ctx.selectResourceChoice({ coin: 1, wood: 1, stone: 1, sword: 1, metal: 1, tradegood: 1 }, 1);
+        if (!resource) {
+          return false;
+        }
+        await applyResourceMapDelta(ctx, resource);
+        await ctx.dropToDiscard({id: selected.map(c => c.id), fromZone: ctx.t('playArea')});
+        return false;
+      }
+    }],
+  },
+  238: {
+    1: [
+      { // Insolation
+        description: (t) => parseEffects(t('effect_description_sun_stroke')).effects[0].text,
+        timing: "otherCardPlayed",
+        usesPerTurn: 1,
+        priority: 1,
+        execute: async function (ctx) {
+          if (!ctx.cardsForTrigger || ctx.cardsForTrigger.length === 0) {
+            return false;
+          }
+          const people = ctx.cardsForTrigger.filter(c => c.GetType(ctx.t).includes(ctx.t('person')));
+          if (people.length < 1) {
+            return false;
+          }
+          const selected = (await ctx.selectCardsFromArray(people, ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card, 'person'))[0];
+          if (!selected) {
+            return false;
+          }
+          if (ctx.otherEffects) {
+            ctx.setEffectsListImmediate(ctx.otherEffects.filter(ce => ce.card.id !== selected.id));
+          }
+          await ctx.dropToDiscard({id: selected.id, fromZone: ctx.t('playArea')});
+          ctx.markAsUsedThisTurn(ctx.card.id, 0);
+          return false;
+        }
+      },
+      {
+        description: (t) => parseEffects(t('effect_description_sun_stroke')).effects[0].text,
+        timing: "endOfRound",
+        execute: async function (ctx) {
+          await ctx.upgradeCard(ctx.card, 3, true);
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+          return false;
+        }
+      }
+    ],
+    3: [
+      { // Soif
+        description: (t) => parseEffects(t('effect_description_thirst')).effects[0].text,
+        timing: "onResourceGain",
+        usesPerTurn: 1,
+        execute: async function (ctx) {
+          const resources = getNonZeroResources(ctx.resources);
+          if (Object.keys(resources).length === 0) {
+            return false;
+          }
+          const selected = await ctx.selectResourceChoice(resources, 1);
+          if (selected) {
+            await applyResourceMapDelta(ctx, selected, true);
+          }
+          ctx.markAsUsedThisTurn(ctx.card.id, 0);
+          return false;
+        }
+      },
+      {
+        description: (t) => parseEffects(t('effect_description_thirst')).effects[0].text,
+        timing: "onClick",
+        execute: async function (ctx) {
+          if (ctx.resources.coin < 4) {
+            return false;
+          }
+          if (await applyResourceMapDelta(ctx, {coin: 4}, true)) {
+            ctx.deleteCardInZone(ctx.zone, ctx.card.id);
+            ctx.effectEndTurn();
+          }
+          return false;
+        }
+      }
+    ],
+  },
+  239: {
+    1: [{ // Historienne
+      description: (t) => parseEffects(t('effect_description_historian')).effects[0].text,
+      timing: "onClick",
+      execute: async function (ctx) {
+        if (!getLastCheckboxChecked(ctx.card)) {
+          await checkNextBox(ctx.card);
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+          ctx.effectEndTurn();
+        }
+        return false;
+      }
+    }],
+    3: [{ // Handy Craftsman
+      description: (t) => parseEffects(t('effect_description_handy_craftsman')).effects[0].text,
+      timing: "onClick",
+      execute: async function (ctx) {
+        const resourceCheckBoxCards = ctx.fetchCardsInZone(resourceCheckboxCardsFilter, ctx.t('playArea'));
+        if (resourceCheckBoxCards.length === 0) {
+          return false;
+        }
+        const selectedCard = (await ctx.selectCardsFromArray(resourceCheckBoxCards, ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card))[0];
+        if (!selectedCard) {
+          return false;
+        }
+
+        return await new Promise<boolean>((resolve) => {
+          ctx.openCheckboxPopup(selectedCard, 1, 0, async (boxes) => {
+            if (boxes.length !== 0) {
+              for (const box of boxes) {
+                const baseResources = getCheckboxResources(box.content) ?? {};
+                const tripledResources = Object.fromEntries(
+                  Object.entries(baseResources).map(([key, value]) => [key, (value ?? 0) * 3])
+                );
+                await applyResourceMapDelta(ctx, tripledResources);
+              }
+              await checkBoxes(selectedCard, boxes);
+              ctx.replaceCardInZone(ctx.t('playArea'), selectedCard.id, selectedCard);
+              resolve(true);
+            }
+            resolve(false);
+          });
+        });
+      }
+    }],
+  },
+  240: {
+    1: [{ // Mal de Mer
+      description: (t) => parseEffects(t('effect_description_seasick')).effects[0].text,
+      timing: "played",
+      execute: async function (ctx) {
+        const people = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'));
+        await ctx.dropToDiscard({id: people.map(c => c.id), fromZone: ctx.t('playArea')});
+        await checkNextBox(ctx.card);
+        if (getLastCheckboxChecked(ctx.card)) {
+          await ctx.upgradeCard(ctx.card, 3, true);
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+          await ctx.dropToDiscard({id: ctx.card.id, fromZone: ctx.zone});
+        }
+        else {
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+        }
+        return false;
+      }
+    }],
+    3: [
+      { // Nouvelle Normalité
+        description: (t) => parseEffects(t('effect_description_new_normal')).effects[0].text,
+        timing: "modifyProduction",
+        priority: -1,
+        productionModifier: {
+          filter: (card: GameCard, t) => card.GetType(t!).includes(t!('person')),
+          zones: (t) => [t('playArea')],
+          multiplier: 0
+        },
+        execute: async function () {
+          return false;
+        }
+      },
+      {
+        description: (t) => parseEffects(t('effect_description_new_normal')).effects[1].text,
+        timing: "onClick",
+        execute: async function (ctx) {
+          if (ctx.resources.tradegood < 10) {
+            return false;
+          }
+          await applyResourceMapDelta(ctx, {tradegood: 10}, true);
+          ctx.deleteCardInZone(ctx.zone, ctx.card.id);
+          return false;
+        }
+      },
+    ],
+  },
+  241: {
+    3: [
+      { // Aventurière
+        description: (t) => parseEffects(t('effect_description_adventurer')).effects[0].text,
+        timing: "staysInPlay",
+        execute: async function () {
+          return false;
+        }
+      },
+      { // Aventurière
+        description: (t) => parseEffects(t('effect_description_adventurer')).effects[1].text,
+        timing: "onClick",
+        execute: async function (ctx) {
+          const topCard = ctx.getCardAtIndex('deck', 0);
+          if (!topCard) {
+            return false;
+          }
+          const effects = parseEffects(topCard.GetEffect(ctx.t)).effects;
+          let choice: string = 'choice_gain_production'; /* TranslationKeys */
+          if (effects.length !== 0) {
+            const activableEffects = effects.map(e => e.keyword).filter(k => k === "effects/time" || "effects/activate");
+            if (activableEffects.length !== 0) {
+              /* TODO : String to chose production or effect =>  */
+              choice = 'choice_select_effect';
+            }
+          }
+          if (choice === 'choice_gain_produciton') {
+            /* TODO : Gain Production*/
+          }
+          else if (choice === 'choice_select_effect'){
+            /* TODO : String Select effect with effect[n].text*/
+          }
+          return false;
+        }
+      }
+    ],
+    4: [{ // Passeur
+      description: (t) => parseEffects(t('effect_description_ferryman')).effects[0].text,
+      timing: "onClick",
+      execute: async function (ctx) {
+        await ctx.mill(1);
         return false;
       }
     }],
@@ -8773,6 +9141,14 @@ export const cardFameValueRegistry: Record<number, Record<number, CardFameValue>
       description: "Vaut 2 par check",
       execute: function(ctx)  {
         return 2 * (ctx.card.checkboxes[2].filter(cb => cb.checked).length);
+      }
+    },
+  },
+  239: {
+    1: { // Historienne
+      description: "Vaut 2 par check",
+      execute: function(ctx)  {
+        return 2 * (ctx.card.checkboxes[0].filter(cb => cb.checked).length);
       }
     },
   }

@@ -1191,7 +1191,7 @@ export const allCards: GameCard[] = [
         {content: "fame x25", checked: false, count: 7},
         {content: "fame x32", checked: false, count: 8},
         {content: "fame x40", checked: false, count: 9},
-        {content: "(135) →", checked: false, count: 10}
+        {content: "(135) effects/arrow", checked: false, count: 10}
       ],
       [],
       [
@@ -1256,7 +1256,7 @@ export const allCards: GameCard[] = [
         {content: "fame x25", checked: false, count: 9},
         {content: "fame x32", checked: false, count: 10},
         {content: "fame x40", checked: false, count: 11},
-        {content: "→", checked: false,count: 12},
+        {content: "effects/arrow", checked: false,count: 12},
       ],
       [],
       [
@@ -1316,7 +1316,7 @@ export const allCards: GameCard[] = [
         {content: "", checked: false, count: 40},
         {content: "", checked: false, count: 55},
         {content: "", checked: false, count: 75},
-        {content: "→", checked: false,count: 100},
+        {content: "effects/arrow", checked: false,count: 100},
       ],
       [],
       [
@@ -6524,7 +6524,7 @@ export const allCards: GameCard[] = [
     checkboxes: [
       [
         {content: "", checked: false},{content: "", checked: false},
-        {content: "", checked: false},{content: "→", checked: false}
+        {content: "", checked: false},{content: "effects/arrow", checked: false}
       ],
       [],
       [
@@ -6886,7 +6886,7 @@ export const allCards: GameCard[] = [
         {content: "", checked: false},
         {content: "", checked: false},
         {content: "", checked: false},
-        {content: "→", checked: false}
+        {content: "effects/arrow", checked: false}
       ],
       []
     ],
@@ -7031,7 +7031,7 @@ export const allCards: GameCard[] = [
         {content: "", checked: false},
         {content: "", checked: false},
         {content: "", checked: false},
-        {content: "→", checked: false}
+        {content: "effects/arrow", checked: false}
       ],
       [],
       [],
@@ -7510,7 +7510,7 @@ export const allCards: GameCard[] = [
     checkboxes: [
       [
         {content: "", checked: false},{content: "", checked: false},
-        {content: "", checked: false},{content: "→", checked: false}
+        {content: "", checked: false},{content: "effects/arrow", checked: false}
       ],
       [],
       [
@@ -7648,8 +7648,8 @@ export const allCards: GameCard[] = [
     checkboxes: [
       [],
       [
-        {content: "✓", checked: false},{content: "✓", checked: false},{content: "✓ →", checked: false},
-        {content: "X", checked: false},{content: "X", checked: false},{content: "X effects/destroy", checked: false}
+        {content: "green", checked: false},{content: "green", checked: false},{content: "green effects/arrow", checked: false},
+        {content: "red", checked: false},{content: "red", checked: false},{content: "red effects/destroy", checked: false}
       ],
       [],
       []
@@ -7750,7 +7750,7 @@ export const allCards: GameCard[] = [
         {content: "fame x25", checked: false, count: 9},
         {content: "fame x32", checked: false, count: 10},
         {content: "fame x40", checked: false, count: 11},
-        {content: "→", checked: false, count: 12}
+        {content: "effects/arrow", checked: false, count: 12}
       ],
       [],
       [
@@ -8955,7 +8955,7 @@ export const allCards: GameCard[] = [
       throw new Error("Function not implemented.");
     }
   },
-  { id: 234,
+  { id: 235,
     name: ['fleet_maneuvers', '', '', ''],
     resources: [
       [],
@@ -8977,6 +8977,345 @@ export const allCards: GameCard[] = [
     ],
     currentSide: 1,
     type: ['permanent', '', '', ''],
+    choice: false,
+    checkboxes: [
+      [
+        {content: "fame x2", checked: false, count: 2},
+        {content: "fame x4", checked: false, count: 2},
+        {content: "fame x7", checked: false, count: 3},
+        {content: "fame x10", checked: false, count: 3},
+        {content: "fame x13", checked: false, count: 3},
+        {content: "fame x17", checked: false, count: 4},
+        {content: "fame x21", checked: false, count: 4},
+        {content: "fame x25", checked: false, count: 4},
+        {content: "fame x29", checked: false, count: 4},
+        {content: "fame x35", checked: false, count: 5},
+        {content: "fame x42", checked: false, count: 6},
+        {content: "fame x50", checked: false, count: 7},
+      ],
+      [],
+      [],
+      []
+    ],
+    negative: [false, false, false, false],
+    discoverable: true,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 236,
+    name: ['planning', '', 'well_prepared', ''],
+    resources: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    effects: [
+      'effect_description_planning',
+      '',
+      'effect_description_well_prepared',
+      '',
+    ],
+    upgrades: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    currentSide: 1,
+    type: ['permanent', '', 'state - permanent', ''],
+    choice: false,
+    checkboxes: [
+      [
+        {content: "", checked: false},
+        {content: "", checked: false},
+        {content: "", checked: false},
+        {content: "", checked: false},
+        {content: "", checked: false},
+        {content: "", checked: false},
+        {content: "", checked: false},
+        {content: "", checked: false},
+      ],
+      [],
+      [
+        {content: "", checked: false},
+        {content: "", checked: false},
+        {content: "", checked: false},
+        {content: "", checked: false},
+        {content: "", checked: false},
+        {content: "", checked: false},
+        {content: "", checked: false},
+        {content: "effects/destroy", checked: false},
+      ],
+      []
+    ],
+    negative: [false, false, false, false],
+    discoverable: true,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 237,
+    name: ['hardships', '', 'friendship', ''],
+    resources: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    effects: [
+      'effect_description_hardships',
+      '',
+      'effect_description_friendship',
+      '',
+    ],
+    upgrades: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    currentSide: 1,
+    type: ['training - permanent', '', 'permanent', ''],
+    choice: false,
+    checkboxes: [
+      [
+        {content: "", checked: false},
+        {content: "", checked: false},
+        {content: "", checked: false},
+        {content: "", checked: false},
+        {content: "", checked: false},
+        {content: "", checked: false},
+        {content: "", checked: false},
+        {content: "", checked: false},
+        {content: "", checked: false},
+        {content: "", checked: false},
+        {content: "", checked: false},
+        {content: "effects/arrow", checked: false},
+      ],
+      [],
+      [],
+      []
+    ],
+    negative: [false, false, false, false],
+    discoverable: true,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 238,
+    name: ['sun_stroke', '', 'thirst', ''],
+    resources: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    effects: [
+      'effect_description_sun_stroke',
+      '',
+      'effect_description_thirst',
+      '',
+    ],
+    upgrades: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    currentSide: 1,
+    type: ['event - permanent', '', 'event - permanent', ''],
+    choice: false,
+    checkboxes: [],
+    negative: [true, false, true, false],
+    discoverable: true,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 239,
+    name: ['historian', '', 'handy_craftsman', ''],
+    resources: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    effects: [
+      'effect_description_historian',
+      '',
+      'effect_description_handy_craftsman',
+      '',
+    ],
+    upgrades: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    currentSide: 1,
+    type: ['person', '', 'person', ''],
+    choice: true,
+    checkboxes: [
+      [
+        {content: "", checked: false}, {content: "", checked: false},
+        {content: "", checked: false}, {content: "", checked: false},
+        {content: "", checked: false}, {content: "", checked: false},
+        {content: "", checked: false}, {content: "", checked: false},
+        {content: "", checked: false}, {content: "", checked: false},
+        {content: "", checked: false}, {content: "", checked: false},
+        {content: "", checked: false}, {content: "", checked: false},
+        {content: "", checked: false}, {content: "", checked: false},
+      ],
+      [],
+      [],
+      []
+    ],
+    negative: [false, false, false, false],
+    discoverable: true,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 240,
+    name: ['seasick', '', 'new_normal', ''],
+    resources: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    effects: [
+      'effect_description_seasick',
+      '',
+      'effect_description_new_normal',
+      '',
+    ],
+    upgrades: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    currentSide: 1,
+    type: ['event', '', 'event', ''],
+    choice: false,
+    checkboxes: [
+      [
+        {content: "", checked: false},
+        {content: "", checked: false},
+        {content: "effects/arrow", checked: false},
+      ],
+      [],
+      [],
+      []
+    ],
+    negative: [true, false, true, false],
+    discoverable: true,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 241,
+    name: ['passenger_list', 'madman', 'adventurer', 'ferryman'],
+    resources: [
+      [],
+      [ { wood: 1 } ],
+      [],
+      [ { wood: 1, fame: 4 } ],
+    ],
+    effects: [
+      '',
+      '',
+      'effect_description_adventurer',
+      'effect_description_ferryman',
+    ],
+    upgrades: [
+      [
+        {cost: {}, nextSide: 3},
+        {cost: {}, nextSide: 2},
+      ],
+      [
+        {cost: {}, nextSide: 4}
+      ],
+      [],
+      [],
+    ],
+    currentSide: 1,
+    type: ['item', 'person', 'person', 'person - seafaring'],
     choice: false,
     checkboxes: [],
     negative: [false, false, false, false],
