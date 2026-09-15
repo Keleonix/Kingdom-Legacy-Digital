@@ -249,9 +249,11 @@ function renderCheckboxesGrid(
                   <Tag
                     key={i}
                     {...(onToggle ? { onClick: (ev: React.MouseEvent) => { ev.stopPropagation(); onToggle(box); } } : {})}
-                    className={`${boxSize} border rounded flex items-center justify-center ${
+                    className={`relative ${boxSize} border rounded flex items-center justify-center ${
                       color
-                        ? "border-gray-400"
+                        ? box.checked
+                          ? "border-2 border-gray-700"
+                          : "border-gray-400"
                         : box.checked
                         ? "bg-green-100 border-green-400"
                         : "bg-white border-gray-300"
@@ -2855,9 +2857,11 @@ const ResourceSelectionPopup: React.FC<{
 
   const handleChange = (resource: keyof ResourceMap, value: number) => {
     const current = amounts[resource] ?? 0;
+    const max = mergedResources[resource] ?? 0;
     const delta = value - current;
     if (delta > remaining && delta > 0) return;
-    setAmounts((prev) => ({ ...prev, [resource]: Math.max(0, value) }));
+    const clamped = Math.min(Math.max(0, value), max);
+    setAmounts((prev) => ({ ...prev, [resource]: clamped }));
   };
 
   const hasAnyResource = isOptionMode
@@ -2940,32 +2944,41 @@ const ResourceSelectionPopup: React.FC<{
             })
           ) : (
             // --- Rendu quantités ---
-            resourceKeys.map((resource) => (
-              <div key={resource} className="flex items-center gap-3 bg-gray-50 p-2 rounded-lg">
-                <img src={resourceIconPath(resource)} alt={t(resource)} className="w-7 h-7" />
-                <span className="text-sm flex-1 capitalize">{t(resource)}</span>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => handleChange(resource, (amounts[resource] ?? 0) - 1)}
-                    disabled={(amounts[resource] ?? 0) <= 0}
-                    className="w-7 h-7 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-40 font-bold"
-                  >
-                    −
-                  </button>
-                  <span className="w-6 text-center text-sm font-semibold">
-                    {amounts[resource] ?? 0}
-                  </span>
-                  <button
-                    onClick={() => handleChange(resource, (amounts[resource] ?? 0) + 1)}
-                    disabled={remaining <= 0}
-                    className="w-7 h-7 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-40 font-bold"
-                  >
-                    +
-                  </button>
+            resourceKeys.map((resource) => {
+              const current = amounts[resource] ?? 0;
+              const max = mergedResources[resource] ?? 0;
+              const isMaxed = current >= max;
+              return (
+                <div key={resource} className="flex items-center gap-3 bg-gray-50 p-2 rounded-lg">
+                  <img src={resourceIconPath(resource)} alt={t(resource)} className="w-7 h-7" />
+                  <span className="text-sm flex-1 capitalize">{t(resource)}</span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handleChange(resource, current - 1)}
+                      disabled={current <= 0}
+                      className="w-7 h-7 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-40 font-bold"
+                    >
+                      −
+                    </button>
+                    <span
+                      className={`w-12 text-center text-sm font-semibold ${
+                        isMaxed ? 'text-red-600' : ''
+                      }`}
+                    >
+                      {current}/{max}
+                    </span>
+                    <button
+                      onClick={() => handleChange(resource, current + 1)}
+                      disabled={remaining <= 0 || isMaxed}
+                      className="w-7 h-7 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-40 font-bold"
+                    >
+                      +
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))
-          )}
+              );
+            }))
+          }
         </div>
 
         <div className="flex justify-end gap-2">
@@ -3450,7 +3463,7 @@ export default function Game() {
 
   const [campaignDeck, setCampaignDeck] = useState<GameCard[]>(() =>
     allCards
-      .filter((c) => c.id > 10 && c.id <= 138 || c.id === 240) // TODO: Change Back => c.id > 10 && c.id <= 138
+      .filter((c) => c.id > 10 && c.id <= 138 || c.id >= 214) // TODO: Change Back => c.id > 10 && c.id <= 138
       .sort((a, b) => a.id - b.id)
       .map((c) => cloneGameCard(c))
   );
@@ -5616,6 +5629,21 @@ export default function Game() {
         setAvailableDiscoverableCards(prev => prev.filter(cardId => cardId !== id));
         setNumberDiscovered((prev) => prev + 1);
         setDiscoveredCards((prev) => [...prev, id]);
+
+        effectsListRef.current = [
+          ...effectsListRef.current,
+          ...cards.flatMap(c =>
+            getCardEffects(c.id, c.currentSide, "discovered").map(effect => ({ effect, card: c, timing: "discovered" as const }))
+          )
+        ];
+
+        effectsListRef.current.sort((a, b) => (b.effect.priority ?? 0) - (a.effect.priority ?? 0));
+
+        while (effectsListRef.current.length > 0) {
+          const entry = effectsListRef.current[0];
+          await handleExecuteCardEffect(entry.card, toZone, "discovered", [], -1, effectsListRef.current);
+          effectsListRef.current = effectsListRef.current.filter(ce => ce != entry);
+        }
       }
       if (fromZone === t('blocked')) setBlockedZoneImmediate((b) => removeById(b, id));
       if (fromZone === t('permanentZone')) setPermanentZone((pe) => removeById(pe, id));
@@ -5649,6 +5677,7 @@ export default function Game() {
       );
 
       effectsListRef.current = [
+        ...effectsListRef.current,
         ...cards.flatMap(c =>
           getCardEffects(c.id, c.currentSide, "played").map(effect => ({ effect, card: c, timing: "played" as const }))
         ),
@@ -6757,7 +6786,7 @@ export default function Game() {
   };
 
   function getCardAtIndex(zone: TranslationKeys, index: number) {
-    if (zone === 'deck' && deckRef.current.length > 0 && deckRef.current.length - 1 <= index) {
+    if (zone === 'deck' && deckRef.current.length > 0 && deckRef.current.length - 1 >= index) {
       return deck[index];
     }
     return undefined;
@@ -8019,6 +8048,7 @@ export default function Game() {
 
       {showCheckboxPopup && checkboxPopupCard && onCheckboxConfirm && (
         <CheckboxSelectionPopup
+          key={checkboxPopupCard.id}
           card={checkboxPopupCard}
           requiredCount={checkboxRequiredCount}
           optionalCount={checkboxOptionalCount}

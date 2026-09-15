@@ -65,6 +65,7 @@ export const TYPE_COLORS: Record<string, string> = {
   person: "#f6e5a5",   // soft pastel yellow
   knight: "#f6e5a5",   // soft pastel yellow
   lady: "#f6e5a5",   // soft pastel yellow
+  disciple: "#f6e5a5",   // soft pastel yellow
   goal: "#f6e5a5",   // soft pastel yellow
   event: "#f4c2d7",  // pastel pink
   land: "#b6d7a8",    // muted green
@@ -133,6 +134,7 @@ export type EffectTiming =
   | "modifyProduction"
   | "onEnemyDefeated"
   | "onPlayAreaUpdated"
+  | "discovered"
   | "onTravel" // Distant Lands only
 ;
 

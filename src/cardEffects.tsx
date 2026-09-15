@@ -354,6 +354,19 @@ const resourceCheckboxCardsFilter = (card: GameCard) => {
   });
 };
 
+function sumResourceMaps(maps: Partial<ResourceMap>[]): Partial<ResourceMap> {
+  const result: Partial<ResourceMap> = {};
+
+  for (const map of maps) {
+    for (const key in map) {
+      const k = key as keyof ResourceMap;
+      result[k] = (result[k] ?? 0) + (map[k] ?? 0);
+    }
+  }
+
+  return result;
+}
+
 // -------------------
 // Get Effects
 // -------------------
@@ -7625,7 +7638,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           const cards = (await ctx.selectCardsFromZone((c) => !c.negative[c.currentSide - 1], ctx.t('playArea'), this.description(ctx.t), 6, ctx.card, 0));
           if (cards.length >= 6) {
             await ctx.dropToDiscard({id: cards.map((c) => c.id), fromZone: ctx.t('playArea')});
-            const checkboxes = ctx.card.checkboxes[ctx.card.currentSide - 1].filter((c) => !c.checked && c.content.includes('✓'));
+            const checkboxes = ctx.card.checkboxes[ctx.card.currentSide - 1].filter((c) => !c.checked && c.content.includes('green'));
             await checkBoxes(ctx.card, [checkboxes[0]]);
             ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
             if (checkboxes[0].content.includes('effects/arrow')) {
@@ -7643,7 +7656,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         description: (t) => parseEffects(t('effect_description_the_chase')).effects[1].text,
         timing: "endOfTurn",
         execute: async function(ctx)  {
-          const checkboxes = ctx.card.checkboxes[ctx.card.currentSide - 1].filter((c) => !c.checked && c.content.includes('X'));
+          const checkboxes = ctx.card.checkboxes[ctx.card.currentSide - 1].filter((c) => !c.checked && c.content.includes('red'));
           await checkBoxes(ctx.card, [checkboxes[0]]);
           ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
           if (checkboxes[0].content.includes('effects/destroy')) {
@@ -8889,7 +8902,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           return false;
         }
       },
-      { // Aventurière
+      {
         description: (t) => parseEffects(t('effect_description_adventurer')).effects[1].text,
         timing: "onClick",
         execute: async function (ctx) {
@@ -8898,19 +8911,32 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             return false;
           }
           const effects = parseEffects(topCard.GetEffect(ctx.t)).effects;
-          let choice: string = 'choice_gain_production'; /* TranslationKeys */
+          let choice: string = ctx.t('string_choice_gain_production');
           if (effects.length !== 0) {
             const activableEffects = effects.map(e => e.keyword).filter(k => k === "effects/time" || "effects/activate");
             if (activableEffects.length !== 0) {
-              /* TODO : String to chose production or effect =>  */
-              choice = 'choice_select_effect';
+              choice = await ctx.selectStringChoice(ctx.t('string_choice_effect_or_production'), [ctx.t('string_choice_select_effect'), ctx.t('string_choice_gain_production')]);
             }
           }
-          if (choice === 'choice_gain_produciton') {
-            /* TODO : Gain Production*/
+          else if (effects.length === 0 && getResourcesCount(sumResourceMaps(topCard.GetResources())) === 0){
+            return false;
           }
-          else if (choice === 'choice_select_effect'){
-            /* TODO : String Select effect with effect[n].text*/
+          if (choice === ctx.t('string_choice_gain_production')) {
+            const selectedProduction = await ctx.selectResourceChoice(topCard.GetResources(), 1);
+            await applyResourceMapDelta(ctx, selectedProduction ?? {});
+            await ctx.dropToDiscard({id: topCard.id, fromZone: ctx.t('deck')});
+            return true;
+          }
+          else if (choice === ctx.t('string_choice_select_effect')){
+            const selectedEffect = await ctx.selectStringChoice(ctx.t('string_choice_select_effect'),
+              parseEffects(topCard.GetEffect(ctx.t))
+                .effects.filter(e => e.keyword === "effects/time" || "effects/activate")
+                .map(e => e.text))
+            const effectIndex = parseEffects(topCard.GetEffect(ctx.t)).effects.map(e => e.text).indexOf(selectedEffect);
+            ctx.card = topCard;
+            await cardEffectsRegistry[topCard.id][topCard.currentSide][effectIndex].execute(ctx);
+            await ctx.dropToDiscard({id: topCard.id, fromZone: ctx.t('deck')});
+            return true;
           }
           return false;
         }
@@ -8921,6 +8947,1365 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       timing: "onClick",
       execute: async function (ctx) {
         await ctx.mill(1);
+        return true;
+      }
+    }],
+  },
+  242: {
+    1: [
+      { // Réparations Nécessaires
+        description: (t) => parseEffects(t('effect_description_repairs_needed')).effects[0].text,
+        timing: "onClick",
+        execute: async function (ctx) {
+          const people = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'));
+          const reinforcedShips = ctx.fetchCardsInZone(c => c.GetName(ctx.t) === ctx.t('reinforced_ship'), ctx.t('playArea'));
+          if (people.length <= 1 && reinforcedShips.length === 0) {
+            return false;
+          }
+          let selectedCards: GameCard[] = [];
+          if (people.length === 0 && reinforcedShips.length >= 1) {
+            selectedCards = await ctx.selectCardsFromArray(reinforcedShips, ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card);
+          }
+          else if (reinforcedShips.length === 0 && people.length >= 2) {
+            selectedCards = await ctx.selectCardsFromArray(people, ctx.t('playArea'), this.description(ctx.t), 2, 0, ctx.card, 'person');
+          }
+          else {
+            const choice = await ctx.selectStringChoice(ctx.t('string_choice_two_people_or_reinforced_ship'), [ctx.t('other_cost_two_people'), ctx.t('reinforced_ship')]);
+            if (choice === ctx.t('other_cost_two_people')) {
+              selectedCards = await ctx.selectCardsFromArray(people, ctx.t('playArea'), this.description(ctx.t), 2, 0, ctx.card, 'person');
+            }
+            else if (choice === ctx.t('reinforced_ship')) {
+              selectedCards = await ctx.selectCardsFromArray(reinforcedShips, ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card);
+            }
+          }
+          if (selectedCards.length > 0) {
+            await ctx.dropToDiscard({id: selectedCards.map(c => c.id), fromZone: ctx.t('playArea')});
+            const checkboxes = ctx.card.checkboxes[ctx.card.currentSide - 1].filter((c) => !c.checked && c.content.includes('green'));
+            await checkBoxes(ctx.card, [checkboxes[0]]);
+            ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+            if (checkboxes[0].content.includes('effects/destroy')) {
+              ctx.deleteCardInZone(ctx.zone, ctx.card.id);
+              await addResourceMapToCard(ctx.card, {}); /* Force await */
+            }
+            ctx.effectEndTurn();
+          }
+          return false;
+        }
+      },
+      {
+        description: (t) => parseEffects(t('effect_description_repairs_needed')).effects[1].text,
+        timing: "endOfTurn",
+        execute: async function (ctx) {
+          const checkboxes = ctx.card.checkboxes[ctx.card.currentSide - 1].filter((c) => !c.checked && c.content.includes('red'));
+          await checkBoxes(ctx.card, [checkboxes[0]]);
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+          if (checkboxes[0].content.includes('effects/arrow')) {
+            await ctx.upgradeCard(ctx.card, 3, true);
+          }
+          return false;
+        }
+      }
+    ],
+    3: [{ // Irréparable
+      description: (t) => parseEffects(t('effect_description_beyond_repair')).effects[0].text,
+      timing: "played",
+      execute: async function (ctx) {
+        const shipsInPlay = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('ship')), ctx.t('playArea'));
+        const shipsInDiscard = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('ship')), ctx.t('discard'));
+        const ships = [...shipsInPlay, ...shipsInDiscard];
+
+        if (ships.length === 0) {
+          return false;
+        }
+        const choice = (await ctx.selectCardsFromArray(ships, ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card, 'ship'))[0];
+        if (!choice) {
+          return false;
+        }
+        ctx.deleteCardInZone(shipsInPlay.includes(choice) ? ctx.t('playArea') : ctx.t('discard'), choice.id);
+        ctx.deleteCardInZone(ctx.zone, ctx.card.id);
+        return false;
+      }
+    }],
+  },
+  243: {
+    3: [{ // Garçon Serviable
+      description: (t) => parseEffects(t('effect_description_errand_boy')).effects[0].text,
+      timing: "onClick",
+      execute: async function (ctx) {
+        const objects = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('cargo')) || c.GetType(ctx.t).includes(ctx.t('item')), ctx.t('discard'));
+        if (objects.length === 0) {
+          return false;
+        }
+        const selected = (await ctx.selectCardsFromArray(objects, ctx.t('discard'), this.description(ctx.t), 1, 0, ctx.card, 'item'))[0];
+        if (!selected) {
+          return false;
+        }
+        await ctx.dropToPlayArea({id: selected.id, fromZone: ctx.t('discard')});
+        return true;
+      }
+    }],
+    4: [{ // Scribe
+      description: (t) => parseEffects(t('effect_description_distant_lands_scribe')).effects[0].text,
+      timing: "endOfTurn",
+      execute: async function (ctx) {
+        const playAreaCards = ctx.fetchCardsInZone(c => c.id !== ctx.card.id, ctx.t('playArea'));
+        if (playAreaCards.length === 0) {
+          return false;
+        }
+        const selected = await ctx.selectCardsFromArray(playAreaCards, ctx.t('playArea'), this.description(ctx.t), 0, 2, ctx.card, 'person');
+        if (selected.length > 0) {
+          ctx.setTemporaryCardListImmediate(selected);
+          return true;
+        }
+        return false;
+      }
+    }],
+  },
+  244: {
+    1: [{ // STOP
+      description: (t) => parseEffects(t('effect_description_stop_distant_lands_5')).effects[0].text,
+      timing: "onClick",
+      execute: async function (ctx) {
+        const cardsIds = [245, 246, 247, 248];
+        for (const id of cardsIds) {
+          ctx.addDiscoverableCard(id, true);
+        }
+        ctx.deleteCardInZone(ctx.zone, ctx.card.id);
+        return false;
+      }
+    }],
+  },
+  245: {
+    1: [
+      { // Plein de Rats
+        description: (t) => parseEffects(t('effect_description_lots_of_rats')).effects[0].text,
+        timing: "played",
+        execute: async function (ctx) {
+          const cargos = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('cargo')), ctx.t('playArea'));
+          if (cargos.length === 0) {
+            return false;
+          }
+          const selected = (await ctx.selectCardsFromArray(cargos, ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card, 'cargo'))[0];
+          if (!selected) {
+            return false;
+          }
+          await checkNextBox(selected);
+          ctx.replaceCardInZone(ctx.t('playArea'), selected.id, selected);
+          if (getLastCheckboxChecked(selected)) {
+            ctx.deleteCardInZone(ctx.t(('playArea')), selected.id);
+          }
+          return false;
+        }
+      },
+      {
+        description: (t) => parseEffects(t('effect_description_lots_of_rats')).effects[1].text,
+        timing: "onClick",
+        execute: async function (ctx) {
+          const people = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'));
+          if (people.length <= 1) {
+            return false;
+          }
+          const selected = await ctx.selectCardsFromArray(people, ctx.t('playArea'), this.description(ctx.t), 2, 0, ctx.card, 'person');
+          if (selected.length < 2) {
+            return false;
+          }
+          await ctx.dropToDiscard({id: selected.map(c => c.id), fromZone: ctx.t('playArea')});
+          await ctx.upgradeCard(ctx.card, 3, true);
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+          ctx.effectEndTurn();
+          return true;
+        }
+      }
+    ],
+    3: [
+      { // Quelques Rats
+        description: (t) => parseEffects(t('effect_description_rats')).effects[0].text,
+        timing: "played",
+        execute: async function (ctx) {
+          const cargos = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('cargo')), ctx.t('playArea'));
+          if (cargos.length === 0) {
+            return false;
+          }
+          const selected = (await ctx.selectCardsFromArray(cargos, ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card, 'cargo'))[0];
+          if (!selected) {
+            return false;
+          }
+          await checkNextBox(selected);
+          ctx.replaceCardInZone(ctx.t('playArea'), selected.id, selected);
+          if (getLastCheckboxChecked(selected)) {
+            ctx.deleteCardInZone(ctx.t(('playArea')), selected.id);
+          }
+          return false;
+        }
+      },
+      {
+        description: (t) => parseEffects(t('effect_description_rats')).effects[1].text,
+        timing: "onClick",
+        execute: async function (ctx) {
+          const people = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'));
+          if (people.length <= 1) {
+            return false;
+          }
+          const selected = await ctx.selectCardsFromArray(people, ctx.t('playArea'), this.description(ctx.t), 2, 0, ctx.card, 'person');
+          if (selected.length < 2) {
+            return false;
+          }
+          await ctx.dropToDiscard({id: selected.map(c => c.id), fromZone: ctx.t('playArea')});
+          ctx.deleteCardInZone(ctx.t(('playArea')), ctx.card.id);
+          ctx.effectEndTurn();
+          return false;
+        }
+      }
+    ],
+  },
+  246: {
+    1: [
+      { // Plein de Rats
+        description: (t) => parseEffects(t('effect_description_lots_of_rats')).effects[0].text,
+        timing: "played",
+        execute: async function (ctx) {
+          const cargos = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('cargo')), ctx.t('playArea'));
+          if (cargos.length === 0) {
+            return false;
+          }
+          const selected = (await ctx.selectCardsFromArray(cargos, ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card, 'cargo'))[0];
+          if (!selected) {
+            return false;
+          }
+          await checkNextBox(selected);
+          ctx.replaceCardInZone(ctx.t('playArea'), selected.id, selected);
+          if (getLastCheckboxChecked(selected)) {
+            ctx.deleteCardInZone(ctx.t(('playArea')), selected.id);
+          }
+          return false;
+        }
+      },
+      {
+        description: (t) => parseEffects(t('effect_description_lots_of_rats')).effects[1].text,
+        timing: "onClick",
+        execute: async function (ctx) {
+          const people = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'));
+          if (people.length <= 1) {
+            return false;
+          }
+          const selected = await ctx.selectCardsFromArray(people, ctx.t('playArea'), this.description(ctx.t), 2, 0, ctx.card, 'person');
+          if (selected.length < 2) {
+            return false;
+          }
+          await ctx.dropToDiscard({id: selected.map(c => c.id), fromZone: ctx.t('playArea')});
+          await ctx.upgradeCard(ctx.card, 3, true);
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+          ctx.effectEndTurn();
+          return true;
+        }
+      }
+    ],
+    3: [
+      { // Quelques Rats
+        description: (t) => parseEffects(t('effect_description_rats')).effects[0].text,
+        timing: "played",
+        execute: async function (ctx) {
+          const cargos = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('cargo')), ctx.t('playArea'));
+          if (cargos.length === 0) {
+            return false;
+          }
+          const selected = (await ctx.selectCardsFromArray(cargos, ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card, 'cargo'))[0];
+          if (!selected) {
+            return false;
+          }
+          await checkNextBox(selected);
+          ctx.replaceCardInZone(ctx.t('playArea'), selected.id, selected);
+          if (getLastCheckboxChecked(selected)) {
+            ctx.deleteCardInZone(ctx.t(('playArea')), selected.id);
+          }
+          return false;
+        }
+      },
+      {
+        description: (t) => parseEffects(t('effect_description_rats')).effects[1].text,
+        timing: "onClick",
+        execute: async function (ctx) {
+          const people = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'));
+          if (people.length <= 1) {
+            return false;
+          }
+          const selected = await ctx.selectCardsFromArray(people, ctx.t('playArea'), this.description(ctx.t), 2, 0, ctx.card, 'person');
+          if (selected.length < 2) {
+            return false;
+          }
+          await ctx.dropToDiscard({id: selected.map(c => c.id), fromZone: ctx.t('playArea')});
+          ctx.deleteCardInZone(ctx.t(('playArea')), ctx.card.id);
+          ctx.effectEndTurn();
+          return false;
+        }
+      }
+    ],
+  },
+  247: {
+    1: [
+      { // Plein de Rats
+        description: (t) => parseEffects(t('effect_description_lots_of_rats')).effects[0].text,
+        timing: "played",
+        execute: async function (ctx) {
+          const cargos = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('cargo')), ctx.t('playArea'));
+          if (cargos.length === 0) {
+            return false;
+          }
+          const selected = (await ctx.selectCardsFromArray(cargos, ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card, 'cargo'))[0];
+          if (!selected) {
+            return false;
+          }
+          await checkNextBox(selected);
+          ctx.replaceCardInZone(ctx.t('playArea'), selected.id, selected);
+          if (getLastCheckboxChecked(selected)) {
+            ctx.deleteCardInZone(ctx.t(('playArea')), selected.id);
+          }
+          return false;
+        }
+      },
+      {
+        description: (t) => parseEffects(t('effect_description_lots_of_rats')).effects[1].text,
+        timing: "onClick",
+        execute: async function (ctx) {
+          const people = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'));
+          if (people.length <= 1) {
+            return false;
+          }
+          const selected = await ctx.selectCardsFromArray(people, ctx.t('playArea'), this.description(ctx.t), 2, 0, ctx.card, 'person');
+          if (selected.length < 2) {
+            return false;
+          }
+          await ctx.dropToDiscard({id: selected.map(c => c.id), fromZone: ctx.t('playArea')});
+          await ctx.upgradeCard(ctx.card, 3, true);
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+          ctx.effectEndTurn();
+          return true;
+        }
+      }
+    ],
+    3: [
+      { // Quelques Rats
+        description: (t) => parseEffects(t('effect_description_rats')).effects[0].text,
+        timing: "played",
+        execute: async function (ctx) {
+          const cargos = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('cargo')), ctx.t('playArea'));
+          if (cargos.length === 0) {
+            return false;
+          }
+          const selected = (await ctx.selectCardsFromArray(cargos, ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card, 'cargo'))[0];
+          if (!selected) {
+            return false;
+          }
+          await checkNextBox(selected);
+          ctx.replaceCardInZone(ctx.t('playArea'), selected.id, selected);
+          if (getLastCheckboxChecked(selected)) {
+            ctx.deleteCardInZone(ctx.t(('playArea')), selected.id);
+          }
+          return false;
+        }
+      },
+      {
+        description: (t) => parseEffects(t('effect_description_rats')).effects[1].text,
+        timing: "onClick",
+        execute: async function (ctx) {
+          const people = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'));
+          if (people.length <= 1) {
+            return false;
+          }
+          const selected = await ctx.selectCardsFromArray(people, ctx.t('playArea'), this.description(ctx.t), 2, 0, ctx.card, 'person');
+          if (selected.length < 2) {
+            return false;
+          }
+          await ctx.dropToDiscard({id: selected.map(c => c.id), fromZone: ctx.t('playArea')});
+          ctx.deleteCardInZone(ctx.t(('playArea')), ctx.card.id);
+          ctx.effectEndTurn();
+          return false;
+        }
+      }
+    ],
+  },
+  248: {
+    1: [
+      { // Plein de Rats
+        description: (t) => parseEffects(t('effect_description_lots_of_rats')).effects[0].text,
+        timing: "played",
+        execute: async function (ctx) {
+          const cargos = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('cargo')), ctx.t('playArea'));
+          if (cargos.length === 0) {
+            return false;
+          }
+          const selected = (await ctx.selectCardsFromArray(cargos, ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card, 'cargo'))[0];
+          if (!selected) {
+            return false;
+          }
+          await checkNextBox(selected);
+          ctx.replaceCardInZone(ctx.t('playArea'), selected.id, selected);
+          if (getLastCheckboxChecked(selected)) {
+            ctx.deleteCardInZone(ctx.t(('playArea')), selected.id);
+          }
+          return false;
+        }
+      },
+      {
+        description: (t) => parseEffects(t('effect_description_lots_of_rats')).effects[1].text,
+        timing: "onClick",
+        execute: async function (ctx) {
+          const people = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'));
+          if (people.length <= 1) {
+            return false;
+          }
+          const selected = await ctx.selectCardsFromArray(people, ctx.t('playArea'), this.description(ctx.t), 2, 0, ctx.card, 'person');
+          if (selected.length < 2) {
+            return false;
+          }
+          await ctx.dropToDiscard({id: selected.map(c => c.id), fromZone: ctx.t('playArea')});
+          await ctx.upgradeCard(ctx.card, 3, true);
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+          ctx.effectEndTurn();
+          return true;
+        }
+      }
+    ],
+    3: [
+      { // Quelques Rats
+        description: (t) => parseEffects(t('effect_description_rats')).effects[0].text,
+        timing: "played",
+        execute: async function (ctx) {
+          const cargos = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('cargo')), ctx.t('playArea'));
+          if (cargos.length === 0) {
+            return false;
+          }
+          const selected = (await ctx.selectCardsFromArray(cargos, ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card, 'cargo'))[0];
+          if (!selected) {
+            return false;
+          }
+          await checkNextBox(selected);
+          ctx.replaceCardInZone(ctx.t('playArea'), selected.id, selected);
+          if (getLastCheckboxChecked(selected)) {
+            ctx.deleteCardInZone(ctx.t(('playArea')), selected.id);
+          }
+          return false;
+        }
+      },
+      {
+        description: (t) => parseEffects(t('effect_description_rats')).effects[1].text,
+        timing: "onClick",
+        execute: async function (ctx) {
+          const people = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'));
+          if (people.length <= 1) {
+            return false;
+          }
+          const selected = await ctx.selectCardsFromArray(people, ctx.t('playArea'), this.description(ctx.t), 2, 0, ctx.card, 'person');
+          if (selected.length < 2) {
+            return false;
+          }
+          await ctx.dropToDiscard({id: selected.map(c => c.id), fromZone: ctx.t('playArea')});
+          ctx.deleteCardInZone(ctx.t(('playArea')), ctx.card.id);
+          ctx.effectEndTurn();
+          return false;
+        }
+      }
+    ],
+  },
+  249: {
+    1: [
+      { // Navire Marchand
+        description: (t) => parseEffects(t('effect_description_merchant_ship')).effects[0].text,
+        timing: "onClick",
+        execute: async function (ctx) {
+          if (ctx.resources.tradegood < 3) {
+            return false;
+          }
+          if (! (await ctx.discoverCard(c => c.id === 357, this.description(ctx.t), 1, ctx.card))) {
+            return false;
+          }
+          await applyResourceMapDelta(ctx, {tradegood: 3}, true);
+          ctx.effectEndTurn();
+          return false;
+        }
+      },
+      {
+        description: (t) => parseEffects(t('effect_description_merchant_ship')).effects[1].text,
+        timing: "onClick",
+        execute: async function (ctx) {
+          if (ctx.resources.coin < 2 && ctx.resources.tradegood < 2) {
+            return false;
+          }
+          if (! (await ctx.discoverCard(c => c.id === 358, this.description(ctx.t), 1, ctx.card))) {
+            return false;
+          }
+          await applyResourceMapDelta(ctx, {coin: 2, tradegood: 2}, true);
+          ctx.effectEndTurn();
+          return false;
+        }
+      },
+      {
+        description: (t) => parseEffects(t('effect_description_merchant_ship')).effects[2].text,
+        timing: "onClick",
+        execute: async function (ctx) {
+          if (ctx.resources.tradegood < 4) {
+            return false;
+          }
+          await ctx.upgradeCard(ctx.card, 3, true);
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+          await applyResourceMapDelta(ctx, {tradegood: 4}, true);
+          await ctx.dropToDiscard({id: ctx.card.id, fromZone: ctx.zone});
+          ctx.effectEndTurn();
+          return false;
+        }
+      },
+      {
+        description: (t) => parseEffects(t('effect_description_merchant_ship')).effects[3].text,
+        timing: "onClick",
+        execute: async function (ctx) {
+          if (ctx.resources.sword < 3) {
+            return false;
+          }
+          if (! (await ctx.discoverCard(c => c.id === 359, this.description(ctx.t), 1, ctx.card))) {
+            return false;
+          }
+          await applyResourceMapDelta(ctx, {sword: 3}, true);
+          ctx.deleteCardInZone(ctx.zone, ctx.card.id);
+          ctx.effectEndTurn();
+          return false;
+        }
+      },
+      {
+        description: (t) => parseEffects(t('effect_description_merchant_ship')).effects[4].text,
+        timing: "endOfRound",
+        execute: async function (ctx) {
+          ctx.deleteCardInZone(ctx.t('permanentZone'), ctx.card.id);
+          return false;
+        }
+      },
+    ],
+    3: [{ // Négociant Habile
+      description: (t) => parseEffects(t('effect_description_skilled_trader')).effects[0].text,
+      timing: "onClick",
+      execute: async function (ctx) {
+        if (getResourcesCount(ctx.resources) < 2) {
+          return false;
+        }
+        const choice = await ctx.selectResourceChoice(getNonZeroResources(ctx.resources), 2);
+        if (!choice || getResourcesCount(choice) < 2) {
+          return false;
+        }
+        await applyResourceMapDelta(ctx, choice, true);
+        await applyResourceMapDelta(ctx, {tradegood: 3});
+        return true;
+      }
+    }],
+  },
+  250: {
+    1: [
+      { // Plein de Rats
+        description: (t) => parseEffects(t('effect_description_lots_of_rats')).effects[0].text,
+        timing: "played",
+        execute: async function (ctx) {
+          const cargos = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('cargo')), ctx.t('playArea'));
+          if (cargos.length === 0) {
+            return false;
+          }
+          const selected = (await ctx.selectCardsFromArray(cargos, ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card, 'cargo'))[0];
+          if (!selected) {
+            return false;
+          }
+          await checkNextBox(selected);
+          ctx.replaceCardInZone(ctx.t('playArea'), selected.id, selected);
+          if (getLastCheckboxChecked(selected)) {
+            ctx.deleteCardInZone(ctx.t(('playArea')), selected.id);
+          }
+          return false;
+        }
+      },
+      {
+        description: (t) => parseEffects(t('effect_description_lots_of_rats')).effects[1].text,
+        timing: "onClick",
+        execute: async function (ctx) {
+          const people = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'));
+          if (people.length <= 1) {
+            return false;
+          }
+          const selected = await ctx.selectCardsFromArray(people, ctx.t('playArea'), this.description(ctx.t), 2, 0, ctx.card, 'person');
+          if (selected.length < 2) {
+            return false;
+          }
+          await ctx.dropToDiscard({id: selected.map(c => c.id), fromZone: ctx.t('playArea')});
+          await ctx.upgradeCard(ctx.card, 3, true);
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+          ctx.effectEndTurn();
+          return true;
+        }
+      }
+    ],
+    3: [
+      { // Quelques Rats
+        description: (t) => parseEffects(t('effect_description_rats')).effects[0].text,
+        timing: "played",
+        execute: async function (ctx) {
+          const cargos = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('cargo')), ctx.t('playArea'));
+          if (cargos.length === 0) {
+            return false;
+          }
+          const selected = (await ctx.selectCardsFromArray(cargos, ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card, 'cargo'))[0];
+          if (!selected) {
+            return false;
+          }
+          await checkNextBox(selected);
+          ctx.replaceCardInZone(ctx.t('playArea'), selected.id, selected);
+          if (getLastCheckboxChecked(selected)) {
+            ctx.deleteCardInZone(ctx.t(('playArea')), selected.id);
+          }
+          return false;
+        }
+      },
+      {
+        description: (t) => parseEffects(t('effect_description_rats')).effects[1].text,
+        timing: "onClick",
+        execute: async function (ctx) {
+          const people = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'));
+          if (people.length <= 1) {
+            return false;
+          }
+          const selected = await ctx.selectCardsFromArray(people, ctx.t('playArea'), this.description(ctx.t), 2, 0, ctx.card, 'person');
+          if (selected.length < 2) {
+            return false;
+          }
+          await ctx.dropToDiscard({id: selected.map(c => c.id), fromZone: ctx.t('playArea')});
+          ctx.deleteCardInZone(ctx.t(('playArea')), ctx.card.id);
+          ctx.effectEndTurn();
+          return false;
+        }
+      }
+    ],
+  },
+  251: {
+    1: [
+      { // STOP
+        description: (t) => parseEffects(t('effect_description_stop_distant_lands_6')).effects[0].text,
+        timing: "onClick",
+        execute: async function (ctx) {
+          ctx.addDiscoverableCard(322, true);
+          ctx.deleteCardInZone(ctx.zone, ctx.card.id);
+          return false;
+        }
+      },
+      {
+        description: (t) => parseEffects(t('effect_description_stop_distant_lands_6')).effects[1].text,
+        timing: "onClick",
+        execute: async function (ctx) {
+          const cardsIds = [252, 253, 321];
+          for (const id of cardsIds) {
+            ctx.addDiscoverableCard(id, true);
+          }
+          ctx.deleteCardInZone(ctx.zone, ctx.card.id);
+          return false;
+        }
+      }
+    ],
+  },
+  252: {
+    1: [
+      { // Réparations Nécessaires
+        description: (t) => parseEffects(t('effect_description_repairs_needed')).effects[0].text,
+        timing: "onClick",
+        execute: async function (ctx) {
+          const people = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'));
+          const reinforcedShips = ctx.fetchCardsInZone(c => c.GetName(ctx.t) === ctx.t('reinforced_ship'), ctx.t('playArea'));
+          if (people.length <= 1 && reinforcedShips.length === 0) {
+            return false;
+          }
+          let selectedCards: GameCard[] = [];
+          if (people.length === 0 && reinforcedShips.length >= 1) {
+            selectedCards = await ctx.selectCardsFromArray(reinforcedShips, ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card);
+          }
+          else if (reinforcedShips.length === 0 && people.length >= 2) {
+            selectedCards = await ctx.selectCardsFromArray(people, ctx.t('playArea'), this.description(ctx.t), 2, 0, ctx.card, 'person');
+          }
+          else {
+            const choice = await ctx.selectStringChoice(ctx.t('string_choice_two_people_or_reinforced_ship'), [ctx.t('other_cost_two_people'), ctx.t('reinforced_ship')]);
+            if (choice === ctx.t('other_cost_two_people')) {
+              selectedCards = await ctx.selectCardsFromArray(people, ctx.t('playArea'), this.description(ctx.t), 2, 0, ctx.card, 'person');
+            }
+            else if (choice === ctx.t('reinforced_ship')) {
+              selectedCards = await ctx.selectCardsFromArray(reinforcedShips, ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card);
+            }
+          }
+          if (selectedCards.length > 0) {
+            await ctx.dropToDiscard({id: selectedCards.map(c => c.id), fromZone: ctx.t('playArea')});
+            const checkboxes = ctx.card.checkboxes[ctx.card.currentSide - 1].filter((c) => !c.checked && c.content.includes('green'));
+            await checkBoxes(ctx.card, [checkboxes[0]]);
+            ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+            if (checkboxes[0].content.includes('effects/destroy')) {
+              ctx.deleteCardInZone(ctx.zone, ctx.card.id);
+              await addResourceMapToCard(ctx.card, {}); /* Force await */
+            }
+            ctx.effectEndTurn();
+          }
+          return false;
+        }
+      },
+      {
+        description: (t) => parseEffects(t('effect_description_repairs_needed')).effects[1].text,
+        timing: "endOfTurn",
+        execute: async function (ctx) {
+          const checkboxes = ctx.card.checkboxes[ctx.card.currentSide - 1].filter((c) => !c.checked && c.content.includes('red'));
+          await checkBoxes(ctx.card, [checkboxes[0]]);
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+          if (checkboxes[0].content.includes('effects/arrow')) {
+            await ctx.upgradeCard(ctx.card, 3, true);
+          }
+          return false;
+        }
+      }
+    ],
+    3: [{ // Irréparable
+      description: (t) => parseEffects(t('effect_description_beyond_repair')).effects[0].text,
+      timing: "played",
+      execute: async function (ctx) {
+        const shipsInPlay = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('ship')), ctx.t('playArea'));
+        const shipsInDiscard = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('ship')), ctx.t('discard'));
+        const ships = [...shipsInPlay, ...shipsInDiscard];
+
+        if (ships.length === 0) {
+          return false;
+        }
+        const choice = (await ctx.selectCardsFromArray(ships, ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card, 'ship'))[0];
+        if (!choice) {
+          return false;
+        }
+        ctx.deleteCardInZone(shipsInPlay.includes(choice) ? ctx.t('playArea') : ctx.t('discard'), choice.id);
+        ctx.deleteCardInZone(ctx.zone, ctx.card.id);
+        return false;
+      }
+    }],
+  },
+  253: {
+    1: [
+      { // Homme à la mer
+        description: (t) => parseEffects(t('effect_description_man_overboard')).effects[0].text,
+        timing: "played",
+        execute: async function (ctx) {
+          const people = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'));
+          if (people.length === 0) {
+            await ctx.dropToDiscard({id: ctx.card.id, fromZone: ctx.zone});
+            return false;
+          }
+          const selected = (await ctx.selectCardsFromArray(people, ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card, 'person'))[0];
+          if (!selected) {
+            await ctx.dropToDiscard({id: ctx.card.id, fromZone: ctx.zone});
+            return false;
+          }
+          await ctx.dropToBlocked({id: selected.id, fromZone: ctx.zone});
+          ctx.updateBlocks(ctx.card.id, [selected.id]);
+          return false;
+        }
+      },
+      { 
+        description: (t) => parseEffects(t('effect_description_man_overboard')).effects[1].text,
+        timing: "staysInPlay",
+        execute: async function () {
+          return false;
+        }
+      },
+      { 
+        description: (t) => parseEffects(t('effect_description_man_overboard')).effects[2].text,
+        timing: "onClick",
+        execute: async function (ctx) {
+          const ships = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('ship')), ctx.t('playArea'));
+          const people = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'));
+          if (ships.length < 1 || people.length < 2) {
+            return false;
+          }
+          const selectedShip = (await ctx.selectCardsFromArray(ships, ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card, 'person'))[0];
+          if (!selectedShip) {
+            return false;
+          }
+          const selectedPeople = await ctx.selectCardsFromArray(people, ctx.t('playArea'), this.description(ctx.t), 2, 0, ctx.card, 'person');
+          if (selectedPeople.length < 2) {
+            return false;
+          }
+          await ctx.dropToDiscard({id: [...selectedPeople, selectedShip, ctx.card].map(c => c.id), fromZone: ctx.t('playArea')});
+          ctx.effectEndTurn();
+          return false;
+        }
+      },
+      { 
+        description: (t) => parseEffects(t('effect_description_man_overboard')).effects[0].text,
+        timing: "endOfRound",
+        execute: async function (ctx) {
+          const blockedCard = ctx.getBlockedBy(ctx.card.id)[0];
+          if (!blockedCard) {
+            return false;
+          }
+          ctx.deleteCardInZone(ctx.t('deck'), blockedCard.id);
+          await ctx.upgradeCard(ctx.card, 3, true);
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+          return false;
+        }
+      },
+    ],
+    3: [{ // Deuil
+      description: (t) => parseEffects(t('effect_description_mourning')).effects[0].text,
+      timing: "played",
+      execute: async function (ctx) {
+        const people = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'));
+        if (people.length === 0) {
+          return false;
+        }
+        const selected = (await ctx.selectCardsFromArray(people, ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card, 'person'))[0];
+        if (!selected) {
+          return false;
+        }
+        await ctx.dropToDiscard({id: selected.id, fromZone: ctx.t('playArea')});
+        await checkNextBox(ctx.card);
+        ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+        if (getLastCheckboxChecked(ctx.card)) {
+          ctx.deleteCardInZone(ctx.zone, ctx.card.id);
+        }
+        return false;
+      }
+    }],
+  },
+  254: {
+    1: [
+      { // Plein de Rats
+        description: (t) => parseEffects(t('effect_description_lots_of_rats')).effects[0].text,
+        timing: "played",
+        execute: async function (ctx) {
+          const cargos = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('cargo')), ctx.t('playArea'));
+          if (cargos.length === 0) {
+            return false;
+          }
+          const selected = (await ctx.selectCardsFromArray(cargos, ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card, 'cargo'))[0];
+          if (!selected) {
+            return false;
+          }
+          await checkNextBox(selected);
+          ctx.replaceCardInZone(ctx.t('playArea'), selected.id, selected);
+          if (getLastCheckboxChecked(selected)) {
+            ctx.deleteCardInZone(ctx.t(('playArea')), selected.id);
+          }
+          return false;
+        }
+      },
+      {
+        description: (t) => parseEffects(t('effect_description_lots_of_rats')).effects[1].text,
+        timing: "onClick",
+        execute: async function (ctx) {
+          const people = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'));
+          if (people.length <= 1) {
+            return false;
+          }
+          const selected = await ctx.selectCardsFromArray(people, ctx.t('playArea'), this.description(ctx.t), 2, 0, ctx.card, 'person');
+          if (selected.length < 2) {
+            return false;
+          }
+          await ctx.dropToDiscard({id: selected.map(c => c.id), fromZone: ctx.t('playArea')});
+          await ctx.upgradeCard(ctx.card, 3, true);
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+          ctx.effectEndTurn();
+          return true;
+        }
+      }
+    ],
+    3: [
+      { // Quelques Rats
+        description: (t) => parseEffects(t('effect_description_rats')).effects[0].text,
+        timing: "played",
+        execute: async function (ctx) {
+          const cargos = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('cargo')), ctx.t('playArea'));
+          if (cargos.length === 0) {
+            return false;
+          }
+          const selected = (await ctx.selectCardsFromArray(cargos, ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card, 'cargo'))[0];
+          if (!selected) {
+            return false;
+          }
+          await checkNextBox(selected);
+          ctx.replaceCardInZone(ctx.t('playArea'), selected.id, selected);
+          if (getLastCheckboxChecked(selected)) {
+            ctx.deleteCardInZone(ctx.t(('playArea')), selected.id);
+          }
+          return false;
+        }
+      },
+      {
+        description: (t) => parseEffects(t('effect_description_rats')).effects[1].text,
+        timing: "onClick",
+        execute: async function (ctx) {
+          const people = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'));
+          if (people.length <= 1) {
+            return false;
+          }
+          const selected = await ctx.selectCardsFromArray(people, ctx.t('playArea'), this.description(ctx.t), 2, 0, ctx.card, 'person');
+          if (selected.length < 2) {
+            return false;
+          }
+          await ctx.dropToDiscard({id: selected.map(c => c.id), fromZone: ctx.t('playArea')});
+          ctx.deleteCardInZone(ctx.t(('playArea')), ctx.card.id);
+          ctx.effectEndTurn();
+          return false;
+        }
+      }
+    ],
+  },
+  255: {
+    1: [
+      { // Plein de Rats
+        description: (t) => parseEffects(t('effect_description_lots_of_rats')).effects[0].text,
+        timing: "played",
+        execute: async function (ctx) {
+          const cargos = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('cargo')), ctx.t('playArea'));
+          if (cargos.length === 0) {
+            return false;
+          }
+          const selected = (await ctx.selectCardsFromArray(cargos, ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card, 'cargo'))[0];
+          if (!selected) {
+            return false;
+          }
+          await checkNextBox(selected);
+          ctx.replaceCardInZone(ctx.t('playArea'), selected.id, selected);
+          if (getLastCheckboxChecked(selected)) {
+            ctx.deleteCardInZone(ctx.t(('playArea')), selected.id);
+          }
+          return false;
+        }
+      },
+      {
+        description: (t) => parseEffects(t('effect_description_lots_of_rats')).effects[1].text,
+        timing: "onClick",
+        execute: async function (ctx) {
+          const people = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'));
+          if (people.length <= 1) {
+            return false;
+          }
+          const selected = await ctx.selectCardsFromArray(people, ctx.t('playArea'), this.description(ctx.t), 2, 0, ctx.card, 'person');
+          if (selected.length < 2) {
+            return false;
+          }
+          await ctx.dropToDiscard({id: selected.map(c => c.id), fromZone: ctx.t('playArea')});
+          await ctx.upgradeCard(ctx.card, 3, true);
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+          ctx.effectEndTurn();
+          return true;
+        }
+      }
+    ],
+    3: [
+      { // Quelques Rats
+        description: (t) => parseEffects(t('effect_description_rats')).effects[0].text,
+        timing: "played",
+        execute: async function (ctx) {
+          const cargos = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('cargo')), ctx.t('playArea'));
+          if (cargos.length === 0) {
+            return false;
+          }
+          const selected = (await ctx.selectCardsFromArray(cargos, ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card, 'cargo'))[0];
+          if (!selected) {
+            return false;
+          }
+          await checkNextBox(selected);
+          ctx.replaceCardInZone(ctx.t('playArea'), selected.id, selected);
+          if (getLastCheckboxChecked(selected)) {
+            ctx.deleteCardInZone(ctx.t(('playArea')), selected.id);
+          }
+          return false;
+        }
+      },
+      {
+        description: (t) => parseEffects(t('effect_description_rats')).effects[1].text,
+        timing: "onClick",
+        execute: async function (ctx) {
+          const people = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'));
+          if (people.length <= 1) {
+            return false;
+          }
+          const selected = await ctx.selectCardsFromArray(people, ctx.t('playArea'), this.description(ctx.t), 2, 0, ctx.card, 'person');
+          if (selected.length < 2) {
+            return false;
+          }
+          await ctx.dropToDiscard({id: selected.map(c => c.id), fromZone: ctx.t('playArea')});
+          ctx.deleteCardInZone(ctx.t(('playArea')), ctx.card.id);
+          ctx.effectEndTurn();
+          return false;
+        }
+      }
+    ],
+  },
+  256: {
+    1: [
+      { // STOP
+        description: (t) => parseEffects(t('effect_description_stop_distant_lands_7')).effects[0].text,
+        timing: "onClick",
+        execute: async function (ctx) {
+          const cardsIds = [260, 261, 262];
+          const deleteIds = [257, 258, 259];
+          for (const id of deleteIds) {
+            ctx.deleteCardInZone(ctx.t('campaign'), id);
+          }
+          for (const id of cardsIds) {
+            ctx.addDiscoverableCard(id, true);
+          }
+          ctx.deleteCardInZone(ctx.zone, ctx.card.id);
+          return false;
+        }
+      },
+      {
+        description: (t) => parseEffects(t('effect_description_stop_distant_lands_7')).effects[1].text,
+        timing: "onClick",
+        execute: async function (ctx) {
+          const cardsIds = [257, 258, 259];
+          const deleteIds = [260, 261, 262];
+          for (const id of deleteIds) {
+            ctx.deleteCardInZone(ctx.t('campaign'), id);
+          }
+          for (const id of cardsIds) {
+            ctx.addDiscoverableCard(id, true);
+          }
+          ctx.deleteCardInZone(ctx.zone, ctx.card.id);
+          return false;
+        }
+      }
+    ],
+  },
+  257: {
+    1: [
+      { // Baie des Pirates
+        description: (t) => parseEffects(t('effect_description_pirate_bay')).effects[0].text,
+        timing: "onClick",
+        execute: async function (ctx) {
+          const validCards = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('person')) || c.GetType(ctx.t).includes(ctx.t('cargo')) || c.GetName(ctx.t).includes(ctx.t('reinforced_ship')),
+                                                  ctx.t('playArea'));
+          if (validCards.length === 0) {
+            return false;
+          }
+          const selected = (await ctx.selectCardsFromArray(validCards, ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card))[0];
+          if (!selected) {
+            return false;
+          }
+          if (selected.GetType(ctx.t).includes(ctx.t('person'))) {
+            if (! await ctx.discoverCard(c => c.id === 365, this.description(ctx.t), 1, ctx.card)) {
+              return false;
+            }
+          }
+          else if (selected.GetType(ctx.t).includes(ctx.t('cargo'))) {
+            if (! await ctx.discoverCard(c => [366, 367].includes(c.id), this.description(ctx.t), 1, ctx.card)) {
+              return false;
+            }
+          }
+          else if (selected.GetName(ctx.t).includes(ctx.t('reinforced_ship'))) {
+            if (! await ctx.discoverCard(c => c.id === 368, this.description(ctx.t), 1, ctx.card)) {
+              return false;
+            }
+          }
+          ctx.deleteCardInZone(ctx.t('playArea'), selected.id);
+          return false;
+        }
+      },
+      {
+        description: (t) => parseEffects(t('effect_description_pirate_bay')).effects[1].text,
+        timing: "endOfRound",
+        execute: async function (ctx) {
+          ctx.deleteCardInZone(ctx.t('permanentZone'), ctx.card.id);
+          return false;
+        }
+      }
+    ],
+  },
+  258: {
+    1: [
+      { // Taverne Glaçante
+        description: (t) => parseEffects(t('effect_description_spooky_tavern')).effects[0].text,
+        timing: "onClick",
+        execute: async function (ctx) {
+          if (ctx.resources.coin < 3) {
+            return false;
+          }
+          const list: string[] = [];
+          const card369 = ctx.fetchCardsInZone(c => c.id === 369, ctx.t('campaign'));
+          const card370 = ctx.fetchCardsInZone(c => c.id === 370, ctx.t('campaign'));
+          const card371 = ctx.fetchCardsInZone(c => c.id === 371, ctx.t('campaign'));
+
+          card369 ? list.push(ctx.t('string_choice_brawl')) : {};
+          card370 ? list.push(ctx.t('string_choice_gossip')) : {};
+          card371 ? list.push(ctx.t('string_choice_refreshments')) : {};
+
+          if (list.length === 0) {
+            return false;
+          }
+          const choice = await ctx.selectStringChoice(ctx.t('string_choice_spooky_tavern'), list);
+          let result = false;
+          if (choice === ctx.t('string_choice_brawl')) {
+            result = await ctx.discoverCard(c => c.id === 369, this.description(ctx.t), 1, ctx.card);
+          }
+          else if (choice === ctx.t('string_choice_gossip')) {
+            result = await ctx.discoverCard(c => c.id === 370, this.description(ctx.t), 1, ctx.card);
+          }
+          else if (choice === ctx.t('string_choice_refreshments')) {
+            result = await ctx.discoverCard(c => c.id === 371, this.description(ctx.t), 1, ctx.card);
+          }
+          if (result) {
+            await applyResourceMapDelta(ctx, {coin: 3}, true);
+          }
+          return false;
+        }
+      },
+      {
+        description: (t) => parseEffects(t('effect_description_spooky_tavern')).effects[1].text,
+        timing: "endOfRound",
+        execute: async function (ctx) {
+          ctx.deleteCardInZone(ctx.t('permanentZone'), ctx.card.id);
+          return false;
+        }
+      }
+    ],
+  },
+  259: {
+    1: [{ // Doublon Maudit
+      description: (t) => parseEffects(t('effect_description_cursed_dubloon')).effects[0].text,
+      timing: "onResourceGain",
+      execute: async function (ctx) {
+        const producingCardId = ctx.cardsForTrigger ? ctx.cardsForTrigger[0].id : -1; 
+        const friendly = ctx.fetchCardsInZone(c => !c.negative[c.currentSide - 1] && c.id !== producingCardId, ctx.t('playArea'));
+        if (ctx.resources.coin <= 0 || friendly.length === 0) {
+          return false;
+        }
+        const selected = (await ctx.selectCardsFromArray(friendly, ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card))[0];
+        if (!selected) {
+          return false;
+        }
+        await ctx.dropToDiscard({id: selected.id, fromZone: ctx.t('playArea')});
+        return false;
+      }
+    }],
+    3: [{ // Malédiction
+      description: (t) => parseEffects(t('effect_description_blood_curse')).effects[0].text,
+      timing: "onAdvance",
+      execute: async function () {
+        return 2;
+      }
+    }]
+  },
+  260: {
+    1: [
+      { // Bateau Pirate
+        description: (t) => parseEffects(t('effect_description_pirate_ship')).effects[0].text,
+        timing: 'discovered',
+        execute: async function (ctx) {
+          const cardIds = [326, 327, 328];
+          await ctx.discoverCard(c => cardIds.includes(c.id), this.description(ctx.t), 3, ctx.card);
+          return false;
+        }
+      },
+      {
+        description: (t) => parseEffects(t('effect_description_pirate_ship')).effects[1].text,
+        timing: 'onClick',
+        execute: async function (ctx) {
+          const cargos = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('cargo')), ctx.t('playArea'));
+          if (cargos.length === 0) {
+            return false;
+          }
+          const availableCheckBoxes = cargos.map(c => c.checkboxes[c.currentSide - 1].flat().filter(ch => !ch.checked)).flat();
+          if (availableCheckBoxes.length < 2) {
+            return false;
+          }
+          const selectedCargos = await ctx.selectCardsFromArray(cargos, ctx.t('playArea'), this.description(ctx.t), 1, 1, ctx.card, 'cargo');
+          const selectedAvailableCheckBoxes = selectedCargos.map(c => c.checkboxes[c.currentSide - 1].flat().filter(ch => !ch.checked)).flat();
+          if (selectedAvailableCheckBoxes.length < 2) {
+            return false;
+          }
+          let selectedCheckboxes: Checkbox[] = [];
+          let separatedCheckBoxes = false;
+          for (const cargo of selectedCargos) {
+            if (selectedCheckboxes.length >= 2) {
+              continue;
+            }
+            await new Promise<void>((resolve) => {
+              ctx.openCheckboxPopup(cargo, 0, 2 - selectedCheckboxes.length, async (boxes) => {
+                console.log('callback appelé, boxes=', boxes, 'longueur actuelle=', selectedCheckboxes.length);
+                selectedCheckboxes.push(...boxes);
+                if (selectedCheckboxes.length === 1) {
+                  separatedCheckBoxes = true;
+                }
+                if (selectedCheckboxes.length === 2) {
+                  if (separatedCheckBoxes) {
+                    await checkBoxes(selectedCargos[0], [selectedCheckboxes[0]]);
+                    await checkBoxes(selectedCargos[1], [selectedCheckboxes[1]]);
+                    ctx.replaceCardInZone(ctx.t('playArea'), selectedCargos[0].id, selectedCargos[0]);
+                    ctx.replaceCardInZone(ctx.t('playArea'), selectedCargos[1].id, selectedCargos[1]);
+                    await checkNextBox(ctx.card);
+                    ctx.replaceCardInZone(ctx.t('playArea'), ctx.card.id, ctx.card);
+                  } else {
+                    await checkBoxes(cargo, selectedCheckboxes);
+                    ctx.replaceCardInZone(ctx.t('playArea'), cargo.id, cargo);
+                    await checkNextBox(ctx.card);
+                    ctx.replaceCardInZone(ctx.t('playArea'), ctx.card.id, ctx.card);
+                  }
+                  if (getLastCheckboxChecked(selectedCargos[0])) {
+                    ctx.deleteCardInZone(ctx.t('playArea'), selectedCargos[0].id);
+                  }
+                  if (getLastCheckboxChecked(selectedCargos[1])) {
+                    ctx.deleteCardInZone(ctx.t('playArea'), selectedCargos[1].id);
+                  }
+                  if (getLastCheckboxChecked(ctx.card)) {
+                    ctx.deleteCardInZone(ctx.t('permanentZone'), ctx.card.id);
+                  }
+                }
+                resolve();
+              });
+            });
+          }
+          return false;
+        }
+      },
+      {
+        description: (t) => parseEffects(t('effect_description_pirate_ship')).effects[2].text,
+        timing: "endOfRound",
+        execute: async function (ctx) {
+          await ctx.upgradeCard(ctx.card, 3, true);
+          ctx.replaceCardInZone(ctx.t('permanentZone'), ctx.card.id, ctx.card);
+          return false;
+        }
+      }
+    ],
+    3: [
+      { // Coups de Canon
+        description: (t) => parseEffects(t('effect_description_cannon_fire')).effects[0].text,
+        timing: 'endOfTurn',
+        execute: async function (ctx) {
+          if (ctx.resources.sword >= 3) {
+            await applyResourceMapDelta(ctx, {sword: 3}, true);
+            return false;
+          }
+          const playAreaReinforcedShips = ctx.fetchCardsInZone(c => c.GetName(ctx.t) === ctx.t('reinforced_ship'), ctx.t('playArea'));
+          const discardReinforcedShips = ctx.fetchCardsInZone(c => c.GetName(ctx.t) === ctx.t('reinforced_ship'), ctx.t('discard'));
+          const playAreaOtherShips = ctx.fetchCardsInZone(c => c.GetName(ctx.t) === ctx.t('reinforced_ship'), ctx.t('playArea'));
+          const discardOtherShips = ctx.fetchCardsInZone(c => c.GetName(ctx.t) === ctx.t('reinforced_ship'), ctx.t('discard'));
+
+          const reinforcedShips = [...playAreaReinforcedShips, ...discardReinforcedShips];
+          const otherShips = [...playAreaOtherShips, ...discardOtherShips];
+
+          if (reinforcedShips.length === 0 && otherShips.length === 0) {
+            return false;
+          }
+
+          let choice = ctx.t('string_choice_destroy_ship');
+          if (reinforcedShips.length > 0) {
+            choice = await ctx.selectStringChoice(ctx.t('string_choice_destroy_or_downgrade_ship'), [ctx.t('string_choice_destroy_ship'), ctx.t('string_choice_downgrade_reinforced_ship')])
+          }
+
+          if (choice === ctx.t('string_choice_destroy_ship')) {
+            const selected = (await ctx.selectCardsFromArray([...reinforcedShips, ...otherShips], ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card, 'ship'))[0];
+            if (selected) {
+              ctx.deleteCardInZone([...playAreaReinforcedShips, ...playAreaOtherShips].includes(selected) ? ctx.t('playArea') : ctx.t('discard'), selected.id);
+            }
+          }
+          else if (choice === ctx.t('string_choice_downgrade_reinforced_ship')) {
+            const selected = (await ctx.selectCardsFromArray(reinforcedShips, ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card, 'ship'))[0];
+            if (selected) {
+              await ctx.upgradeCard(selected, 4, true);
+              ctx.replaceCardInZone(playAreaReinforcedShips.includes(selected) ? ctx.t('playArea') : ctx.t('discard'), selected.id, selected);
+            }
+          }
+
+          return false;
+        }
+      },
+      {
+        description: (t) => parseEffects(t('effect_description_cannon_fire')).effects[2].text,
+        timing: "endOfRound",
+        execute: async function (ctx) {
+          await ctx.upgradeCard(ctx.card, 3, true);
+          ctx.replaceCardInZone(ctx.t('permanentZone'), ctx.card.id, ctx.card);
+          return false;
+        }
+      }
+    ]
+  },
+  262: {
+    1: [
+      { // Homme à la mer
+        description: (t) => parseEffects(t('effect_description_man_overboard')).effects[0].text,
+        timing: "played",
+        execute: async function (ctx) {
+          const people = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'));
+          if (people.length === 0) {
+            await ctx.dropToDiscard({id: ctx.card.id, fromZone: ctx.zone});
+            return false;
+          }
+          const selected = (await ctx.selectCardsFromArray(people, ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card, 'person'))[0];
+          if (!selected) {
+            await ctx.dropToDiscard({id: ctx.card.id, fromZone: ctx.zone});
+            return false;
+          }
+          await ctx.dropToBlocked({id: selected.id, fromZone: ctx.zone});
+          ctx.updateBlocks(ctx.card.id, [selected.id]);
+          return false;
+        }
+      },
+      { 
+        description: (t) => parseEffects(t('effect_description_man_overboard')).effects[1].text,
+        timing: "staysInPlay",
+        execute: async function () {
+          return false;
+        }
+      },
+      { 
+        description: (t) => parseEffects(t('effect_description_man_overboard')).effects[2].text,
+        timing: "onClick",
+        execute: async function (ctx) {
+          const ships = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('ship')), ctx.t('playArea'));
+          const people = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'));
+          if (ships.length < 1 || people.length < 2) {
+            return false;
+          }
+          const selectedShip = (await ctx.selectCardsFromArray(ships, ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card, 'person'))[0];
+          if (!selectedShip) {
+            return false;
+          }
+          const selectedPeople = await ctx.selectCardsFromArray(people, ctx.t('playArea'), this.description(ctx.t), 2, 0, ctx.card, 'person');
+          if (selectedPeople.length < 2) {
+            return false;
+          }
+          await ctx.dropToDiscard({id: [...selectedPeople, selectedShip, ctx.card].map(c => c.id), fromZone: ctx.t('playArea')});
+          ctx.effectEndTurn();
+          return false;
+        }
+      },
+      { 
+        description: (t) => parseEffects(t('effect_description_man_overboard')).effects[0].text,
+        timing: "endOfRound",
+        execute: async function (ctx) {
+          const blockedCard = ctx.getBlockedBy(ctx.card.id)[0];
+          if (!blockedCard) {
+            return false;
+          }
+          ctx.deleteCardInZone(ctx.t('deck'), blockedCard.id);
+          await ctx.upgradeCard(ctx.card, 3, true);
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+          return false;
+        }
+      },
+    ],
+    3: [{ // Deuil
+      description: (t) => parseEffects(t('effect_description_mourning')).effects[0].text,
+      timing: "played",
+      execute: async function (ctx) {
+        const people = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'));
+        if (people.length === 0) {
+          return false;
+        }
+        const selected = (await ctx.selectCardsFromArray(people, ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card, 'person'))[0];
+        if (!selected) {
+          return false;
+        }
+        await ctx.dropToDiscard({id: selected.id, fromZone: ctx.t('playArea')});
+        await checkNextBox(ctx.card);
+        ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+        if (getLastCheckboxChecked(ctx.card)) {
+          ctx.deleteCardInZone(ctx.zone, ctx.card.id);
+        }
         return false;
       }
     }],

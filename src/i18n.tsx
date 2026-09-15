@@ -320,6 +320,22 @@ export type TranslationKeys =
   | 'madman'
   | 'adventurer'
   | 'ferryman'
+  | 'repairs_needed'
+  | 'beyond_repair'
+  | 'freeloader'
+  | 'apprentice'
+  | 'errand_boy'
+  | 'lots_of_rats'
+  | 'rats'
+  | 'merchant_ship'
+  | 'skilled_trader'
+  | 'man_overboard'
+  | 'mourning'
+  | 'pirate_bay'
+  | 'spooky_tavern'
+  | 'cursed_dubloon'
+  | 'pirate_ship'
+  | 'cannon_fire'
 
   // Cards Effects Descriptions
   | 'staysInPlay'
@@ -653,6 +669,24 @@ export type TranslationKeys =
   | 'effect_description_new_normal'
   | 'effect_description_adventurer'
   | 'effect_description_ferryman'
+  | 'effect_description_repairs_needed'
+  | 'effect_description_beyond_repair'
+  | 'effect_description_errand_boy'
+  | 'effect_description_distant_lands_scribe'
+  | 'effect_description_stop_distant_lands_5'
+  | 'effect_description_lots_of_rats'
+  | 'effect_description_rats'
+  | 'effect_description_merchant_ship'
+  | 'effect_description_skilled_trader'
+  | 'effect_description_stop_distant_lands_6'
+  | 'effect_description_man_overboard'
+  | 'effect_description_mourning'
+  | 'effect_description_stop_distant_lands_7'
+  | 'effect_description_pirate_bay'
+  | 'effect_description_spooky_tavern'
+  | 'effect_description_cursed_dubloon'
+  | 'effect_description_pirate_ship'
+  | 'effect_description_cannon_fire'
 
   // Other costs
   | 'other_cost_destroy_stone_bridge'
@@ -693,6 +727,17 @@ export type TranslationKeys =
   | 'string_choice_discard_to_gain_3_resources'
   | 'string_choice_discard_to_keep_lands'
   | 'string_choice_tradegood_or_sword'
+  | 'string_choice_effect_or_production'
+  | 'string_choice_select_effect'
+  | 'string_choice_gain_production'
+  | 'string_choice_two_people_or_reinforced_ship'
+  | 'string_choice_spooky_tavern'
+  | 'string_choice_brawl'
+  | 'string_choice_gossip'
+  | 'string_choice_refreshments'
+  | 'string_choice_destroy_or_downgrade_ship'
+  | 'string_choice_destroy_ship'
+  | 'string_choice_downgrade_reinforced_ship'
 
   // Expansion Effects
   | 'specific_targets_distant_lands'
@@ -1413,6 +1458,22 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     madman: 'Fou',
     adventurer: 'Aventurière',
     ferryman: 'Passeur',
+    repairs_needed: 'Réparations Nécessaires',
+    beyond_repair: 'Irréparable',
+    freeloader: 'Petit Clandestin',
+    apprentice: 'Apprenti',
+    errand_boy: 'Garçon Serviable',
+    lots_of_rats: 'Plein de Rats',
+    rats: 'Quelques Rats',
+    merchant_ship: 'Navire Marchand',
+    skilled_trader: 'Négociant Habile',
+    man_overboard: 'Homme à la Mer',
+    mourning: 'Deuil',
+    pirate_bay: 'Baie des Pirates',
+    spooky_tavern: 'Tavenre Glaçante',
+    cursed_dubloon: 'Doublon Maudit',
+    pirate_ship: 'Bateau Pirate',
+    cannon_fire: 'Coups de Canon',
 
     // Cards Effects Descriptions
     staysInPlay: "effects/passive Reste en jeu.",
@@ -1744,8 +1805,26 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     effect_description_handy_craftsman: 'effects/activate effects/check 1 case contenant une ou plusieurs ressources d\'une carte au choix et gagnez le triple de ressources de cette case',
     effect_description_seasick: 'effects/forced Carte Jouée : Défausse toutes les personnes en jeu et effects/check .',
     effect_description_new_normal: 'effects/passive Les Personnes n\'ont plus aucune production. effects/activate Dépensez 10 resources/tradegood pour effects/destroy .',
-    effect_description_adventurer: 'effects/passive Reste en jeu. effects/activate Défaussez la carte du dessus de votre deck pour utiliser un effet effects/activate, effect/time ou sa production.',
+    effect_description_adventurer: 'effects/passive Reste en jeu. effects/activate Défaussez la carte du dessus de votre deck pour utiliser un effet effects/activate , effects/time ou sa production.',
     effect_description_ferryman: 'effects/activate Défaussez la carte du dessus de votre deck.',
+    effect_description_repairs_needed: 'effects/time Défaussez 2 Personnes ou 1 i18n/reinforced_ship pour effects/check la première case verte disponible. effects/forced Fin de Tour : effects/check dans la première case rouge disponible.',
+    effect_description_beyond_repair: 'effects/forced Carte Jouée : Détruisez un Navire en jeu ou dans la défausse, puis si vous le faites effects/destroy .',
+    effect_description_errand_boy: 'effects/activate Jouez une carte Objet ou Cargaison depuis la défausse.',
+    effect_description_distant_lands_scribe: 'effects/optional Fin du Tour : Défaussez cette carte pour que 2 autres cartes restent en jeu.',
+    effect_description_stop_distant_lands_5: 'Oh, des rats. effects/destroy Découvrez Plein de Rats (245-248).',
+    effect_description_lots_of_rats: 'effects/forced Carte Jouée : effects/check 1 Cargaison en jeu sans recevoir les ressources. effects/time Défaussez 2 Personnes pour effects/arrow .',
+    effect_description_rats: 'effects/forced Carte Jouée : effects/check 1 Cargaison en jeu sans recevoir les ressources. effects/time Défaussez 2 Personnes pour effects/destroy .',
+    effect_description_merchant_ship: 'effects/time Dépensez resources/tradegood resources/tradegood resources/tradegood pour découvrir une Armoire (357). effects/time Dépensez resources/coin resources/coin resources/tradegood resources/tradegood pour découvrir un Chat (358). effects/time Dépensez resources/tradegood resources/tradegood resources/tradegood resources/tradegood pour effects/arrow . effects/time Dépensez resources/sword resources/sword resources/sword et effects/destroy cette carte pour découvrir une Cargaison Volée (359). effects/forced Fin de Manche : effects/destroy .',
+    effect_description_skilled_trader: 'effects/activate Dépensez 2 ressources pour obtenir resources/tradegood resources/tradegood resources/tradegood .',
+    effect_description_stop_distant_lands_6: 'Vous appercevez au loin un navire en flammes, décidez si vous voulez aller venir en aide à l\'équipage. effects/destroy Allez les aidez et découvrez un Navire en Flamme (322). effects/destroy Continuez votre chemin avec une Mauvaise Conscience (321) et les 2 cartes suivantes. ',
+    effect_description_man_overboard: 'effects/forced Carte Jouée : Bloque une Personne et si vous ne pouvez pas, défaussez cette carte. effects/passive Reste en jeu. effects/time Défaussez 1 Navire et 2 Personnes pour défausser cette carte. effects/forced Find de Manche : Détruisez la personne bloquée, et si vous le faites, effects/arrow .',
+    effect_description_mourning: 'effects/forced Carte Jouée : Défaussez 1 Personne et si vous le faites, effects/check .',
+    effect_description_stop_distant_lands_7: 'Après votre choix, découvrez les 2 prochaines cartes. effects/destroy Défier la tempête pour trouver l\'île légendaire en effects/destoy (257-259). effects/destroy Contourner par la Baie des Pirates en effects/destroy (260-262).',
+    effect_description_pirate_bay: 'effects/time effects/destroy une carte en jeu pour avoir un effet en fonction du type | Personne : Découvrez une Grosse Cargaison (365) | Cargaison : Découvrez des Hommes de Main (366/367) | Navire Renforcé : Découvrez une Boussole (368). effects/forced Fin de Manche : effects/destroy .',
+    effect_description_spooky_tavern: 'effects/time Dépensez resources/coin resources/coin resources/coin et choisissez une option | Déclencher une bagarre : Découvrez (369) | Ragots : Découvrez (370) | Boire un coup : Découvrez (371). effects/forced End of Round : effects/destroy .',
+    effect_description_cursed_dubloon: 'effects/forced A chaque fois que vous gagnez au moins 1 resources/coin , défaussez une carte alliée.',
+    effect_description_pirate_ship: 'effects/forced Carte Révélée : Découvrez 3 pirates (326, 327 et 328). effects/time Inscrivez 2 effects/check sur des cases de Cargaison sans gagner les ressources pour effects/check . effects/forced Fin de Manche : effects/arrow .',
+    effect_description_cannon_fire: 'effects/forced Fin du tour : Dépensez resources/sword resources/sword resources/sword , si vous ne le pouvez pas, détruisez 1 Navire en jeu ou dans la défausse, ou rétrogadez un i18n/reinforced_ship en jeu ou dans la défausse. effects/forced Fin de Manche : effects/destroy .',
 
     // Other costs
     other_cost_destroy_stone_bridge: 'Détruisez le Pont de Pierre (12)',
@@ -1786,6 +1865,17 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     string_choice_pass: "Passer",
     string_choice_discard_to_keep_lands: "Défausser la Muraille d'Avant-Poste pour faire rester en jeu les Terrains?",
     string_choice_tradegood_or_sword: "Convertir des resources/tradegood en resources/sword , ou l'inverse?",
+    string_choice_effect_or_production: "Choisir un effet ou une production de la carte du dessus du deck?",
+    string_choice_select_effect: "Choisir un effet",
+    string_choice_gain_production: "Choisir une production",
+    string_choice_two_people_or_reinforced_ship: "Défausser 2 Personnes ou 1 i18n/reinforced_ship ?",
+    string_choice_spooky_tavern: 'Quel est votre choix?',
+    string_choice_brawl: 'Déclencher une bagarre',
+    string_choice_gossip: 'Ragots',
+    string_choice_refreshments: 'Boire un coup',
+    string_choice_destroy_or_downgrade_ship: 'Détruire un Navire ou rétrogader un i18n/reinforced_ship ?',
+    string_choice_destroy_ship: 'Détruire un Navire',
+    string_choice_downgrade_reinforced_ship: 'Rétrogader un i18n/reinforced_ship',
 
     // Expansion Effects
     specific_targets_distant_lands: 'Enlevez " effects/passive Reste en jeu. " à 2 cartes.',
@@ -2504,6 +2594,22 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     madman: 'Madman',
     adventurer: 'Adventurer',
     ferryman: 'Ferryman',
+    repairs_needed: 'Repairs Needed',
+    beyond_repair: 'Beyond Repair',
+    freeloader: 'Freeloader',
+    apprentice: 'Apprentice',
+    errand_boy: 'Errand Boy',
+    lots_of_rats: 'Lots of Rats',
+    rats: 'Rats',
+    merchant_ship: 'Merchant Ship',
+    skilled_trader: 'Skilled Trader',
+    man_overboard: 'Man Overboard !',
+    mourning: 'Mourning',
+    pirate_bay: 'Pirate Bay',
+    spooky_tavern: 'Spooky Tavern',
+    cursed_dubloon: 'Cursed Dubloon',
+    pirate_ship: 'Pirate Ship',
+    cannon_fire: 'Cannon Fire',
 
     // Cards Effects Descriptions
     staysInPlay: "effects/passive Stays in play.",
@@ -2835,8 +2941,26 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     effect_description_handy_craftsman: 'effects/activate effects/check on any card checkbox with a resource and gain triple tha resource.',
     effect_description_seasick: 'effects/forced Card Played : Discard all Persons in play and effects/check .',
     effect_description_new_normal: 'effects/passive Persons have no production. effects/activate Spend 10 resources/tradegood to effects/destroy .',
-    effect_description_adventurer: 'effects/passive Stays in play. effects/activate Discard the top card of your deckto use its effects/activate, effect/time or its production.',
+    effect_description_adventurer: 'effects/passive Stays in play. effects/activate Discard the top card of your deckto use its effects/activate , effects/time or its production.',
     effect_description_ferryman: 'effects/activate Discard the top card of your deck.',
+    effect_description_repairs_needed: 'effects/time Discard 2 Persons or 1 i18n/reinforced_ship to effects/check the first green checkbox. effects/forced End of Turn : effects/check the first red checkbox.',
+    effect_description_beyond_repair: 'effects/forced Card Played : Destroy 1 Ship in play or in the discard, if you do, effects/destroy .',
+    effect_description_errand_boy: 'effects/activate Play an Item or Cargo card from the discard.',
+    effect_description_distant_lands_scribe: 'effects/optional End of Turn : Discard to make 2 other cards stay in play.',
+    effect_description_stop_distant_lands_5: 'Oh, rats. effects/destroy Discover Lots of Rats (245-248).',
+    effect_description_lots_of_rats: 'effects/forced Card Played : effects/check 1 Cargo in play without getting resources. effects/time Discard 2 Persons to effects/arrow .',
+    effect_description_rats: 'effects/forced Card Played : effects/check 1 Cargo in play without getting resources. effects/time Discard 2 Persons to effects/destroy .',
+    effect_description_merchant_ship: 'effects/time Spend resources/tradegood resources/tradegood resources/tradegood to discover Wardrobe (357). effects/time Spend resources/coin resources/coin resources/tradegood resources/tradegood to discover Cat (358). effects/time Spend resources/tradegood resources/tradegood resources/tradegood resources/tradegood to effects/arrow . effects/time Spend resources/sword resources/sword resources/sword and effects/destroy this card to discover Stolen Cargo (359). effects/forced End of Round : effects/destroy .',
+    effect_description_skilled_trader: 'effects/activate Spend 2 resources to gain resources/tradegood resources/tradegood resources/tradegood .',
+    effect_description_stop_distant_lands_6: 'In the distance, you spot a burning ship; decide if you want to rescue the the crew. effects/destroy Go help them and discover Burning Ship (322). effects/destroy Continue your journey with a Bad Conscience (321) and the 2 following cards. ',
+    effect_description_man_overboard: 'effects/forced Card Played : Block 1 Person and if you cannot, discard this card. effects/passive Stays in play. effects/time Discard 1 Ship and 2 Person to discard this card. effects/forced End of Round : Destroy the blocked Person, and if you do, effects/arrow .',
+    effect_description_mourning: 'effects/forced Card Played : Discard 1 Person and if you do, effects/check .',
+    effect_description_stop_distant_lands_7: 'After your choice, discover the next 2 cards. effects/destroy Defy the storm in search of the legendary island, effects/destoy (257-259). effects/destroy Take a detour pas the Pirate Bay, effects/destroy (260-262).',
+    effect_description_pirate_bay: 'effects/time effects/destroy a card in play to benefit from an effect depening on its type | Person : Discover Large Cargo (365) | Cargo : Discover Henchmen (366/367) | i18n/reinforced_ship : Discover Compass (368). effects/forced End of Round : effects/destroy .',
+    effect_description_spooky_tavern: 'effects/time Spend resources/coin resources/coin resources/coin and choose an option | Start a brawl : Discover (369) | Gossip : Discover (370) | Get refreshments : Discover (371). effects/forced End of Round : effects/destroy .',
+    effect_description_cursed_dubloon: 'effects/forced Each time you gain at least 1 resources/coin , discard a friendly card.',
+    effect_description_pirate_ship: 'effects/forced Card Revealed : Discover 3 pirates (326, 327 et 328). effects/time Mark 2 effects/check on cargo checkboxes without getting the resources to effects/check . effects/forced End of Round : effects/arrow .',
+    effect_description_cannon_fire: 'effects/forced End of Turn : Spend resources/sword resources/sword resources/sword , if you cannot, destroy 1 Ship in play or in the discard, or downgrade a i18n/reinforced_ship in play or in the discard. effects/forced End of Round : effects/destroy .',
 
     // Other costs
     other_cost_destroy_stone_bridge: 'Destroy the Stone Bridge (12)',
@@ -2877,6 +3001,17 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     string_choice_pass: "Pass",
     string_choice_discard_to_keep_lands: "Discard Walled Outpost to keep all Lands in play?",
     string_choice_tradegood_or_sword: "Trade resources/tradegood for resources/sword , or the opposite?",
+    string_choice_effect_or_production: "Select an effect or a production from the top card of the deck?",
+    string_choice_select_effect: "Select an effect",
+    string_choice_gain_production: "Select a production",
+    string_choice_two_people_or_reinforced_ship: "Discard 2 People or 1 i18n/reinforced_ship ?",
+    string_choice_spooky_tavern: 'What is your choice?',
+    string_choice_brawl: 'Start a brawl',
+    string_choice_gossip: 'Gossip',
+    string_choice_refreshments: 'Get refreshments',
+    string_choice_destroy_or_downgrade_ship: 'Destroy a Ship or downgrade a i18n/reinforced_ship ?',
+    string_choice_destroy_ship: 'Destroy a Ship',
+    string_choice_downgrade_reinforced_ship: 'Downgrade a i18n/reinforced_ship',
 
     // Expansion Effects
     specific_targets_distant_lands: 'Remove " effects/passive Stays in play. " from 2 cards.',
