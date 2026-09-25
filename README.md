@@ -115,3 +115,4 @@ All rights to the original **Kingdom Legacy** game, rules, and artwork remain wi
 
 - Cards don't look at bonus production (bandit (14) for example, won't see the scientist as a valid source) => Refactoring needed on getResources from context rather than cards for actual value checks
 - Interraction between 44 and 141 make it so lands don't produce double swords
+- Effects that restrict play does not work on cards that do not draw, but move cards

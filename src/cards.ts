@@ -10177,6 +10177,48 @@ export const allCards: GameCard[] = [
       throw new Error("Function not implemented.");
     }
   },
+  { id: 261,
+    name: ['maelstrom', '', 'escape', ''],
+    resources: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    effects: [
+      'effect_description_maelstrom',
+      '',
+      'effect_description_escape',
+      '',
+    ],
+    upgrades: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    currentSide: 1,
+    type: ['event - permanent', '', 'event - permanent', ''],
+    choice: false,
+    checkboxes: [],
+    negative: [true, false, true, false],
+    discoverable: true,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
   { id: 262,
     name: ['man_overboard', '', 'mourning', ''],
     resources: [
@@ -10212,6 +10254,289 @@ export const allCards: GameCard[] = [
       [],
     ],
     negative: [true, false, true, false],
+    discoverable: true,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 263,
+    name: ['cargo_loose', '', 'lose_cargo', ''],
+    resources: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    effects: [
+      'effect_description_cargo_loose',
+      '',
+      'effect_description_lose_cargo',
+      '',
+    ],
+    upgrades: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    currentSide: 1,
+    type: ['event', '', 'event', ''],
+    choice: false,
+    checkboxes: [],
+    negative: [true, false, true, false],
+    discoverable: true,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 264,
+    name: ['island', '', 'treasure_island', ''],
+    resources: [
+      [
+        emptyResource
+      ],
+      [],
+      [
+        emptyResource
+      ],
+      [],
+    ],
+    effects: [
+      'effect_description_island',
+      '',
+      'effect_description_treasure_island',
+      '',
+    ],
+    upgrades: [
+      [
+        { cost: {}, nextSide: 3 }
+      ],
+      [],
+      [],
+      [],
+    ],
+    currentSide: 1,
+    type: ['land', '', 'land', ''],
+    choice: false,
+    checkboxes: [
+      [],
+      [],
+      [
+        {content: '', checked: false}, {content: '', checked: false},
+        {content: '', checked: false}, {content: '', checked: false},
+        {content: '', checked: false}, {content: 'effects/oneTime', checked: false},
+      ],
+      [],
+    ],
+    negative: [false, false, false, false],
+    discoverable: true,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 265,
+    name: ['calm_sea', '', 'land_ahead', ''],
+    resources: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    effects: [
+      'effect_description_calm_sea',
+      '',
+      'effect_description_land_ahead',
+      '',
+    ],
+    upgrades: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    currentSide: 1,
+    type: ['event', '', 'event', ''],
+    choice: false,
+    checkboxes: [],
+    negative: [false, false, false, false],
+    discoverable: true,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 266,
+    name: ['calm_sea', '', 'land_ahead', ''],
+    resources: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    effects: [
+      'effect_description_calm_sea',
+      '',
+      'effect_description_land_ahead',
+      '',
+    ],
+    upgrades: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    currentSide: 1,
+    type: ['event', '', 'event', ''],
+    choice: false,
+    checkboxes: [],
+    negative: [false, false, false, false],
+    discoverable: true,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 267,
+    name: ['stop', '', '', ''],
+    resources: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    effects: [
+      'effect_description_stop_distant_lands_8',
+      '',
+      '',
+      '',
+    ],
+    upgrades: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    currentSide: 1,
+    type: ['scroll', '', '', ''],
+    choice: false,
+    checkboxes: [],
+    negative: [false, false, false, false],
+    discoverable: true,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
+  { id: 268,
+    name: ['reef_of_despair', '', 'shipwreck', ''],
+    resources: [
+      [
+        emptyResource
+      ],
+      [],
+      [
+        emptyResource
+      ],
+      [],
+    ],
+    effects: [
+      'effect_description_reef_of_despair',
+      '',
+      'effect_description_shipwreck',
+      '',
+    ],
+    upgrades: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    currentSide: 1,
+    type: ['obstacle', '', 'structure', ''],
+    choice: false,
+    checkboxes: [
+      [],
+      [],
+      [
+        {content: 'wood, wood', checked: false},
+        {content: 'wood, wood', checked: false},
+        {content: 'wood, wood', checked: false},
+        {content: 'coin, coin', checked: false},
+        {content: 'tradegood, tradegood', checked: false},
+        {content: 'metal, metal', checked: false},
+      ],
+      [],
+    ],
+    negative: [true, false, false, false],
     discoverable: true,
     GetResources: function (): Partial<ResourceMap>[] {
       throw new Error("Function not implemented.");

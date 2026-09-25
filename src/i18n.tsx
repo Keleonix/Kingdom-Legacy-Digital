@@ -336,6 +336,16 @@ export type TranslationKeys =
   | 'cursed_dubloon'
   | 'pirate_ship'
   | 'cannon_fire'
+  | 'maelstrom'
+  | 'escape'
+  | 'cargo_loose'
+  | 'lose_cargo'
+  | 'island'
+  | 'treasure_island'
+  | 'calm_sea'
+  | 'land_ahead'
+  | 'reef_of_despair'
+  | 'shipwreck'
 
   // Cards Effects Descriptions
   | 'staysInPlay'
@@ -687,6 +697,17 @@ export type TranslationKeys =
   | 'effect_description_cursed_dubloon'
   | 'effect_description_pirate_ship'
   | 'effect_description_cannon_fire'
+  | 'effect_description_maelstrom'
+  | 'effect_description_escape'
+  | 'effect_description_cargo_loose'
+  | 'effect_description_lose_cargo'
+  | 'effect_description_island'
+  | 'effect_description_treasure_island'
+  | 'effect_description_calm_sea'
+  | 'effect_description_land_ahead'
+  | 'effect_description_stop_distant_lands_8'
+  | 'effect_description_reef_of_despair'
+  | 'effect_description_shipwreck'
 
   // Other costs
   | 'other_cost_destroy_stone_bridge'
@@ -738,6 +759,10 @@ export type TranslationKeys =
   | 'string_choice_destroy_or_downgrade_ship'
   | 'string_choice_destroy_ship'
   | 'string_choice_downgrade_reinforced_ship'
+  | 'string_choice_discard_ship'
+  | 'string_choice_destroy_allied'
+  | 'string_choice_discard_the_ship'
+  | 'string_choice_discard_two_persons'
 
   // Expansion Effects
   | 'specific_targets_distant_lands'
@@ -1474,6 +1499,16 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     cursed_dubloon: 'Doublon Maudit',
     pirate_ship: 'Bateau Pirate',
     cannon_fire: 'Coups de Canon',
+    maelstrom: 'Maelstrom',
+    escape: 'Echappatoire',
+    cargo_loose: 'Sans Attache',
+    lose_cargo: 'La Cargaison prend le Large !',
+    island: 'Île',
+    treasure_island: 'Île au Trésor',
+    calm_sea: 'Mer Calme',
+    land_ahead: 'Terre !',
+    reef_of_despair: 'Récif du Désespoir',
+    shipwreck: 'Epave de Navire',
 
     // Cards Effects Descriptions
     staysInPlay: "effects/passive Reste en jeu.",
@@ -1819,12 +1854,23 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     effect_description_stop_distant_lands_6: 'Vous appercevez au loin un navire en flammes, décidez si vous voulez aller venir en aide à l\'équipage. effects/destroy Allez les aidez et découvrez un Navire en Flamme (322). effects/destroy Continuez votre chemin avec une Mauvaise Conscience (321) et les 2 cartes suivantes. ',
     effect_description_man_overboard: 'effects/forced Carte Jouée : Bloque une Personne et si vous ne pouvez pas, défaussez cette carte. effects/passive Reste en jeu. effects/time Défaussez 1 Navire et 2 Personnes pour défausser cette carte. effects/forced Find de Manche : Détruisez la personne bloquée, et si vous le faites, effects/arrow .',
     effect_description_mourning: 'effects/forced Carte Jouée : Défaussez 1 Personne et si vous le faites, effects/check .',
-    effect_description_stop_distant_lands_7: 'Après votre choix, découvrez les 2 prochaines cartes. effects/destroy Défier la tempête pour trouver l\'île légendaire en effects/destoy (257-259). effects/destroy Contourner par la Baie des Pirates en effects/destroy (260-262).',
+    effect_description_stop_distant_lands_7: 'Après votre choix, découvrez les 2 prochaines cartes. effects/destroy Défier la tempête pour trouver l\'île légendaire en effects/destoy (257-260). effects/destroy Contourner par la Baie des Pirates en effects/destroy (261-264).',
     effect_description_pirate_bay: 'effects/time effects/destroy une carte en jeu pour avoir un effet en fonction du type | Personne : Découvrez une Grosse Cargaison (365) | Cargaison : Découvrez des Hommes de Main (366/367) | Navire Renforcé : Découvrez une Boussole (368). effects/forced Fin de Manche : effects/destroy .',
     effect_description_spooky_tavern: 'effects/time Dépensez resources/coin resources/coin resources/coin et choisissez une option | Déclencher une bagarre : Découvrez (369) | Ragots : Découvrez (370) | Boire un coup : Découvrez (371). effects/forced End of Round : effects/destroy .',
     effect_description_cursed_dubloon: 'effects/forced A chaque fois que vous gagnez au moins 1 resources/coin , défaussez une carte alliée.',
     effect_description_pirate_ship: 'effects/forced Carte Révélée : Découvrez 3 pirates (326, 327 et 328). effects/time Inscrivez 2 effects/check sur des cases de Cargaison sans gagner les ressources pour effects/check . effects/forced Fin de Manche : effects/arrow .',
     effect_description_cannon_fire: 'effects/forced Fin du tour : Dépensez resources/sword resources/sword resources/sword , si vous ne le pouvez pas, détruisez 1 Navire en jeu ou dans la défausse, ou rétrogadez un i18n/reinforced_ship en jeu ou dans la défausse. effects/forced Fin de Manche : effects/destroy .',
+    effect_description_maelstrom: 'effects/forced Début du Tour : Jouez 4 cartes en plus et si vous ne pouvez pas, défaussez toutes les cartes sans effets. effects/passive Vous ne pouvez pas jouer de cartes. effects/forced Fin du Tour : Défaussez 1 Navire ou détruisez 1 carte alliée en jeu. effects/forced Fin de Manche : effects/arrow .',
+    effect_description_escape: 'effects/forced Lorsque vous jouez un navire, défaussez-le ou défaussez 2 Personnes, ou rétrogradez un i18n/reinforced_ship en jeu ou dans la défausse. effects/forced Fin de Manche : effects/destroy .',
+    effect_description_cargo_loose: 'effects/passive Reste en jeu. effects/time Défaussez 2 Personnes et 2 Navires pour effects/destroy . effects/forced Fin de Mancehe : effects/arrow .',
+    effect_description_lose_cargo: 'effects/passive Reste en jeu. effects/forced Lorsqu\'une Cargaison est jouée, effects/destroy cette carte et 1 carte Cargaison de votre choix en jeu.',
+    effect_description_island: 'effects/time Défaussez 2 Navires et 2 Personnes pour découvrir 3 Survivants (362-364).',
+    effect_description_treasure_island: 'effects/activate effects/destroy 1 Objet en jeu pour donner sa resources/fame + 5 à cette carte et effects/check .',
+    effect_description_calm_sea: 'effects/forced Carte Jouée : Jouez les 5 prochaines carte de votre pioche, puis effects/arrow .',
+    effect_description_land_ahead: 'effects/forced Carte Jouée : Jouez les 5 prochaines carte de votre pioche, puis effects/destroy .',
+    effect_description_stop_distant_lands_8: 'Avez-vous survécu? Il vous reste un dernier obstacle à franchir avant de retrouver la terre ferme : le récif. effects/destroy S\'il ne vous reste pas de Navires, découvrez uniquement (269), sinon (268-269).',
+    effect_description_reef_of_despair: 'effects/passive Reste en jeu. effects/forced Fin de Manche : effects/destroy 1 Navire de votre paquet, puis effects/arrow .',
+    effect_description_shipwreck: 'effects/activate Défaussez 1 Personne en jeu pour effects/check 1 au choix, ne fois complétée, effects/destroy .',
 
     // Other costs
     other_cost_destroy_stone_bridge: 'Détruisez le Pont de Pierre (12)',
@@ -1876,6 +1922,10 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     string_choice_destroy_or_downgrade_ship: 'Détruire un Navire ou rétrogader un i18n/reinforced_ship ?',
     string_choice_destroy_ship: 'Détruire un Navire',
     string_choice_downgrade_reinforced_ship: 'Rétrogader un i18n/reinforced_ship',
+    string_choice_discard_ship: 'Défaussez un navire',
+    string_choice_destroy_allied: 'Détruisez une carte alliée',
+    string_choice_discard_the_ship: 'Défaussez le Navire',
+    string_choice_discard_two_persons: 'Défaussez 2 Personnes',
 
     // Expansion Effects
     specific_targets_distant_lands: 'Enlevez " effects/passive Reste en jeu. " à 2 cartes.',
@@ -2610,6 +2660,16 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     cursed_dubloon: 'Cursed Dubloon',
     pirate_ship: 'Pirate Ship',
     cannon_fire: 'Cannon Fire',
+    maelstrom: 'Maelstrom',
+    escape: 'Escape',
+    cargo_loose: 'Cargo Loose !',
+    lose_cargo: 'Lose Cargo !',
+    island: 'island',
+    treasure_island: 'Treasure Island',
+    calm_sea: 'Calm Sea',
+    land_ahead: 'Land Ahead !',
+    reef_of_despair: 'Reef of Despair',
+    shipwreck: 'Shipwreck',
 
     // Cards Effects Descriptions
     staysInPlay: "effects/passive Stays in play.",
@@ -2955,13 +3015,24 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     effect_description_stop_distant_lands_6: 'In the distance, you spot a burning ship; decide if you want to rescue the the crew. effects/destroy Go help them and discover Burning Ship (322). effects/destroy Continue your journey with a Bad Conscience (321) and the 2 following cards. ',
     effect_description_man_overboard: 'effects/forced Card Played : Block 1 Person and if you cannot, discard this card. effects/passive Stays in play. effects/time Discard 1 Ship and 2 Person to discard this card. effects/forced End of Round : Destroy the blocked Person, and if you do, effects/arrow .',
     effect_description_mourning: 'effects/forced Card Played : Discard 1 Person and if you do, effects/check .',
-    effect_description_stop_distant_lands_7: 'After your choice, discover the next 2 cards. effects/destroy Defy the storm in search of the legendary island, effects/destoy (257-259). effects/destroy Take a detour pas the Pirate Bay, effects/destroy (260-262).',
+    effect_description_stop_distant_lands_7: 'After your choice, discover the next 2 cards. effects/destroy Defy the storm in search of the legendary island, effects/destoy (257-260). effects/destroy Take a detour pas the Pirate Bay, effects/destroy (261-264).',
     effect_description_pirate_bay: 'effects/time effects/destroy a card in play to benefit from an effect depening on its type | Person : Discover Large Cargo (365) | Cargo : Discover Henchmen (366/367) | i18n/reinforced_ship : Discover Compass (368). effects/forced End of Round : effects/destroy .',
     effect_description_spooky_tavern: 'effects/time Spend resources/coin resources/coin resources/coin and choose an option | Start a brawl : Discover (369) | Gossip : Discover (370) | Get refreshments : Discover (371). effects/forced End of Round : effects/destroy .',
     effect_description_cursed_dubloon: 'effects/forced Each time you gain at least 1 resources/coin , discard a friendly card.',
     effect_description_pirate_ship: 'effects/forced Card Revealed : Discover 3 pirates (326, 327 et 328). effects/time Mark 2 effects/check on cargo checkboxes without getting the resources to effects/check . effects/forced End of Round : effects/arrow .',
     effect_description_cannon_fire: 'effects/forced End of Turn : Spend resources/sword resources/sword resources/sword , if you cannot, destroy 1 Ship in play or in the discard, or downgrade a i18n/reinforced_ship in play or in the discard. effects/forced End of Round : effects/destroy .',
-
+    effect_description_maelstrom: 'effects/forced Start of Turn : Play 4 additional cards and if you cannot, discard all cards without effects. effects/passive You cannot play cards. effects/forced End of Turn : Discard 1 Ship or destroy 1allied card in play. effects/forced End of Round : effects/arrow .',
+    effect_description_escape: 'effects/forced Whenever you play a Ship, discard it or 2 Persons, or downgrade a i18n/reinforced_ship in play or in the discard. effects/forced End of Round : effects/destroy .',
+    effect_description_cargo_loose: 'effects/passive Stays in play. effects/time Discard 2 Persons and 2 Ships to effects/destroy . effects/forced End of Round : effects/arrow .',
+    effect_description_lose_cargo: 'effects/passive Stays in play. effects/forced When a Cargo is played, effects/destroy this and any 1 Cargo card in play.',
+    effect_description_island: 'effects/time Discard 2 Ships et 2 Persons to discover 3 Survivors (362-364).',
+    effect_description_treasure_island: 'effects/activate effects/destroy 1 Item in play to give its resources/fame + 5 to this card and effects/check .',
+    effect_description_calm_sea: 'effects/forced Card Played : Play the next 5 cards from your deck, then effects/arrow .',
+    effect_description_land_ahead: 'effects/forced Card Played : Play the next 5 cards from your deck, then effects/destroy .',
+    effect_description_stop_distant_lands_8: 'Did you make it? The last obstacle to overcome before landingis the reef. effects/destroy If you don\'t have Ships left, discover only (269), otherwise (268-269).',
+    effect_description_reef_of_despair: 'effects/passive Stays in play. effects/forced End of Round : effects/destroy 1 Ship in your deck, then effects/arrow .',
+    effect_description_shipwreck: 'effects/activate Discard 1 Person in play to effects/check any 1 box, when complete, effects/destroy .',
+    
     // Other costs
     other_cost_destroy_stone_bridge: 'Destroy the Stone Bridge (12)',
     other_cost_one_person: '1 Person',
@@ -3012,6 +3083,10 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     string_choice_destroy_or_downgrade_ship: 'Destroy a Ship or downgrade a i18n/reinforced_ship ?',
     string_choice_destroy_ship: 'Destroy a Ship',
     string_choice_downgrade_reinforced_ship: 'Downgrade a i18n/reinforced_ship',
+    string_choice_discard_ship: 'Discard a Ship',
+    string_choice_destroy_allied: 'Destroy an allied card',
+    string_choice_discard_the_ship: 'Discard the Ship',
+    string_choice_discard_two_persons: 'Discard 2 Persons',
 
     // Expansion Effects
     specific_targets_distant_lands: 'Remove " effects/passive Stays in play. " from 2 cards.',

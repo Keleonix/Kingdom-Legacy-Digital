@@ -135,6 +135,7 @@ export type EffectTiming =
   | "onEnemyDefeated"
   | "onPlayAreaUpdated"
   | "discovered"
+  | "startOfTurn"
   | "onTravel" // Distant Lands only
 ;
 

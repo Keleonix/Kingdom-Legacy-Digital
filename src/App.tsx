@@ -3983,15 +3983,12 @@ export default function Game() {
     return effectText.startsWith("effects/time");
   };
 
-  async function draw(nbCards: number) {
-    if (checkPlayRestrictions()) {
+  async function draw(nbCards: number, force?: boolean) {
+    if (checkPlayRestrictions() && !force) {
       return;
     }
-
-    const drawn = deck.slice(0, nbCards);
-    const cardIds = drawn.map(c => c.id);
     
-    dropToPlayArea({id: cardIds, fromZone: t('deck')});
+    await dropToPlayArea({id: deckRef.current.slice(0, nbCards).map(c => c.id), fromZone: t('deck')});
   };
 
   const drawNewTurn = async () => {
@@ -4012,7 +4009,8 @@ export default function Game() {
       if ("fame" in prev) (reset as Partial<ResourceMap>).fame = (prev as Partial<ResourceMap>).fame;
       return reset;
     });
-    await draw(4);
+    await draw(4, true);
+    await handleEffectsStartOfTurn();
     setIsAnimating(false);
   }
   
@@ -4097,8 +4095,14 @@ export default function Game() {
     draw(2 + bonusCards);
   };
 
+  const handleEffectsStartOfTurn = async () => {
+    for(const card of [...playAreaRef.current, ...permanentZoneRef.current]) {
+      await handleExecuteCardEffect(card, t('playArea'), "startOfTurn");
+    }
+  }
+
   const handleEffectsEndOfTurn = async () => {
-    for(const card of [...playAreaRef.current, ...permanentZone]) {
+    for(const card of [...playAreaRef.current, ...permanentZoneRef.current]) {
       await handleExecuteCardEffect(card, t('playArea'), "endOfTurn");
     }
   }
@@ -4106,7 +4110,7 @@ export default function Game() {
   const gatherEffectsEndOfRound = async () => {
     const cardsWithEffects: Array<{ card: GameCard, effectIndex: number }> = [];
     
-    for (const card of [...playAreaRef.current, ...permanentZone]) {
+    for (const card of [...playAreaRef.current, ...permanentZoneRef.current]) {
       const effects = getCardEffects(card.id, card.currentSide);
       effects.forEach((effect, index) => {
         if (effect.timing === "endOfRound") {
@@ -4327,7 +4331,7 @@ export default function Game() {
               );
         
         const fameValueEffect = getCardFameValue(card.id, card.currentSide);
-        if (fameValueEffect.execute) {
+        if (fameValueEffect?.execute) {
           const context: GameContext = {
               card,
               zone: t('deck'),
@@ -4403,7 +4407,7 @@ export default function Game() {
         );
         
         const fameValueEffect = getCardFameValue(card.id, card.currentSide);
-        if (fameValueEffect.execute) {
+        if (fameValueEffect?.execute) {
           const context: GameContext = {
               card,
               zone: t('deck'),
@@ -4463,7 +4467,7 @@ export default function Game() {
               getCardAtIndex,
             };
           
-          const specialFameValue = fameValueEffect.execute(context);
+          const specialFameValue = fameValueEffect?.execute(context) ?? 0;
           totalFame += specialFameValue;
         }
         totalFame += maxFameFromResources;
@@ -6787,7 +6791,7 @@ export default function Game() {
 
   function getCardAtIndex(zone: TranslationKeys, index: number) {
     if (zone === 'deck' && deckRef.current.length > 0 && deckRef.current.length - 1 >= index) {
-      return deck[index];
+      return deckRef.current[index];
     }
     return undefined;
   }
