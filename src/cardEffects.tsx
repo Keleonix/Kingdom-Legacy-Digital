@@ -1,7 +1,6 @@
 import { parseEffects } from "./utils";
 import type { TranslationKeys } from "./i18n";
 import { GameCard, type ResourceMap, type DropPayload, type EffectTiming, type Checkbox, RESOURCE_KEYS, emptyResource, type Upgrade } from "./types";
-import { fromJSON } from "postcss";
 
 // -------------------
 // Types
