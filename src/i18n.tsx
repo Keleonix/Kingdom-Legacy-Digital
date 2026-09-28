@@ -346,6 +346,7 @@ export type TranslationKeys =
   | 'land_ahead'
   | 'reef_of_despair'
   | 'shipwreck'
+  | 'sinking_cargo'
 
   // Cards Effects Descriptions
   | 'staysInPlay'
@@ -708,6 +709,7 @@ export type TranslationKeys =
   | 'effect_description_stop_distant_lands_8'
   | 'effect_description_reef_of_despair'
   | 'effect_description_shipwreck'
+  | 'effect_description_sinking_cargo'
 
   // Other costs
   | 'other_cost_destroy_stone_bridge'
@@ -1509,6 +1511,7 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     land_ahead: 'Terre !',
     reef_of_despair: 'Récif du Désespoir',
     shipwreck: 'Epave de Navire',
+    sinking_cargo: 'Restes du Naufrage',
 
     // Cards Effects Descriptions
     staysInPlay: "effects/passive Reste en jeu.",
@@ -1871,6 +1874,7 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     effect_description_stop_distant_lands_8: 'Avez-vous survécu? Il vous reste un dernier obstacle à franchir avant de retrouver la terre ferme : le récif. effects/destroy S\'il ne vous reste pas de Navires, découvrez uniquement (269), sinon (268-269).',
     effect_description_reef_of_despair: 'effects/passive Reste en jeu. effects/forced Fin de Manche : effects/destroy 1 Navire de votre paquet, puis effects/arrow .',
     effect_description_shipwreck: 'effects/activate Défaussez 1 Personne en jeu pour effects/check 1 au choix, ne fois complétée, effects/destroy .',
+    effect_description_sinking_cargo: 'effects/activate Défaussez 1 Personne pour effects/check 1 au choix et une fois complète, effects/destroy cette carte et découvrez un Perroquet (348). effects/forced Fin du Tour : effects/destroy .',
 
     // Other costs
     other_cost_destroy_stone_bridge: 'Détruisez le Pont de Pierre (12)',
@@ -2670,6 +2674,7 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     land_ahead: 'Land Ahead !',
     reef_of_despair: 'Reef of Despair',
     shipwreck: 'Shipwreck',
+    sinking_cargo: 'Sinking Cargo',
 
     // Cards Effects Descriptions
     staysInPlay: "effects/passive Stays in play.",
@@ -3032,6 +3037,7 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     effect_description_stop_distant_lands_8: 'Did you make it? The last obstacle to overcome before landingis the reef. effects/destroy If you don\'t have Ships left, discover only (269), otherwise (268-269).',
     effect_description_reef_of_despair: 'effects/passive Stays in play. effects/forced End of Round : effects/destroy 1 Ship in your deck, then effects/arrow .',
     effect_description_shipwreck: 'effects/activate Discard 1 Person in play to effects/check any 1 box, when complete, effects/destroy .',
+    effect_description_sinking_cargo: 'effects/activate Discard 1 Personn to effects/check any box below and once complete, effects/destroy this card and discover Parrot (348). effects/forced End of Turn : effects/destroy .',
     
     // Other costs
     other_cost_destroy_stone_bridge: 'Destroy the Stone Bridge (12)',

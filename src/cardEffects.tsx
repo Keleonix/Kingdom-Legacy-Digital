@@ -10743,6 +10743,55 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
   },
+  269: {
+    1: [
+      { // Restes du Naufrage
+        description: (t) => parseEffects(t('effect_description_sinking_cargo')).effects[0].text,
+        timing: "onClick",
+        execute: async function (ctx) {
+          const people = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'));
+          if (people.length === 0) {
+            return false;
+          }
+          const selected = (await ctx.selectCardsFromArray(people, ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card, 'person'))[0];
+          if (!selected) {
+            return false;
+          }
+          const choice = await new Promise<boolean>((resolve) => {
+            ctx.openCheckboxPopup(ctx.card, 2, 0, async (boxes) => {
+              if (boxes.length <= 1) {
+                resolve(false);
+              }
+              for(const box of boxes) {
+                await applyResourceMapDelta(ctx, getCheckboxResources(box.content) ?? {});
+              }
+              await checkBoxes(ctx.card, boxes);
+              ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+              resolve(true);
+            });
+          });
+          if (!choice) {
+            return false;
+          }
+          await ctx.dropToDiscard({id: selected.id, fromZone: ctx.t('playArea')});
+          if (getLastCheckboxChecked(ctx.card)) {
+            ctx.deleteCardInZone(ctx.zone, ctx.card.id);
+            await ctx.discoverCard(c => c.id === 348, this.description(ctx.t), 1, ctx.card);
+            return false;
+          }
+          return true;
+        }
+      },
+      { 
+        description: (t) => parseEffects(t('effect_description_sinking_cargo')).effects[1].text,
+        timing: "endOfTurn",
+        execute: async function (ctx) {
+          ctx.deleteCardInZone(ctx.zone, ctx.card.id);
+          return false;
+        }
+      },
+    ],
+  },
 };
 
 export const cardFameValueRegistry: Record<number, Record<number, CardFameValue>> = {

@@ -10554,6 +10554,58 @@ export const allCards: GameCard[] = [
       throw new Error("Function not implemented.");
     }
   },
+  { id: 269,
+    name: ['sinking_cargo', '', '', ''],
+    resources: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    effects: [
+      'effect_description_sinking_cargo',
+      '',
+      '',
+      '',
+    ],
+    upgrades: [
+      [],
+      [],
+      [],
+      [],
+    ],
+    currentSide: 1,
+    type: ['cargo', '', '', ''],
+    choice: false,
+    checkboxes: [
+      [
+        {content: "coin", checked: false}, {content: "coin", checked: false},
+        {content: "coin", checked: false}, {content: "coin", checked: false},
+        {content: "wood", checked: false}, {content: "wood", checked: false},
+        {content: "wood", checked: false}, {content: "wood", checked: false}
+      ],
+      [],
+      [],
+      [],
+    ],
+    negative: [false, false, false, false],
+    discoverable: true,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
   { id: 373,
     name: ['welcome_to_foundations', '', '', ''],
     resources: [
