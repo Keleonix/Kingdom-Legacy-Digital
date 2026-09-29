@@ -235,6 +235,8 @@ async function setResourceMapToCard(
 }
 
 async function checkBoxes(
+  ctx: GameContext,
+  zone: string,
   card: GameCard,
   checkboxes: Checkbox[]
 ) {
@@ -244,6 +246,13 @@ async function checkBoxes(
         cardCheckbox.checked = true;
         break;
       }
+    }
+  }
+  ctx.replaceCardInZone(zone, card.id, card);
+  if (getLastCheckboxChecked(card)) {
+    const effects = cardCheckboxEffectsRegistry[card.id]?.[card.currentSide]?.filter(e => e.timing === 'lastBoxChecked') ?? [];
+    for (const effect of effects) {
+      await effect.execute(ctx);
     }
   }
 }
@@ -260,12 +269,21 @@ function getResourcesCount(
 }
 
 async function checkNextBox(
+  ctx: GameContext,
+  zone: string,
   card: GameCard
 ) {
   for (const checkbox of card.checkboxes[card.currentSide - 1]) {
     if (!checkbox.checked) {
       checkbox.checked = true;
       break;
+    }
+  }
+  ctx.replaceCardInZone(zone, card.id, card);
+  if (getLastCheckboxChecked(card)) {
+    const effects = cardCheckboxEffectsRegistry[card.id]?.[card.currentSide]?.filter(e => e.timing === 'lastBoxChecked') ?? [];
+    for (const effect of effects) {
+      await effect.execute(ctx);
     }
   }
 }
@@ -280,6 +298,13 @@ async function checkNextBoxApplyEffect(
         await effect.execute(ctx);
       }
       break;
+    }
+  }
+  ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+  if (getLastCheckboxChecked(ctx.card)) {
+    const effects = cardCheckboxEffectsRegistry[ctx.card.id]?.[ctx.card.currentSide]?.filter(e => e.timing === 'lastBoxChecked') ?? [];
+    for (const effect of effects) {
+      await effect.execute(ctx);
     }
   }
 }
@@ -1197,19 +1222,14 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
             militaryToPay += checkbox.checked ? 1 : 0;
           }
-          // Checkbox
-          if (ctx.resources.sword >= militaryToPay) {
-            if (! await applyResourceMapDelta(ctx, { sword: militaryToPay }, true)) {
-              return false;
-            }
-            for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
-              if (!checkbox.checked) {
-                checkbox.checked = true;
-                ctx.effectEndTurn();
-                break;
-              }
-            }
+          if (ctx.resources.sword < militaryToPay) {
+            return false;
           }
+          // Checkbox
+          if (! await applyResourceMapDelta(ctx, { sword: militaryToPay }, true)) {
+            return false;
+          }
+          await checkNextBox(ctx, ctx.zone, ctx.card);
           // Apply resource effect
           let lastCheckbox;
           for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
@@ -1222,16 +1242,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             }
             lastCheckbox = checkbox;
           }
-          const allChecked = ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked);
-          if (allChecked) {
-            await ctx.upgradeCard(ctx.card, 3, true);
-            await ctx.discoverCard(
-              (card) => ([135].includes(card.id)),
-              this.description(ctx.t),
-              1,
-              ctx.card
-            )
-          }
+          ctx.effectEndTurn();
           return false;
         }
       }],
@@ -1247,19 +1258,14 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
             checkedBoxes += checkbox.checked ? 1 : 0;
           }
-          // Checkbox
-          if (ctx.resources.sword >= militaryToPay[checkedBoxes]) {
-            if (! await applyResourceMapDelta(ctx, { sword: militaryToPay[checkedBoxes] }, true)) {
-              return false;
-            }
-            for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
-              if (!checkbox.checked) {
-                checkbox.checked = true;
-                ctx.effectEndTurn();
-                break;
-              }
-            }
+          if (ctx.resources.sword < militaryToPay[checkedBoxes]) {
+            return false;
           }
+          // Checkbox
+          if (! await applyResourceMapDelta(ctx, { sword: militaryToPay[checkedBoxes] }, true)) {
+            return false;
+          }
+          await checkNextBox(ctx, ctx.zone, ctx.card);
           // Apply resource effect
           let lastCheckbox;
           for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
@@ -1276,6 +1282,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (allChecked) {
             await setResourceMapToCard(ctx.card, {fame: 100});
           }
+          ctx.effectEndTurn();
           return false;
         }
       }],
@@ -1290,18 +1297,13 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             goldToPay += checkbox.checked ? 1 : 0;
           }
           // Checkbox
-          if (ctx.resources.coin >= goldToPay) {
-            if (! await applyResourceMapDelta(ctx, { coin: goldToPay }, true)) {
-              return false;
-            }
-            for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
-              if (!checkbox.checked) {
-                checkbox.checked = true;
-                ctx.effectEndTurn();
-                break;
-              }
-            }
+          if (ctx.resources.coin < goldToPay) {
+            return false;
           }
+          if (! await applyResourceMapDelta(ctx, { coin: goldToPay }, true)) {
+            return false;
+          }
+          await checkNextBox(ctx, ctx.zone, ctx.card);
           // Apply resource effect
           let lastCheckbox;
           for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
@@ -1314,10 +1316,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             }
             lastCheckbox = checkbox;
           }
-          const allChecked = ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked);
-          if (allChecked) {
-            await ctx.upgradeCard(ctx.card, 3, true);
-          }
+          ctx.effectEndTurn();
           return false;
         }
       }],
@@ -1332,19 +1331,14 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
             goldToPay += checkbox.checked ? 1 : 0;
           }
-          // Checkbox
-          if (ctx.resources.coin >= goldToPay) {
-            if (! await applyResourceMapDelta(ctx, { coin: goldToPay }, true)) {
-              return false;
-            }
-            for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
-              if (!checkbox.checked) {
-                checkbox.checked = true;
-                ctx.effectEndTurn();
-                break;
-              }
-            }
+          if (ctx.resources.coin < goldToPay) {
+            return false;
           }
+          // Checkbox
+          if (! await applyResourceMapDelta(ctx, { coin: goldToPay }, true)) {
+            return false;
+          }
+          await checkNextBox(ctx, ctx.zone, ctx.card);
           // Apply resource effect
           let lastCheckbox;
           for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
@@ -1361,6 +1355,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (allChecked) {
             await setResourceMapToCard(ctx.card, {fame: 100});
           }
+          ctx.effectEndTurn();
           return false;
         }
       }],
@@ -1394,7 +1389,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                     },
                     false
                   );
-                  await checkNextBox(ctx.card);
+                  await checkNextBox(ctx, ctx.zone, ctx.card);
                   break;
                 case 20:
                   ctx.registerEndRoundEffect(
@@ -1406,7 +1401,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                     },
                     false
                   );
-                  await checkNextBox(ctx.card);
+                  await checkNextBox(ctx, ctx.zone, ctx.card);
                   break;
                 case 30:
                   ctx.registerEndRoundEffect(
@@ -1423,7 +1418,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                     },
                     false
                   );
-                  await checkNextBox(ctx.card);
+                  await checkNextBox(ctx, ctx.zone, ctx.card);
                   break;
                 case 40:
                   ctx.registerEndRoundEffect(
@@ -1450,7 +1445,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                     },
                     false
                   );
-                  await checkNextBox(ctx.card);
+                  await checkNextBox(ctx, ctx.zone, ctx.card);
                   break;
                 case 75:
                   ctx.registerEndRoundEffect(
@@ -1463,7 +1458,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                     },
                     false
                   );
-                  await checkNextBox(ctx.card);
+                  await checkNextBox(ctx, ctx.zone, ctx.card);
                   break;
                 case 100:
                   ctx.registerEndRoundEffect(
@@ -1473,7 +1468,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                     },
                     false
                   );
-                  await checkNextBox(ctx.card);
+                  await checkNextBox(ctx, ctx.zone, ctx.card);
                   break;
               }
             }
@@ -1515,7 +1510,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                     },
                     false
                   );
-                  await checkNextBox(ctx.card);
+                  await checkNextBox(ctx, ctx.zone, ctx.card);
                   break;
                 case 50:
                   ctx.registerEndRoundEffect(
@@ -1528,7 +1523,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                     },
                     false
                   );
-                  await checkNextBox(ctx.card);
+                  await checkNextBox(ctx, ctx.zone, ctx.card);
                   break;
                 case 75:
                   ctx.registerEndRoundEffect(
@@ -1545,7 +1540,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                     },
                     false
                   );
-                  await checkNextBox(ctx.card);
+                  await checkNextBox(ctx, ctx.zone, ctx.card);
                   break;
                 case 100:
                   ctx.registerEndRoundEffect(
@@ -1577,7 +1572,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                     },
                     false
                   );
-                  await checkNextBox(ctx.card);
+                  await checkNextBox(ctx, ctx.zone, ctx.card);
                   break;
                 case 200:
                   ctx.registerEndRoundEffect(
@@ -1595,7 +1590,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                     },
                     false
                   );
-                  await checkNextBox(ctx.card);
+                  await checkNextBox(ctx, ctx.zone, ctx.card);
                   break;
                 case 250:
                   ctx.registerEndRoundEffect(
@@ -1612,7 +1607,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                     },
                     false
                   );
-                  await checkNextBox(ctx.card);
+                  await checkNextBox(ctx, ctx.zone, ctx.card);
                   break;
               }
             }
@@ -1646,7 +1641,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       execute: async function (ctx) {
         if(!getLastCheckboxChecked(ctx.card)) {
           let i = 0;
-          await checkNextBox(ctx.card);
+          await checkNextBox(ctx, ctx.zone, ctx.card);
           for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
             if(!checkbox.checked){
               i++;
@@ -1874,8 +1869,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             await applyResourceMapDelta(ctx, selectedResource);
             await ctx.upgradeCard(ctx.card, 1, true);
             ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
-            await checkNextBox(ctx.card);
-            ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+            await checkNextBox(ctx, ctx.zone, ctx.card);
             return true;
           }
         }
@@ -1888,7 +1882,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           )).valueOf()) {
             await ctx.upgradeCard(ctx.card, 1, true);
             ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
-            await checkNextBox(ctx.card);
+            await checkNextBox(ctx, ctx.zone, ctx.card);
             return true;
           }
         }
@@ -1941,8 +1935,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
               for(const box of boxes) {
                 await applyResourceMapDelta(ctx, getCheckboxResources(box.content) ?? {});
               }
-              await checkBoxes(ctx.card, boxes);
-              ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+              await checkBoxes(ctx, ctx.zone, ctx.card, boxes);
               resolve(true);
             } else {
               resolve(false);
@@ -2041,8 +2034,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                 for(const box of boxes) {
                   await applyResourceMapDelta(ctx, getCheckboxResources(box.content) ?? {});
                 }
-                await checkBoxes(ctx.card, boxes);
-                ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+                await checkBoxes(ctx, ctx.zone, ctx.card, boxes);
                 resolve(true);
               } else {
                 resolve(false);
@@ -2062,8 +2054,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                 for(const box of boxes) {
                   await applyResourceMapDelta(ctx, getCheckboxResources(box.content) ?? {});
                 }
-                await checkBoxes(ctx.card, boxes);
-                ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+                await checkBoxes(ctx, ctx.zone, ctx.card, boxes);
                 resolve(true);
               } else {
                 resolve(false);
@@ -2725,8 +2716,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                 for(const box of boxes) {
                   await applyResourceMapDelta(ctx, getCheckboxResources(box.content) ?? {});
                 }
-                await checkBoxes(ctx.card, boxes);
-                ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+                await checkBoxes(ctx, ctx.zone, ctx.card, boxes);
               }
               resolve(false);
             });
@@ -2763,8 +2753,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                 for(const box of boxes) {
                   await applyResourceMapDelta(ctx, getCheckboxResources(box.content) ?? {});
                 }
-                await checkBoxes(ctx.card, boxes);
-                ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+                await checkBoxes(ctx, ctx.zone, ctx.card, boxes);
                 resolve(true);
               } else {
                 resolve(false);
@@ -2993,7 +2982,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       execute: async function (ctx) {
         if(!getLastCheckboxChecked(ctx.card)) {
           let i = 0;
-          await checkNextBox(ctx.card);
+          await checkNextBox(ctx, ctx.zone, ctx.card);
           for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
             if(!checkbox.checked){
               i++;
@@ -3993,16 +3982,11 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
         const selected = await ctx.selectCardsFromZone((card) => card.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'), this.description(ctx.t), 0, ctx.card, peopleToDiscard[checkedBoxes], 'person');
         // Checkbox
-        if (selected.length === peopleToDiscard[checkedBoxes]) {
-          for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
-            if (!checkbox.checked) {
-              checkbox.checked = true;
-              await ctx.dropToDiscard({id: selected.map((c) => c.id), fromZone: ctx.t('playArea')});
-              ctx.effectEndTurn();
-              break;
-            }
-          }
+        if (selected.length !== peopleToDiscard[checkedBoxes]) {
+          return false;
         }
+        await checkNextBox(ctx, ctx.zone, ctx.card);
+        await ctx.dropToDiscard({id: selected.map((c) => c.id), fromZone: ctx.t('playArea')});
         // Apply resource effect
         let lastCheckbox;
         for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
@@ -4019,6 +4003,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         if (allChecked) {
           await setResourceMapToCard(ctx.card, {fame: 45});
         }
+        ctx.effectEndTurn();
         return false;
       }
     }],
@@ -4037,17 +4022,12 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
         // Checkbox
         if (ctx.resources.stone >= stoneToPay) {
-          if(! await applyResourceMapDelta(ctx, { stone: stoneToPay }, true)) {
-            return false;
-          }
-          for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
-            if (!checkbox.checked) {
-              checkbox.checked = true;
-              ctx.effectEndTurn();
-              break;
-            }
-          }
+          return false;
         }
+        if(! await applyResourceMapDelta(ctx, { stone: stoneToPay }, true)) {
+          return false;
+        }
+        await checkNextBox(ctx, ctx.zone, ctx.card);
         // Apply resource effect
         let lastCheckbox;
         for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
@@ -4064,6 +4044,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         if (allChecked) {
           await setResourceMapToCard(ctx.card, {fame: 75});
         }
+        ctx.effectEndTurn();
         return false;
       }
     }]
@@ -4085,15 +4066,10 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }],
     3: [{ // Colonie de la Fosse
-      description: (t) => parseEffects(t('none')).effects[0].text,
+      description: (t) => parseEffects(t('pit_settlement')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
-        await checkNextBox(ctx.card);
-        ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
-        if (getLastCheckboxChecked(ctx.card)) {
-          await ctx.upgradeCard(ctx.card, 4, true);
-          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
-        }
+        await checkNextBox(ctx, ctx.zone, ctx.card);
         return true;
       }
     }],
@@ -4122,8 +4098,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                   for(const box of boxes) {
                     await applyResourceMapDelta(ctx, getCheckboxResources(box.content) ?? {});
                   }
-                  await checkBoxes(ctx.card, boxes);
-                  ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+                  await checkBoxes(ctx, ctx.zone, ctx.card, boxes);
                   const selected = await ctx.selectCardsFromZone((card) => card.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('playArea'), this.description(ctx.t), 1, ctx.card, 0, 'enemy');
                   await ctx.dropToDiscard({id: selected[0].id, fromZone: ctx.t('playArea')});
                   resolve(true);
@@ -4152,19 +4127,14 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           ingotToPay += checkbox.checked ? 1 : 0;
         }
         // Checkbox
-        if (ctx.resources.metal >= ingotToPay) {
-          if (! await applyResourceMapDelta(ctx, { metal: ingotToPay }, true)) {
-            return false;
-          }
-          for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
-            if (!checkbox.checked) {
-              checkbox.checked = true;
-              await applyResourceMapDelta(ctx, { tradegood: 5 });
-              ctx.effectEndTurn();
-              break;
-            }
-          }
+        if (ctx.resources.metal < ingotToPay) {
+          return false;
         }
+        if (! await applyResourceMapDelta(ctx, { metal: ingotToPay }, true)) {
+          return false;
+        }
+        await checkNextBox(ctx, ctx.zone, ctx.card);
+        await applyResourceMapDelta(ctx, { tradegood: 5 });
         // Apply resource effect
         let lastCheckbox;
         for (const checkbox of ctx.card.checkboxes[ctx.card.currentSide - 1]) {
@@ -4180,6 +4150,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         if (ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked)) {
           await setResourceMapToCard(ctx.card, {fame: 40});
         }
+        ctx.effectEndTurn();
         return false;
       }
     }]
@@ -4222,9 +4193,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           return false;
         }
         for (let i = 0; i < (getArraySelectionValue(people, 'person') - 1)/2; i++) {
-          await checkNextBox(ctx.card);
+          await checkNextBox(ctx, ctx.zone, ctx.card);
         }
-        ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
         return true;
       }
     }],
@@ -4380,7 +4350,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (! await applyResourceMapDelta(ctx, { coin: 2 }, true)) {
             return false;
           }
-          await checkNextBox(ctx.card);
+          await checkNextBox(ctx, ctx.zone, ctx.card);
           ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
           return true;
         }
@@ -4519,29 +4489,19 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         if (cards.length < 1) {
           return false;
         }
-        const result = await new Promise<boolean>((resolve) => {
+        return await new Promise<boolean>((resolve) => {
           ctx.openCheckboxPopup(ctx.card, 0, cards.length, async (boxes) => {
             if(boxes.length !== 0) {
               for(const box of boxes) {
                 await applyResourceMapDelta(ctx, getCheckboxResources(box.content) ?? {});
               }
-              await checkBoxes(ctx.card, boxes);
-              ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+              await checkBoxes(ctx, ctx.zone, ctx.card, boxes);
               resolve(true);
             } else {
               resolve(false);
             }
           });
         });
-        if (result) {
-          const allChecked = ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked);
-          if (allChecked) {
-            await ctx.upgradeCard(ctx.card, 2, true);
-            ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
-          }
-          return true;
-        }
-        return false;
       }
     }],
     2: [{ // Navigation
@@ -4552,29 +4512,19 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         if (cards.length < 1) {
           return false;
         }
-        const result = await new Promise<boolean>((resolve) => {
+        return await new Promise<boolean>((resolve) => {
           ctx.openCheckboxPopup(ctx.card, 0, cards.length, async (boxes) => {
             if(boxes.length !== 0) {
               for(const box of boxes) {
                 await applyResourceMapDelta(ctx, getCheckboxResources(box.content) ?? {});
               }
-              await checkBoxes(ctx.card, boxes);
-              ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+              await checkBoxes(ctx, ctx.zone, ctx.card, boxes);
               resolve(true);
             } else {
               resolve(false);
             }
           });
         });
-        if (result) {
-          const allChecked = ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked);
-          if (allChecked) {
-            await ctx.upgradeCard(ctx.card, 4, true);
-            ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
-          }
-          return true;
-        }
-        return false;
       }
     }],
     3: [{ // Calendrier
@@ -4606,8 +4556,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           prev.filter(card => !randomCards.some(rc => rc.id === card.id))
         );
         
-        checkNextBox(ctx.card)
-        ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+        await checkNextBox(ctx, ctx.zone, ctx.card)
         
         return true;
       }
@@ -4620,29 +4569,19 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         if (cards.length < 1) {
           return false;
         }
-        const result = await new Promise<boolean>((resolve) => {
+        return await new Promise<boolean>((resolve) => {
           ctx.openCheckboxPopup(ctx.card, 0, cards.length, async (boxes) => {
             if(boxes.length !== 0) {
               for(const box of boxes) {
                 await applyResourceMapDelta(ctx, getCheckboxResources(box.content) ?? {});
               }
-              await checkBoxes(ctx.card, boxes);
-              ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+              await checkBoxes(ctx, ctx.zone, ctx.card, boxes);
               resolve(true);
             } else {
               resolve(false);
             }
           });
         });
-        if (result) {
-          const allChecked = ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked);
-          if (allChecked) {
-            await ctx.upgradeCard(ctx.card, 3, true);
-            ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
-          }
-          return true;
-        }
-        return false;
       }
     }],
   },
@@ -4730,12 +4669,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
-        await checkNextBox(ctx.card);
-        ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
-        const allChecked = ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked);
-        if (allChecked) {
-          await ctx.upgradeCard(ctx.card, 4, true);
-          await ctx.dropToPermanent({id: ctx.card.id, fromZone: ctx.zone});
+        await checkNextBox(ctx, ctx.zone, ctx.card);
+        if (getLastCheckboxChecked(ctx.card)) {
           return false;
         }
         return true;
@@ -4782,15 +4717,12 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "onClick",
       execute: async function (ctx) {
-        let allChecked = ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked);
-        if (allChecked) {
+        if (getLastCheckboxChecked(ctx.card)) {
           return false;
         }
-        await checkNextBox(ctx.card);
-        ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
-        allChecked = ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked);
-        if (allChecked) {
-          addResourceMapToCard(ctx.card, {coin: 1});
+        await checkNextBox(ctx, ctx.zone, ctx.card);
+        if (getLastCheckboxChecked(ctx.card)) {
+          await addResourceMapToCard(ctx.card, {coin: 1});
         }
         return true;
       }
@@ -4998,9 +4930,11 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       description: (t) => parseEffects(t('none')).effects[0].text,
       timing: "endOfTurn",
       execute: async function (ctx) {
+        if (getLastCheckboxChecked(ctx.card)) {
+          return false;
+        }
         if (ctx.fetchCardsInZone(() => (true), ctx.t('deck')).length === 0) {
-          await checkNextBox(ctx.card);
-          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+          await checkNextBox(ctx, ctx.zone, ctx.card);
         }
         return false;
       }
@@ -5087,8 +5021,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             peopleValue += getCardSelectionValue(card, 'person');
           }
           addResourceMapToCard(ctx.card, {fame: peopleValue});
-          await checkNextBox(ctx.card);
-          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+          await checkNextBox(ctx, ctx.zone, ctx.card);
           return true;
         }
         return false;
@@ -5565,8 +5498,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         const card = (await ctx.selectCardsFromArray(people, ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card, 'person'))[0];
         if (card) {
           await ctx.dropToDiscard({id: card.id, fromZone: ctx.t('playArea')});
-          await checkNextBox(ctx.card);
-          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+          await checkNextBox(ctx, ctx.zone, ctx.card);
           return true;
         }
         return false;
@@ -5723,7 +5655,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         timing: "onClick",
         execute: async function (ctx) {
           if (ctx.resources.tradegood >= 4 && !ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked)) {
-            await checkNextBox(ctx.card);
+            await checkNextBox(ctx, ctx.zone, ctx.card);
             ctx.effectEndTurn();
           }
           return false;
@@ -5783,7 +5715,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         const card = (await ctx.selectCardsFromZone((card) => card.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'), this.description(ctx.t), 1, ctx.card, 0,ctx.t('person')))[0];
         if (card) {
           await ctx.dropToDiscard({id: card.id, fromZone: ctx.t('playArea')});
-          await checkNextBox(ctx.card);
+          await checkNextBox(ctx, ctx.zone, ctx.card);
           ctx.effectEndTurn();
         }
         return false;
@@ -5984,7 +5916,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (!lord) {
             return false;
           }
-          const result = await new Promise<boolean>((resolve) => {
+          return await new Promise<boolean>((resolve) => {
             ctx.openCheckboxPopup(ctx.card, 1, 0, async (boxes) => {
             if(boxes.length !== 0) {
               for(const box of boxes) {
@@ -5993,13 +5925,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                   if (! await applyResourceMapDelta(ctx, cbResources, true)) {
                     return false;
                   }
-                  await checkBoxes(ctx.card, boxes);
-                  ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+                  await checkBoxes(ctx, ctx.zone, ctx.card, boxes);
                   await ctx.dropToDiscard({ id: lord.id, fromZone: ctx.t('playArea') });
-                  if (ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked)) {
-                    await ctx.upgradeCard(ctx.card, 3, true);
-                    ctx.replaceCardInZone(ctx.t('playArea'), ctx.card.id, ctx.card);
-                  }
                   resolve(true);
                 }
               }
@@ -6007,7 +5934,6 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             resolve(false);
             })
           });
-          return result;
         }
       }
     ],
@@ -6251,10 +6177,9 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           
           for (const playedPerson of peoplePlayed) {
             if (peopleInPlay.length >= 2 && !peopleInPlay.includes(playedPerson)) {
-              await checkNextBox(ctx.card);
+              await checkNextBox(ctx, ctx.zone, ctx.card);
             }
           }
-          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
           
           return false;
         }
@@ -6413,13 +6338,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                 discarded = [...discarded, ...cards];
               }
               else {
-                await checkNextBox(ctx.card);
-                ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
-                if(getLastCheckboxChecked(ctx.card)) {
-                  /* Mill Deck */
-                  ctx.mill(ctx.fetchCardsInZone(() => true, ctx.t('deck')).length);
-                }
-
+                await checkNextBox(ctx, ctx.zone, ctx.card);
               }
             }
           }
@@ -6530,13 +6449,9 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             enemies = enemies.filter((c) => ctx.cardsForTrigger?.map((d) => d.id).includes(c.id) && !discardedEnemies.map((d) => d.id).includes(c.id));
           }
           for (let i = 0; i < enemies.length; i++) {
-            await checkNextBox(ctx.card);
+            await checkNextBox(ctx, ctx.zone, ctx.card);
           }
-          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
-          await ctx.mill(0);
           if (getLastCheckboxChecked(ctx.card)) {
-            await ctx.upgradeCard(ctx.card, 3, true);
-            ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
             return true;
           }
           return false;
@@ -6563,12 +6478,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         if (card) {
           await removeResourceFromCard(card, {coin: 1});
           ctx.replaceCardInZone(ctx.zone, card.id, card);
-          await checkNextBox(ctx.card);
-          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
-          if (getLastCheckboxChecked(ctx.card)) {
-            await ctx.handleEnemyDefeated(ctx.card, ctx.zone);
-            ctx.deleteCardInZone(ctx.zone, ctx.card.id);
-          }
+          await checkNextBox(ctx, ctx.zone, ctx.card);
         }
         return false;
       }
@@ -6577,7 +6487,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
   141: {
     1: [
       { // Roi des Voleurs
-        description: (t) => parseEffects(t('none')).effects[0].text,
+        description: (t) => parseEffects(t('robbin_leader')).effects[0].text,
         timing: "onResourceGain",
         priority: 1,
         execute: async function(ctx)  {
@@ -6588,26 +6498,21 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
       {
-        description: (t) => parseEffects(t('none')).effects[1].text,
+        description: (t) => parseEffects(t('robbin_leader')).effects[1].text,
         timing: "onClick",
         execute: async function(ctx)  {
           if (hasEnoughResources(ctx.resources, {sword: 3})) {
+            let returnValue = true;
             if (! await applyResourceMapDelta(ctx, { sword: 3 }, true)) {
               return false;
             }
-            await checkNextBox(ctx.card);
-            ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+            if (ctx.fetchCardsInZone((c) => c.GetName(ctx.t) === ctx.t('a_certain_lady'), ctx.getCardZone(140)).length === 0) {
+              returnValue = false;
+            }
+            await checkNextBox(ctx, ctx.zone, ctx.card);
             await ctx.handleEnemyDefeated(ctx.card, ctx.zone);
             if (getLastCheckboxChecked(ctx.card)) {
-              if (ctx.fetchCardsInZone((c) => c.GetName(ctx.t) === ctx.t('a_certain_lady'), ctx.getCardZone(140)).length > 0) {
-                ctx.deleteCardInZone(ctx.getCardZone(140), 140);
-                await ctx.upgradeCard(ctx.card, 3, true);
-                ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
-              }
-              else {
-                ctx.deleteCardInZone(ctx.zone, ctx.card.id);
-                return false;
-              }
+              return returnValue;
             }
             return true;
           }
@@ -6901,14 +6806,11 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (selected.length > 0) {
             await ctx.dropToDiscard({id: selected.map((c) => c.id), fromZone: ctx.t('playArea')});
             for (let i = 0; i < selected.length; i++) {
-              await checkNextBox(ctx.card);
-              ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+              await checkNextBox(ctx, ctx.zone, ctx.card);
               if (getLastCheckboxChecked(ctx.card)) {
-                await ctx.upgradeCard(ctx.card, 4, true);
                 break;
               }
             }
-            ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
             return true;
           }
         }
@@ -6939,8 +6841,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       timing: "onResourceGain",
       execute: async function (ctx) {
         if (ctx.cardsForTrigger && ctx.cardsForTrigger[0].id === ctx.card.id) {
-          await checkNextBox(ctx.card);
-          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+          await checkNextBox(ctx, ctx.zone, ctx.card);
         }
         return true;
       }
@@ -6998,12 +6899,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         if (enemies.length > 0) {
           const selected = (await ctx.selectCardsFromArray(enemies, ctx.t('discard'), this.description(ctx.t), 1, 0, ctx.card, 'enemy'))[0];
           if (selected) {
-            await checkNextBox(ctx.card);
-            ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
-            if (getLastCheckboxChecked(ctx.card)) {
-              await ctx.upgradeCard(ctx.card, 3, true);
-            }
-            ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+            await checkNextBox(ctx, ctx.zone, ctx.card);
             await ctx.dropToPlayArea({id: selected.id, fromZone: ctx.t('discard')});
             return true;
           }
@@ -7391,8 +7287,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (events.length > 0 && !getLastCheckboxChecked(ctx.card)) {
             const selected = (await ctx.selectCardsFromArray(events, ctx.t('discard'), this.description(ctx.t), 1, 0, ctx.card, 'event'))[0];
             if (selected) {
-              await checkNextBox(ctx.card);
-              ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+              await checkNextBox(ctx, ctx.zone, ctx.card);
               await ctx.dropToPlayArea({id: selected.id, fromZone: ctx.t('discard')});
               return true;
             }
@@ -7519,12 +7414,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             if (! await applyResourceMapDelta(ctx, { metal: 2 }, true)) {
               return false;
             }
-            await checkNextBox(ctx.card);
-            ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
-            if (getLastCheckboxChecked(ctx.card)) {
-              await ctx.upgradeCard(ctx.card, 3, true);
-              ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
-            }
+            await checkNextBox(ctx, ctx.zone, ctx.card);
             return true
           }
           return false;
@@ -7542,8 +7432,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                 for(const box of boxes) {
                   await applyResourceMapDelta(ctx, getCheckboxResources(box.content) ?? {});
                 }
-                await checkBoxes(ctx.card, boxes);
-                ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+                await checkBoxes(ctx, ctx.zone, ctx.card, boxes);
                 resolve(true);
               }
               resolve(false);
@@ -7663,8 +7552,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (cards.length >= 6) {
             await ctx.dropToDiscard({id: cards.map((c) => c.id), fromZone: ctx.t('playArea')});
             const checkboxes = ctx.card.checkboxes[ctx.card.currentSide - 1].filter((c) => !c.checked && c.content.includes('green'));
-            await checkBoxes(ctx.card, [checkboxes[0]]);
-            ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+            await checkBoxes(ctx, ctx.zone, ctx.card, [checkboxes[0]]);
             if (checkboxes[0].content.includes('effects/arrow')) {
               await ctx.upgradeCard(ctx.card, 4, true);
               await ctx.dropToPermanent({id: ctx.card.id, fromZone: ctx.zone});
@@ -7681,8 +7569,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         timing: "endOfTurn",
         execute: async function(ctx)  {
           const checkboxes = ctx.card.checkboxes[ctx.card.currentSide - 1].filter((c) => !c.checked && c.content.includes('red'));
-          await checkBoxes(ctx.card, [checkboxes[0]]);
-          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+          await checkBoxes(ctx, ctx.zone, ctx.card, [checkboxes[0]]);
           if (checkboxes[0].content.includes('effects/destroy')) {
             ctx.deleteCardInZone(ctx.zone, ctx.card.id);
           }
@@ -7781,7 +7668,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (! await applyResourceMapDelta(ctx, { coin: goldToPay }, true)) {
             return false;
           }
-          await checkNextBox(ctx.card);
+          await checkNextBox(ctx, ctx.zone, ctx.card);
           ctx.effectEndTurn();
         }
         // Apply resource effect
@@ -7795,10 +7682,6 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             break;
           }
           lastCheckbox = checkbox;
-        }
-        const allChecked = ctx.card.checkboxes[ctx.card.currentSide - 1].every(cb => cb.checked);
-        if (allChecked) {
-          await ctx.upgradeCard(ctx.card, 3, true);
         }
         return false;
       }
@@ -7826,7 +7709,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             if (! await applyResourceMapDelta(ctx, { coin: goldToPay }, true)) {
               return false;
             }
-            await checkNextBox(ctx.card);
+            await checkNextBox(ctx, ctx.zone, ctx.card);
             ctx.effectEndTurn();
           }
           // Apply resource effect
@@ -8010,12 +7893,10 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           return false;
         }
         for (const cargo of cargosInPlay) {
-          await checkNextBox(cargo);
-          ctx.replaceCardInZone(ctx.t('playArea'), cargo.id, cargo);
+          await checkNextBox(ctx, ctx.t('playArea'), cargo);
         }
         for (const cargo of cargosInDiscard) {
-          await checkNextBox(cargo);
-          ctx.replaceCardInZone(ctx.t('discard'), cargo.id, cargo);
+          await checkNextBox(ctx, ctx.t('playArea'), cargo);
         }
         return true;
       }
@@ -8137,7 +8018,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             return false;
           }
           for (let i = 0; i < selectedResources.stone; i++) {
-            checkNextBox(ctx.card);
+            await checkNextBox(ctx, ctx.zone, ctx.card);
           }
           await applyResourceMapDelta(ctx, selectedResources, true);
           return true;
@@ -8154,13 +8035,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                 for(const box of boxes) {
                   await applyResourceMapDelta(ctx, getCheckboxResources(box.content) ?? {});
                 }
-                await checkBoxes(ctx.card, boxes);
-                if (getLastCheckboxChecked(ctx.card)) {
-                  ctx.deleteCardInZone(ctx.zone, ctx.card.id);
-                }
-                else {
-                  ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
-                }
+                await checkBoxes(ctx, ctx.zone, ctx.card, boxes);
                 resolve(true);
               }
               resolve(false);
@@ -8185,7 +8060,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             return false;
           }
           for (let i = 0; i < selectedResources.wood; i++) {
-            checkNextBox(ctx.card);
+            checkNextBox(ctx, ctx.zone, ctx.card);
           }
           await applyResourceMapDelta(ctx, selectedResources, true);
           return true;
@@ -8202,13 +8077,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                 for(const box of boxes) {
                   await applyResourceMapDelta(ctx, getCheckboxResources(box.content) ?? {});
                 }
-                await checkBoxes(ctx.card, boxes);
-                if (getLastCheckboxChecked(ctx.card)) {
-                  ctx.deleteCardInZone(ctx.zone, ctx.card.id);
-                }
-                else {
-                  ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
-                }
+                await checkBoxes(ctx, ctx.zone, ctx.card, boxes);
                 resolve(true);
               }
               resolve(false);
@@ -8233,7 +8102,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             return false;
           }
           for (let i = 0; i < selectedResources.coin; i++) {
-            checkNextBox(ctx.card);
+            checkNextBox(ctx, ctx.zone, ctx.card);
           }
           await applyResourceMapDelta(ctx, selectedResources, true);
           return true;
@@ -8250,13 +8119,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                 for(const box of boxes) {
                   await applyResourceMapDelta(ctx, getCheckboxResources(box.content) ?? {});
                 }
-                await checkBoxes(ctx.card, boxes);
-                if (getLastCheckboxChecked(ctx.card)) {
-                  ctx.deleteCardInZone(ctx.zone, ctx.card.id);
-                }
-                else {
-                  ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
-                }
+                await checkBoxes(ctx, ctx.zone, ctx.card, boxes);
                 resolve(true);
               }
               resolve(false);
@@ -8281,7 +8144,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             return false;
           }
           for (let i = 0; i < selectedResources.tradegood; i++) {
-            checkNextBox(ctx.card);
+            checkNextBox(ctx, ctx.zone, ctx.card);
           }
           await applyResourceMapDelta(ctx, selectedResources, true);
           return true;
@@ -8298,13 +8161,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                 for(const box of boxes) {
                   await applyResourceMapDelta(ctx, getCheckboxResources(box.content) ?? {});
                 }
-                await checkBoxes(ctx.card, boxes);
-                if (getLastCheckboxChecked(ctx.card)) {
-                  ctx.deleteCardInZone(ctx.zone, ctx.card.id);
-                }
-                else {
-                  ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
-                }
+                await checkBoxes(ctx, ctx.zone, ctx.card, boxes);
                 resolve(true);
               }
               resolve(false);
@@ -8329,7 +8186,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             return false;
           }
           for (let i = 0; i < selectedResources.metal; i++) {
-            checkNextBox(ctx.card);
+            checkNextBox(ctx, ctx.zone, ctx.card);
           }
           await applyResourceMapDelta(ctx, selectedResources, true);
           return true;
@@ -8346,13 +8203,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                 for(const box of boxes) {
                   await applyResourceMapDelta(ctx, getCheckboxResources(box.content) ?? {});
                 }
-                await checkBoxes(ctx.card, boxes);
-                if (getLastCheckboxChecked(ctx.card)) {
-                  ctx.deleteCardInZone(ctx.zone, ctx.card.id);
-                }
-                else {
-                  ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
-                }
+                await checkBoxes(ctx, ctx.zone, ctx.card, boxes);
                 resolve(true);
               }
               resolve(false);
@@ -8377,7 +8228,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             return false;
           }
           for (let i = 0; i < selectedResources.sword; i++) {
-            checkNextBox(ctx.card);
+            checkNextBox(ctx, ctx.zone, ctx.card);
           }
           await applyResourceMapDelta(ctx, selectedResources, true);
           return true;
@@ -8399,13 +8250,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                 for(const box of boxes) {
                   await applyResourceMapDelta(ctx, getCheckboxResources(box.content) ?? {});
                 }
-                await checkBoxes(ctx.card, boxes);
-                if (getLastCheckboxChecked(ctx.card)) {
-                  ctx.deleteCardInZone(ctx.zone, ctx.card.id);
-                }
-                else {
-                  ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
-                }
+                await checkBoxes(ctx, ctx.zone, ctx.card, boxes);
                 resolve(true);
               }
               resolve(false);
@@ -8614,7 +8459,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           const uncheckedBoxes = card.checkboxes[ctx.card.currentSide - 1].filter(c => !c.checked).length;
           card.currentSide = 3;
           for (let i = 0; i < uncheckedBoxes; i++) {
-            await checkNextBox(card);
+            await checkNextBox(ctx, ctx.t('deck'), card);
           }
           card.currentSide = 1;
           await ctx.upgradeCard(card, 3, true);
@@ -8647,7 +8492,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             return false;
           }
 
-          await checkNextBox(ctx.card);
+          await checkNextBox(ctx, ctx.zone, ctx.card);
 
           // Apply resource effect
           let lastCheckbox;
@@ -8683,8 +8528,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (!selected) {
             return false;
           }
-          await checkNextBox(ctx.card);
-          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+          await checkNextBox(ctx, ctx.zone, ctx.card);
           await ctx.dropToDiscard({id: selected.id, fromZone: ctx.t('playArea')});
           ctx.effectEndTurn();
         }
@@ -8696,14 +8540,8 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       timing: "onClick",
       usesPerTurn: 1,
       execute: async function (ctx) {
-        await checkNextBox(ctx.card);
+        await checkNextBox(ctx, ctx.zone, ctx.card);
         ctx.setUpgradeNotEndingTurn(true);
-        if (getLastCheckboxChecked(ctx.card)) {
-          ctx.deleteCardInZone(ctx.zone, ctx.card.id);
-        }
-        else {
-          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
-        }
         ctx.markAsUsedThisTurn(ctx.card.id, 0);
         return false;
       }
@@ -8722,11 +8560,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         if (!selected || selected.length < 2) {
           return false;
         }
-        await checkNextBox(ctx.card);
-        if (getLastCheckboxChecked(ctx.card)) {
-          ctx.upgradeCard(ctx.card, 3, true);
-        }
-        ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+        await checkNextBox(ctx, ctx.zone, ctx.card);
         await ctx.dropToDiscard({id: selected.map(c => c.id), fromZone: ctx.t('playArea')});
         return false;
       }
@@ -8830,8 +8664,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       timing: "onClick",
       execute: async function (ctx) {
         if (!getLastCheckboxChecked(ctx.card)) {
-          await checkNextBox(ctx.card);
-          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+          await checkNextBox(ctx, ctx.zone, ctx.card);
           ctx.effectEndTurn();
         }
         return false;
@@ -8860,8 +8693,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                 );
                 await applyResourceMapDelta(ctx, tripledResources);
               }
-              await checkBoxes(selectedCard, boxes);
-              ctx.replaceCardInZone(ctx.t('playArea'), selectedCard.id, selectedCard);
+              await checkBoxes(ctx, ctx.t('playArea'), selectedCard, boxes);
               resolve(true);
             }
             resolve(false);
@@ -8877,15 +8709,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       execute: async function (ctx) {
         const people = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'));
         await ctx.dropToDiscard({id: people.map(c => c.id), fromZone: ctx.t('playArea')});
-        await checkNextBox(ctx.card);
-        if (getLastCheckboxChecked(ctx.card)) {
-          await ctx.upgradeCard(ctx.card, 3, true);
-          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
-          await ctx.dropToDiscard({id: ctx.card.id, fromZone: ctx.zone});
-        }
-        else {
-          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
-        }
+        await checkNextBox(ctx, ctx.zone, ctx.card);
         return false;
       }
     }],
@@ -9005,8 +8829,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (selectedCards.length > 0) {
             await ctx.dropToDiscard({id: selectedCards.map(c => c.id), fromZone: ctx.t('playArea')});
             const checkboxes = ctx.card.checkboxes[ctx.card.currentSide - 1].filter((c) => !c.checked && c.content.includes('green'));
-            await checkBoxes(ctx.card, [checkboxes[0]]);
-            ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+            await checkBoxes(ctx, ctx.zone, ctx.card, [checkboxes[0]]);
             if (checkboxes[0].content.includes('effects/destroy')) {
               ctx.deleteCardInZone(ctx.zone, ctx.card.id);
               await addResourceMapToCard(ctx.card, {}); /* Force await */
@@ -9021,10 +8844,10 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         timing: "endOfTurn",
         execute: async function (ctx) {
           const checkboxes = ctx.card.checkboxes[ctx.card.currentSide - 1].filter((c) => !c.checked && c.content.includes('red'));
-          await checkBoxes(ctx.card, [checkboxes[0]]);
-          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+          await checkBoxes(ctx, ctx.zone, ctx.card, [checkboxes[0]]);
           if (checkboxes[0].content.includes('effects/arrow')) {
             await ctx.upgradeCard(ctx.card, 3, true);
+            return true;
           }
           return false;
         }
@@ -9113,11 +8936,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (!selected) {
             return false;
           }
-          await checkNextBox(selected);
-          ctx.replaceCardInZone(ctx.t('playArea'), selected.id, selected);
-          if (getLastCheckboxChecked(selected)) {
-            ctx.deleteCardInZone(ctx.t(('playArea')), selected.id);
-          }
+          await checkNextBox(ctx, ctx.t('playArea'), selected);
           return false;
         }
       },
@@ -9154,11 +8973,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (!selected) {
             return false;
           }
-          await checkNextBox(selected);
-          ctx.replaceCardInZone(ctx.t('playArea'), selected.id, selected);
-          if (getLastCheckboxChecked(selected)) {
-            ctx.deleteCardInZone(ctx.t(('playArea')), selected.id);
-          }
+          await checkNextBox(ctx, ctx.t('playArea'), selected);
           return false;
         }
       },
@@ -9196,11 +9011,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (!selected) {
             return false;
           }
-          await checkNextBox(selected);
-          ctx.replaceCardInZone(ctx.t('playArea'), selected.id, selected);
-          if (getLastCheckboxChecked(selected)) {
-            ctx.deleteCardInZone(ctx.t(('playArea')), selected.id);
-          }
+          await checkNextBox(ctx, ctx.t('playArea'), selected);
           return false;
         }
       },
@@ -9237,11 +9048,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (!selected) {
             return false;
           }
-          await checkNextBox(selected);
-          ctx.replaceCardInZone(ctx.t('playArea'), selected.id, selected);
-          if (getLastCheckboxChecked(selected)) {
-            ctx.deleteCardInZone(ctx.t(('playArea')), selected.id);
-          }
+          await checkNextBox(ctx, ctx.t('playArea'), selected);
           return false;
         }
       },
@@ -9279,11 +9086,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (!selected) {
             return false;
           }
-          await checkNextBox(selected);
-          ctx.replaceCardInZone(ctx.t('playArea'), selected.id, selected);
-          if (getLastCheckboxChecked(selected)) {
-            ctx.deleteCardInZone(ctx.t(('playArea')), selected.id);
-          }
+          await checkNextBox(ctx, ctx.t('playArea'), selected);
           return false;
         }
       },
@@ -9320,11 +9123,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (!selected) {
             return false;
           }
-          await checkNextBox(selected);
-          ctx.replaceCardInZone(ctx.t('playArea'), selected.id, selected);
-          if (getLastCheckboxChecked(selected)) {
-            ctx.deleteCardInZone(ctx.t(('playArea')), selected.id);
-          }
+          await checkNextBox(ctx, ctx.t('playArea'), selected);
           return false;
         }
       },
@@ -9362,11 +9161,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (!selected) {
             return false;
           }
-          await checkNextBox(selected);
-          ctx.replaceCardInZone(ctx.t('playArea'), selected.id, selected);
-          if (getLastCheckboxChecked(selected)) {
-            ctx.deleteCardInZone(ctx.t(('playArea')), selected.id);
-          }
+          await checkNextBox(ctx, ctx.t('playArea'), selected);
           return false;
         }
       },
@@ -9403,11 +9198,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (!selected) {
             return false;
           }
-          await checkNextBox(selected);
-          ctx.replaceCardInZone(ctx.t('playArea'), selected.id, selected);
-          if (getLastCheckboxChecked(selected)) {
-            ctx.deleteCardInZone(ctx.t(('playArea')), selected.id);
-          }
+          await checkNextBox(ctx, ctx.t('playArea'), selected);
           return false;
         }
       },
@@ -9534,11 +9325,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (!selected) {
             return false;
           }
-          await checkNextBox(selected);
-          ctx.replaceCardInZone(ctx.t('playArea'), selected.id, selected);
-          if (getLastCheckboxChecked(selected)) {
-            ctx.deleteCardInZone(ctx.t(('playArea')), selected.id);
-          }
+          await checkNextBox(ctx, ctx.t('playArea'), selected);
           return false;
         }
       },
@@ -9575,11 +9362,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (!selected) {
             return false;
           }
-          await checkNextBox(selected);
-          ctx.replaceCardInZone(ctx.t('playArea'), selected.id, selected);
-          if (getLastCheckboxChecked(selected)) {
-            ctx.deleteCardInZone(ctx.t(('playArea')), selected.id);
-          }
+          await checkNextBox(ctx, ctx.t('playArea'), selected);
           return false;
         }
       },
@@ -9658,7 +9441,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (selectedCards.length > 0) {
             await ctx.dropToDiscard({id: selectedCards.map(c => c.id), fromZone: ctx.t('playArea')});
             const checkboxes = ctx.card.checkboxes[ctx.card.currentSide - 1].filter((c) => !c.checked && c.content.includes('green'));
-            await checkBoxes(ctx.card, [checkboxes[0]]);
+            await checkBoxes(ctx, ctx.zone, ctx.card, [checkboxes[0]]);
             ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
             if (checkboxes[0].content.includes('effects/destroy')) {
               ctx.deleteCardInZone(ctx.zone, ctx.card.id);
@@ -9674,10 +9457,10 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         timing: "endOfTurn",
         execute: async function (ctx) {
           const checkboxes = ctx.card.checkboxes[ctx.card.currentSide - 1].filter((c) => !c.checked && c.content.includes('red'));
-          await checkBoxes(ctx.card, [checkboxes[0]]);
-          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+          await checkBoxes(ctx, ctx.zone, ctx.card, [checkboxes[0]]);
           if (checkboxes[0].content.includes('effects/arrow')) {
             await ctx.upgradeCard(ctx.card, 3, true);
+            return true;
           }
           return false;
         }
@@ -9782,11 +9565,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           return false;
         }
         await ctx.dropToDiscard({id: selected.id, fromZone: ctx.t('playArea')});
-        await checkNextBox(ctx.card);
-        ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
-        if (getLastCheckboxChecked(ctx.card)) {
-          ctx.deleteCardInZone(ctx.zone, ctx.card.id);
-        }
+        await checkNextBox(ctx, ctx.zone, ctx.card);
         return false;
       }
     }],
@@ -9805,11 +9584,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (!selected) {
             return false;
           }
-          await checkNextBox(selected);
-          ctx.replaceCardInZone(ctx.t('playArea'), selected.id, selected);
-          if (getLastCheckboxChecked(selected)) {
-            ctx.deleteCardInZone(ctx.t(('playArea')), selected.id);
-          }
+          await checkNextBox(ctx, ctx.t('playArea'), selected);
           return false;
         }
       },
@@ -9846,11 +9621,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (!selected) {
             return false;
           }
-          await checkNextBox(selected);
-          ctx.replaceCardInZone(ctx.t('playArea'), selected.id, selected);
-          if (getLastCheckboxChecked(selected)) {
-            ctx.deleteCardInZone(ctx.t(('playArea')), selected.id);
-          }
+          await checkNextBox(ctx, ctx.t('playArea'), selected);
           return false;
         }
       },
@@ -9888,11 +9659,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (!selected) {
             return false;
           }
-          await checkNextBox(selected);
-          ctx.replaceCardInZone(ctx.t('playArea'), selected.id, selected);
-          if (getLastCheckboxChecked(selected)) {
-            ctx.deleteCardInZone(ctx.t(('playArea')), selected.id);
-          }
+          await checkNextBox(ctx, ctx.t('playArea'), selected);
           return false;
         }
       },
@@ -9929,11 +9696,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           if (!selected) {
             return false;
           }
-          await checkNextBox(selected);
-          ctx.replaceCardInZone(ctx.t('playArea'), selected.id, selected);
-          if (getLastCheckboxChecked(selected)) {
-            ctx.deleteCardInZone(ctx.t(('playArea')), selected.id);
-          }
+          await checkNextBox(ctx, ctx.t('playArea'), selected);
           return false;
         }
       },
@@ -10157,17 +9920,12 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
                 }
                 if (selectedCheckboxes.length === 2) {
                   if (separatedCheckBoxes) {
-                    await checkBoxes(selectedCargos[0], [selectedCheckboxes[0]]);
-                    await checkBoxes(selectedCargos[1], [selectedCheckboxes[1]]);
-                    ctx.replaceCardInZone(ctx.t('playArea'), selectedCargos[0].id, selectedCargos[0]);
-                    ctx.replaceCardInZone(ctx.t('playArea'), selectedCargos[1].id, selectedCargos[1]);
-                    await checkNextBox(ctx.card);
-                    ctx.replaceCardInZone(ctx.t('playArea'), ctx.card.id, ctx.card);
+                    await checkBoxes(ctx, ctx.t('playArea'), selectedCargos[0], [selectedCheckboxes[0]]);
+                    await checkBoxes(ctx, ctx.t('playArea'), selectedCargos[1], [selectedCheckboxes[1]]);
+                    await checkNextBox(ctx, ctx.zone, ctx.card);
                   } else {
-                    await checkBoxes(cargo, selectedCheckboxes);
-                    ctx.replaceCardInZone(ctx.t('playArea'), cargo.id, cargo);
-                    await checkNextBox(ctx.card);
-                    ctx.replaceCardInZone(ctx.t('playArea'), ctx.card.id, ctx.card);
+                    await checkBoxes(ctx, ctx.t('playArea'), cargo, selectedCheckboxes);
+                    await checkNextBox(ctx, ctx.zone, ctx.card);
                   }
                   if (getLastCheckboxChecked(selectedCargos[0])) {
                     ctx.deleteCardInZone(ctx.t('playArea'), selectedCargos[0].id);
@@ -10465,11 +10223,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           return false;
         }
         await ctx.dropToDiscard({id: selected.id, fromZone: ctx.t('playArea')});
-        await checkNextBox(ctx.card);
-        ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
-        if (getLastCheckboxChecked(ctx.card)) {
-          ctx.deleteCardInZone(ctx.zone, ctx.card.id);
-        }
+        await checkNextBox(ctx, ctx.zone, ctx.card);
         return false;
       }
     }],
@@ -10603,7 +10357,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         ctx.card = oldCard;
         ctx.zone = oldZone;
         await addResourceMapToCard(ctx.card, {fame: selectedFameEffect + selectedMaxFame + 5})
-        await checkNextBox(ctx.card);
+        await checkNextBox(ctx, ctx.zone, ctx.card);
         if (getLastCheckboxChecked(ctx.card)) {
           this.unusable = true;
         }
@@ -10725,18 +10479,16 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
             for(const box of boxes) {
               await applyResourceMapDelta(ctx, getCheckboxResources(box.content) ?? {});
             }
-            await checkBoxes(selected, boxes);
+            await checkBoxes(ctx, ctx.t('playArea'), selected, boxes);
             resolve(true);
           });
         });
         if (!choice) {
           return false;
         }
-        await checkNextBox(ctx.card);
-        ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+        await checkNextBox(ctx, ctx.zone, ctx.card);
         await ctx.dropToDiscard({id: selected.id, fromZone: ctx.t('playArea')});
         if (getLastCheckboxChecked(ctx.card)) {
-          ctx.deleteCardInZone(ctx.zone, ctx.card.id);
           return false;
         }
         return true;
@@ -10765,8 +10517,7 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
               for(const box of boxes) {
                 await applyResourceMapDelta(ctx, getCheckboxResources(box.content) ?? {});
               }
-              await checkBoxes(ctx.card, boxes);
-              ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+              await checkBoxes(ctx, ctx.zone, ctx.card, boxes);
               resolve(true);
             });
           });
@@ -10775,8 +10526,6 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           }
           await ctx.dropToDiscard({id: selected.id, fromZone: ctx.t('playArea')});
           if (getLastCheckboxChecked(ctx.card)) {
-            ctx.deleteCardInZone(ctx.zone, ctx.card.id);
-            await ctx.discoverCard(c => c.id === 348, this.description(ctx.t), 1, ctx.card);
             return false;
           }
           return true;
@@ -10791,6 +10540,329 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       },
     ],
+  },
+};
+
+export const cardCheckboxEffectsRegistry: Record<number, Record<number, CardEffect[]>> = {
+  25: {
+    1: [{
+      description: (t) => t('none'),
+      timing: 'lastBoxChecked',
+      execute: async function(ctx) {
+        await ctx.upgradeCard(ctx.card, 3, true);
+        ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+        await ctx.discoverCard((card) => ([135].includes(card.id)), this.description(ctx.t), 1, ctx.card);
+        return false;
+      }
+    }]
+  },
+  26: {
+    1: [{
+      description: (t) => t('none'),
+      timing: 'lastBoxChecked',
+      execute: async function(ctx) {
+        await ctx.upgradeCard(ctx.card, 3, true)
+        ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+        return false;
+      }
+    }]
+  },
+  89: {
+    3: [{
+      description: (t) => t('pit_settlement'),
+      timing: 'lastBoxChecked',
+      execute: async function(ctx) {
+        await ctx.upgradeCard(ctx.card, 4, true);
+        ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+        return false;
+      }
+    }]
+  },
+  98: {
+    1: [{
+      description: (t) => t('none'),
+      timing: 'lastBoxChecked',
+      execute: async function(ctx) {
+        await ctx.upgradeCard(ctx.card, 2, true);
+        ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+        return false;
+      }
+    }],
+    2: [{
+      description: (t) => t('none'),
+      timing: 'lastBoxChecked',
+      execute: async function(ctx) {
+        await ctx.upgradeCard(ctx.card, 4, true);
+        ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+        return false;
+      }
+    }],
+    4: [{
+      description: (t) => t('none'),
+      timing: 'lastBoxChecked',
+      execute: async function(ctx) {
+        await ctx.upgradeCard(ctx.card, 3, true);
+        ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+        return false;
+      }
+    }],
+  },
+  102: {
+    3: [{
+      description: (t) => t('none'),
+      timing: 'lastBoxChecked',
+      execute: async function(ctx) {
+        await ctx.upgradeCard(ctx.card, 4, true);
+        await ctx.dropToPermanent({id: ctx.card.id, fromZone: ctx.zone});
+        return false;
+      }
+    }]
+  },
+  134: {
+    3: [{
+      description: (t) => t('none'),
+      timing: 'lastBoxChecked',
+      execute: async function(ctx) {
+        await ctx.upgradeCard(ctx.card, 3, true);
+        ctx.replaceCardInZone(ctx.t('playArea'), ctx.card.id, ctx.card);
+        return false;
+      }
+    }]
+  },
+  138: {
+    2: [{
+      description: (t) => t('effect_description_espionage'),
+      timing: 'lastBoxChecked',
+      execute: async function(ctx) {
+        ctx.mill(ctx.fetchCardsInZone(() => true, ctx.t('deck')).length);
+        return false;
+      }
+    }]
+  },
+  140: {
+    1: [{
+      description: (t) => t('effect_description_a_certain_lady'),
+      timing: 'lastBoxChecked',
+      execute: async function(ctx) {
+        await ctx.upgradeCard(ctx.card, 3, true);
+        ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+        return false;
+      }
+    }],
+    3: [{
+      description: (t) => t('effect_description_a_certain_lady'),
+      timing: 'lastBoxChecked',
+      execute: async function(ctx) {
+        await ctx.handleEnemyDefeated(ctx.card, ctx.zone);
+        ctx.deleteCardInZone(ctx.zone, 140);
+        return false;
+      }
+    }]
+  },
+  141: {
+    1: [{
+      description: (t) => t('robbin_leader'),
+      timing: 'lastBoxChecked',
+      execute: async function(ctx) {
+        if (ctx.fetchCardsInZone((c) => c.GetName(ctx.t) === ctx.t('a_certain_lady'), ctx.getCardZone(140)).length > 0) {
+          ctx.deleteCardInZone(ctx.getCardZone(140), 140);
+          await ctx.upgradeCard(ctx.card, 3, true);
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+        }
+        else {
+          ctx.deleteCardInZone(ctx.zone, 141);
+        }
+        return false;
+      }
+    }]
+  },
+  148: {
+    3: [{
+      description: (t) => t('effect_description_small_dungeon'),
+      timing: 'lastBoxChecked',
+      execute: async function(ctx) {
+        await ctx.upgradeCard(ctx.card, 4, true);
+        ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+        return false;
+      }
+    }]
+  },
+  151: {
+    1: [{
+      description: (t) => t('effect_description_archery_contest'),
+      timing: 'lastBoxChecked',
+      execute: async function(ctx) {
+        await ctx.upgradeCard(ctx.card, 3, true);
+        ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+        return false;
+      }
+    }]
+  },
+  162: {
+    1: [{
+      description: (t) => t('effect_description_old_oak_tree'),
+      timing: 'lastBoxChecked',
+      execute: async function(ctx) {
+        await ctx.upgradeCard(ctx.card, 3, true);
+        ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+        return false;
+      }
+    }]
+  },
+  167: {
+    3: [{
+      description: (t) => t('none'),
+      timing: 'lastBoxChecked',
+      execute: async function(ctx) {
+        await ctx.upgradeCard(ctx.card, 3, true);
+        ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+        return false;
+      }
+    }]
+  },
+  222: {
+    3: [{
+      description: (t) => t('none'),
+      timing: 'lastBoxChecked',
+      execute: async function(ctx) {
+        ctx.deleteCardInZone(ctx.zone, 222);
+        return false;
+      }
+    }]
+  },
+  223: {
+    3: [{
+      description: (t) => t('none'),
+      timing: 'lastBoxChecked',
+      execute: async function(ctx) {
+        ctx.deleteCardInZone(ctx.zone, 223);
+        return false;
+      }
+    }]
+  },
+  224: {
+    3: [{
+      description: (t) => t('none'),
+      timing: 'lastBoxChecked',
+      execute: async function(ctx) {
+        ctx.deleteCardInZone(ctx.zone, 224);
+        return false;
+      }
+    }]
+  },
+  225: {
+    3: [{
+      description: (t) => t('none'),
+      timing: 'lastBoxChecked',
+      execute: async function(ctx) {
+        ctx.deleteCardInZone(ctx.zone, 225);
+        return false;
+      }
+    }]
+  },
+  226: {
+    3: [{
+      description: (t) => t('none'),
+      timing: 'lastBoxChecked',
+      execute: async function(ctx) {
+        ctx.deleteCardInZone(ctx.zone, 226);
+        return false;
+      }
+    }]
+  },
+  227: {
+    3: [{
+      description: (t) => t('none'),
+      timing: 'lastBoxChecked',
+      execute: async function(ctx) {
+        ctx.deleteCardInZone(ctx.zone, 227);
+        return false;
+      }
+    }]
+  },
+  236: {
+    1: [{
+      description: (t) => t('none'),
+      timing: 'lastBoxChecked',
+      execute: async function(ctx) {
+        ctx.deleteCardInZone(ctx.zone, 236);
+        return false;
+      }
+    }]
+  },
+  237: {
+    1: [{
+      description: (t) => t('none'),
+      timing: 'lastBoxChecked',
+      execute: async function(ctx) {
+        await ctx.upgradeCard(ctx.card, 3, true);
+        ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+        return false;
+      }
+    }]
+  },
+  240: {
+    1: [{
+      description: (t) => t('none'),
+      timing: 'lastBoxChecked',
+      execute: async function(ctx) {
+        await ctx.upgradeCard(ctx.card, 3, true);
+        ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+        await ctx.dropToDiscard({id: ctx.card.id, fromZone: ctx.zone});
+        return false;
+      }
+    }]
+  },
+  253: {
+    3: [{
+      description: (t) => t('none'),
+      timing: 'lastBoxChecked',
+      execute: async function(ctx) {
+        ctx.deleteCardInZone(ctx.zone, 253);
+        return false;
+      }
+    }]
+  },
+  260: {
+    1: [{
+      description: (t) => t('none'),
+      timing: 'lastBoxChecked',
+      execute: async function(ctx) {
+        ctx.deleteCardInZone(ctx.zone, 260);
+        return false;
+      }
+    }]
+  },
+  262: {
+    3: [{
+      description: (t) => t('none'),
+      timing: 'lastBoxChecked',
+      execute: async function(ctx) {
+        ctx.deleteCardInZone(ctx.zone, 262);
+        return false;
+      }
+    }]
+  },
+  268: {
+    3: [{
+      description: (t) => t('none'),
+      timing: 'lastBoxChecked',
+      execute: async function(ctx) {
+        ctx.deleteCardInZone(ctx.zone, 268);
+        return false;
+      }
+    }]
+  },
+  269: {
+    1: [{
+      description: (t) => t('none'),
+      timing: 'lastBoxChecked',
+      execute: async function(ctx) {
+        await ctx.discoverCard(c => c.id === 348, this.description(ctx.t), 1, ctx.card);
+        ctx.deleteCardInZone(ctx.zone, 269);
+        return false;
+      }
+    }]
   },
 };
 

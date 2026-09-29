@@ -136,6 +136,7 @@ export type EffectTiming =
   | "onPlayAreaUpdated"
   | "discovered"
   | "startOfTurn"
+  | 'lastBoxChecked' // Checkbox Registry
   | "onTravel" // Distant Lands only
 ;
 
