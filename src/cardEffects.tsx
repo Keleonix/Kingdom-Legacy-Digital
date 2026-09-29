@@ -124,16 +124,16 @@ export const stayInPlayEffect: CardEffect = {
   }
 }
 
-// const trailScoutAtDestination: CardEffect = {
-//   description: (t) => t('effect_description_trail_scout_at_destination'),
-//   timing: "onClick",
-//   execute: async function (ctx: GameContext) {
-//     if (await ctx.discoverCard(c => [352, 353, 354, 355].includes(c.id), this.description(ctx.t), 1, ctx.card)) {
-//       ctx.effectEndTurn();
-//     }
-//     return false;
-//   }
-// }
+const trailScoutAtDestination: CardEffect = {
+  description: (t) => t('effect_description_trail_scout_at_destination'),
+  timing: "onClick",
+  execute: async function (ctx: GameContext) {
+    if (await ctx.discoverCard(c => [352, 353, 354, 355].includes(c.id), this.description(ctx.t), 1, ctx.card)) {
+      ctx.effectEndTurn();
+    }
+    return false;
+  }
+}
 
 // -------------------
 // Private Stuff
@@ -10541,6 +10541,277 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       },
     ],
   },
+  270: {
+    1: [
+      { // Stop ! - Arrivée à destination
+        description: (t) => parseEffects(t('effect_description_stop_distant_lands_9')).effects[0].text,
+        timing: "onClick",
+        execute: async function (ctx) {
+          // Step 1: Flip the planning card to invert checks
+          const planningCard = ctx.fetchCardsInZone(c => c.id === 236, ctx.t('permanentZone'))[0];
+          if (planningCard) {
+            // Invert checked boxes
+            const uncheckedBoxes = planningCard.checkboxes[ctx.card.currentSide - 1].filter(c => !c.checked).length;
+            planningCard.currentSide = 3;
+            for (let i = 0; i < uncheckedBoxes; i++) {
+              await checkNextBox(ctx, ctx.t('permanentZone'), planningCard);
+            }
+            if (!getLastCheckboxChecked(planningCard)) {
+              planningCard.currentSide = 1;
+              await ctx.upgradeCard(planningCard, 3, true);
+              ctx.replaceCardInZone(ctx.t('permanentZone'), planningCard.id, planningCard);
+            }
+          }
+
+          // Step 2: Add effect to trail_scout card (if in deck)
+          const trailScoutCard = ctx.fetchCardsInZone(c => c.id === 229, ctx.t('deck'))[0];
+          if (trailScoutCard) {
+            ctx.addCardEffect(229, trailScoutCard.currentSide, ctx.t('deck'), trailScoutAtDestination, ctx.t('effect_description_trail_scout_at_destination'));
+          }
+
+          // Step 3: Destroy all man_overboard, lose_cargo, and repairs_needed cards
+          const cardsToDestroy = ctx.fetchCardsInZone(c =>
+            c.GetName(ctx.t) === ctx.t('man_overboard') ||
+            c.GetName(ctx.t) === ctx.t('lose_cargo') ||
+            c.GetName(ctx.t) === ctx.t('repairs_needed'),
+            ctx.t('deck')
+          );
+          for (const card of cardsToDestroy) {
+            ctx.deleteCardInZone(ctx.t('deck'), card.id);
+          }
+
+          // Step 4: Move seafaring cards to sideDeck
+          const seafaringCards = ctx.fetchCardsInZone(c =>
+            c.GetType(ctx.t).includes(ctx.t('seafaring')),
+            ctx.t('deck')
+          );
+          for (const card of seafaringCards) {
+            await ctx.dropToSideDeck({id: card.id, fromZone: ctx.t('deck')});
+          }
+
+          // Step 5: Discover cards 271-274
+          await ctx.discoverCard(c => [271, 272, 273, 274].includes(c.id), this.description(ctx.t), 4, ctx.card);
+
+
+          // Destroy
+          ctx.deleteCardInZone(ctx.zone, ctx.card.id);
+          return true;
+        }
+      }
+    ]
+  },
+  271: {
+    2: [{ // Camp de Base - Discard 1 Person to gain resources
+      description: (t) => parseEffects(t('effect_description_base_camp')).effects[0].text,
+      timing: "onClick",
+      execute: async function (ctx) {
+        // Step 1: Check if there are valid targets
+        const people = ctx.fetchCardsInZone((card) => card.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'));
+        if (people.length === 0) {
+          return false;
+        }
+        // Step 2: Player selects a person to discard
+        const selected = await ctx.selectCardsFromZone((card) => card.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'), this.description(ctx.t), 1, ctx.card, 0, 'person');
+        if (selected.length !== 0) {
+          await ctx.dropToDiscard({id: selected[0].id, fromZone: ctx.t('playArea')});
+          // Step 3: Gain 1 resource of choice
+          const choice = await ctx.selectResourceChoice({ coin: 1, wood: 1, stone: 1 }, 1);
+          if (choice) {
+            await applyResourceMapDelta(ctx, choice);
+            return true;
+          }
+        }
+        return false;
+      }
+    }],
+    3: [
+      { // Territoire Revendiqué - Card Played: Discover Nin'Gari
+        description: (t) => parseEffects(t('effect_description_claimed_territory')).effects[0].text,
+        timing: "played",
+        execute: async function (ctx) {
+          await ctx.discoverCard((card) => card.id === 335, this.description(ctx.t), 1, ctx.card);
+          return false;
+        }
+      },
+      { // Territoire Revendiqué - Gain 1 resource of choice
+        description: (t) => parseEffects(t('effect_description_claimed_territory')).effects[1].text,
+        timing: "onClick",
+        execute: async function (ctx) {
+          const choice = await ctx.selectResourceChoice({ coin: 1, wood: 1, stone: 1, sword: 1, metal: 1, tradegood: 1 }, 1);
+          if (choice) {
+            await applyResourceMapDelta(ctx, choice);
+            return true;
+          }
+          return false;
+        }
+      }
+    ],
+    4: [{ // Camp Stratégique - Discard 1 allied card to gain resources
+      description: (t) => parseEffects(t('effect_description_strategic_camp')).effects[0].text,
+      timing: "onClick",
+      execute: async function (ctx) {
+        // Step 1: Check if there are valid allied targets
+        const alliedCards = ctx.fetchCardsInZone((card) => card.id !== ctx.card.id && !card.negative[card.currentSide - 1], ctx.t('playArea'));
+        if (alliedCards.length === 0) {
+          return false;
+        }
+        // Step 2: Player selects an allied card to discard
+        const selected = await ctx.selectCardsFromArray(alliedCards, ctx.t('playArea'), this.description(ctx.t), 1, 0, ctx.card);
+        if (selected.length !== 0) {
+          await ctx.dropToDiscard({id: selected[0].id, fromZone: ctx.t('playArea')});
+          // Step 3: Gain 1 resource of choice
+          const choice = await ctx.selectResourceChoice({ coin: 1, wood: 1, stone: 1, sword: 1 }, 1);
+          if (choice) {
+            await applyResourceMapDelta(ctx, choice);
+            return true;
+          }
+        }
+        return false;
+      }
+    }]
+  },
+  272: {
+    3: [{ // Artisan - Discover 1 tool
+      description: (t) => parseEffects(t('effect_description_craftsman')).effects[0].text,
+      timing: "onClick",
+      execute: async function (ctx) {
+        return (await ctx.discoverCard((card) => [329, 330, 331].includes(card.id), this.description(ctx.t), 1, ctx.card));
+      }
+    }]
+  },
+  273: {
+    3: [{ // Résidence du Roi - Check 1 to play 1 card from discard
+      description: (t) => parseEffects(t('effect_description_kings_residence')).effects[0].text,
+      timing: "onClick",
+      execute: async function (ctx) {
+         const discardCards = ctx.fetchCardsInZone(() => true, ctx.t('discard'));
+        if (getLastCheckboxChecked(ctx.card) || discardCards.length === 0) {
+          return false;
+        }
+        const selected = await ctx.selectCardsFromArray(discardCards, ctx.t('discard'), this.description(ctx.t), 1, 0, ctx.card);
+        if (selected.length === 0) {
+          return false;
+        }
+        return await new Promise<boolean>((resolve) => {
+          ctx.openCheckboxPopup(ctx.card, 1, 0, async (boxes) => {
+            if (boxes.length === 0) {
+              resolve(false);
+            }
+            await ctx.dropToPlayArea({id: selected[0].id, fromZone: ctx.t('discard')});
+            await checkBoxes(ctx, ctx.zone, ctx.card, boxes);
+            resolve(true);
+          });
+        });
+      }
+    }]
+  },
+  274: {
+    4: [{ // Arbres Géants - On upgrade to Mammoth Trees, discover Nin'Garis
+      description: (t) => parseEffects(t('effect_description_giant_trees')).effects[0].text,
+      timing: "onUpgrade",
+      execute: async function (ctx) {
+        await ctx.discoverCard((card) => card.id === 365, this.description(ctx.t), 1, ctx.card);
+        return false;
+      }
+    }]
+  },
+  275: {
+    2: [{ // Jetée - Add seafaring from sideDeck to deck
+      description: (t) => parseEffects(t('effect_description_pier')).effects[0].text,
+      timing: "onClick",
+      execute: async function (ctx) {
+        const seafarings = ctx.fetchCardsInZone(c => c.GetType(ctx.t).includes(ctx.t('seafaring')), ctx.t('sideDeck'));
+        if (seafarings.length === 0) {
+          return false;
+        }
+        const selected = (await ctx.selectCardsFromArray(seafarings, ctx.t('sideDeck'), this.description(ctx.t), 1, 0, ctx.card, 'seafaring'))[0];
+        if (!selected) {
+          return false;
+        }
+        await ctx.dropToDiscard({id: selected.id, fromZone: ctx.t('sideDeck')});
+        ctx.effectEndTurn();
+        return false;
+      }
+    }]
+  },
+  276: {
+    1: [{ // Curiosité - Discover 1 expedition
+      description: (t) => parseEffects(t('effect_description_curiosity')).effects[0].text,
+      timing: "onClick",
+      execute: async function (ctx) {
+        if (await ctx.discoverCard((card) => [383, 384, 385, 386].includes(card.id), this.description(ctx.t), 1, ctx.card)) {
+          await ctx.upgradeCard(ctx.card, 3, true);
+          ctx.replaceCardInZone(ctx.zone, ctx.card.id, ctx.card);
+          return true;
+        }
+        return false;
+      }
+    }],
+    3: [{ // Débris - Check as many as you want, destroy when complete
+      description: (t) => parseEffects(t('effect_description_debris')).effects[0].text,
+      timing: "onClick",
+      execute: async function (ctx) {
+        const uncheckedBoxes = ctx.card.checkboxes[ctx.card.currentSide - 1].filter(c => !c.checked).length;
+        if (uncheckedBoxes === 0) {
+          return false;
+        }
+        return await new Promise<boolean>((resolve) => {
+          ctx.openCheckboxPopup(ctx.card, 0, uncheckedBoxes, async (boxes) => {
+              if(boxes.length !== 0) {
+                for(const box of boxes) {
+                  await applyResourceMapDelta(ctx, getCheckboxResources(box.content) ?? {});
+                }
+                await checkBoxes(ctx, ctx.zone, ctx.card, boxes);
+                resolve(true);
+              }
+              resolve(false);
+            });
+          });
+      }
+    }]
+  },
+  277: {
+
+  },
+  278: {
+    4: [{ // Arbres Géants - On upgrade to Mammoth Trees, discover Nin'Garis
+      description: (t) => parseEffects(t('effect_description_giant_trees')).effects[0].text,
+      timing: "onUpgrade",
+      execute: async function (ctx) {
+        await ctx.discoverCard((card) => card.id === 365, this.description(ctx.t), 1, ctx.card);
+        return false;
+      }
+    }]
+  },
+  279: {
+
+  },
+  280: {
+    1: [{ // Comme à la Maison
+      description: (t) => parseEffects(t('effect_description_just_like_home')).effects[0].text,
+      timing: "onEndOfExpansion",
+      execute: async function (ctx) {
+        const choice = await ctx.selectStringChoice(this.description(ctx.t), [ctx.t('yes'), ctx.t('no')]);
+        if (choice === ctx.t('yes')) {
+          ctx.setPurgedCards(prev => [...prev, ctx.card]);
+          ctx.deleteCardInZone(ctx.zone, ctx.card.id);
+        }
+        return false;
+      }
+    }],
+    3: [{ // Hâte de Rentrer à la Maison
+      description: (t) => parseEffects(t('effect_description_longing_for_home')).effects[0].text,
+      timing: "onEndOfExpansion",
+      execute: async function (ctx) {
+        const choice = await ctx.selectStringChoice(this.description(ctx.t), [ctx.t('yes'), ctx.t('no')]);
+        if (choice === ctx.t('yes')) {
+          ctx.setPurgedCards(prev => [...prev, ctx.card]);
+          ctx.deleteCardInZone(ctx.zone, ctx.card.id);
+        }
+        return false;
+      }
+    }]
+  },
 };
 
 export const cardCheckboxEffectsRegistry: Record<number, Record<number, CardEffect[]>> = {
@@ -10864,6 +11135,16 @@ export const cardCheckboxEffectsRegistry: Record<number, Record<number, CardEffe
       }
     }]
   },
+  276: {
+    3: [{
+      description: (t) => t('none'),
+      timing: 'lastBoxChecked',
+      execute: async function(ctx) {
+        ctx.deleteCardInZone(ctx.zone, 276);
+        return false;
+      }
+    }]
+  },
 };
 
 export const cardFameValueRegistry: Record<number, Record<number, CardFameValue>> = {
@@ -11090,6 +11371,20 @@ export const cardFameValueRegistry: Record<number, Record<number, CardFameValue>
         return 2 * (ctx.card.checkboxes[0].filter(cb => cb.checked).length);
       }
     },
+  },
+  280: {
+    1: { // Comme à la Maison
+      description: "Vaut 5 par Meuble",
+      execute: function(ctx)  {
+        return 5 * (ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('furniture')), ctx.t('deck')).length);
+      }
+    },
+    3: { // Hâte de Rentrer à la Maison
+      description: "Vaut 2 par carte Maritime",
+      execute: function(ctx)  {
+        return 2 * (ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('seafaring')), ctx.t('deck')).length);
+      }
+    }
   }
 }
 
@@ -11394,6 +11689,21 @@ export const cardUpgradeAdditionalCostRegistry: Record<number, Record<number, Ca
       }
     },
   },
+  272: {
+    3: {
+      description: "other_cost_one_person",
+      execute: async function (ctx) {
+        const cards = await ctx.selectCardsFromZone((c) => c.GetType(ctx.t).includes(ctx.t('person')), ctx.t('playArea'), this.description, 1, ctx.card, 0, 'person');
+        if(cards.reduce((sum, c) => sum + getCardSelectionValue(c, 'person'), 0) >= 1) {
+          for(const card of cards) {
+            await ctx.dropToDiscard({fromZone: ctx.t('playArea'), id: card.id});
+          }
+          return true;
+        }
+        return false;
+      }
+    },
+  }
 }
 
 export const cardSelectionValues: Record<number, Record<number, Record<string, number>>> = {

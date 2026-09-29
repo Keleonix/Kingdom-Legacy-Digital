@@ -29,7 +29,7 @@ export type TranslationKeys =
   | 'land' | 'building' | 'person' | 'knight' | 'lady' | 'seafaring'
   | 'ship' | 'event' | 'enemy' | 'permanent' | 'scroll' | 'choice'
   | 'potion' | 'item' | 'invention' | 'artefact' | 'livestock'
-  | 'horse' | 'wagon' | 'state' | 'goal' | 'cargo'
+  | 'horse' | 'wagon' | 'state' | 'goal' | 'cargo' | 'furniture'
   
   // Resources
   | 'coin' | 'wood' | 'stone' | 'sword' | 'metal' | 'tradegood' | 'fame'
@@ -347,6 +347,31 @@ export type TranslationKeys =
   | 'reef_of_despair'
   | 'shipwreck'
   | 'sinking_cargo'
+  | 'distant_shore'
+  | 'base_camp'
+  | 'claimed_territory'
+  | 'strategic_camp'
+  | 'sturdy_bushes'
+  | 'empty_land'
+  | 'craftsman'
+  | 'workshop'
+  | 'stony_beach'
+  | 'cleared_beach'
+  | 'kings_residence'
+  | 'kings_cabin'
+  | 'tropical_forest'
+  | 'deep_forest'
+  | 'mammoth_trees'
+  | 'giant_trees'
+  | 'delicious_fish'
+  | 'fishing_pier'
+  | 'pier'
+  | 'curiosity'
+  | 'debris'
+  | 'exotic_quarry'
+  | 'tropical_quarry'
+  | 'just_like_home'
+  | 'longing_for_home'
 
   // Cards Effects Descriptions
   | 'staysInPlay'
@@ -710,6 +735,18 @@ export type TranslationKeys =
   | 'effect_description_reef_of_despair'
   | 'effect_description_shipwreck'
   | 'effect_description_sinking_cargo'
+  | 'effect_description_stop_distant_lands_9'
+  | 'effect_description_base_camp'
+  | 'effect_description_claimed_territory'
+  | 'effect_description_strategic_camp'
+  | 'effect_description_craftsman'
+  | 'effect_description_kings_residence'
+  | 'effect_description_giant_trees'
+  | 'effect_description_pier'
+  | 'effect_description_curiosity'
+  | 'effect_description_debris'
+  | 'effect_description_just_like_home'
+  | 'effect_description_longing_for_home'
 
   // Other costs
   | 'other_cost_destroy_stone_bridge'
@@ -919,6 +956,7 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     state: 'État',
     goal: 'Objectif',
     cargo: 'Cargaison',
+    furniture: 'Meuble',
     
     // Resources
     coin: 'Or',
@@ -1512,6 +1550,31 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     reef_of_despair: 'Récif du Désespoir',
     shipwreck: 'Epave de Navire',
     sinking_cargo: 'Restes du Naufrage',
+    distant_shore: 'Rivage Lointain',
+    base_camp: 'Camp de Base',
+    claimed_territory: 'Territoire Revendiqué',
+    strategic_camp: 'Camp Stratégique',
+    sturdy_bushes: 'Végétation Sauvage',
+    empty_land: 'Terre Vierge',
+    craftsman: 'Artisan',
+    workshop: 'Atelier',
+    stony_beach: 'Plage Caillouteuse',
+    cleared_beach: 'Plage de Sable Fin',
+    kings_residence: 'Résidence du Roi',
+    kings_cabin: 'Cabane du Roi',
+    tropical_forest: 'Forêt Tropicale',
+    deep_forest: 'Forêt Profonde',
+    mammoth_trees: 'Séquoias Géants',
+    giant_trees: 'Arbres Géants',
+    pier: 'Jetée',
+    delicious_fish: 'Délicieux Poissons',
+    fishing_pier: 'Jetée pour Pêcheurs',
+    curiosity: 'Curiosité',
+    debris: 'Débris',
+    exotic_quarry: 'Carrière Exotique',
+    tropical_quarry: 'Carrière Tropicale',
+    just_like_home: 'Comme à la Maison',
+    longing_for_home: 'Hâte de Rentrer à la Maison',
 
     // Cards Effects Descriptions
     staysInPlay: "effects/passive Reste en jeu.",
@@ -1875,6 +1938,18 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     effect_description_reef_of_despair: 'effects/passive Reste en jeu. effects/forced Fin de Manche : effects/destroy 1 Navire de votre paquet, puis effects/arrow .',
     effect_description_shipwreck: 'effects/activate Défaussez 1 Personne en jeu pour effects/check 1 au choix, ne fois complétée, effects/destroy .',
     effect_description_sinking_cargo: 'effects/activate Défaussez 1 Personne pour effects/check 1 au choix et une fois complète, effects/destroy cette carte et découvrez un Perroquet (348). effects/forced Fin du Tour : effects/destroy .',
+    effect_description_stop_distant_lands_9: 'La terre ferme, enfin. effects/destroy 1) Retournez (effects/arrow ) la carte i18n/planning pour inverser les effects/check ; 2) Ajoutez un effet à la carte i18n/trail_scout (si elle est dans votre paquet); 3) effects/destroy toutes les cartes i18n/man_overboard , i18n/lose_cargo et i18n/repairs_needed ; 4) Les cartes Maritimes sont rangées avec le reste des cartes écartées; 5) Découvrez (271-274).',
+    effect_description_base_camp: 'effects/activate Défaussez 1 Personne pour gagner resources/coin / resources/wood / resources/stone .',
+    effect_description_claimed_territory: 'effects/forced Carte Jouée : Découvrez les Nin\'Gari (335). effects/activate Gagnez 1 ressource au choix.',
+    effect_description_strategic_camp: 'effects/activate Défaussez 1 carte alliée pour gagner resources/coin / resources/wood / resources/stone / resources/sword .',
+    effect_description_craftsman: 'effects/activate Découvrez 1 outil (329/330/331).',
+    effect_description_kings_residence: 'effects/activate effects/check 1 pour jouer 1 carte depuis la défausse.',
+    effect_description_giant_trees: 'effects/forced Lorsque vous améliorez cette carte vers i18n/mammoth_trees , découvrez les Nin\'Gari (335).',
+    effect_description_pier: 'effects/time Ajoutez à votre deck une de vos cartes Maritime mise de côtée.',
+    effect_description_curiosity: 'effects/activate effects/arrow cette carte pour découvrir 1 expédition (383/384/385/386).',
+    effect_description_debris: 'Une fois complétée, effects/destroy . effects/activate effects/check autant que vous le souhaitez.',
+    effect_description_just_like_home: 'Vaut 5 resources/fame par Meuble. effects/passive Vous pouvez purger cette carte à la fin de l\'extension.',
+    effect_description_longing_for_home: 'Vaut 2 resources/fame par carte Maritime. effects/passive Vous pouvez purger cette carte à la fin de l\'extension.',
 
     // Other costs
     other_cost_destroy_stone_bridge: 'Détruisez le Pont de Pierre (12)',
@@ -2081,6 +2156,7 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     state: 'State',
     goal: 'Goal',
     cargo: 'Cargo',
+    furniture: 'Furniture',
 
     // Resources
     coin: 'Gold',
@@ -2675,6 +2751,31 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     reef_of_despair: 'Reef of Despair',
     shipwreck: 'Shipwreck',
     sinking_cargo: 'Sinking Cargo',
+    distant_shore: 'Distant Shore',
+    base_camp: 'Base Camp',
+    claimed_territory: 'Claimed Territory',
+    strategic_camp: 'Strategic Camp',
+    sturdy_bushes: 'Sturdy Bushes',
+    empty_land: 'Empty Land',
+    craftsman: 'Craftsman',
+    workshop: 'Workshop',
+    stony_beach: 'Stony Beach',
+    cleared_beach: 'Cleared Beach',
+    kings_residence: "King's Residence",
+    kings_cabin: "King's Cabin",
+    tropical_forest: 'Tropical Forest',
+    deep_forest: 'Deep Forest',
+    mammoth_trees: 'Mammoth Trees',
+    giant_trees: 'Giant Trees',
+    pier: 'Pier',
+    delicious_fish: 'Delicious Fish',
+    fishing_pier: 'Fishing Pier',
+    curiosity: 'Curiosity',
+    debris: 'Debris',
+    exotic_quarry: 'Exotic Quarry',
+    tropical_quarry: 'Tropical Quarry',
+    just_like_home: 'Just Like Home',
+    longing_for_home: 'Longing for Home',
 
     // Cards Effects Descriptions
     staysInPlay: "effects/passive Stays in play.",
@@ -2941,7 +3042,7 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     effect_description_treasure_wagon: "effects/forced Card Played: If an Enemy is in play, remove a production from this card. effects/forced When an Enemy is played, remove a production from this card. effects/forced: When Purged: This card is worth 5 resources/fame for each production on it.",
     effect_description_powerful_prince: "Resources are lost when a new card enters play. effects/passive Spend resources/coin resources/coin resources/coin to remove 1 resources/coin from this card's upgrade cost. effects/optional Card Played: Gain any 2 resources.",
     effect_description_prince__: "Resources are lost when a new card enters play. effects/optional Card Played: Gain any 3 resources. effects/time Discover the Treasury (167).",
-    effect_description_robber_saboteur: "effects/forced Carte jouée: Remove 1 production from 1 Building in play. effects/time Spend resources/sword resources/sword resources/sword to defeat effects/arrow i18n/prisoner .",
+    effect_description_robber_saboteur: "effects/forced Carte Played: Remove 1 production from 1 Building in play. effects/time Spend resources/sword resources/sword resources/sword to defeat effects/arrow i18n/prisoner .",
     effect_description_rebellious_monk: "effects/forced Card Played: Blocks 3 friendly cards. effects/time Spend resources/tradegood resources/tradegood resources/tradegood resources/tradegood to defeat effects/arrow i18n/prisoner .",
     effect_description_bard_of_the_people: "effects/forced Card Played: Play 1 Enemy from the discard.",
     effect_description_obedient_bard: "Worth 2 resources/fame per effects/check . effects/activate Put 1 effects/check to play 1 Event from the discard.",
@@ -3038,6 +3139,18 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     effect_description_reef_of_despair: 'effects/passive Stays in play. effects/forced End of Round : effects/destroy 1 Ship in your deck, then effects/arrow .',
     effect_description_shipwreck: 'effects/activate Discard 1 Person in play to effects/check any 1 box, when complete, effects/destroy .',
     effect_description_sinking_cargo: 'effects/activate Discard 1 Personn to effects/check any box below and once complete, effects/destroy this card and discover Parrot (348). effects/forced End of Turn : effects/destroy .',
+    effect_description_stop_distant_lands_9: 'Land, at last. effects/destroy 1) Flip (effects/arrow ) the i18n/planning card and invert its effects/check ; 2) Add an effect to the i18n/trail_scout card (if it is in your deck); 3) effects/destroy all i18n/man_overboard , i18n/lose_cargo and i18n/repairs_needed cards; 4) Seafaring cards are set aside with the rest of the set aside cards; 5) Discover (271-274).',
+    effect_description_base_camp: 'effects/activate Discard 1 Person to gain resources/coin / resources/wood / resources/stone .',
+    effect_description_claimed_territory: 'effects/forced Card Played : Discover the Nin\'Gari (335). effects/activate Gain any 1 resource.',
+    effect_description_strategic_camp: 'effects/activate Discard 1 allied card to gain resources/coin / resources/wood / resources/stone / resources/sword .',
+    effect_description_craftsman: 'effects/activate Discover 1 tool (329/330/331).',
+    effect_description_kings_residence: 'effects/activate effects/check 1 to play 1 card from the discard.',
+    effect_description_giant_trees: 'effects/forced When you upgrade this to i18n/mammoth_trees , discover the Nin\'Gari (335).',
+    effect_description_pier: 'effects/time Add to your deck one of your put aside Seafaring cards.',
+    effect_description_curiosity: 'effects/activate effects/arrow this card to discover 1 expedition (383/384/385/386).',
+    effect_description_debris: 'Once complete, effects/destroy . effects/activate effects/check as many as you want.',
+    effect_description_just_like_home: 'Worth 5 resources/fame per Furniture. effects/passive You may purge this card at the end of the expansion.',
+    effect_description_longing_for_home: 'Worth 2 resources/fame per Seafaring card. effects/passive You may purge this card at the end of the expansion.',
     
     // Other costs
     other_cost_destroy_stone_bridge: 'Destroy the Stone Bridge (12)',
