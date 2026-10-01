@@ -5816,71 +5816,64 @@ export default function Game() {
       const effects = getCardEffects(card.id, card.currentSide);
       for (const effect of effects) {
         if (effect.timing === 'onPurge') {
-          const context: GameContext = {
-              card,
-              zone: purgeType === 'deck' ? t('deck') : t('permanentZone'),
-              resources:resourcesRef.current,
-              cardsForTrigger: purgedCardsRef.current,
-              filterZone,
-              setResources,
-              handleGainResources,
-              handlePayResources,
-              draw,
-              effectEndTurn,
-              dropToPlayArea,
-              dropToBlocked,
-              dropToDeck,
-              dropToSideDeck,
-              dropToDiscard,
-              dropToCampaign,
-              dropToPermanent,
-              setDeck: setDeckImmediate,
-              setSideDeck: setSideDeckImmediate,
-              setPlayArea: setPlayAreaImmediate,
-              setDiscard: setDiscardImmediate,
-              setPermanentZone,
-              setCampaignDeck,
-              setTemporaryCardList,
-              setTemporaryCardListImmediate,
-              setBlockedZone,
-              setPurgedCards: setPurgedCardsImmediate,
-              setEffectsListImmediate,
-              deleteCardInZone,
-              replaceCardInZone,
-              mill,
-              openCheckboxPopup,
-              selectResourceChoice,
-              selectCardsFromZone,
-              selectCardsFromArray,
-              discoverCard,
-              boostProductivity,
-              registerEndRoundEffect,
-              addCardEffect,
-              fetchCardsInZone,
-              selectCardSides,
-              selectUpgradeCost,
-              selectTextInput,
-              selectStringChoice,
-              updateBlocks,
-              getBlockedBy,
-              getCardZone,
-              upgradeCard,
-              handleCardUpdate,
-              handleEnemyDefeated,
-              addDiscoverableCard,
-              getCardProduction,
-              hasBeenUsedThisTurn,
-              markAsUsedThisTurn,
-              t,
-              setUpgradeNotEndingTurn,
-              getCardAtIndex,
-            };
-          await effect.execute(context);
+          await handleExecuteCardEffect(
+            card,
+            purgeType === 'deck' ? t('deck') : t('permanentZone'),
+            'onPurge',
+            purgedCardsRef.current
+          );
         }
       }
     }
 
-    // Finally remove cards
+    // Remove cards
+    for (const card of purged) {
+      // Retirer de la zone source
+      if (purgeType === 'deck') {
+        setDeck(prev => prev.filter(c => c.id !== card.id));
+      } else {
+        setPermanentZone(prev => prev.filter(c => c.id !== card.id));
+      }
+    }
+
+    // After Purge Effects
+    effectsListRef.current = [];
+    for (const card of [...deckRef.current, ...permanentZoneRef.current]) {
+      const effects = getCardEffects(card.id, card.currentSide);
+      for (const effect of effects) {
+        if (effect.timing === 'afterPurgeSelect') {
+          effectsListRef.current.push({effect: effect, card: card, timing: "afterPurgeSelect"});
+        }
+      }
+    }
+
+    for (const effect of effectsListRef.current) {
+      await handleExecuteCardEffect(
+        effect.card,
+        deckRef.current.includes(effect.card) ? t('deck') : t('permanentZone'),
+        "afterPurgeSelect",
+        effectsListRef.current.map(e => e.card),
+        undefined,
+        effectsListRef.current.filter(e => e !== effect)
+      )
+    }
+
+    // Trigger onPurge effects
+    for (const card of purged) {
+      const effects = getCardEffects(card.id, card.currentSide);
+      for (const effect of effects) {
+        if (effect.timing === 'onPurge') {
+          await handleExecuteCardEffect(
+            card,
+            deckRef.current.includes(card) ? t('deck') : t('permanentZone'),
+            'onPurge',
+            purgedCardsRef.current,
+          )
+        }
+      }
+    }
+
+    // Remove cards
     for (const card of purged) {
       // Retirer de la zone source
       if (purgeType === 'deck') {
@@ -7321,7 +7314,7 @@ export default function Game() {
               onClick={handleDebugClick}
               className="absolute -bottom-7 -right-98 text-xs text-gray-700 whitespace-nowrap cursor-pointer select-none z-50"
             >
-              Kingdom Legacy - Digital by Keleonix | v0.11.0 {debugMode && '🐛'}
+              Kingdom Legacy - Digital by Keleonix | v0.12 {debugMode && '🐛'}
             </div>
           </div>
         </div>

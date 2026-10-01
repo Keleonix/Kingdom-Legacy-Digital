@@ -6567,8 +6567,9 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       }
     ],
-    3: [{ // Prisonnier
-      description: (t) => parseEffects(t('none')).effects[0].text,
+    3: [
+      { // Prisonnier
+        description: (t) => parseEffects(t('effect_description_prisoner')).effects[0].text,
         timing: "otherCardPlayed",
         execute: async function(ctx)  {
           const enemies = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('playArea'));
@@ -6579,7 +6580,25 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           }
           return false;
         }
-    }]
+      },
+      {
+        description: (t) => parseEffects(t('effect_description_prisoner')).effects[1].text,
+        timing: "afterPurgeSelect",
+        execute: async function(ctx)  {
+          const choice = await ctx.selectStringChoice(this.description(ctx.t), [ctx.t('yes'), ctx.t('no')]);
+          if (choice === ctx.t('no')) {
+            return false;
+          }
+          const selected = await ctx.selectCardsFromZone(c => c.GetName(ctx.t) === ctx.t('prisoner'), ctx.t('deck'), this.description(ctx.t), 0, ctx.card, 2);
+          if (selected.length === 0) {
+            return false;
+          }
+          ctx.setPurgedCards(prev => [...prev, ...selected]);
+          ctx.setEffectsListImmediate(prev => prev.filter(e => e.card.GetName(ctx.t) !== ctx.t('prisoner')));
+          return false;
+        }
+      }
+    ]
   },
   143: {
     1: [{ // Forêt des Voleurs
@@ -6698,8 +6717,9 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       }
     ],
-    3: [{ // Prisonnier
-      description: (t) => parseEffects(t('none')).effects[0].text,
+    3: [
+      { // Prisonnier
+        description: (t) => parseEffects(t('effect_description_prisoner')).effects[0].text,
         timing: "otherCardPlayed",
         execute: async function(ctx)  {
           const enemies = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('playArea'));
@@ -6710,7 +6730,25 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           }
           return false;
         }
-    }]
+      },
+      {
+        description: (t) => parseEffects(t('effect_description_prisoner')).effects[1].text,
+        timing: "afterPurgeSelect",
+        execute: async function(ctx)  {
+          const choice = await ctx.selectStringChoice(this.description(ctx.t), [ctx.t('yes'), ctx.t('no')]);
+          if (choice === ctx.t('no')) {
+            return false;
+          }
+          const selected = await ctx.selectCardsFromZone(c => c.GetName(ctx.t) === ctx.t('prisoner'), ctx.t('deck'), this.description(ctx.t), 0, ctx.card, 2);
+          if (selected.length === 0) {
+            return false;
+          }
+          ctx.setPurgedCards(prev => [...prev, ...selected]);
+          ctx.setEffectsListImmediate(prev => prev.filter(e => e.card.GetName(ctx.t) !== ctx.t('prisoner')));
+          return false;
+        }
+      }
+    ]
   },
   146: {
     1: [
@@ -6739,8 +6777,9 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       }
     ],
-    3: [{ // Prisonnier
-      description: (t) => parseEffects(t('none')).effects[0].text,
+    3: [
+      { // Prisonnier
+        description: (t) => parseEffects(t('effect_description_prisoner')).effects[0].text,
         timing: "otherCardPlayed",
         execute: async function(ctx)  {
           const enemies = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('playArea'));
@@ -6751,7 +6790,25 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           }
           return false;
         }
-    }]
+      },
+      {
+        description: (t) => parseEffects(t('effect_description_prisoner')).effects[1].text,
+        timing: "afterPurgeSelect",
+        execute: async function(ctx)  {
+          const choice = await ctx.selectStringChoice(this.description(ctx.t), [ctx.t('yes'), ctx.t('no')]);
+          if (choice === ctx.t('no')) {
+            return false;
+          }
+          const selected = await ctx.selectCardsFromZone(c => c.GetName(ctx.t) === ctx.t('prisoner'), ctx.t('deck'), this.description(ctx.t), 0, ctx.card, 2);
+          if (selected.length === 0) {
+            return false;
+          }
+          ctx.setPurgedCards(prev => [...prev, ...selected]);
+          ctx.setEffectsListImmediate(prev => prev.filter(e => e.card.GetName(ctx.t) !== ctx.t('prisoner')));
+          return false;
+        }
+      }
+    ]
   },
   147: {
     1: [{ // Grand Camp de Voleurs
@@ -6876,8 +6933,9 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       }
     ],
-    3: [{ // Prisonnier
-      description: (t) => parseEffects(t('none')).effects[0].text,
+    3: [
+      { // Prisonnier
+        description: (t) => parseEffects(t('effect_description_prisoner')).effects[0].text,
         timing: "otherCardPlayed",
         execute: async function(ctx)  {
           const enemies = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('playArea'));
@@ -6888,7 +6946,25 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           }
           return false;
         }
-    }]
+      },
+      {
+        description: (t) => parseEffects(t('effect_description_prisoner')).effects[1].text,
+        timing: "afterPurgeSelect",
+        execute: async function(ctx)  {
+          const choice = await ctx.selectStringChoice(this.description(ctx.t), [ctx.t('yes'), ctx.t('no')]);
+          if (choice === ctx.t('no')) {
+            return false;
+          }
+          const selected = await ctx.selectCardsFromZone(c => c.GetName(ctx.t) === ctx.t('prisoner'), ctx.t('deck'), this.description(ctx.t), 0, ctx.card, 2);
+          if (selected.length === 0) {
+            return false;
+          }
+          ctx.setPurgedCards(prev => [...prev, ...selected]);
+          ctx.setEffectsListImmediate(prev => prev.filter(e => e.card.GetName(ctx.t) !== ctx.t('prisoner')));
+          return false;
+        }
+      }
+    ]
   },
   151: {
     1: [{ // Concours de Tir à l'Arc
@@ -7202,8 +7278,9 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       }
     ],
-    3: [{ // Prisonnier
-      description: (t) => parseEffects(t('none')).effects[0].text,
+    3: [
+      { // Prisonnier
+        description: (t) => parseEffects(t('effect_description_prisoner')).effects[0].text,
         timing: "otherCardPlayed",
         execute: async function(ctx)  {
           const enemies = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('playArea'));
@@ -7214,7 +7291,25 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           }
           return false;
         }
-    }]
+      },
+      {
+        description: (t) => parseEffects(t('effect_description_prisoner')).effects[1].text,
+        timing: "afterPurgeSelect",
+        execute: async function(ctx)  {
+          const choice = await ctx.selectStringChoice(this.description(ctx.t), [ctx.t('yes'), ctx.t('no')]);
+          if (choice === ctx.t('no')) {
+            return false;
+          }
+          const selected = await ctx.selectCardsFromZone(c => c.GetName(ctx.t) === ctx.t('prisoner'), ctx.t('deck'), this.description(ctx.t), 0, ctx.card, 2);
+          if (selected.length === 0) {
+            return false;
+          }
+          ctx.setPurgedCards(prev => [...prev, ...selected]);
+          ctx.setEffectsListImmediate(prev => prev.filter(e => e.card.GetName(ctx.t) !== ctx.t('prisoner')));
+          return false;
+        }
+      }
+    ]
   },
   158: {
     1: [
@@ -7250,8 +7345,9 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       }
     ],
-    3: [{ // Prisonnier
-      description: (t) => parseEffects(t('none')).effects[0].text,
+    3: [
+      { // Prisonnier
+        description: (t) => parseEffects(t('effect_description_prisoner')).effects[0].text,
         timing: "otherCardPlayed",
         execute: async function(ctx)  {
           const enemies = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('playArea'));
@@ -7262,7 +7358,25 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           }
           return false;
         }
-    }]
+      },
+      {
+        description: (t) => parseEffects(t('effect_description_prisoner')).effects[1].text,
+        timing: "afterPurgeSelect",
+        execute: async function(ctx)  {
+          const choice = await ctx.selectStringChoice(this.description(ctx.t), [ctx.t('yes'), ctx.t('no')]);
+          if (choice === ctx.t('no')) {
+            return false;
+          }
+          const selected = await ctx.selectCardsFromZone(c => c.GetName(ctx.t) === ctx.t('prisoner'), ctx.t('deck'), this.description(ctx.t), 0, ctx.card, 2);
+          if (selected.length === 0) {
+            return false;
+          }
+          ctx.setPurgedCards(prev => [...prev, ...selected]);
+          ctx.setEffectsListImmediate(prev => prev.filter(e => e.card.GetName(ctx.t) !== ctx.t('prisoner')));
+          return false;
+        }
+      }
+    ]
   },
   159: {
     1: [{ // Barde du Peuple
@@ -7329,8 +7443,9 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       }
     ],
-    3: [{ // Prisonnier
-      description: (t) => parseEffects(t('none')).effects[0].text,
+    3: [
+      { // Prisonnier
+        description: (t) => parseEffects(t('effect_description_prisoner')).effects[0].text,
         timing: "otherCardPlayed",
         execute: async function(ctx)  {
           const enemies = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('playArea'));
@@ -7341,7 +7456,25 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           }
           return false;
         }
-    }]
+      },
+      {
+        description: (t) => parseEffects(t('effect_description_prisoner')).effects[1].text,
+        timing: "afterPurgeSelect",
+        execute: async function(ctx)  {
+          const choice = await ctx.selectStringChoice(this.description(ctx.t), [ctx.t('yes'), ctx.t('no')]);
+          if (choice === ctx.t('no')) {
+            return false;
+          }
+          const selected = await ctx.selectCardsFromZone(c => c.GetName(ctx.t) === ctx.t('prisoner'), ctx.t('deck'), this.description(ctx.t), 0, ctx.card, 2);
+          if (selected.length === 0) {
+            return false;
+          }
+          ctx.setPurgedCards(prev => [...prev, ...selected]);
+          ctx.setEffectsListImmediate(prev => prev.filter(e => e.card.GetName(ctx.t) !== ctx.t('prisoner')));
+          return false;
+        }
+      }
+    ]
   },
   161: {
     1: [
@@ -7376,8 +7509,9 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
         }
       }
     ],
-    3: [{ // Prisonnier
-      description: (t) => parseEffects(t('none')).effects[0].text,
+    3: [
+      { // Prisonnier
+        description: (t) => parseEffects(t('effect_description_prisoner')).effects[0].text,
         timing: "otherCardPlayed",
         execute: async function(ctx)  {
           const enemies = ctx.fetchCardsInZone((c) => c.GetType(ctx.t).includes(ctx.t('enemy')), ctx.t('playArea'));
@@ -7388,7 +7522,25 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
           }
           return false;
         }
-    }]
+      },
+      {
+        description: (t) => parseEffects(t('effect_description_prisoner')).effects[1].text,
+        timing: "afterPurgeSelect",
+        execute: async function(ctx)  {
+          const choice = await ctx.selectStringChoice(this.description(ctx.t), [ctx.t('yes'), ctx.t('no')]);
+          if (choice === ctx.t('no')) {
+            return false;
+          }
+          const selected = await ctx.selectCardsFromZone(c => c.GetName(ctx.t) === ctx.t('prisoner'), ctx.t('deck'), this.description(ctx.t), 0, ctx.card, 2);
+          if (selected.length === 0) {
+            return false;
+          }
+          ctx.setPurgedCards(prev => [...prev, ...selected]);
+          ctx.setEffectsListImmediate(prev => prev.filter(e => e.card.GetName(ctx.t) !== ctx.t('prisoner')));
+          return false;
+        }
+      }
+    ]
   },
   162: {
     1: [
