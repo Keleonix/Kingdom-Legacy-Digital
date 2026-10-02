@@ -11136,6 +11136,52 @@ export const allCards: GameCard[] = [
       throw new Error("Function not implemented.");
     }
   },
+  { id: 281,
+    name: ['near_forest', 'exploitation', 'faraway_forest', 'mahogany_trees'],
+    resources: [
+      [ { wood: 1 } ],
+      [ { wood: 3, fame: -2 } ],
+      [ emptyResource ],
+      [ { wood: 1 } ],
+    ],
+    effects: [
+      '',
+      'effect_description_exploitation',
+      '',
+      'effect_description_mahogany_trees',
+    ],
+    upgrades: [
+      [
+        { cost: { coin: 1 }, nextSide: 2 }
+      ],
+      [],
+      [
+        { cost: { coin: 5 }, nextSide: 4 }
+      ],
+      [],
+    ],
+    currentSide: 1,
+    type: ['land', 'land - event', 'land', 'land'],
+    choice: true,
+    checkboxes: [],
+    negative: [false, false, false, false],
+    discoverable: true,
+    GetResources: function (): Partial<ResourceMap>[] {
+      throw new Error("Function not implemented.");
+    },
+    GetEffect: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetName: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetType: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    GetUpgrades: function (): Upgrade[] {
+      throw new Error("Function not implemented.");
+    }
+  },
   { id: 373,
     name: ['welcome_to_foundations', '', '', ''],
     resources: [

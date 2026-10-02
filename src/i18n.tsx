@@ -115,6 +115,7 @@ export type TranslationKeys =
   | 'field_worker' | 'servant'
   | 'bandit' | 'worker'
   | 'hill' | 'chapel' | 'cathedral' | 'church'
+  | 'near_forest' | 'exploitation' | 'faraway_forest' | 'mahogany_trees'
   | 'east_cliffs' | 'smithy' | 'wall' | 'arsenal'
   | 'swamp' | 'accessible_swamp' | 'exotic_fruit_trees' | 'swamp_garden'
   | 'lake' | 'fishermans_cabin' | 'lighthouse' | 'fishing_boat'
@@ -397,6 +398,8 @@ export type TranslationKeys =
   | 'effect_description_chapel'
   | 'effect_description_cathedral'
   | 'effect_description_church'
+  | 'effect_description_exploitation'
+  | 'effect_description_mahogany_trees'
   | 'effect_description_smithy'
   | 'effect_description_arsenal'
   | 'effect_description_lighthouse'
@@ -1144,6 +1147,10 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     chapel: "Chappelle",
     cathedral: "Cathédrale",
     church: "Eglise",
+    near_forest: "Forêt Proche",
+    exploitation: "Exploitation",
+    faraway_forest: "Forêt Lointaine",
+    mahogany_trees: "Acajous",
     east_cliffs: "Falaise de l'Est",
     smithy: "Forge",
     wall: "Muraille",
@@ -1600,6 +1607,8 @@ Ceci est un projet de fan non officiel et n'est pas affilié, approuvé ou spons
     effect_description_chapel: "effects/activate Dépensez  resources/coin resources/coin resources/coin pour découvrir un Missionaire (103).",
     effect_description_cathedral: "effects/passive Cette carte produit +1 resources/coin pour chaque Personne en jeu.",
     effect_description_church: "effects/activate Dépensez resources/coin resources/coin resources/coin resources/coin pour découvrir un Prêtre (104).",
+    effect_description_exploitation: "effects/passive Reste en jeu.",
+    effect_description_mahogany_trees: "effects/activate Découvrez un meuble à réaliser (349/350/351/352).",
     effect_description_smithy: "effects/activate Réinitialisez pour découvrir des Bijoux (90).",
     effect_description_arsenal: "effects/activate Gagnez resources/sword pour chaque personne en jeu.",
     effect_description_lighthouse:"effects/passive Reste en jeu. effects/passive Défaussez la carte du sommet de votre deck.",
@@ -2345,6 +2354,10 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     chapel: "Chapel",
     cathedral: "Cathedral",
     church: "Church",
+    near_forest: "Near Forest",
+    exploitation: "Exploitation",
+    faraway_forest: "Faraway Forest",
+    mahogany_trees: "Mahogany Trees",
     east_cliffs: "East Cliffs",
     smithy: "Smithy",
     wall: "Wall",
@@ -2801,6 +2814,8 @@ This is an unofficial fan project and is not affiliated with, endorsed by, or sp
     effect_description_chapel: "effects/activate Spend resources/coin resources/coin resources/coin to discover a Missionary (103).",
     effect_description_cathedral: "effects/passive This card produces +1 resources/coin for each Person in play.",
     effect_description_church: "effects/activate Spend resources/coin resources/coin resources/coin resources/coin to discover a Priest (104).",
+    effect_description_exploitation: "effects/passive Stays in play.",
+    effect_description_mahogany_trees: "effects/activate Discover a furniture project (349/350/351/352).",
     effect_description_smithy: "effects/activate Reset to discover Jewellery (90).",
     effect_description_arsenal: "effects/activate Gain resources/sword for each person in play.",
     effect_description_lighthouse: "effects/passive Stays in play. effects/passive Discard the top card of your deck.",
