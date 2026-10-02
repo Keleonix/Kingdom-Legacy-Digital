@@ -10964,6 +10964,30 @@ export const cardEffectsRegistry: Record<number, Record<number, CardEffect[]>> =
       }
     }]
   },
+  281: {
+    2: [{ // Exploitation
+      description: (t) => parseEffects(t('effect_description_exploitation')).effects[0].text,
+      timing: "staysInPlay",
+      execute: async function () {
+        return false;
+      }
+    }],
+    4: [{ // Acajous
+      description: (t) => parseEffects(t('effect_description_mahogany_trees')).effects[0].text,
+      timing: "onClick",
+      execute: async function (ctx) {
+        const ids = [349, 350, 351, 352];
+        const furnitures = ctx.fetchCardsInZone(c => ids.includes(c.id), ctx.t('campaign'));
+        if (furnitures.length === 0) {
+          return false
+        }
+        if (await ctx.discoverCard(c => ids.includes(c.id), this.description(ctx.t), 1, ctx.card)) {
+          return true;
+        }
+        return false;
+      }
+    }]
+  },
 };
 
 export const cardCheckboxEffectsRegistry: Record<number, Record<number, CardEffect[]>> = {
